@@ -48,11 +48,13 @@ try {
     'appium:app': app, 'appium:bundleId': applicationId, 'appium:noReset': false,
     'appium:language': 'en', 'appium:locale': 'en_US',
     'appium:autoAcceptAlerts': true, 'appium:wdaLaunchTimeout': 240_000,
-    'appium:showXcodeLog': true, 'appium:isHeadless': true, 'appium:waitForIdleTimeout': 0,
+    'appium:maxTypingFrequency': 8, 'appium:showXcodeLog': true, 'appium:isHeadless': true, 'appium:waitForIdleTimeout': 0,
     'appium:newCommandTimeout': 180 });
   console.log('XCUITest 已就绪，等待 Staging 确认页');
   await driver.find('staging-confirmation-input', 120_000);
   await driver.fill('staging-confirmation-input', 'CONFIRM');
+  const confirmation = await driver.find('confirm-button');
+  if (!await driver.request('GET', driver.path(`/element/${confirmation}/enabled`))) throw new Error('输入确认词后进入按钮仍禁用。');
   await driver.tap('confirm-button');
   await driver.find('settings-tab', 120_000);
   for (const scenario of selectedScenarios) {

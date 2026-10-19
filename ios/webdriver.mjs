@@ -60,7 +60,12 @@ export class WebDriver {
   async fill(identifier, value) {
     const element = await this.find(identifier);
     await this.request('POST', this.path(`/element/${element}/clear`), {});
-    await this.request('POST', this.path(`/element/${element}/value`), { text: value });
+    for (const character of value) {
+      await this.request('POST', this.path(`/element/${element}/value`), { text: character });
+      await delay(150);
+    }
+    const actual = await this.request('GET', this.path(`/element/${element}/attribute/value`));
+    if (actual !== value) throw new Error(`原生输入未完整写入：${identifier}`);
   }
 
   async screenshot() {
