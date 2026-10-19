@@ -43,11 +43,14 @@ try {
     try { await driver.request('GET', '/status'); break; }
     catch (error) { if (attempt === 119) throw error; await delay(500); }
   }
+  console.log('启动 XCUITest 会话（首次安装与 WDA 编译最多等待 10 分钟）');
   await driver.start({ platformName: 'iOS', 'appium:automationName': 'XCUITest', 'appium:udid': udid,
     'appium:app': app, 'appium:bundleId': applicationId, 'appium:noReset': false,
     'appium:language': 'en', 'appium:locale': 'en_US',
-    'appium:autoAcceptAlerts': true, 'appium:wdaLaunchTimeout': 120_000,
+    'appium:autoAcceptAlerts': true, 'appium:wdaLaunchTimeout': 240_000,
+    'appium:showXcodeLog': true, 'appium:isHeadless': true, 'appium:waitForIdleTimeout': 0,
     'appium:newCommandTimeout': 180 });
+  console.log('XCUITest 已就绪，等待 Staging 确认页');
   await driver.find('staging-confirmation-input', 120_000);
   await driver.fill('staging-confirmation-input', 'CONFIRM');
   await driver.tap('confirm-button');
@@ -81,7 +84,6 @@ try {
       }
       if (mode === 'reference') {
         cpSync(join(animationDirectory, 'animation.mp4'), join(snapshots, scenario.name, 'animation.mp4'));
-        writeFileSync(join(snapshots, 'provenance.json'), JSON.stringify(report, null, 2));
       }
       report.scenarios.push({ name: scenario.name, checks });
       if (checks.some(check => !check.matches)) throw new Error(`截图或动画帧发生变化：${scenario.name}，见报告及 diff PNG。`);
@@ -96,11 +98,15 @@ try {
     }
   }
 } catch (error) {
+  report.setupError = error.message;
   await driver.screenshot().then(bytes => writeFileSync(join(results, 'setup-failed.png'), bytes)).catch(() => {});
   await driver.source().then(xml => writeFileSync(join(results, 'setup-source.xml'), xml)).catch(() => {});
   throw error;
 } finally {
   writeFileSync(join(results, 'report.json'), JSON.stringify(report, null, 2));
+  if (mode === 'reference' && existsSync(snapshots)) {
+    writeFileSync(join(snapshots, 'provenance.json'), JSON.stringify(report, null, 2));
+  }
   await driver.close().catch(error => console.error(`关闭会话失败：${error.message}`));
   server.kill('SIGTERM');
   execFileSync('xcrun', ['simctl', 'status_bar', udid, 'clear']);
