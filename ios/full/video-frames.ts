@@ -1,5 +1,5 @@
 import { execFileSync, spawn } from 'node:child_process';
-import { mkdirSync, readFileSync, readdirSync, rmSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import type { TestInfo } from '@playwright/test';
@@ -16,16 +16,21 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   const directory = testInfo.outputPath(`video-${name}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
   const video = path.join(directory, 'capture.mp4');
+  const processStartedAt = performance.now();
+  const processStartedUtc = new Date().toISOString();
   const recorder = spawn('xcrun', ['simctl', 'io', device.udid, 'recordVideo', '--codec=h264', '--mask=ignored', '--force', video],
     { stdio: ['ignore', 'ignore', 'pipe'] });
-  let stderr = '', failed: Error | undefined;
-  recorder.stderr.on('data', chunk => { stderr += String(chunk); });
+  let stderr = '', failed: Error | undefined, recordingStartedAt = 0;
+  recorder.stderr.on('data', chunk => {
+    stderr = (stderr + String(chunk)).slice(-64 * 1024);
+    if (!recordingStartedAt && stderr.includes('Recording started')) recordingStartedAt = performance.now();
+  });
   recorder.on('error', error => { failed = error; });
   const finished = new Promise<{ code: number | null; signal: string | null }>(resolve =>
     recorder.once('close', (code, signal) => resolve({ code, signal })));
   let triggerAt = 0, stoppedAt = 0;
   try {
-    for (let attempt = 0; !stderr.includes('Recording started'); attempt++) {
+    for (let attempt = 0; !recordingStartedAt; attempt++) {
       if (failed) throw failed;
       if (recorder.exitCode !== null || attempt >= 100) throw new Error(`iOS 录屏未启动：${stderr}`);
       await delay(100);
@@ -40,10 +45,19 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     await delay(durationMs);
   } finally {
     stoppedAt = performance.now();
-    if (recorder.exitCode === null) recorder.kill('SIGINT');
-    const timeout = setTimeout(() => recorder.kill('SIGKILL'), 60_000);
+    if (recorder.exitCode === null && recorder.signalCode === null) recorder.kill('SIGINT');
+    // simctl drains in-flight frames after SIGINT; CI exceeded the former 60s budget.
+    const timeout = setTimeout(() => recorder.kill('SIGKILL'), 180_000);
     const result = await finished;
     clearTimeout(timeout);
+    const diagnostic = path.join(directory, 'recording.json');
+    let videoBytes = 0;
+    try { videoBytes = statSync(video).size; } catch {}
+    writeFileSync(diagnostic, JSON.stringify({ processStartedUtc,
+      startupMs: recordingStartedAt ? recordingStartedAt - processStartedAt : null,
+      recordingMs: recordingStartedAt ? stoppedAt - recordingStartedAt : null,
+      stopMs: performance.now() - stoppedAt, ...result, videoBytes, stderr }, null, 2));
+    await testInfo.attach(`${name}-recorder-process`, { path: diagnostic, contentType: 'application/json' });
     if (result.signal === 'SIGKILL' || (result.code !== 0 && result.code !== 130 && result.signal !== 'SIGINT')) {
       throw new Error(`iOS 录屏失败：${stderr}`);
     }
