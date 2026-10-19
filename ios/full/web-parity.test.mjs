@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { collectPlaywright } from '../../scripts/playwright-collection.mjs';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 import { webVisualMapping } from './web-visual-map.ts';
@@ -9,7 +9,7 @@ import { requireFade } from './web-animation-parity.ts';
 const root = fileURLToPath(new URL('../../', import.meta.url));
 const source = JSON.parse(readFileSync(new URL('../../docs/web-coverage-source.json', import.meta.url), 'utf8'));
 function collect(locale) {
-  const report = JSON.parse(execFileSync(process.execPath, ['node_modules/playwright/cli.js','test','--config','ios/full/playwright.config.ts','tests/','--list','--reporter=json'],
+  const report = JSON.parse(collectPlaywright(['--config','ios/full/playwright.config.ts','tests/','--list','--reporter=json'],
     { cwd: root, encoding: 'utf8', env: { ...process.env, IOS_LOCALE: locale, IOS_GROUP: 'all' }, stdio: ['ignore','pipe','pipe'], timeout: 60_000 }));
   const specs=[]; const visit = suite => { specs.push(...(suite.specs || [])); for(const child of suite.suites || [])visit(child); };
   report.suites.forEach(visit); return specs;

@@ -41,6 +41,8 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
   const locales = ['zh-Hans', 'zh-Hant', 'en'];
   const texasTable = 'signed_in_texas_(?:pre_game|optional_pre_game|game|panels)$';
   const texasOther = 'signed_in_texas_(?:hall|records_v2|controls|table_states|panel_variants|hall_variants)$';
+  // 按完整测试文件划分，启动失败不能让 maxFailures 提前截断页面覆盖。
+  const guestPages = '(?:^|\\s)tests/parity\\.spec\\.ts(?:\\s|$)';
   const shards = {
     // Playwright 按真实测试分片，不依赖容易漏项的标题正则。
     'functional/en': Array.from({ length: 5 }, (_, index) => [`part-${index + 1}`, '', `${index + 1}/5`]),
@@ -72,7 +74,8 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
       : locales.filter(locale => selectedLocale === 'all' || locale === selectedLocale))
       .flatMap(locale => {
         const key = `${group}/${locale}`;
-        const parts = shards[key] || [['all', '']];
+        const parts = group === 'guest' ? [['pages', guestPages], ['startup', `^(?!.*${guestPages})`]]
+          : shards[key] || [['all', '']];
         return parts.map(([shard, filter, playwrightShard = ''], index) => ({ group, locale, shard, filter, playwrightShard,
           label: `${group} / ${locale}${shard === 'all' ? '' : ` / ${shard}`}`,
           // 原 functional 槽位 35 留给第一片；新片使用 39–42，保留其余组槽位。

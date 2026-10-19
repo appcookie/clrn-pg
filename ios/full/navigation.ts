@@ -94,6 +94,23 @@ export async function fillScenarioInputs(device: NativeDevice, scenario: VisualS
     await device.hideKeyboard();
   }
 }
+export async function revealScenarioReady(device: NativeDevice, scenario: Pick<VisualScenario, 'visualReadySelector' | 'readyText'>) {
+  const selector = nativeSelector(scenario.visualReadySelector);
+  if (selector.res === 'game-matching-sign-in-popup') {
+    // On iOS this ID belongs to the hidden hall mount point, not the presented
+    // native modal. CI showed its 2559px bounds extending below the hall scroll
+    // viewport while the actual prompt and both actions were fully visible.
+    if (!scenario.readyText) throw new Error('游客游戏登录弹窗必须提供对应语言的就绪文案。');
+    await reveal(device, { res: 'popup-content-container' });
+    await device.wait({ res: 'pop-up-message-text', text: scenario.readyText });
+    for (const res of ['cancel-button', 'confirm-button']) {
+      await device.wait({ res, enabled: true });
+      await reveal(device, { res });
+    }
+    return;
+  }
+  await reveal(device, selector);
+}
 export async function navigateScenario(device: NativeDevice, scenario: VisualScenario): Promise<ScreenshotBounds | undefined> {
   await returnToTabs(device);
   await tap(device, scenario.tabTestId || 'hall-tab');
@@ -131,7 +148,7 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
     } else await tap(device, identifier);
   }
   if (!filled) await fillScenarioInputs(device, scenario);
-  await reveal(device, nativeSelector(scenario.visualReadySelector));
+  await revealScenarioReady(device, scenario);
   if (scenario.pageLabel === 'hall') await scrollToEnd(device, { res: 'hall-content-list' }, { res: 'hall-sign-in-button' });
   if (scenario.navClickTestIds.includes('advanced-options-button')) {
     await scrollToEnd(device, { scrollable: true }, { res: 'create-room-tips-text' });

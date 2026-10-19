@@ -20,7 +20,8 @@ export function normalizeNativeScreenshot(bytes: Buffer, size: { width: number; 
     || source.width - size.width > 1 || source.height - size.height > 1) {
     throw new Error(`原生截图尺寸不匹配：${source.width}×${source.height}，预期 ${size.width}×${size.height}`);
   }
-  const target = new PNG(size);
+  // pngjs mutates its options; keep the shared device geometry immutable.
+  const target = new PNG({ width: size.width, height: size.height });
   PNG.bitblt(source, target, 0, 0, size.width, size.height, 0, 0);
   return PNG.sync.write(target);
 }

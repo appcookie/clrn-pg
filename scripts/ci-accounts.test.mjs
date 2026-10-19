@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { execFileSync } from 'node:child_process';
+import { collectPlaywright } from './playwright-collection.mjs';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { ciAccounts, executionAccounts, allocateCiAccount, iosAccountMatrix, ciAccountCredentials, availableCiAccounts } from './ci-accounts.mjs';
@@ -23,7 +23,7 @@ test('完整iOS池矩阵分配不同账号，guest不需要账号，功能组固
     assert.equal(entries.length, group === 'functional' ? 5 : 1);
     assert.ok(entries.every(entry => entry.locale === 'en'));
   }
-  assert.equal(iosAccountMatrix('1', 'guest', 'en').include.length, 1);
+  assert.equal(iosAccountMatrix('1', 'guest', 'en').include.length, 2);
   assert.throws(() => iosAccountMatrix('1', 'unknown'));
   assert.throws(() => iosAccountMatrix('1', 'all', 'unknown'));
 });
@@ -55,10 +55,10 @@ test('functional五片账号槽位独立稳定，少量账号只复用已配置�
 test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或重复', { timeout: 120_000 }, () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(shard) {
-    const args = ['node_modules/playwright/cli.js', 'test', '--config', 'ios/full/playwright.config.ts',
+    const args = ['--config', 'ios/full/playwright.config.ts',
       '--list', '--reporter=json', '--grep', '', '--fully-parallel', '--workers', '1'];
     if (shard) args.push('--shard', shard);
-    const report = JSON.parse(execFileSync(process.execPath, args, {
+    const report = JSON.parse(collectPlaywright(args, {
       cwd: root, encoding: 'utf8', timeout: 60_000,
       env: { ...process.env, IOS_GROUP: 'functional', IOS_LOCALE: 'en' },
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -81,6 +81,46 @@ test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或�
   assert.deepEqual(parts.map(part => part.length).sort((a, b) => a - b), [10, 10, 11, 11, 11]);
   assert.equal(new Set(parts.flat()).size, 53);
   assert.deepEqual(parts.flat().sort(), complete.sort());
+});
+
+test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰好覆盖一次', { timeout: 180_000 }, () => {
+  const root = fileURLToPath(new URL('../', import.meta.url));
+  function collect(locale, filter = '') {
+    const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts',
+      '--list', '--reporter=json', '--grep', filter], {
+      cwd: root, env: { IOS_GROUP: 'guest', IOS_LOCALE: locale },
+    }));
+    const specs = [];
+    function visit(suite) {
+      for (const spec of suite.specs || []) {
+        assert.equal(spec.tests.length, 1);
+        assert.equal(spec.tests[0].expectedStatus, 'passed', spec.title);
+        specs.push(spec);
+      }
+      for (const child of suite.suites || []) visit(child);
+    }
+    for (const suite of report.suites) visit(suite);
+    return specs;
+  }
+  for (const [locale, count] of [['en', 25], ['zh-Hans', 21], ['zh-Hant', 20]]) {
+    const entries = iosAccountMatrix('123', 'guest', locale).include;
+    assert.deepEqual(entries.map(entry => entry.shard), ['pages', 'startup']);
+    assert.ok(entries.every(entry => entry.account === '' && entry.playwrightShard === ''));
+    const complete = collect(locale);
+    const [pages, startup] = entries.map(entry => collect(locale, entry.filter));
+    assert.equal(complete.length, count);
+    assert.equal(pages.length, 18);
+    assert.ok(pages.every(spec => spec.file === 'tests/parity.spec.ts'));
+    assert.equal(startup.length, count - 18);
+    assert.ok(startup.every(spec => spec.file !== 'tests/parity.spec.ts'));
+    const keys = specs => specs.map(spec => `${spec.file}:${spec.title}`);
+    const combined = keys([...pages, ...startup]);
+    assert.equal(new Set(combined).size, count);
+    assert.deepEqual(combined.sort(), keys(complete).sort());
+  }
+  const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /max-parallel: 3/);
+  assert.match(workflow, /github\.run_id, matrix\.group, matrix\.locale, matrix\.shard/);
 });
 test('凭据接受任意非空ready独立iOS子池，拒绝原仓库账号或损坏Secret且不泄露正文', () => {
   const accounts = ciAccounts.map(username => ({ username, password: 'fake-password', status: 'ready' }));
@@ -131,7 +171,7 @@ test('单账号可覆盖所有非guest矩阵任务，少量账号轮转不引用
     assert.ok(include.every(item => item.group === 'guest' ? item.account === '' : available.includes(item.account)));
   }
   assert.throws(() => iosAccountMatrix('1', 'account', 'en', []), /至少需要一个/);
-  assert.equal(iosAccountMatrix('1', 'guest', 'all', []).include.length, 3);
+  assert.equal(iosAccountMatrix('1', 'guest', 'all', []).include.length, 6);
 });
 
 test('plan从Secret仅导出公开username，guest无Secret仍可调度', async () => {

@@ -8,7 +8,9 @@ test('原生截图只裁末尾一像素，保留每个内容像素，拒绝其�
   for (let i = 0; i < source.data.length; i++) source.data[i] = i;
   const bytes = PNG.sync.write(source);
   assert.equal(normalizeNativeScreenshot(bytes, { width: 5, height: 7 }), bytes);
-  const cropped = PNG.sync.read(normalizeNativeScreenshot(bytes, { width: 4, height: 6 }));
+  const size = { width: 4, height: 6 };
+  const cropped = PNG.sync.read(normalizeNativeScreenshot(bytes, size));
+  assert.deepEqual(size, { width: 4, height: 6 }, '截图裁边不能让pngjs默认选项污染设备屏幕尺寸');
   for (let y = 0; y < 6; y++) assert.deepEqual(cropped.data.subarray(y * 16, (y + 1) * 16), source.data.subarray(y * 20, y * 20 + 16));
   for (const size of [{ width: 3, height: 7 }, { width: 5, height: 8 }, { width: 0, height: 0 }]) {
     assert.throws(() => normalizeNativeScreenshot(bytes, size), /尺寸不匹配/);

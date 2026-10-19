@@ -2,12 +2,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { execFileSync } from 'node:child_process';
+import { collectPlaywright } from '../../../scripts/playwright-collection.mjs';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../../../', import.meta.url));
 const source = JSON.parse(readFileSync(new URL('../../../docs/web-coverage-source.json', import.meta.url), 'utf8'));
 function collect(group) {
-  const output = execFileSync(process.execPath, ['node_modules/playwright/cli.js', 'test', '--config', 'ios/full/playwright.config.ts', 'functional', '--list', '--reporter=json'], {
+  const output = collectPlaywright(['--config', 'ios/full/playwright.config.ts', 'functional', '--list', '--reporter=json'], {
     cwd: root, encoding: 'utf8', env: { ...process.env, IOS_GROUP: group }, stdio: ['ignore', 'pipe', 'pipe'], timeout: 60_000,
   });
   const report = JSON.parse(output); const specs = [];
