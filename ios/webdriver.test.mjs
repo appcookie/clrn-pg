@@ -13,6 +13,7 @@ test('WebDriver 使用原生 accessibility id 并能保存截图', async () => {
     let value = null;
     if (request.url === '/session') value = { sessionId: 'test-session' };
     else if (request.url.endsWith('/element')) value = { 'element-6066-11e4-a52e-4f735466cecf': 'element-1' };
+    else if (request.url.endsWith('/attribute/value')) value = 'CONFIRM';
     else if (request.url.endsWith('/screenshot')) value = Buffer.from('PNG').toString('base64');
     response.writeHead(200, { 'Content-Type': 'application/json' }).end(JSON.stringify({ value }));
   });
