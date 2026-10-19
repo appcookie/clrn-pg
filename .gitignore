@@ -1,0 +1,4 @@
+node_modules/
+.appium/
+ios/artifacts/
+.DS_Store
