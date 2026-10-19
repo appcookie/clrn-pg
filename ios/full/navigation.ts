@@ -68,20 +68,23 @@ async function closePicker(device: NativeDevice) {
 }
 export async function returnToTabs(device: NativeDevice) {
   for (let attempt = 0; attempt < 12; attempt++) {
-    if (await exists(device, { res: 'stepDescription' })) {
-      await tap(device, await exists(device, { res: 'tooltip-finish-button' }) ? 'tooltip-finish-button' : 'tooltip-next-button');
-    } else if (await exists(device, { res: 'slot-machine-view' })) {
+    // 分支判断期间没有 UI 操作，复用本轮树；操作后下一轮重新读取。
+    const nodes = await device.nodes();
+    const has = (identifier: string) => nodes.some(node => node.res === identifier);
+    if (has('stepDescription')) {
+      await tap(device, has('tooltip-finish-button') ? 'tooltip-finish-button' : 'tooltip-next-button');
+    } else if (has('slot-machine-view')) {
       await tap(device, 'close-button');
       await waitAbsent(device, { res: 'slot-machine-view' });
-    } else if (await exists(device, { res: 'confirm-pop-up-image-background' })) {
+    } else if (has('confirm-pop-up-image-background')) {
       await tap(device, 'cancel-button');
       await waitAbsent(device, { res: 'confirm-pop-up-image-background' });
-    } else if (await exists(device, { res: 'select-game-category-text' })) {
+    } else if (has('select-game-category-text')) {
       await closePicker(device);
-    } else if (await exists(device, { res: 'base-create-room-screen' })) {
+    } else if (has('base-create-room-screen')) {
       await device.input.press('Back');
       await waitAbsent(device, { res: 'base-create-room-screen' });
-    } else if (await exists(device, { res: 'settings-tab' })) return;
+    } else if (has('settings-tab')) return;
     else await device.input.press('Back');
   }
   throw new Error('未能通过真实导航返回主标签。');

@@ -5,6 +5,7 @@ import { captureFailure } from '../diagnostics';
 import { selectLanguage, tap } from '../navigation';
 import { withAndroidProxy } from '../proxy';
 import { gameReady } from '../game-controls';
+import { waitForHallAfterLaunchHold } from '../launch-recovery';
 
 const locale = process.env.IOS_LOCALE || 'en';
 if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
@@ -48,7 +49,8 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
         // 初始化的真实超时窗口很短；使用瞬态截图的前后断言，避免重复读取整棵树耗尽窗口。
         await compareScreenshot(device, `${locale}-launch-branding`, info, [], assertBranding, fullScreen);
         await proxy.command('android/launch-network', { hold: false });
-        await device.wait({ res: 'settings-tab' }, { timeout: 120000 });
+        const recovery = await waitForHallAfterLaunchHold(device);
+        await info.attach('launch-health-recovery', { body: JSON.stringify(recovery), contentType: 'application/json' });
       } catch (error) { await captureFailure(device, info); throw error; }
       finally {
         try { await proxy.command('android/launch-network', { hold: false }); }
