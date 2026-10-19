@@ -2,6 +2,7 @@
 import { expect } from '@playwright/test';
 import { nativeTest } from './shared/register';
 import { success } from './shared/api';
+import { waitForClubReady } from '../guest-club-ready';
 const source='kevinanew/clrn@3974319d1c72a964dad3d2c8d5862fbd255cc03b:e2e/network-resilience.spec.ts';
 nativeTest('network','NETWORK-001 大厅超时与真实重试恢复','guest',async ui=>{
   try{
@@ -21,7 +22,7 @@ nativeTest('network','NETWORK-002 登录失败退出 loading 并提示','guest',
 },source);
 nativeTest('network','NETWORK-003 俱乐部错误重试仍失败，解除故障后真实恢复','signed-in',async ui=>{
   try{
-    await ui.proxy.inject('club-failure');await ui.tap('club-tab');await ui.visible('club-list-load-error');await ui.visible('club-list-retry-button');await ui.visible('club-tab-screen');
+    await ui.proxy.inject('club-failure');await ui.tap('club-tab');await ui.visible('club-list-load-error');await ui.visible('club-list-retry-button');await waitForClubReady(ui.device,{signIn:true});
     const before=(await ui.proxy.status()).interceptedRequests;expect(before).toBeGreaterThan(0);await ui.tap('club-list-retry-button');
     await expect.poll(async()=>(await ui.proxy.status()).interceptedRequests).toBeGreaterThan(before);await ui.visible('club-list-load-error');await ui.visible('club-list-retry-button');
     await ui.proxy.clear();const response=await ui.network.waitForResponse({method:'GET',path:'/v10/club'},()=>ui.tap('club-list-retry-button'));

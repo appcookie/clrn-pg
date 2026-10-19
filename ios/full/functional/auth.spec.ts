@@ -1,6 +1,8 @@
 /** Web AUTH-001..011 的真实 iOS 控件和会话回归。 */
 import { expect } from '@playwright/test';
 import { register } from './shared/register';
+import { openNativeLegalDocument } from '../legal-document';
+import { waitForCountryPicker } from '../country-picker';
 import { accountStatus, balances, createAccount, credentials, request, success, type Session } from './shared/api';
 register('AUTH-001', 0, 'guest', async ui => {
   await ui.loginForm(); await ui.fill('username-input', 'formcheck'); await ui.fill('password-input', 'formcheck123');
@@ -34,7 +36,7 @@ register('AUTH-003', 0, 'signed-in', async ui => {
 });
 register('AUTH-004', 0, 'guest', async ui => {
   await ui.openLogin(); await ui.tap('sign-in-button'); await ui.hasText('country-code-selector', /\+\d+/);
-  await ui.tap('country-code-selector'); await ui.visible('pick-country-code-container'); await ui.tap('country-code-list-item-852');
+  await ui.tap('country-code-selector'); await waitForCountryPicker(ui.device); await ui.tap('country-code-list-item-852');
   await ui.contains('country-code-selector', '+852'); await ui.hasText('country-code-selector', /Hong Kong|中国香港|中國香港/i);
   await ui.fill('phone-number-input', '2025550123'); await ui.hasText('phone-number-input', '2025550123');
   await ui.visible('sms-request-code-button'); await ui.tap('password-sign-in-button'); await ui.secure('password-input');
@@ -48,8 +50,8 @@ for (const [index, method] of ['email', 'sms'].entries()) register('AUTH-005', i
   await ui.fill(field, value); await ui.hasText(field, value); await ui.enabled('next-button', true);
   await ui.back(); await ui.visible('reset-password-by-email-button'); await ui.back(); await ui.visible('username-input'); await ui.secure('password-input');
 });
-for (const [index, document] of ['user-agreement', 'user-privacy'].entries()) register('AUTH-006', index, 'guest', async ui => {
-  await ui.openLogin(); await ui.tap(`${document}-button`); await ui.visible(`${document}-screen`);
+for (const [index, document] of (['user-agreement', 'user-privacy'] as const).entries()) register('AUTH-006', index, 'guest', async ui => {
+  await ui.openLogin(); await openNativeLegalDocument(ui.device, document, entry => ui.tap(entry));
   // Native WKWebView 的实际可访问正文。仅容器/标题存在不能证明文档加载成功。
   await expect.poll(async () => (await ui.device.nodes()).map(n => n.text).join('\n'), { timeout: 60_000 }).toMatch(/GoPlay360|来玩|來玩/i);
   await expect.poll(async () => (await ui.device.nodes()).map(n => n.text).join('\n')).toMatch(/privacy|隐私|隱私/i);

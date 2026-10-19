@@ -5,8 +5,11 @@ import type { VisualScenario } from '../../visual/scenarioTypes';
 import type { ScreenshotBounds } from './screenshot';
 import { exists, waitAbsent } from './native-state';
 import { nativeSelector } from './scenarios';
+import { waitForCountryPicker } from './country-picker';
 import { scrollToEnd } from './scroll-end';
+import { openNativeLegalDocument, waitForNativeLegalDocument } from './legal-document';
 import { fullyInside, intersectBounds, nativeViewport, pointInside } from './native-viewport';
+import { waitForClubReady } from './guest-club-ready';
 export { dismissKeyboard } from './keyboard';
 
 export async function reveal(device: NativeDevice, selector: NativeSelector, fullyVisible = false) {
@@ -97,8 +100,23 @@ export async function fillScenarioInputs(device: NativeDevice, scenario: VisualS
     await device.hideKeyboard();
   }
 }
-export async function revealScenarioReady(device: NativeDevice, scenario: Pick<VisualScenario, 'visualReadySelector' | 'readyText'>) {
+export async function revealScenarioReady(device: NativeDevice, scenario: Pick<VisualScenario, 'visualReadySelector' | 'readyText' | 'pageLabel' | 'signIn'>) {
   const selector = nativeSelector(scenario.visualReadySelector);
+  if (selector.res === 'user-agreement-screen' || selector.res === 'user-privacy-screen') {
+    await waitForNativeLegalDocument(device, selector.res === 'user-agreement-screen' ? 'user-agreement' : 'user-privacy');
+    return;
+  }
+  if (selector.res === 'pick-country-code-container') {
+    await waitForCountryPicker(device);
+    return;
+  }
+  if (selector.res === 'club-tab-screen') {
+    if (scenario.signIn !== true && !(scenario.pageLabel === 'guest_club' && scenario.signIn === false)) {
+      throw new Error('俱乐部就绪检查需要明确的游客场景或已登录场景。');
+    }
+    await waitForClubReady(device, { signIn: scenario.signIn });
+    return;
+  }
   if (selector.res === 'game-matching-sign-in-popup') {
     // On iOS this ID belongs to the hidden hall mount point, not the presented
     // native modal. CI showed its 2559px bounds extending below the hall scroll
@@ -144,7 +162,10 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
         if (!scenario.navClickTestIds.includes('create-game-button')) await closePicker(device);
       } else await reveal(device, { res: 'copy-house-number-button' });
     } else if (identifier === 'create-game-button' && await exists(device, { res: 'select-game-category-text' })) continue;
-    else if (identifier === 'hall-sign-in-button') {
+    else if (identifier === 'user-agreement-button' || identifier === 'user-privacy-button') {
+      await openNativeLegalDocument(device, identifier === 'user-agreement-button' ? 'user-agreement' : 'user-privacy',
+        entry => tap(device, entry));
+    } else if (identifier === 'hall-sign-in-button') {
       await tap(device, 'settings-tab');
       await tap(device, 'sign-in-button');
       await device.wait({ res: 'username-or-email-sign-in-button' });

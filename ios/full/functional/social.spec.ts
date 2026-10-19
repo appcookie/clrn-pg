@@ -3,14 +3,16 @@ import { expect } from '@playwright/test';
 import { randomUUID } from 'node:crypto';
 import { register } from './shared/register';
 import { success } from './shared/api';
+import { waitForClubReady } from '../guest-club-ready';
 register('CLUB-003', 0, 'signed-in', async ui => {
-  await ui.tap('club-tab'); await ui.visible('club-tab-screen'); await ui.tap('club_tab_room'); await ui.visible('club-tab-screen');
+  await ui.tap('club-tab'); await waitForClubReady(ui.device, { signIn: true });
+  await ui.tap('club_tab_room'); await waitForClubReady(ui.device, { signIn: true });
   await ui.tap('club_tab_my_club'); await ui.visible('club-list-screen'); await ui.tap('show-more-button'); await ui.visible('club-more-popup');
   await ui.tap('search-club-button'); await ui.absent('club-more-popup');
   const keyword = `IOS${randomUUID().replaceAll('-','')}`; const response = await ui.submitSearch(keyword);
   expect(new URL(response.url).searchParams.get('keyword')).toBe(keyword); expect(success(response)).toEqual([]);
   await ui.hasText('club-search-input',keyword); await ui.fill('club-search-input',''); await ui.hasText('club-search-input','');
-  await ui.tap('club-search-back-button'); await ui.visible('club-tab-screen'); await ui.tap('hall-tab'); await ui.visible('hall-auth-state-signed-in');
+  await ui.tap('club-search-back-button'); await waitForClubReady(ui.device, { signIn: true }); await ui.tap('hall-tab'); await ui.visible('hall-auth-state-signed-in');
 });
 register('CLUB-006', 0, 'signed-in', async ui => {
   await ui.settings('create-club'); const submit='edit-club-header-right-complete';

@@ -2,12 +2,16 @@
 import { expect } from '@playwright/test';
 import { register } from './shared/register';
 import { success } from './shared/api';
+import { waitForGuestClubReady } from '../guest-club-ready';
 register('HALL-001', 0, 'guest', async ui => {
   await ui.visible('hall-auth-state-signed-out'); await ui.tap('private-room-tab'); await ui.visible('guest-private-room-empty-state');
   await ui.tap('hall-tab'); await ui.visible('hall-screen'); await ui.visible('hall-sign-in-button');
 });
 for (const [index, [tab, screen]] of [['club-tab','club-tab-screen'], ['message-tab','message-screen']].entries()) register('HALL-002', index, 'guest', async ui => {
-  await ui.tap(tab); await ui.visible(screen); await ui.tap('not-sign-in-container'); await ui.visible('username-or-email-sign-in-button');
+  await ui.tap(tab);
+  if (tab === 'club-tab') await waitForGuestClubReady(ui.device);
+  else await ui.visible(screen);
+  await ui.tap('not-sign-in-container'); await ui.visible('username-or-email-sign-in-button');
 });
 register('HALL-002', 2, 'guest', async ui => {
   await ui.tap('settings-tab'); await ui.hasText('after-sign-in-see-asset-text', /sign.?in|log.?in|登录|登入/i);
@@ -15,13 +19,14 @@ register('HALL-002', 2, 'guest', async ui => {
 });
 register('HALL-002', 3, 'guest', async ui => {
   await ui.tap('hall-search-button'); await ui.hasText('pop-up-message-text', /sign.?in|log.?in|登录|登入/i);
-  await ui.tap('cancel-button'); await ui.absent('confirm-pop-up-image-background'); await ui.visible('hall-auth-state-signed-out');
+  await ui.tap('cancel-button'); await ui.absent('popup-content-container'); await ui.visible('hall-auth-state-signed-out');
   await ui.tap('hall-search-button'); await ui.tap('confirm-button'); await ui.visible('username-or-email-sign-in-button');
 });
 for (const [index, game] of ['texas_holdem','zhajinhua'].entries()) register('HALL-002', index + 4, 'guest', async ui => {
-  await ui.tap(`match-game-item-${game}-tourists`); await ui.visible('game-matching-sign-in-popup');
+  await ui.tap(`match-game-item-${game}-tourists`); await ui.visible('popup-content-container');
   await ui.hasText('pop-up-message-text', /sign.?in|log.?in|登录|登入/i);
-  await ui.tap('close-button'); await ui.absent('game-matching-sign-in-popup'); await ui.visible('hall-auth-state-signed-out');
+  for (const button of ['cancel-button', 'confirm-button', 'close-button']) { await ui.visible(button); await ui.enabled(button, true); }
+  await ui.tap('close-button'); await ui.absent('popup-content-container'); await ui.visible('hall-auth-state-signed-out');
 });
 register('HALL-003', 0, 'signed-in', async ui => {
   await ui.tap('hall-search-button'); await ui.hasText('club-search-input', '');
