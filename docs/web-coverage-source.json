@@ -1,0 +1,3832 @@
+{
+  "schemaVersion": 1,
+  "sourceRepository": "https://github.com/kevinanew/clrn",
+  "sourceCommit": "3974319d1c72a964dad3d2c8d5862fbd255cc03b",
+  "androidComparisonCommit": "36112e1aadba49a83c4b36005363bfe24f94d0db",
+  "summary": {
+    "functionalCaseDirectories": 42,
+    "functionalDistinctTests": 60,
+    "functionalMatrixTests": 120,
+    "animationsDistinctTests": 21,
+    "animationsMatrixTests": 41,
+    "interactionsDistinctTests": 8,
+    "interactionsMatrixTests": 16,
+    "visualMobileFlowsPerLocale": 91,
+    "visualMobileStatesPerLocale": 260,
+    "visualAllLocaleViewportFlows": 402,
+    "visualAllLocaleViewportStates": 1416,
+    "functionalCreationDistinctTests": 7,
+    "functionalExistingDistinctTests": 53
+  },
+  "functional": [
+    {
+      "title": "AUTH-001：打开用户名登录表单，密码输入被遮蔽",
+      "path": "e2e/cases/auth-001-login-form/test.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-001",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从游客大厅打开用户名登录', async () => {",
+        "'填写表单并检查密码遮蔽，不提交凭据', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-001/1 AUTH-001：打开用户名登录表单，密码输入被遮蔽",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-002：不同设备再次登录后旧会话失效",
+      "path": "e2e/cases/auth-002-session-replacement/test.spec.ts",
+      "line": 8,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'设备 A 登录并验证账户接口有效', async () => {",
+        "'不同设备 B 使用同一账号登录', async () => {",
+        "'新会话有效，旧会话被服务器拒绝', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-002/1 AUTH-002：不同设备再次登录后旧会话失效",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-003：相同设备标识再次登录的认证行为",
+      "path": "e2e/cases/auth-003-same-device-login/test.spec.ts",
+      "line": 10,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-003",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'相同 deviceId 也不能保留两份有效登录凭据', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-003/1 AUTH-003：相同设备标识再次登录的认证行为",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": [
+          "真实原生UI首登，第二轮以捕获的同一deviceId通过真实API登录；没有登录前退出或改写私有缓存。"
+        ]
+      }
+    },
+    {
+      "title": "AUTH-004：手机号登录选择国家区号并切换密码方式",
+      "path": "e2e/cases/auth-004-phone-country-code/test.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开游客手机号登录表单', async () => {",
+        "'选择中国香港区号并确认表单回填', async () => {",
+        "'切换密码登录并确认密码遮蔽，不提交', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-004/1 AUTH-004：手机号登录选择国家区号并切换密码方式",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-005：邮箱找回密码表单可填写并返回",
+      "path": "e2e/cases/auth-005-password-recovery/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-005",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从用户名登录进入找回密码方式选择', async () => {",
+        "'填写找回密码联系方式，不发送验证码', async () => {",
+        "'返回方式选择和用户名登录', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-005/1 AUTH-005：邮箱找回密码表单可填写并返回",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-005：短信找回密码表单可填写并返回",
+      "path": "e2e/cases/auth-005-password-recovery/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-005",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从用户名登录进入找回密码方式选择', async () => {",
+        "'填写找回密码联系方式，不发送验证码', async () => {",
+        "'返回方式选择和用户名登录', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-005/2 AUTH-005：短信找回密码表单可填写并返回",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-006：user-agreement 显示可阅读正文并返回登录",
+      "path": "e2e/cases/auth-006-legal-documents/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-006",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从登录首页打开文档', async () => {",
+        "'确认内嵌文档加载了正文', async () => {",
+        "'返回登录首页，仍可选择登录方式', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-006/1 AUTH-006：user-agreement 显示可阅读正文并返回登录",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": [
+          "WKWebView可访问正文代替浏览器iframe正文；必须读到品牌和隐私内容。"
+        ]
+      }
+    },
+    {
+      "title": "AUTH-006：user-privacy 显示可阅读正文并返回登录",
+      "path": "e2e/cases/auth-006-legal-documents/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-006",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从登录首页打开文档', async () => {",
+        "'确认内嵌文档加载了正文', async () => {",
+        "'返回登录首页，仍可选择登录方式', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-006/2 AUTH-006：user-privacy 显示可阅读正文并返回登录",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": [
+          "WKWebView可访问正文代替浏览器iframe正文；必须读到品牌和隐私内容。"
+        ]
+      }
+    },
+    {
+      "title": "AUTH-007：测试接口创建独立账号后登录且不发放奖励",
+      "path": "e2e/cases/auth-007-auto-registration/test.spec.ts",
+      "line": 9,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [
+        "creates-data"
+      ],
+      "caseId": "AUTH-007",
+      "createsData": true,
+      "assertionStepsSource": [
+        "'通过测试接口创建本轮独立账号并从界面登录', async () => {",
+        "'测试账号初始钻石为零，页面显示同一余额', async () => {",
+        "'刷新保留同一账号，不重复注册或重复发放钻石', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-007/1 AUTH-007：测试接口创建独立账号后登录且不发放奖励",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional-creation",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-008：登录必填与密码长度校验随输入、清空即时更新",
+      "path": "e2e/cases/auth-008-form-validation/test.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-008",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'空表单和短密码不能提交', async () => {",
+        "'有效输入启用提交，清空任一必填项再次禁用', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-008/1 AUTH-008：登录必填与密码长度校验随输入、清空即时更新",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-008：找回密码拒绝空邮箱和无效格式，修改后恢复",
+      "path": "e2e/cases/auth-008-form-validation/test.spec.ts",
+      "line": 30,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-008",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'空表单和短密码不能提交', async () => {",
+        "'有效输入启用提交，清空任一必填项再次禁用', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-008/2 AUTH-008：找回密码拒绝空邮箱和无效格式，修改后恢复",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-009：登录语言选择确认后保存，刷新仍显示对应语言",
+      "path": "e2e/cases/auth-009-language-persistence/test.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-009",
+      "createsData": false,
+      "assertionStepsSource": [
+        "`切换 ${locale.label}，检查保存和刷新后的界面`, async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-009/1 AUTH-009：登录语言选择确认后保存，刷新仍显示对应语言",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": [
+          "应用terminate/activate保留数据，替代浏览器reload；检查实际翻译和已保存选项。"
+        ]
+      }
+    },
+    {
+      "title": "AUTH-010：退出可取消，确认后刷新仍为游客且受保护入口要求登录",
+      "path": "e2e/cases/auth-010-sign-out/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-010",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'取消退出保留当前账号', async () => {",
+        "'确认退出后资产和账号入口恢复游客状态', async () => {",
+        "'重新加载后不会自动恢复登录，私人房间入口仍受保护', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-010/1 AUTH-010：退出可取消，确认后刷新仍为游客且受保护入口要求登录",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "AUTH-011：用户名规范化、最短长度和密码上限",
+      "path": "e2e/cases/auth-011-username-password-boundaries/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "AUTH-011",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'用户名去除两端空格并转换小写', async () => {",
+        "'五位用户名无效，六位用户名有效', async () => {",
+        "'十九位密码有效，二十位密码无效', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "AUTH-011/1 AUTH-011：用户名规范化、最短长度和密码上限",
+        "file": "ios/full/functional/auth.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "真实创建俱乐部并核实详情、归属和服务端持久化",
+      "path": "e2e/cases/club-001-create/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [
+        "creates-data"
+      ],
+      "caseId": "CLUB-001",
+      "createsData": true,
+      "assertionStepsSource": [
+        "'进入创建表单，验证必填校验与50钻费用', async () => {",
+        "'提交真实创建，验证详情与50钻扣除', async () => {",
+        "'独立读取刚创建的俱乐部，验证服务端持久化与创建人归属', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "CLUB-001/1 真实创建俱乐部并核实详情、归属和服务端持久化",
+        "file": "ios/full/functional/creation.spec.ts",
+        "group": "functional-creation",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "真实创建俱乐部德州牌局、验证归属并通过API清理退款",
+      "path": "e2e/cases/club-002-create-and-dismiss-game/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [
+        "creates-data"
+      ],
+      "caseId": "CLUB-002",
+      "createsData": true,
+      "assertionStepsSource": [
+        "'创建本用例自己的俱乐部，避免依赖其他测试顺序', async () => {",
+        "'从俱乐部详情选择德州，确认默认10钻创建配置', async () => {",
+        "'真实创建，验证服务端俱乐部归属、牌桌名称、等待开始及扣钻', async () => {",
+        "'通过API只清理本次精确UUID的未开始牌局，验证10钻退款', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "CLUB-002/1 真实创建俱乐部德州牌局、验证归属并通过API清理退款",
+        "file": "ios/full/functional/creation.spec.ts",
+        "group": "functional-creation",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "俱乐部切换列表、真实搜索无匹配名称并返回",
+      "path": "e2e/cases/club-003-search-and-navigation/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "CLUB-003",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'切换我的俱乐部与牌局列表', async () => {",
+        "'从更多菜单打开搜索，并验证真实无匹配结果', async () => {",
+        "'返回俱乐部列表和大厅', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "CLUB-003/1 俱乐部切换列表、真实搜索无匹配名称并返回",
+        "file": "ios/full/functional/social.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "CLUB-004：房主连续移除成员后人数与列表一致",
+      "path": "e2e/cases/club-004-member-management/test.spec.ts",
+      "line": 15,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [
+        "creates-data"
+      ],
+      "caseId": "CLUB-004",
+      "createsData": true,
+      "assertionStepsSource": [
+        "'创建本例专用俱乐部并核对真实扣费', async () => {",
+        "'两个独立账号经真实申请和审批成为成员', async () => {",
+        "'连续删除与中途取消编辑后，页面和服务端人数一致', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "CLUB-004/1 CLUB-004：房主连续移除成员后人数与列表一致",
+        "file": "ios/full/functional/creation.spec.ts",
+        "group": "functional-creation",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "普通申请、邀请申请经房主审批后才成为俱乐部成员",
+      "path": "e2e/cases/club-005-join-approval-invite/test.spec.ts",
+      "line": 7,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [
+        "creates-data"
+      ],
+      "caseId": "CLUB-005",
+      "createsData": true,
+      "assertionStepsSource": [
+        "'房主创建独立俱乐部，核对初始成员和费用', async () => {",
+        "'申请人通过真实搜索找到本次俱乐部并提交加入申请', async () => {",
+        "'房主在申请列表审批，申请人成为真实成员', async () => {",
+        "'邀请链接生成、解析后受邀者提交真实申请', async () => {",
+        "'房主审批受邀者，成员列表和人数体现实际加入', async () => {",
+        "'另一申请被房主拒绝后仍不是成员', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "CLUB-005/1 普通申请、邀请申请经房主审批后才成为俱乐部成员",
+        "file": "ios/full/functional/creation.spec.ts",
+        "group": "functional-creation",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "CLUB-006：纯空格地区和清空名称禁用完成",
+      "path": "e2e/cases/club-006-create-form-boundaries/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "CLUB-006",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'有效表单改为纯空格地区后禁用，再恢复', async () => {",
+        "'清空名称后禁用，取消返回我的页面', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "CLUB-006/1 CLUB-006：纯空格地区和清空名称禁用完成",
+        "file": "ios/full/functional/social.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-001：游客进入私人房间后返回大厅",
+      "path": "e2e/cases/hall-001-guest-navigation/test.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-001",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'准备简体中文游客大厅', async () => {",
+        "'进入私人房间并检查游客空态', async () => {",
+        "'返回大厅，仍可使用登录入口', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-001/1 HALL-001：游客进入私人房间后返回大厅",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-002：游客 club-tab 空态可进入登录",
+      "path": "e2e/cases/hall-002-guest-sign-in-gates/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开游客功能入口', async () => {",
+        "'点击游客引导并验证登录选项', async () => {",
+        "'打开我的页面并检查游客资产提示', async () => {",
+        "'打开登录方式选择', async () => {",
+        "'打开搜索登录门禁', async () => {",
+        "'取消后保持游客状态', async () => {",
+        "'再次搜索并确认登录', async () => {",
+        "'等待场次数据并打开游客场', async () => {",
+        "'关闭弹窗，保持游客大厅', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-002/1 HALL-002：游客 club-tab 空态可进入登录",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-002：游客 message-tab 空态可进入登录",
+      "path": "e2e/cases/hall-002-guest-sign-in-gates/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开游客功能入口', async () => {",
+        "'点击游客引导并验证登录选项', async () => {",
+        "'打开我的页面并检查游客资产提示', async () => {",
+        "'打开登录方式选择', async () => {",
+        "'打开搜索登录门禁', async () => {",
+        "'取消后保持游客状态', async () => {",
+        "'再次搜索并确认登录', async () => {",
+        "'等待场次数据并打开游客场', async () => {",
+        "'关闭弹窗，保持游客大厅', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-002/2 HALL-002：游客 message-tab 空态可进入登录",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-002：游客我的页面隐藏资产并提供登录入口",
+      "path": "e2e/cases/hall-002-guest-sign-in-gates/test.spec.ts",
+      "line": 19,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开游客功能入口', async () => {",
+        "'点击游客引导并验证登录选项', async () => {",
+        "'打开我的页面并检查游客资产提示', async () => {",
+        "'打开登录方式选择', async () => {",
+        "'打开搜索登录门禁', async () => {",
+        "'取消后保持游客状态', async () => {",
+        "'再次搜索并确认登录', async () => {",
+        "'等待场次数据并打开游客场', async () => {",
+        "'关闭弹窗，保持游客大厅', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-002/3 HALL-002：游客我的页面隐藏资产并提供登录入口",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-002：游客搜索提示可取消，也可前往登录",
+      "path": "e2e/cases/hall-002-guest-sign-in-gates/test.spec.ts",
+      "line": 32,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开游客功能入口', async () => {",
+        "'点击游客引导并验证登录选项', async () => {",
+        "'打开我的页面并检查游客资产提示', async () => {",
+        "'打开登录方式选择', async () => {",
+        "'打开搜索登录门禁', async () => {",
+        "'取消后保持游客状态', async () => {",
+        "'再次搜索并确认登录', async () => {",
+        "'等待场次数据并打开游客场', async () => {",
+        "'关闭弹窗，保持游客大厅', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-002/4 HALL-002：游客搜索提示可取消，也可前往登录",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-002：游客 texas_holdem 入场需登录且可关闭",
+      "path": "e2e/cases/hall-002-guest-sign-in-gates/test.spec.ts",
+      "line": 52,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开游客功能入口', async () => {",
+        "'点击游客引导并验证登录选项', async () => {",
+        "'打开我的页面并检查游客资产提示', async () => {",
+        "'打开登录方式选择', async () => {",
+        "'打开搜索登录门禁', async () => {",
+        "'取消后保持游客状态', async () => {",
+        "'再次搜索并确认登录', async () => {",
+        "'等待场次数据并打开游客场', async () => {",
+        "'关闭弹窗，保持游客大厅', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-002/5 HALL-002：游客 texas_holdem 入场需登录且可关闭",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-002：游客 zhajinhua 入场需登录且可关闭",
+      "path": "e2e/cases/hall-002-guest-sign-in-gates/test.spec.ts",
+      "line": 52,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开游客功能入口', async () => {",
+        "'点击游客引导并验证登录选项', async () => {",
+        "'打开我的页面并检查游客资产提示', async () => {",
+        "'打开登录方式选择', async () => {",
+        "'打开搜索登录门禁', async () => {",
+        "'取消后保持游客状态', async () => {",
+        "'再次搜索并确认登录', async () => {",
+        "'等待场次数据并打开游客场', async () => {",
+        "'关闭弹窗，保持游客大厅', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-002/6 HALL-002：游客 zhajinhua 入场需登录且可关闭",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-003：大厅搜索同时查询俱乐部和私人房间并返回",
+      "path": "e2e/cases/hall-003-signed-in-shortcuts/test.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-003",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开已登录大厅搜索', async () => {",
+        "'提交不存在的九位号码并验证联合查询空结果', async () => {",
+        "'返回大厅并保持登录状态', async () => {",
+        "'从消息通知进入三类消息列表再返回大厅', async () => {",
+        "'从商店进入真实钻石商品列表再返回', async () => {",
+        "'打开邀请页面，核对下载和 H5 地址再返回', async () => {",
+        "'打开每日奖励并检查七天奖励内容', async () => {",
+        "'查看说明并返回，不领取签到或救济金', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-003/1 HALL-003：大厅搜索同时查询俱乐部和私人房间并返回",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-003：通知、商城和邀请快捷入口可往返",
+      "path": "e2e/cases/hall-003-signed-in-shortcuts/test.spec.ts",
+      "line": 41,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-003",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开已登录大厅搜索', async () => {",
+        "'提交不存在的九位号码并验证联合查询空结果', async () => {",
+        "'返回大厅并保持登录状态', async () => {",
+        "'从消息通知进入三类消息列表再返回大厅', async () => {",
+        "'从商店进入真实钻石商品列表再返回', async () => {",
+        "'打开邀请页面，核对下载和 H5 地址再返回', async () => {",
+        "'打开每日奖励并检查七天奖励内容', async () => {",
+        "'查看说明并返回，不领取签到或救济金', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-003/2 HALL-003：通知、商城和邀请快捷入口可往返",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-003：每日奖励展示七日签到和救济规则，浏览后返回",
+      "path": "e2e/cases/hall-003-signed-in-shortcuts/test.spec.ts",
+      "line": 69,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-003",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开已登录大厅搜索', async () => {",
+        "'提交不存在的九位号码并验证联合查询空结果', async () => {",
+        "'返回大厅并保持登录状态', async () => {",
+        "'从消息通知进入三类消息列表再返回大厅', async () => {",
+        "'从商店进入真实钻石商品列表再返回', async () => {",
+        "'打开邀请页面，核对下载和 H5 地址再返回', async () => {",
+        "'打开每日奖励并检查七天奖励内容', async () => {",
+        "'查看说明并返回，不领取签到或救济金', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-003/3 HALL-003：每日奖励展示七日签到和救济规则，浏览后返回",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-004：游客 slot-banner 登录引导关闭后可返回大厅",
+      "path": "e2e/cases/hall-004-guest-shortcuts/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'进入受保护业务并检查登录入口', async () => {",
+        "'关闭登录后保持游客状态，入口可再次使用', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-004/1 HALL-004：游客 slot-banner 登录引导关闭后可返回大厅",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-004：游客 daily-bonus-button 登录引导关闭后可返回大厅",
+      "path": "e2e/cases/hall-004-guest-shortcuts/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'进入受保护业务并检查登录入口', async () => {",
+        "'关闭登录后保持游客状态，入口可再次使用', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-004/2 HALL-004：游客 daily-bonus-button 登录引导关闭后可返回大厅",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-004：游客 store-button 登录引导关闭后可返回大厅",
+      "path": "e2e/cases/hall-004-guest-shortcuts/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'进入受保护业务并检查登录入口', async () => {",
+        "'关闭登录后保持游客状态，入口可再次使用', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-004/3 HALL-004：游客 store-button 登录引导关闭后可返回大厅",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-004：游客 personal-house-create 登录引导关闭后可返回大厅",
+      "path": "e2e/cases/hall-004-guest-shortcuts/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'进入受保护业务并检查登录入口', async () => {",
+        "'关闭登录后保持游客状态，入口可再次使用', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-004/4 HALL-004：游客 personal-house-create 登录引导关闭后可返回大厅",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-004：游客 personal-house-join 登录引导关闭后可返回大厅",
+      "path": "e2e/cases/hall-004-guest-shortcuts/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'进入受保护业务并检查登录入口', async () => {",
+        "'关闭登录后保持游客状态，入口可再次使用', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-004/5 HALL-004：游客 personal-house-join 登录引导关闭后可返回大厅",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "HALL-005：清空无结果搜索恢复默认引导",
+      "path": "e2e/cases/hall-005-search-clear-state/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "HALL-005",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'提交唯一关键字，真实搜索返回后显示结果空态', async () => {",
+        "'清空关键字后移除结果空态，恢复初始引导', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "HALL-005/1 HALL-005：清空无结果搜索恢复默认引导",
+        "file": "ios/full/functional/hall.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "MESSAGE-001：浏览三类消息并返回消息列表",
+      "path": "e2e/cases/message-001-notification-navigation/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "MESSAGE-001",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'登录并打开消息列表', async () => {",
+        "`打开${label}、确认空态并返回`, async () => {",
+        "'从我的再次进入俱乐部消息并返回', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "MESSAGE-001/1 MESSAGE-001：浏览三类消息并返回消息列表",
+        "file": "ios/full/functional/social.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "MESSAGE-002：带入通知切换未处理和已处理状态",
+      "path": "e2e/cases/message-002-buy-in-tabs/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "MESSAGE-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'初始未处理选中，切至已处理后两者状态互斥', async () => {",
+        "'切回未处理并返回消息分类列表', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "MESSAGE-002/1 MESSAGE-002：带入通知切换未处理和已处理状态",
+        "file": "ios/full/functional/social.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "私人德州牌局真实创建、退出、解散并退回钻石",
+      "path": "e2e/cases/private-001-create-and-dismiss/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [
+        "creates-data"
+      ],
+      "caseId": "PRIVATE-001",
+      "createsData": true,
+      "assertionStepsSource": [
+        "'进入空私人房间，检查创建配置和实际资产', async () => {",
+        "'提交真实创建，验证桌名、房型、等待开始及扣钻', async () => {",
+        "'退出桌面，验证刚创建牌局仍在私人房间', async () => {",
+        "'清理本次未开始牌局，验证真实解散接口和退款', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-001/1 私人德州牌局真实创建、退出、解散并退回钻石",
+        "file": "ios/full/functional/creation.spec.ts",
+        "group": "functional-creation",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "经典德州配置可编辑、展开高级设置并返回",
+      "path": "e2e/cases/private-002-game-configuration/test.spec.ts",
+      "line": 10,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "PRIVATE-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从私人房间选择玩法', async () => {",
+        "'验证玩法配置并展开高级设置', async () => {",
+        "'返回私人房间，不创建牌局或消耗钻石', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-002/1 经典德州配置可编辑、展开高级设置并返回",
+        "file": "ios/full/functional/rooms.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "拼三张配置可编辑、展开高级设置并返回",
+      "path": "e2e/cases/private-002-game-configuration/test.spec.ts",
+      "line": 10,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "PRIVATE-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从私人房间选择玩法', async () => {",
+        "'验证玩法配置并展开高级设置', async () => {",
+        "'返回私人房间，不创建牌局或消耗钻石', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-002/2 拼三张配置可编辑、展开高级设置并返回",
+        "file": "ios/full/functional/rooms.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "短牌配置可编辑、展开高级设置并返回",
+      "path": "e2e/cases/private-002-game-configuration/test.spec.ts",
+      "line": 10,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "PRIVATE-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从私人房间选择玩法', async () => {",
+        "'验证玩法配置并展开高级设置', async () => {",
+        "'返回私人房间，不创建牌局或消耗钻石', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-002/3 短牌配置可编辑、展开高级设置并返回",
+        "file": "ios/full/functional/rooms.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "第二账号通过真实房号加入新建私人牌局",
+      "path": "e2e/cases/private-003-join-created-room/test.spec.ts",
+      "line": 7,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [
+        "creates-data"
+      ],
+      "caseId": "PRIVATE-003",
+      "createsData": true,
+      "assertionStepsSource": [
+        "'房主创建等待开始的私人牌局并读取其真实房号', async () => {",
+        "'加入者输入房主的九位房号，实际进入同一牌桌', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-003/1 第二账号通过真实房号加入新建私人牌局",
+        "file": "ios/full/functional/creation.spec.ts",
+        "group": "functional-creation",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "PRIVATE-004：九位数字房号才启用加入，字母输入被拒绝",
+      "path": "e2e/cases/private-004-room-number-validation/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "PRIVATE-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'空房号和八位房号禁用加入，九位启用', async () => {",
+        "'真实按键清空，输入字母后仍为空且禁用加入', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-004/1 PRIVATE-004：九位数字房号才启用加入，字母输入被拒绝",
+        "file": "ios/full/functional/rooms.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "PRIVATE-005：德州扑克带入审核切换后恢复初始值",
+      "path": "e2e/cases/private-005-buy-in-audit-toggle/test.spec.ts",
+      "line": 11,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "PRIVATE-005",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从私人房选择玩法，等待建房表单和弹层关闭', async () => {",
+        "'审核开关切换为反值，再恢复进入页面时的值', async () => {",
+        "'取消返回，不创建牌局', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-005/1 PRIVATE-005：德州扑克带入审核切换后恢复初始值",
+        "file": "ios/full/functional/rooms.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "PRIVATE-005：拼三张带入审核切换后恢复初始值",
+      "path": "e2e/cases/private-005-buy-in-audit-toggle/test.spec.ts",
+      "line": 11,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "PRIVATE-005",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从私人房选择玩法，等待建房表单和弹层关闭', async () => {",
+        "'审核开关切换为反值，再恢复进入页面时的值', async () => {",
+        "'取消返回，不创建牌局', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-005/2 PRIVATE-005：拼三张带入审核切换后恢复初始值",
+        "file": "ios/full/functional/rooms.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "PRIVATE-005：德州短牌带入审核切换后恢复初始值",
+      "path": "e2e/cases/private-005-buy-in-audit-toggle/test.spec.ts",
+      "line": 11,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "PRIVATE-005",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'从私人房选择玩法，等待建房表单和弹层关闭', async () => {",
+        "'审核开关切换为反值，再恢复进入页面时的值', async () => {",
+        "'取消返回，不创建牌局', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "PRIVATE-005/3 PRIVATE-005：德州短牌带入审核切换后恢复初始值",
+        "file": "ios/full/functional/rooms.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-001：个人资料预填、取消编辑与等级浏览",
+      "path": "e2e/cases/settings-001-profile-browsing/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-001",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'登录并检查我的资料和余额', async () => {",
+        "'昵称预填当前资料，取消编辑后资料不变', async () => {",
+        "'签名输入后取消，重新打开仍为原值', async () => {",
+        "'返回我的并浏览等级说明及奖励', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-001/1 SETTINGS-001：个人资料预填、取消编辑与等级浏览",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-002：浏览账号安全四个分支并安全返回",
+      "path": "e2e/cases/settings-002-account-security/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-002",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'登录并进入账号与安全', async () => {",
+        "'浏览绑定手机，确认区号和空表单后返回', async () => {",
+        "'浏览绑定邮箱说明后返回', async () => {",
+        "'浏览改密空表单后返回', async () => {",
+        "'阅读注销影响并选择暂不注销', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-002/1 SETTINGS-002：浏览账号安全四个分支并安全返回",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-003：商城商品、钱包流水、购买记录和礼品卡浏览",
+      "path": "e2e/cases/settings-003-wallet-records/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-003",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'登录并打开商城，等待真实商品加载', async () => {",
+        "'金币和钻石流水与真实接口一致，兼容没有注册奖励的账号', async () => {",
+        "'打开购买记录，确认空态并返回', async () => {",
+        "'切换可用和过期礼品卡，打开兑换表单后返回', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-003/1 SETTINGS-003：商城商品、钱包流水、购买记录和礼品卡浏览",
+        "file": "ios/full/functional/wallet.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-004：客服、常见问题与各平台下载帮助浏览",
+      "path": "e2e/cases/settings-004-help-download/test.spec.ts",
+      "line": 21,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-004",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'登录并打开我的', async () => {",
+        "'从联系客服进入常见问题，并查看分享图文说明', async () => {",
+        "'浏览苹果下载帮助后返回平台列表', async () => {",
+        "`浏览${button}说明并返回`, async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-004/1 SETTINGS-004：客服、常见问题与各平台下载帮助浏览",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": [
+          "iOS包若缺下载帮助入口会明确失败；不能把Android default渠道的不可达结论直接套用iOS。"
+        ]
+      }
+    },
+    {
+      "title": "SETTINGS-005：语言偏好、关于、官网与分享入口浏览",
+      "path": "e2e/cases/settings-005-preferences-about/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-005",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'登录并打开我的', async () => {",
+        "'语言列表展示当前选中项，返回后保留简体中文', async () => {",
+        "'关于显示实际版本和协议入口', async () => {",
+        "'官网列表展示三个 HTTPS 地址', async () => {",
+        "'分享页展示下载地址和扫码说明', async () => {",
+        "'频道入口展示官方频道 URL', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-005/1 SETTINGS-005：语言偏好、关于、官网与分享入口浏览",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-006：我的战绩加载为空态并返回个人设置",
+      "path": "e2e/cases/settings-006-game-record/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-006",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'登录并从我的进入战绩', async () => {",
+        "'等待接口完成并确认无战绩', async () => {",
+        "'通过导航返回我的', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-006/1 SETTINGS-006：我的战绩加载为空态并返回个人设置",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-007：修改密码的八至十六位边界",
+      "path": "e2e/cases/settings-007-password-boundaries/test.spec.ts",
+      "line": 7,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-007",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'旧密码有效时验证新密码的七、八、十六、十七位', async () => {",
+        "'新密码有效时验证旧密码边界和清空状态', async () => {",
+        "'返回账号安全，不提交修改密码请求', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-007/1 SETTINGS-007：修改密码的八至十六位边界",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-008：语言预览后取消恢复已保存语言",
+      "path": "e2e/cases/settings-008-language-cancel/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-008",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'选择英文后立即显示英文预览和选中标记', async () => {",
+        "'返回取消，再次打开仍选中简中且显示中文', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-008/1 SETTINGS-008：语言预览后取消恢复已保存语言",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": [
+          "基准locale=en；预览简中再取消恢复English，与Web基准简中预览English对称。"
+        ]
+      }
+    },
+    {
+      "title": "SETTINGS-009：文字 FAQ 的标题、正文与返回",
+      "path": "e2e/cases/settings-009-text-faq/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-009",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'答案标题对应问题，文字正文非空', async () => {",
+        "'返回问题列表，原问题保持不变', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-009/1 SETTINGS-009：文字 FAQ 的标题、正文与返回",
+        "file": "ios/full/functional/settings.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-010：金币余额入口保留真实余额并默认显示金币",
+      "path": "e2e/cases/settings-010-coin-mall-entry/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-010",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'等待真实钱包响应并核对我的金币余额', async () => {",
+        "'点击金币余额，商城保持余额且默认展示金币分类', async () => {"
+      ],
+      "knownExpectedFailure": true,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-010/1 SETTINGS-010：金币余额入口保留真实余额并默认显示金币",
+        "file": "ios/full/functional/wallet.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": [
+          "不继承Web已知产品错误的test.fail标记；iOS错误默认分类按失败处理。"
+        ]
+      }
+    },
+    {
+      "title": "SETTINGS-011：金币与钻石分类往返显示对应商品",
+      "path": "e2e/cases/settings-011-mall-categories/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-011",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'选择金币，金币商品进入视口且钻石列表离开视口', async () => {",
+        "'选择钻石，真实价格可见且金币页离开视口', async () => {",
+        "'再次选择金币，金币页重新进入视口', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-011/1 SETTINGS-011：金币与钻石分类往返显示对应商品",
+        "file": "ios/full/functional/wallet.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SETTINGS-012：钱包流水切换请求对应币种并恢复金币页",
+      "path": "e2e/cases/settings-012-wallet-currencies/test.spec.ts",
+      "line": 6,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SETTINGS-012",
+      "createsData": false,
+      "assertionStepsSource": [
+        "'打开金币流水，真实接口成功且金币页进入视口', async () => {",
+        "'切换钻石，真实接口成功并展示钻石页', async () => {",
+        "'切回金币，金币流水重新进入视口', async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SETTINGS-012/1 SETTINGS-012：钱包流水切换请求对应币种并恢复金币页",
+        "file": "ios/full/functional/wallet.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    },
+    {
+      "title": "SLOT-001：抽奖面板显示能量和奖品，关闭重开不消耗钻石",
+      "path": "e2e/cases/slot-001-panel-navigation/test.spec.ts",
+      "line": 5,
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "tags": [],
+      "caseId": "SLOT-001",
+      "createsData": false,
+      "assertionStepsSource": [
+        "`第 ${visit + 1} 次打开和关闭抽奖面板`, async () => {"
+      ],
+      "knownExpectedFailure": false,
+      "browserOnly": false,
+      "androidOverlap": "Navigation and visual state overlap; full functional assertion parity is NOT established by native Android screenshots.",
+      "nativeImplementation": {
+        "testTitle": "SLOT-001/1 SLOT-001：抽奖面板显示能量和奖品，关闭重开不消耗钻石",
+        "file": "ios/full/functional/wallet.spec.ts",
+        "group": "functional",
+        "validation": "collected-and-typechecked; native-execution-pending",
+        "platformChanges": []
+      }
+    }
+  ],
+  "animations": [
+    {
+      "title": "launch branding fades in",
+      "path": "visual/animations/ambient.spec.ts",
+      "line": 8,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Android fixed package launch notice obscures branding fade; only visible artwork/notice covered.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/web-animation-parity.spec.ts",
+        "testTitle": "launch branding independently fades in while real initialization waits",
+        "locale": "en",
+        "platformChanges": "原生固定区域像素拟合淡入；不访问DOM opacity",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "hall slot banner automatically spins and repeats",
+      "path": "visual/animations/ambient.spec.ts",
+      "line": 27,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/slot-animation.spec.ts",
+        "testTitle": "all three native slot reels and reward types animate from real spin responses",
+        "locale": "en",
+        "platformChanges": "原生循环实际帧",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "guest search confirmation enter and exit",
+      "path": "visual/animations/application.spec.ts",
+      "line": 8,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "testTitle": "guest search confirmation animates into and out of the iOS screen",
+        "locale": "en",
+        "platformChanges": "原生进退场",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "club more menu enter and exit",
+      "path": "visual/animations/application.spec.ts",
+      "line": 20,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "testTitle": "club more menu fades into and out of the iOS screen",
+        "locale": "en",
+        "platformChanges": "原生进退场",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "private room invitation bottom sheet enter and exit",
+      "path": "visual/animations/application.spec.ts",
+      "line": 29,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "testTitle": "private room invite sheet slides into and out of the iOS screen",
+        "locale": "en",
+        "platformChanges": "原生邀请抽屉",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "create room game picker enter and exit",
+      "path": "visual/animations/application.spec.ts",
+      "line": 41,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "testTitle": "private room game picker slides into and out of the iOS screen",
+        "locale": "en",
+        "platformChanges": "原生玩法抽屉",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "club rooms empty state fades in",
+      "path": "visual/animations/application.spec.ts",
+      "line": 52,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "testTitle": "club more menu fades into and out of the iOS screen",
+        "locale": "en",
+        "platformChanges": "同一测试另采club-rooms-empty-enter",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "hall matching spinner modal enter and exit",
+      "path": "visual/animations/application.spec.ts",
+      "line": 63,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/web-animation-parity.spec.ts",
+        "testTitle": "hall matching modal records its native entrance before cancellation",
+        "locale": "en",
+        "platformChanges": "补入场；原有spinner循环仍独立比较，源退出为无动画",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "staging notice fades and scales in on launch",
+      "path": "visual/animations/dialogs.spec.ts",
+      "line": 9,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "testTitle": "native launch artwork and staging notice appear on a real app start",
+        "locale": "en",
+        "platformChanges": "原生启动提示；未伪造DOM opacity",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "share link confirmation dialog enter and exit",
+      "path": "visual/animations/dialogs.spec.ts",
+      "line": 35,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": true,
+      "androidOverlap": "Web-only .web.js dialog; Android uses OS share sheet.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/web-animation-parity.spec.ts",
+        "testTitle": "share link opens and closes the real iOS share sheet",
+        "locale": "en",
+        "platformChanges": "Web剪贴板确认框替换为实际iOS系统分享面板、Copy选项和取消",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "zh-Hans mobile guest search prompt fades in",
+      "path": "visual/animations/search-prompt.spec.ts",
+      "line": 27,
+      "projects": [
+        "mobile"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/web-animation-parity.spec.ts",
+        "testTitle": "zh-Hans mobile guest search prompt fades in and reopens on iOS",
+        "locale": "zh-Hans",
+        "platformChanges": "中文文案、真实入退场关键帧、关闭后再次打开",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "club list placeholders pulse while details are pending",
+      "path": "visual/animations/skeleton.spec.ts",
+      "line": 5,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/club-skeleton-animation.spec.ts",
+        "testTitle": "every native club placeholder pulses while detail response is pending",
+        "locale": "en",
+        "platformChanges": "原生占位脉冲",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "slot reels and all three reward animations",
+      "path": "visual/animations/slot.spec.ts",
+      "line": 6,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/slot-animation.spec.ts",
+        "testTitle": "all three native slot reels and reward types animate from real spin responses",
+        "locale": "en",
+        "platformChanges": "原生三种奖励",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "slot panel and no-energy dialog enter and exit",
+      "path": "visual/animations/slotPopups.spec.ts",
+      "line": 7,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/slot-animation.spec.ts",
+        "testTitle": "all three native slot reels and reward types animate from real spin responses",
+        "locale": "en",
+        "platformChanges": "同例面板/能量不足进退场",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "texas panels animations",
+      "path": "visual/animations/texas.spec.ts",
+      "line": 19,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/games.spec.ts",
+        "testTitle": "en / texas / signed_in_texas_pre_game_first",
+        "locale": "en",
+        "platformChanges": "原生牌桌面板分片",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "texas gameplay animations",
+      "path": "visual/animations/texas.spec.ts",
+      "line": 19,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/games.spec.ts",
+        "testTitle": "en / texas / signed_in_texas_game_table",
+        "locale": "en",
+        "platformChanges": "原生牌桌动作分片",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "texas social animations",
+      "path": "visual/animations/texas.spec.ts",
+      "line": 19,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/games.spec.ts",
+        "testTitle": "en / texas / signed_in_texas_game_effects",
+        "locale": "en",
+        "platformChanges": "原生社交效果分片",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "texas assets animations",
+      "path": "visual/animations/texas.spec.ts",
+      "line": 19,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/games.spec.ts",
+        "testTitle": "en / texas / signed_in_texas_game_effects",
+        "locale": "en",
+        "platformChanges": "原生贴图/道具逐帧",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "texas hall panel animations",
+      "path": "visual/animations/texas.spec.ts",
+      "line": 27,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/games.spec.ts",
+        "testTitle": "en / texas / signed_in_texas_hall",
+        "locale": "en",
+        "platformChanges": "含level_up动态关键帧替代静态",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "zhajinhua panels animations",
+      "path": "visual/animations/zhajinhua.spec.ts",
+      "line": 7,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/games.spec.ts",
+        "testTitle": "en / zhajinhua / signed_in_zhajinhua_pre_game_first",
+        "locale": "en",
+        "platformChanges": "原生拼三张面板",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    },
+    {
+      "title": "zhajinhua gameplay animations",
+      "path": "visual/animations/zhajinhua.spec.ts",
+      "line": 7,
+      "projects": [
+        "mobile",
+        "desktop"
+      ],
+      "tags": [],
+      "browserOnly": false,
+      "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
+      "nativeImplementation": {
+        "file": "ios/full/tests/games.spec.ts",
+        "testTitle": "en / zhajinhua / signed_in_zhajinhua_game_table",
+        "locale": "en",
+        "platformChanges": "原生拼三张发牌/翻牌/比牌",
+        "validation": "collected-and-typechecked; native-execution-pending"
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "title": "在线客服打开真实 Freshchat，可输入草稿、关闭并再次打开",
+      "path": "e2e/interactions/freshchat.spec.ts",
+      "line": 21,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    },
+    {
+      "title": "横向手势切换申请标签，触底按游标追加且末页停止请求",
+      "path": "e2e/interactions/pagination.spec.ts",
+      "line": 30,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    },
+    {
+      "title": "大厅滚动后可返回顶部并打开搜索",
+      "path": "e2e/interactions/scroll-and-controls.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    },
+    {
+      "title": "选择玩法弹层关闭后仍能打开建房表单并拖动滑块",
+      "path": "e2e/interactions/scroll-and-controls.spec.ts",
+      "line": 40,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    },
+    {
+      "title": "俱乐部请求失败后点击重试恢复列表并可打开菜单",
+      "path": "e2e/interactions/scroll-and-controls.spec.ts",
+      "line": 91,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    },
+    {
+      "title": "大厅接口失败后点击重试恢复页面操作",
+      "path": "e2e/interactions/scroll-and-controls.spec.ts",
+      "line": 148,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    },
+    {
+      "title": "我的虚拟列表可滚动到后续菜单并进入关于页面",
+      "path": "e2e/interactions/settings-scroll.spec.ts",
+      "line": 4,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    },
+    {
+      "title": "我的列表最后一项可通过真实滚动进入视口",
+      "path": "e2e/interactions/settings-scroll.spec.ts",
+      "line": 26,
+      "projects": [
+        "desktop",
+        "touch"
+      ],
+      "tags": []
+    }
+  ],
+  "additionalE2e": [
+    {
+      "path": "e2e/network-resilience.spec.ts",
+      "browserOnly": false,
+      "titles": [
+        "大厅首屏超时显示提示，重试后恢复真实牌局列表",
+        "用户名登录接口失败后退出 loading 并显示错误提示",
+        "俱乐部列表接口失败时展示降级界面并允许重试"
+      ]
+    },
+    {
+      "path": "e2e/staging-notice.spec.ts",
+      "browserOnly": false,
+      "description": "Three languages: correct confirmation text mandatory before hall"
+    },
+    {
+      "path": "e2e/sites-availability.spec.ts",
+      "browserOnly": true
+    },
+    {
+      "path": "e2e/public-artifacts.spec.ts",
+      "browserOnly": true
+    },
+    {
+      "path": "e2e/mitmproxy.spec.ts",
+      "browserOnly": true,
+      "description": "test infrastructure; port proxy facility assertions separately"
+    }
+  ],
+  "visualMobileFlows": [
+    {
+      "pageLabel": "hall",
+      "group": "hall",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"hall-sign-in-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "guest_game_sign_in_prompt",
+      "group": "hall",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "match-game-item-texas_holdem-tourists"
+      ],
+      "visualReadySelector": "[data-testid=\"game-matching-sign-in-popup\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "guest_private_room",
+      "group": "private-room",
+      "signIn": false,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"guest-private-room-empty-state\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button"
+      ],
+      "visualReadySelector": "[data-testid=\"sign-in-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_username",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "username-or-email-sign-in-button"
+      ],
+      "visualReadySelector": "[data-testid=\"username-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "guest_club",
+      "group": "club",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "club-tab"
+      ],
+      "visualReadySelector": "[data-testid=\"club-tab-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "search_sign_in_prompt",
+      "group": "hall",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-search-button"
+      ],
+      "visualReadySelector": "[data-testid=\"confirm-pop-up-image-background\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_forgot_password",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "username-or-email-sign-in-button",
+        "forget-password-button"
+      ],
+      "visualReadySelector": "[data-testid=\"reset-password-by-email-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_forgot_password_email",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "username-or-email-sign-in-button",
+        "forget-password-button",
+        "reset-password-by-email-button"
+      ],
+      "visualReadySelector": "[data-testid=\"email-address-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_phone",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "sign-in-button"
+      ],
+      "visualReadySelector": "[data-testid=\"sms-request-code-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_forgot_password_sms",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "username-or-email-sign-in-button",
+        "forget-password-button",
+        "reset-password-by-sms-button"
+      ],
+      "visualReadySelector": "[data-testid=\"next-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_pick_country_code",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "sign-in-button",
+        "country-code-selector"
+      ],
+      "visualReadySelector": "[data-testid=\"pick-country-code-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_user_agreement",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "user-agreement-button"
+      ],
+      "visualReadySelector": "[data-testid=\"user-agreement-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_user_privacy",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "user-privacy-button"
+      ],
+      "visualReadySelector": "[data-testid=\"user-privacy-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_language",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "switch-language-button"
+      ],
+      "visualReadySelector": "[data-testid=\"switch-language-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "login_phone_password",
+      "group": "auth",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [
+        "hall-sign-in-button",
+        "sign-in-button",
+        "password-sign-in-button"
+      ],
+      "visualReadySelector": "[data-testid=\"password-input\"] input",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "guest_message",
+      "group": "message",
+      "signIn": false,
+      "tabTestId": "message-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"not-sign-in-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "guest_me",
+      "group": "account",
+      "signIn": false,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"after-sign-in-see-asset-text\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_slot",
+      "group": "hall",
+      "signIn": true,
+      "tabTestId": "hall-tab",
+      "navClickTestIds": [
+        "slot-banner"
+      ],
+      "visualReadySelector": "[data-testid=\"slot-machine-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_daily_bonus",
+      "group": "hall",
+      "signIn": true,
+      "tabTestId": "hall-tab",
+      "navClickTestIds": [
+        "daily-bonus-button"
+      ],
+      "visualReadySelector": "[data-testid=\"CheckInDateList\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_hall_search",
+      "group": "hall",
+      "signIn": true,
+      "tabTestId": "hall-tab",
+      "navClickTestIds": [
+        "hall-search-button"
+      ],
+      "visualReadySelector": "[data-testid=\"club-search-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_hall",
+      "group": "hall",
+      "signIn": true,
+      "tabTestId": "hall-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"hall-shortcut-buttons-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_hall_match",
+      "group": "hall",
+      "signIn": true,
+      "tabTestId": "hall-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"match-game-room-group\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_message",
+      "group": "message",
+      "signIn": true,
+      "tabTestId": "message-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"message-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_message_club_notifications",
+      "group": "message",
+      "signIn": true,
+      "tabTestId": "message-tab",
+      "navClickTestIds": [
+        "message-notification-item-club"
+      ],
+      "visualReadySelector": "[data-testid=\"club-notification-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_message_buy_in",
+      "group": "message",
+      "signIn": true,
+      "tabTestId": "message-tab",
+      "navClickTestIds": [
+        "message-notification-item-buy-in"
+      ],
+      "visualReadySelector": "[data-testid=\"game-buy-in-application-list-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_message_system",
+      "group": "message",
+      "signIn": true,
+      "tabTestId": "message-tab",
+      "navClickTestIds": [
+        "message-notification-item-system"
+      ],
+      "visualReadySelector": "[data-testid=\"system-notification-screen-root\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_room_advanced_texas",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "create-game-button",
+        "game-type-button-texas_react_native",
+        "advanced-options-button"
+      ],
+      "visualReadySelector": "[data-testid=\"operation-duration-title-text\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_room_advanced_zhajinhua",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "create-game-button",
+        "game-type-button-zhajinhua",
+        "advanced-options-button"
+      ],
+      "visualReadySelector": "[data-testid=\"operation-duration-title-text\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_room_advanced_six_plus",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "create-game-button",
+        "game-type-button-texas_six_plus",
+        "advanced-options-button"
+      ],
+      "visualReadySelector": "[data-testid=\"operation-duration-title-text\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_private_room",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_private_room_join",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "personal-house-join"
+      ],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_private_room_detail",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "personal-house-create"
+      ],
+      "visualReadySelector": "[data-testid=\"create-game-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_room_picker",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "personal-house-create",
+        "create-game-button"
+      ],
+      "visualReadySelector": "[data-testid=\"select-game-category-text\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_room_form",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "personal-house-create",
+        "create-game-button",
+        "game-type-button-texas_react_native"
+      ],
+      "visualReadySelector": "[data-testid=\"base-create-room-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_room_form_zhajinhua",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "personal-house-create",
+        "create-game-button",
+        "game-type-button-zhajinhua"
+      ],
+      "visualReadySelector": "[data-testid=\"base-create-room-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_room_form_six_plus",
+      "group": "private-room",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [
+        "personal-house-create",
+        "create-game-button",
+        "game-type-button-texas_six_plus"
+      ],
+      "visualReadySelector": "[data-testid=\"base-create-room-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_texas_pre_game",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "waiting_table",
+        "menu",
+        "card_rank",
+        "theme",
+        "settings",
+        "buy_in",
+        "renew",
+        "leaderboard",
+        "game_record",
+        "chat",
+        "buy_in_applications"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_optional_pre_game",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "waiting_table",
+        "raise_blinds"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_game",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "preflop",
+        "flop",
+        "turn",
+        "river",
+        "raise",
+        "accurate_raise",
+        "opponent_turn",
+        "all_in",
+        "showdown",
+        "settlement",
+        "own_profile",
+        "player_profile",
+        "player_statistics_1000",
+        "statistics_help",
+        "report",
+        "block"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_panels",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "theme_four_color",
+        "theme_four_color_two",
+        "theme_realistic",
+        "table_blue",
+        "table_purple",
+        "table_black",
+        "settings_enabled",
+        "voice",
+        "leaderboard_players",
+        "record_settlement",
+        "record_actions",
+        "chat_phrases",
+        "chat_history",
+        "chat_actions",
+        "chat_report",
+        "chat_block_confirm",
+        "buy_in_review",
+        "hand_end",
+        "remaining_cards",
+        "show_cards",
+        "quit_confirm"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_hall",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "hall_table",
+        "hall_menu",
+        "auto_rebuy",
+        "pair_play_report",
+        "personal_leaderboard",
+        "prediction",
+        "prediction_result",
+        "level_up"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_records_v2",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "empty",
+        "actions",
+        "settlement"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_controls",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "check",
+        "all_in_only",
+        "all_in_call",
+        "shortcut_blinds",
+        "shortcut_disabled",
+        "auto_buttons",
+        "auto_fold_selected",
+        "auto_call_selected",
+        "auto_check_selected",
+        "raise_maximum",
+        "raise_dragging",
+        "accurate_raise_value",
+        "accurate_raise_minimum_error"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_table_states",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "observer",
+        "full_table",
+        "full_table_multiple_pots",
+        "reserved_seat",
+        "player_disconnected",
+        "guest_menu"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_panel_variants",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "applications_pending",
+        "applications_resolved",
+        "applications_more",
+        "chat_audio_history",
+        "chat_barrage_off",
+        "alert_retry",
+        "alert_insufficient_balance",
+        "alert_authentication_failed"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_texas_hall_variants",
+      "group": "texas-holdem",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "auto_rebuy_enabled",
+        "pair_play_selected",
+        "prediction_bet",
+        "prediction_loss",
+        "prediction_diamond",
+        "delay_cooldown",
+        "delay_cooldown_alert"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_zhajinhua_pre_game",
+      "group": "zhajinhua",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "waiting_table",
+        "menu",
+        "card_rank",
+        "theme",
+        "settings",
+        "buy_in",
+        "renew",
+        "leaderboard",
+        "game_record",
+        "chat",
+        "buy_in_applications",
+        "theme_four_color",
+        "theme_four_color_two",
+        "theme_realistic",
+        "table_blue",
+        "table_purple",
+        "table_black",
+        "settings_enabled"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_zhajinhua_game",
+      "group": "zhajinhua",
+      "signIn": true,
+      "tabTestId": "private-room-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"copy-house-number-button\"]",
+      "snapshotStates": [
+        "blind_cards",
+        "seen_cards",
+        "quick_raise",
+        "accurate_raise",
+        "challenge_select",
+        "opponent_turn",
+        "showdown",
+        "settlement"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_club",
+      "group": "club",
+      "signIn": true,
+      "tabTestId": "club-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"club-tab-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_club_rooms",
+      "group": "club",
+      "signIn": true,
+      "tabTestId": "club-tab",
+      "navClickTestIds": [
+        "club_tab_room"
+      ],
+      "visualReadySelector": "[data-testid=\"club-rooms-empty-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_club_more",
+      "group": "club",
+      "signIn": true,
+      "tabTestId": "club-tab",
+      "navClickTestIds": [
+        "show-more-button"
+      ],
+      "visualReadySelector": "[data-testid=\"club-more-popup\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_club_search",
+      "group": "club",
+      "signIn": true,
+      "tabTestId": "club-tab",
+      "navClickTestIds": [
+        "show-more-button",
+        "search-club-button"
+      ],
+      "visualReadySelector": "[data-testid=\"club-search-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_create_club",
+      "group": "club",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "create-club"
+      ],
+      "visualReadySelector": "[data-testid=\"club-profile-list\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_me",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"settings-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_profile",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "user-info-button"
+      ],
+      "visualReadySelector": "[data-testid=\"profile-item-0\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_update_nickname",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "user-info-button",
+        "profile-item-0"
+      ],
+      "visualReadySelector": "[data-testid=\"nickname-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_update_bio",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "user-info-button",
+        "profile-item-3"
+      ],
+      "visualReadySelector": "[data-testid=\"bio-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_account_security",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "account-security"
+      ],
+      "visualReadySelector": "[data-testid=\"account-security-items-list\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_bind_phone",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "account-security",
+        "account-security-item-0"
+      ],
+      "visualReadySelector": "[data-testid=\"input-phone-number-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_bind_email",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "account-security",
+        "account-security-item-1"
+      ],
+      "visualReadySelector": "[data-testid=\"bind-email-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_reset_password",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "account-security",
+        "account-security-item-2"
+      ],
+      "visualReadySelector": "[data-testid=\"old-password-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_delete_account",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "account-security",
+        "account-security-item-3"
+      ],
+      "visualReadySelector": "[data-testid=\"warning-sign-image\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_user_level",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "user-level"
+      ],
+      "visualReadySelector": "[data-testid=\"user-level-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_application_management",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "application-management"
+      ],
+      "visualReadySelector": "[data-testid=\"application-management-list\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_club_notifications",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "club-notifications"
+      ],
+      "visualReadySelector": "[data-testid=\"club-notification-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_telegram_channel",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "telegram-channel"
+      ],
+      "visualReadySelector": "[data-testid=\"channel-url-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_language",
+      "group": "account",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "application-management",
+        "language"
+      ],
+      "visualReadySelector": "[data-testid=\"switch-language-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_mall",
+      "group": "wallet",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "mall"
+      ],
+      "visualReadySelector": "[data-testid^=\"product-amount-\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_currency_transaction",
+      "group": "wallet",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "mall",
+        "currency-transaction-record-button"
+      ],
+      "visualReadySelector": "[data-testid=\"coin-transaction-record-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_purchase_history",
+      "group": "wallet",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "purchase-history"
+      ],
+      "visualReadySelector": "[data-testid=\"purchase-history-empty-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_game_record",
+      "group": "wallet",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "game-record"
+      ],
+      "visualReadySelector": "[data-testid=\"no-records-text\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_gift_card",
+      "group": "wallet",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "gift-card"
+      ],
+      "visualReadySelector": "[data-testid=\"personal-gift-card-screen-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_gift_card_exchange",
+      "group": "wallet",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "gift-card",
+        "exchange-gift-card-button"
+      ],
+      "visualReadySelector": "[data-testid=\"gift-card-input\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_gift_card_expired",
+      "group": "wallet",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "gift-card",
+        "expired-gift-card-tab"
+      ],
+      "visualReadySelector": "[data-testid=\"expired-gift-card\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_game_records_legacy",
+      "group": "game-record",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"game-record\"]",
+      "snapshotStates": [
+        "loading",
+        "empty",
+        "list",
+        "list_bottom",
+        "select_none",
+        "select_win",
+        "select_loss",
+        "select_all",
+        "select_clear",
+        "select_cancel",
+        "swipe_delete",
+        "delete_confirm",
+        "delete_cancel",
+        "delete_blocked",
+        "private_overview",
+        "private_relationship",
+        "private_relationship_switch",
+        "private_actions",
+        "private_settlement",
+        "replay_list",
+        "club_overview",
+        "club_actions",
+        "club_settlement",
+        "hall_overview",
+        "short_deck_overview",
+        "no_hands",
+        "replay_empty",
+        "delete_success",
+        "delete_failure",
+        "pagination_loading",
+        "pagination_end",
+        "reopen"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_game_records_v2",
+      "group": "game-record",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"game-record\"]",
+      "snapshotStates": [
+        "loading",
+        "empty",
+        "list",
+        "list_bottom",
+        "select_none",
+        "select_win",
+        "select_loss",
+        "select_all",
+        "select_clear",
+        "select_cancel",
+        "swipe_delete",
+        "delete_confirm",
+        "delete_cancel",
+        "delete_blocked",
+        "private_overview",
+        "private_relationship",
+        "private_relationship_switch",
+        "private_actions",
+        "private_settlement",
+        "replay_list",
+        "club_overview",
+        "club_actions",
+        "club_settlement",
+        "hall_overview",
+        "short_deck_overview",
+        "no_hands",
+        "replay_empty",
+        "list_failure",
+        "retry_success",
+        "detail_failure"
+      ],
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately."
+    },
+    {
+      "pageLabel": "signed_in_faq",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "faq"
+      ],
+      "visualReadySelector": "[data-testid=\"faq-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_faq_detail",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "faq",
+        "faq-item-share_laiwan"
+      ],
+      "visualReadySelector": "[data-testid=\"faq-detail-scroll-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_contact_us",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "contact-us"
+      ],
+      "visualReadySelector": "[data-testid=\"online-service-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_feedback",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "contact-us",
+        "feedback-button"
+      ],
+      "visualReadySelector": "[data-testid=\"feedback-user-report-screen\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_share_app",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "share-app"
+      ],
+      "visualReadySelector": "[data-testid=\"content-image-background\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_official_site",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "official-site"
+      ],
+      "visualReadySelector": "[data-testid=\"application-management-list\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_download_help",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "download-help"
+      ],
+      "visualReadySelector": "[data-testid=\"apple-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Unavailable in Android default distribution channel; verify iOS package channel.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_download_help_apple",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "download-help",
+        "apple-button"
+      ],
+      "visualReadySelector": "[data-testid=\"h5_link1_button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Unavailable in Android default distribution channel; verify iOS package channel.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_download_help_android",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "download-help",
+        "android-button"
+      ],
+      "visualReadySelector": "[data-testid=\"download-android-help-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Unavailable in Android default distribution channel; verify iOS package channel.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_download_help_h5",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "download-help",
+        "h5-button"
+      ],
+      "visualReadySelector": "[data-testid=\"h5-version-help-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Unavailable in Android default distribution channel; verify iOS package channel.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_download_help_official",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "download-help",
+        "official_website-button"
+      ],
+      "visualReadySelector": "[data-testid=\"download-official-website-help-view\"]",
+      "browserOnly": false,
+      "androidOverlap": "Unavailable in Android default distribution channel; verify iOS package channel.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_about",
+      "group": "help",
+      "signIn": true,
+      "tabTestId": "settings-tab",
+      "navClickTestIds": [
+        "about-laiwan"
+      ],
+      "visualReadySelector": "[data-testid=\"logo-button\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "launch_staging_notice",
+      "group": "launch",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"launch-screen-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "launch_branding",
+      "group": "launch",
+      "signIn": false,
+      "tabTestId": "",
+      "navClickTestIds": [],
+      "visualReadySelector": "[data-testid=\"launch-screen-container\"]",
+      "browserOnly": false,
+      "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    }
+  ],
+  "dependencies": {
+    "existing": [
+      "E2E_TEST_USERNAME",
+      "E2E_TEST_PASSWORD",
+      "real staging session/account/wallet checks; no missing-account registration"
+    ],
+    "creation": [
+      "TESTING_API_TOKEN",
+      "E2E_CREATION_USERNAME",
+      "E2E_CREATION_PASSWORD",
+      "starting 60 diamond; club cost50 + room cost10"
+    ],
+    "registration": [
+      "POST /public/v10/user/register/username_password/testing",
+      "X-Testing-Api-Token",
+      "zero initial diamonds; no retries"
+    ],
+    "multipleAccounts": [
+      "AUTH-002/003",
+      "PRIVATE-003",
+      "CLUB-004",
+      "CLUB-005"
+    ],
+    "cleanup": [
+      "exact created room UUID cleanup/refund",
+      "created clubs have no verified delete path, remain staging"
+    ],
+    "CI": [
+      "CLRN_CI_TEST_ACCOUNTS_V3",
+      "same-user jobs serialized"
+    ],
+    "privacy": [
+      "do not upload tokens/request bodies or sensitive login DOM"
+    ]
+  },
+  "helpers": [
+    "e2e/cases/_shared/auth.ts",
+    "e2e/cases/_shared/provision.ts",
+    "e2e/cases/_shared/test-user.ts",
+    "e2e/cases/_shared/test-wallet.ts",
+    "e2e/cases/_shared/read-account-fixture.ts",
+    "e2e/cases/_shared/creation-account-fixture.ts",
+    "e2e/cases/_shared/second-account.ts",
+    "e2e/cases/_shared/sign-in-notices.ts",
+    "e2e/cases/_shared/form.ts",
+    "e2e/cases/_shared/navigation.ts",
+    "e2e/cases/_shared/settings-navigation.ts",
+    "e2e/mitmproxy/network_faults.py",
+    "e2e/mitmproxy/response_overrides.py",
+    "visual/cases/texas-holdem/mitmproxy/texas_replay.py",
+    "visual/cases/texas-holdem/mitmproxy/ui_states.py",
+    "visual/cases/texas-holdem/mitmproxy/records_v2.py",
+    "visual/cases/zhajinhua/mitmproxy/zhajinhua_replay.py",
+    "visual/cases/game-record/mitmproxy/addon.py",
+    "visual/cases/game-record/mitmproxy/data.py"
+  ],
+  "notes": [
+    "Only test repository source read; no React application source or repository mutation. --list does not execute tests.",
+    "Local functional/scenario definitions equal fetched master; master-only diagnostics changes do not change inventory.",
+    "Android retains Web e2e files but this alone does not prove native execution. Android native auth test is a four-screen visual flow, not all 60 functional assertions.",
+    "Browser-only infrastructure: site availability/navigation retries, public source-map disclosure checks, proxy CORS, DOM/CSS stabilization, localStorage/deviceId injection, Chromium Freshchat script/iframe instance checks. Port business semantics independently.",
+    "Native needs iOS proxy/CA, native touch, WebView document access and native customer-service handling. Web page.clock and DOM text mutation cannot be reused.",
+    "Preserve three locales and all mobile business states; do not count duplicate desktop margins as new iPhone cases.",
+    "Web share-link confirmation is .web.js; Android uses OS share sheet. Native staging prompt obscures branding fade. Verify iOS behavior, never count invisible animation as tested.",
+    "Web lightweight game mode disables coin particles/victory sequences/some deal and seat arrows. Native navigation transitions and pull-refresh are additional native work.",
+    "No test may silently skip required secrets, unreachable native states or failed backend requests and claim complete coverage.",
+    "Known SETTINGS-010 Web expected failure is product default coin-mall category bug; verify iOS independently.",
+    "Game replay is UI verification via precise staging room UUID/HTTP/WS fixtures, not real multiuser financial settlement. Own account data/wallet passes through; delete only room created by this test.",
+    "Native baselines must use fixed simulator model/runtime/language. Existing Web PNGs cannot serve as iOS pixel baselines. Raw video alone is not animation regression comparison."
+  ],
+  "nativeFunctionalValidation": {
+    "status": "implemented-unverified-on-simulator",
+    "typecheck": "passed",
+    "collectionContract": "2 node tests passed; exact 53+7+8+3 without skip/expectedFailure",
+    "execution": "no native functional run performed by this implementation task",
+    "command": "node --test ios/full/functional/coverage.test.mjs"
+  }
+}

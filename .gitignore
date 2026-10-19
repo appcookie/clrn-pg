@@ -2,3 +2,9 @@ node_modules/
 .appium/
 ios/artifacts/
 .DS_Store
+
+e2e/.venv/
+__pycache__/
+*.pyc
+playwright-report/
+test-results/

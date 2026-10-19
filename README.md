@@ -33,3 +33,20 @@ IOS_SIMULATOR_UDID=<专用模拟器 UUID> npm run test:ios
 PR、master 推送及手动运行均执行公开包校验和真实模拟器任务，无需自定义 Secrets。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
 
 扩展页面见 `ios/scenarios.mjs`；更新应用只需修改部署记录，不需要修改业务代码。
+
+## Web / Android 全量迁移
+
+完整清单及原生验证状态见 [docs/coverage.md](docs/coverage.md)。`ios/full/` 覆盖共享静态场景、德州/拼三张/战绩状态、转场和素材动画，并加入 Web 的 60 个功能、8 个交互和 3 个弱网案例。代码收集通过不等于这些原生用例已经通过；运行证据以相应业务组的 CI 报告为准。
+
+```sh
+npm run check         # TypeScript、算法/协议/清单契约与实际用例收集
+npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
+```
+
+完整原生测试通过「iOS 完整回归」工作流运行。每个 job 明确一个 `IOS_GROUP`，全量模式拆成三语言、业务组和牌桌分片。代理仅允许 GitHub 托管临时 macOS runner，保存并恢复系统代理；本机默认拒绝更改日常网络。
+
+游客组不需要凭据。登录组需要仓库 Secret `CLRN_IOS_CI_TEST_ACCOUNTS`（至少一个独立 iOS 测试账号），以及余额准备/创建数据所需的 `TESTING_API_TOKEN`。账号池格式为 `{"accounts":[{"username":"clrnciios001","password":"实际密码","status":"ready"}]}`；只配置确实已创建的账号，禁止借用 Web/Android 并发占用的账号。账号级排队锁保证同一账号不会被多个 job 同时使用。
+
+未配置凭据时，PR 明确只运行游客矩阵，并在 Actions summary 记录未运行的登录/创建组。配置两项 Secrets 后，PR 默认展开完整矩阵；手动选择 all 但缺凭据会直接失败。`smoke` 保留语义/运动断言及原始证据，首次 `reference` 输出须审查后入库，后续 `compare` 才进行版本视觉比较。不会自动接受变化或用跳过充当业务通过。
+
+全量覆盖契约按三语言逐个核对 Web 的 91 个流程/260 个状态，并为 21 项动画关联实际注册的原生执行入口。英文升级提示以真实动态关键帧替代同名静态图；Web 分享复制确认框映射为 iOS 系统分享面板的显示、选项和取消。新增简体中文游客搜索、匹配面板入场和独立品牌淡入检查，保存原始录屏与关键帧。这些新增用例目前仅完成类型、算法和收集检查，尚待完整模拟器任务验证；详细映射和限制见 [覆盖说明](docs/coverage.md)。

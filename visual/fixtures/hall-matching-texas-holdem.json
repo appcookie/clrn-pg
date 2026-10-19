@@ -1,0 +1,135 @@
+{
+  "ok": true,
+  "result": {
+    "halls": [
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "ante": 0,
+          "audit_buy_in": false,
+          "big_blind": 2,
+          "duration": 172800,
+          "player_operating_seconds": 10,
+          "prediction_amount_options": [2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
+          "prediction_currency": "coin",
+          "remove_player_ranking_when_quit": true,
+          "small_blind": 1,
+          "variation": "texas_holdem"
+        },
+        "game_type": "texas_holdem",
+        "hall_id": "ba41a7da-c063-4b4f-9aa3-e44529de718b",
+        "hall_title": "Tourists",
+        "hall_type": "tourists",
+        "is_open": true,
+        "maximum_chip": 20000,
+        "minimum_chip": 100,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 4000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 200,
+          "minimum_buy_in": 100,
+          "seat_quantity": 6
+        }
+      },
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "ante": 0,
+          "audit_buy_in": false,
+          "big_blind": 10,
+          "duration": 172800,
+          "player_operating_seconds": 10,
+          "prediction_amount_options": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+          "prediction_currency": "coin",
+          "remove_player_ranking_when_quit": true,
+          "small_blind": 5,
+          "variation": "texas_holdem"
+        },
+        "game_type": "texas_holdem",
+        "hall_id": "bf3f7109-18f3-4167-8f0d-b4a3f04323df",
+        "hall_title": "Novice",
+        "hall_type": "novice",
+        "is_open": true,
+        "maximum_chip": 100000,
+        "minimum_chip": 1000,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 4000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 1000,
+          "minimum_buy_in": 500,
+          "seat_quantity": 6
+        }
+      },
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "ante": 0,
+          "audit_buy_in": false,
+          "big_blind": 50,
+          "duration": 172800,
+          "player_operating_seconds": 10,
+          "prediction_amount_options": [50, 100, 150, 200, 250, 300, 350, 400, 450, 500],
+          "prediction_currency": "coin",
+          "remove_player_ranking_when_quit": true,
+          "small_blind": 25,
+          "variation": "texas_holdem"
+        },
+        "game_type": "texas_holdem",
+        "hall_id": "c9eb61ae-86f3-43b3-9a61-d3bcdb61aa06",
+        "hall_title": "Elite",
+        "hall_type": "elite",
+        "is_open": true,
+        "maximum_chip": null,
+        "minimum_chip": 5000,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 20000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 10000,
+          "minimum_buy_in": 2500,
+          "seat_quantity": 6
+        }
+      },
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "ante": 0,
+          "audit_buy_in": false,
+          "big_blind": 100,
+          "duration": 172800,
+          "player_operating_seconds": 15,
+          "prediction_amount_options": [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+          "prediction_currency": "coin",
+          "remove_player_ranking_when_quit": true,
+          "small_blind": 50,
+          "variation": "texas_holdem"
+        },
+        "game_type": "texas_holdem",
+        "hall_id": "534e4b9c-53c7-4e9e-b2cd-916bbb215049",
+        "hall_title": "Master",
+        "hall_type": "master",
+        "is_open": true,
+        "maximum_chip": null,
+        "minimum_chip": 70000,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 200000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 100000,
+          "minimum_buy_in": 50000,
+          "seat_quantity": 6
+        }
+      }
+    ]
+  }
+}

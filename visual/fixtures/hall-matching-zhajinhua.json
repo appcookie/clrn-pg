@@ -1,0 +1,147 @@
+{
+  "ok": true,
+  "result": {
+    "halls": [
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "audit_buy_in": false,
+          "boot": 1,
+          "challenge_limit_round": 1,
+          "duration": 172800,
+          "max_blind_round": null,
+          "max_round": 12,
+          "must_blind_round": null,
+          "player_lowest_stack": 10,
+          "player_operating_seconds": 10,
+          "pot_limit": null,
+          "raise_step": 1,
+          "raise_times": 2,
+          "variation": "sichuan"
+        },
+        "game_type": "zhajinhua",
+        "hall_id": "e6d7c40d-a63c-4e94-873f-2532d433e888",
+        "hall_title": "Tourists",
+        "hall_type": "tourists",
+        "is_open": true,
+        "maximum_chip": 10000,
+        "minimum_chip": 200,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 20000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 400,
+          "minimum_buy_in": 200,
+          "seat_quantity": 6
+        }
+      },
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "audit_buy_in": false,
+          "boot": 5,
+          "challenge_limit_round": 1,
+          "duration": 172800,
+          "max_blind_round": null,
+          "max_round": 12,
+          "must_blind_round": null,
+          "player_lowest_stack": 10,
+          "player_operating_seconds": 10,
+          "pot_limit": null,
+          "raise_step": 5,
+          "raise_times": 10,
+          "variation": "sichuan"
+        },
+        "game_type": "zhajinhua",
+        "hall_id": "4d96c039-2a1c-4fe5-95b9-4124a3dce81b",
+        "hall_title": "Novice",
+        "hall_type": "novice",
+        "is_open": true,
+        "maximum_chip": 100000,
+        "minimum_chip": 1000,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 20000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 2000,
+          "minimum_buy_in": 1000,
+          "seat_quantity": 6
+        }
+      },
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "audit_buy_in": false,
+          "boot": 20,
+          "challenge_limit_round": 1,
+          "duration": 172800,
+          "max_blind_round": null,
+          "max_round": 12,
+          "must_blind_round": null,
+          "player_lowest_stack": 50,
+          "player_operating_seconds": 10,
+          "pot_limit": null,
+          "raise_step": 20,
+          "raise_times": 10,
+          "variation": "sichuan"
+        },
+        "game_type": "zhajinhua",
+        "hall_id": "ee6168bc-0953-4219-877d-41677b7897dc",
+        "hall_title": "Elite",
+        "hall_type": "elite",
+        "is_open": true,
+        "maximum_chip": null,
+        "minimum_chip": 5000,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 100000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 10000,
+          "minimum_buy_in": 5000,
+          "seat_quantity": 6
+        }
+      },
+      {
+        "check_gps_coordinate": false,
+        "check_ip_address": true,
+        "game_settings": {
+          "audit_buy_in": false,
+          "boot": 100,
+          "challenge_limit_round": 1,
+          "duration": 172800,
+          "max_blind_round": null,
+          "max_round": 12,
+          "must_blind_round": null,
+          "player_lowest_stack": 100,
+          "player_operating_seconds": 10,
+          "pot_limit": null,
+          "raise_step": 100,
+          "raise_times": 10,
+          "variation": "sichuan"
+        },
+        "game_type": "zhajinhua",
+        "hall_id": "c7ecd600-f6e0-41a5-bed4-cbe97128dd43",
+        "hall_title": "Master",
+        "hall_type": "master",
+        "is_open": true,
+        "maximum_chip": null,
+        "minimum_chip": 50000,
+        "room_settings": {
+          "auto_start_player_quantity": 2,
+          "buy_in_highest_stack": 200000,
+          "can_reserve_seat": false,
+          "currency_name": "coin",
+          "maximum_buy_in": 100000,
+          "minimum_buy_in": 50000,
+          "seat_quantity": 6
+        }
+      }
+    ]
+  }
+}

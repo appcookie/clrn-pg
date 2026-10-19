@@ -2,14 +2,27 @@
   "name": "clrn-pg",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "check": "node --test ios/*.test.mjs",
-    "test:ios": "node ios/run.mjs"
+    "check": "npm run typecheck && npm run test:unit && npm run test:ios:collect",
+    "test:ios": "node ios/run.mjs",
+    "typecheck": "tsc --noEmit",
+    "test:unit": "node --import tsx --test ios/*.test.mjs ios/full/*.test.mjs ios/full/functional/coverage.test.mjs scripts/*.test.mjs",
+    "test:ios:collect": "playwright test --config ios/full/playwright.config.ts --list",
+    "test:ios:full": "playwright test --config ios/full/playwright.config.ts",
+    "check:python": "node scripts/check-python.mjs"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@types/node": "22.15.30",
+    "@types/pngjs": "6.0.5",
     "appium": "3.4.2",
-    "pngjs": "7.0.0"
+    "fast-xml-parser": "5.11.2",
+    "pngjs": "7.0.0",
+    "tsx": "4.20.3",
+    "typescript": "5.9.3"
   },
   "overrides": {
     "@appium/support": "7.2.8",

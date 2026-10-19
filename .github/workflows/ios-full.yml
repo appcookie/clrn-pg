@@ -1,0 +1,141 @@
+# 完整原生测试按业务组隔离；游客无需凭据，完整矩阵使用独立 iOS 测试账号。
+name: iOS 完整回归
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      group:
+        description: all 覆盖全部业务；guest 无需账号
+        type: choice
+        default: guest
+        options: [all, guest, account, social, rooms, wallet-help, records, texas, zhajinhua, functional, functional-creation, interaction, network]
+      locale:
+        description: 视觉语言；功能组固定 en
+        type: choice
+        default: all
+        options: [all, en, zh-Hans, zh-Hant]
+      mode:
+        description: 视觉基准模式
+        type: choice
+        default: smoke
+        options: [smoke, reference, compare]
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - id: plan
+        env:
+          CI_IOS_GROUP: ${{ inputs.group }}
+          CI_IOS_LOCALE: ${{ inputs.locale || 'all' }}
+          CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
+          TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
+        run: |
+          if [ -z "$CI_IOS_GROUP" ]; then
+            if [ -n "$CLRN_IOS_CI_TEST_ACCOUNTS" ] && [ -n "$TESTING_API_TOKEN" ]; then
+              export CI_IOS_GROUP=all
+            else
+              export CI_IOS_GROUP=guest
+              echo '当前仅执行无需账号的游客矩阵；登录/建房/俱乐部等完整组尚未执行，需要 iOS 专用账号池和 TESTING_API_TOKEN。' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          fi
+          node scripts/plan-ci-accounts.mjs ios
+  proxy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - run: |
+          python -m venv e2e/.venv
+          e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
+      - run: npm run check:python
+  native:
+    needs: [plan, proxy-check]
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    concurrency:
+      group: ios-account-${{ matrix.account || format('{0}-{1}-{2}-{3}', github.run_id, matrix.group, matrix.locale, matrix.shard) }}
+      queue: max
+    runs-on: macos-15
+    timeout-minutes: 120
+    name: ${{ matrix.label }}
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      APPIUM_HOME: ${{ github.workspace }}/.appium
+      IOS_SIMULATOR_UDID: ''
+      IOS_GROUP: ${{ matrix.group }}
+      IOS_LOCALE: ${{ matrix.locale }}
+      IOS_VISUAL_MODE: ${{ inputs.mode || 'smoke' }}
+      CLRN_CI_ACCOUNT: ${{ matrix.account }}
+      CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - name: 下载公开模拟器包并安装测试工具
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node ios/download-release.mjs --simulator
+          npx appium driver install xcuitest@12.19.1
+          brew install ffmpeg
+          python -m venv e2e/.venv
+          e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
+      - name: 在独占锁内准备测试账号
+        if: matrix.account != ''
+        env:
+          CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
+          TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
+        run: node scripts/configure-ci-account.mjs
+      - name: 创建并启动专用模拟器
+        run: |
+          udid=$(xcrun simctl create clrn-full com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
+          echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
+          xcrun simctl boot "$udid"
+          xcrun simctl bootstatus "$udid" -b
+      - name: 执行原生业务、视觉及动画断言
+        env:
+          TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
+          IOS_FILTER: ${{ matrix.filter }}
+        run: npm run test:ios:full -- --grep "$IOS_FILTER"
+      - name: 恢复 runner 代理设置
+        if: always()
+        run: node ios/full/system-proxy.mjs restore
+      - name: 保存测试产物
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
+          retention-days: 30
+          path: |
+            ios/artifacts/full-results/
+            ios/artifacts/full-report/
+            ios/artifacts/release/build-info.json
+            ios/snapshots/full/
+      - name: 删除专用模拟器
+        if: always() && env.IOS_SIMULATOR_UDID != ''
+        run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
