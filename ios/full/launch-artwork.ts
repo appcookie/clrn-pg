@@ -1,42 +1,70 @@
-import { assertVisual } from './device';
+import { assertVisual, simulatorAppPath } from './device';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 import { frameColorDistance } from './animation-transition';
-import { motionParts } from './motion-regions';
-import { maskScreenshot } from './screenshot';
+import type { ScreenshotBounds } from './screenshot';
 
-/**
- * Staging 弹窗出现前，锁定应用自己的插画；排除系统 Splash 和桌面。
- * @param frames - 冷启动期间采集的完整原生屏幕。
- * @param testInfo - 保存和比较关键帧的测试信息。
- */
-export async function verifyLaunchArtwork(frames: Buffer[], testInfo: TestInfo): Promise<void> {
+/** Reference pixels come from the downloaded .app image, never application source. */
+export function launchArtworkTemplate(application: string, width: number, height: number): PNG {
+  return PNG.sync.read(execFileSync('ffmpeg', ['-v', 'error', '-i',
+    path.join(application, 'assets/src/launch/assets/launch-background-phone.jpg'),
+    '-vf', `scale=${width}:${height}:force_original_aspect_ratio=increase,crop=${width}:${height}`,
+    '-frames:v', '1', '-f', 'image2pipe', '-vcodec', 'png', '-'], { maxBuffer: 32 * 1024 * 1024, timeout: 30000 }));
+}
+
+/** Match the actual spatial artwork, allowing the staging dialog's uniform dimming layer. */
+export function launchArtworkMatch(picture: PNG, reference: PNG, occlusions: ScreenshotBounds[]) {
+  if (picture.width !== reference.width || picture.height !== reference.height) throw new Error('启动插画参考尺寸不一致');
+  const samples: { actual: number[]; expected: number[] }[] = [];
+  const stride = Math.max(1, Math.ceil(picture.width / 64));
+  for (let y = stride; y < picture.height; y += stride) for (let x = stride; x < picture.width; x += stride) {
+    if (occlusions.some(box => x >= box.x - 6 && y >= box.y - 6
+      && x < box.x + box.width + 6 && y < box.y + box.height + 6)) continue;
+    const offset = (y * picture.width + x) * 4;
+    samples.push({ actual: [...picture.data.subarray(offset, offset + 3)], expected: [...reference.data.subarray(offset, offset + 3)] });
+  }
+  if (samples.length < 128) throw new Error('启动插画未遮挡的像素不足，不能验证真实素材');
+  const means = (key: 'actual' | 'expected') => [0, 1, 2].map(channel =>
+    samples.reduce((sum, sample) => sum + sample[key][channel], 0) / samples.length);
+  const actualMean = means('actual'), expectedMean = means('expected');
+  let expectedVariance = 0, actualVariance = 0, covariance = 0;
+  for (const sample of samples) for (let channel = 0; channel < 3; channel++) {
+    const actual = sample.actual[channel] - actualMean[channel];
+    const expected = sample.expected[channel] - expectedMean[channel];
+    expectedVariance += expected * expected; actualVariance += actual * actual; covariance += actual * expected;
+  }
+  const gain = covariance / expectedVariance;
+  const correlation = covariance / Math.sqrt(expectedVariance * actualVariance);
+  const rmse = Math.sqrt(Math.max(0, actualVariance - covariance * covariance / expectedVariance) / (samples.length * 3));
+  // Black/white/system splash or a similarly coloured gradient has no matching forest,
+  // clouds and water texture. Uniform dimming may change colour but cannot move them.
+  const matches = Number.isFinite(correlation) && correlation > 0.98 && rmse < 5 && gain >= 0.3 && gain <= 1.1;
+  return { matches, samples: samples.length, correlation, rmse, gain };
+}
+
+/** Verify the rendered iOS artwork behind the staging dialog, not Android colour coordinates. */
+export async function verifyLaunchArtwork(frames: Buffer[], testInfo: TestInfo,
+  occlusions: ScreenshotBounds[]): Promise<void> {
   const full = PNG.sync.read(frames[0]);
-  const scaleX = full.width / 720, scaleY = full.height / 1280;
-  const region = { x: Math.round(70 * scaleX), y: Math.round(155 * scaleY),
-    width: Math.round(580 * scaleX), height: Math.round(900 * scaleY) };
-  const artwork = frames.map(frame => motionParts(frame, [region]).regions[0]);
-  /**
-   * 判断截图是否处在应用插画可见的蓝色阶段。
-   * @param frame - 已裁切并遮蔽桌面时钟的启动截图。
-   */
-  const isArtwork = (frame: Buffer) => {
-    const picture = PNG.sync.read(frame);
-    const reds = [100, 200, 300, 400, 500].map(x => picture.data[(Math.round(90 * scaleY) * picture.width + Math.round(x * scaleX)) * 4]);
-    const center = (Math.round(90 * scaleY) * picture.width + Math.round(300 * scaleX)) * 4;
-    // 系统 Splash 是均匀蓝底，桌面与弹窗在这个位置没有应用插画的蓝色。
-    return picture.data[center] < 160 && picture.data[center + 1] >= 120
-      && picture.data[center + 2] >= 200 && Math.max(...reds) - Math.min(...reds) > 8;
-  };
-  const first = artwork.find(isArtwork);
-  expect(first, '必须看到应用自己的启动插画').toBeDefined();
-  const name = 'native-launch-artwork-visible.png';
-  await testInfo.attach(name, { body: first!, contentType: 'image/png' });
-  if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(first!, name, testInfo);
+  const reference = launchArtworkTemplate(await simulatorAppPath(), full.width, full.height);
+  // The system status/home indicators are not part of the app artwork. These narrow
+  // edges were measured in the iPhone 16 CI recording; dialog/brand use native bounds.
+  const exclusions = [...occlusions,
+    { x: 0, y: 0, width: full.width, height: Math.ceil(full.height * 0.08) },
+    { x: 0, y: Math.floor(full.height * 0.96), width: full.width, height: Math.ceil(full.height * 0.04) }];
+  const metrics = frames.map(frame => launchArtworkMatch(PNG.sync.read(frame), reference, exclusions));
+  await testInfo.attach('native-launch-artwork-matches', { body: JSON.stringify(metrics), contentType: 'application/json' });
+  const candidates = frames.filter((_, index) => metrics[index].matches);
+  expect(candidates.length, '真实启动帧必须呈现应用森林、云层及水波插画，不能用系统启动页代替').toBeGreaterThan(0);
+  const first = candidates[0], name = 'native-launch-artwork-visible.png';
+  await testInfo.attach(name, { body: first, contentType: 'image/png' });
+  if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(first, name, testInfo);
   else {
-    const reference = readFileSync(testInfo.snapshotPath(name));
-    expect(Math.min(...artwork.filter(isArtwork).map(candidate => frameColorDistance(candidate, reference))),
+    const baseline = readFileSync(testInfo.snapshotPath(name));
+    expect(Math.min(...candidates.map(candidate => frameColorDistance(candidate, baseline))),
       `${name} 须在真实启动帧里接近已审查的插画`).toBeLessThanOrEqual(12);
   }
 }

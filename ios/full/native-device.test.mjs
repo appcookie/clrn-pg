@@ -1,7 +1,19 @@
 // XCUITest XML 的真实可见性与 point/pixel 转换是所有原生业务断言的基础。
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseNativeTree, NativeDevice, keyboardDismissTarget } from './native-device.ts';
+import { PNG } from 'pngjs';
+import { parseNativeTree, NativeDevice, keyboardDismissTarget, normalizeNativeScreenshot } from './native-device.ts';
+test('原生截图只裁末尾一像素，保留每个内容像素，拒绝其他尺寸变化', () => {
+  const source = new PNG({ width: 5, height: 7 });
+  for (let i = 0; i < source.data.length; i++) source.data[i] = i;
+  const bytes = PNG.sync.write(source);
+  assert.equal(normalizeNativeScreenshot(bytes, { width: 5, height: 7 }), bytes);
+  const cropped = PNG.sync.read(normalizeNativeScreenshot(bytes, { width: 4, height: 6 }));
+  for (let y = 0; y < 6; y++) assert.deepEqual(cropped.data.subarray(y * 16, (y + 1) * 16), source.data.subarray(y * 20, y * 20 + 16));
+  for (const size of [{ width: 3, height: 7 }, { width: 5, height: 8 }, { width: 0, height: 0 }]) {
+    assert.throws(() => normalizeNativeScreenshot(bytes, size), /尺寸不匹配/);
+  }
+});
 const xml = `<?xml version="1.0"?><AppiumAUT><XCUIElementTypeApplication name="App" enabled="true" visible="true" x="0" y="0" width="393" height="852">
 <XCUIElementTypeButton name="confirm-button" label="Enter test version" enabled="false" visible="true" x="50" y="575" width="293" height="39"/>
 <XCUIElementTypeSecureTextField name="password-input" value="••••" enabled="true" visible="true" x="50" y="503" width="293" height="49"/>

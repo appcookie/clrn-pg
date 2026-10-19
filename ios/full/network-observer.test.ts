@@ -68,6 +68,11 @@ test('iOS游客启动请求可命中metadata、health、country和hall共享夹�
         else assert.equal(body.ok, true);
         if (path.startsWith('/public/v10/profile/country')) assert.equal(body.result.countryPhoneCode, '86');
       }
+      const transport = await proxy.command<{ responses: { path: string; status: number; count: number }[];
+        tlsFailures: unknown[] }>('native/transport');
+      assert.ok(transport.responses.some(item => item.path === '/node/v1/status' && item.status === 200));
+      assert.ok(transport.responses.some(item => item.path === '/public/v13/metadata/servers' && item.status === 200));
+      assert.deepEqual(transport.tlsFailures, []);
     }, { addonPath: fileURLToPath(new URL('./proxy-addon.py', import.meta.url)),
       environment: { ...process.env, IOS_FUNCTIONAL: 'false', IOS_FIXTURE_TOKEN: token,
         IOS_FIXTURE_URL: `http://127.0.0.1:${address.port}/` } });

@@ -14,6 +14,7 @@ from presentation import AccountPresentation
 from game_session import GameSession
 from launch_network import LaunchNetwork
 from network_observer import NetworkObserver
+from transport_diagnostics import TransportDiagnostics
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'e2e/mitmproxy'))
 from network_faults import NetworkFaults
 from response_overrides import is_staging
@@ -23,6 +24,7 @@ class IosVisualProxy:
     def __init__(self):
         self.launch = LaunchNetwork()
         self.observer = NetworkObserver()
+        self.transport = TransportDiagnostics()
         self.functional = os.environ.get('IOS_FUNCTIONAL') == 'true'
         self.faults = NetworkFaults()
         self.presentation = AccountPresentation()
@@ -67,6 +69,7 @@ class IosVisualProxy:
             self.records.scenario = 'visual-stable'
 
     def response(self, flow):
+        self.transport.response(flow)
         self.observer.response(flow)
         if self.functional:
             return
@@ -154,13 +157,28 @@ class IosVisualProxy:
         if self.game:
             self.game.websocket_end(flow)
 
+    def tls_failed_client(self, data):
+        self.transport.tls_failure('client', data)
+
+    def tls_failed_server(self, data):
+        self.transport.tls_failure('server', data)
+
     def error(self, flow):
+        self.transport.response(flow)
         self.observer.response(flow)
 
     def done(self):
         self.observer.done()
 
     async def request(self, flow):
+        if flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/native/transport':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, b'Forbidden')
+            else:
+                flow.response = http.Response.make(200, json.dumps(self.transport.snapshot()).encode(),
+                    {'Content-Type': 'application/json'})
+            return
+        self.transport.request(flow)
         if self.observer.control(flow):
             return
         if is_staging(flow.request.host):

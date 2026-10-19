@@ -102,12 +102,20 @@ export async function launchApplication(options: { isolated?: boolean; gameDrive
       'appium:bundleId': applicationId, 'appium:fullReset': true, 'appium:language': 'en', 'appium:locale': 'en_US',
       'appium:maxTypingFrequency': 8, 'appium:autoAcceptAlerts': false, 'appium:isHeadless': true, 'appium:waitForIdleTimeout': 0,
       'appium:appTimeZone': 'UTC',
+      // fullReset 会清空模拟器信任库；由 XCUITest 在 reset 后重装本轮临时 CA。
+      ...(process.env.IOS_PROXY_CA_CERT ? { 'appium:customSSLCert': readFileSync(process.env.IOS_PROXY_CA_CERT, 'utf8') } : {}),
       'appium:wdaLaunchTimeout': 240_000, 'appium:newCommandTimeout': 1800,
       'appium:wdaLocalPort': 8100 + index, 'appium:mjpegServerPort': 9100 + index };
-    await driver.start(capabilities);
+    const start = async () => {
+      await driver!.start(capabilities);
+      // fullReset 也会清除先前 status_bar override，因此在会话建立后固定显示。
+      execFileSync('xcrun', ['simctl', 'status_bar', udid, 'override', '--time', '9:41', '--batteryState', 'charged',
+        '--batteryLevel', '100', '--wifiBars', '3', '--cellularBars', '4']);
+    };
+    await start();
     const reset = async () => {
       await driver!.close();
-      await driver!.start(capabilities);
+      await start();
     };
     const native = new NativeDevice(driver, udid, cleanup, reset, applicationId);
     await native.initialize();

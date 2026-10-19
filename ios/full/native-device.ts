@@ -12,6 +12,18 @@ export type NativeNode = { res?: string; text?: string; value?: string; clazz: s
   enabled: boolean; checked: boolean; visible: boolean; focused?: boolean; bounds: Bounds;
   attributes: Record<string, string>; children: NativeNode[] };
 export class ElementNotFound extends Error { code = 'no such element'; }
+/** simctl 保留奇数边长，WDA/录像可能去掉末列；只裁这一像素，不缩放内容。 */
+export function normalizeNativeScreenshot(bytes: Buffer, size: { width: number; height: number }): Buffer {
+  const source = PNG.sync.read(bytes);
+  if (source.width === size.width && source.height === size.height) return bytes;
+  if (size.width <= 0 || size.height <= 0 || source.width < size.width || source.height < size.height
+    || source.width - size.width > 1 || source.height - size.height > 1) {
+    throw new Error(`原生截图尺寸不匹配：${source.width}×${source.height}，预期 ${size.width}×${size.height}`);
+  }
+  const target = new PNG(size);
+  PNG.bitblt(source, target, 0, 0, size.width, size.height, 0, 0);
+  return PNG.sync.write(target);
+}
 const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '', parseAttributeValue: false,
   processEntities: false, allowBooleanAttributes: false });
 const decodeXml = (value: string) => value.replace(/&(quot|apos|amp|lt|gt|#x[0-9a-f]+|#\d+);/gi, (_, key: string) => {
@@ -143,8 +155,8 @@ export class NativeDevice {
   }
   screenshot() { return this.driver.screenshot(); }
   async nativeScreenshot(): Promise<Buffer> {
-    return execFileSync('xcrun', ['simctl', 'io', this.udid, 'screenshot', '--type=png', '--mask=ignored', '-'],
-      { maxBuffer: 32 * 1024 * 1024, timeout: 30_000, stdio: ['ignore', 'pipe', 'ignore'] });
+    return normalizeNativeScreenshot(execFileSync('xcrun', ['simctl', 'io', this.udid, 'screenshot', '--type=png', '--mask=ignored', '-'],
+      { maxBuffer: 32 * 1024 * 1024, timeout: 30_000, stdio: ['ignore', 'pipe', 'ignore'] }), this.screenSize);
   }
   async execute(script: string, args: Record<string, unknown> = {}) {
     return this.driver.request('POST', this.driver.path('/execute/sync'), { script, args: [args] });

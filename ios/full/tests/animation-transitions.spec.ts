@@ -29,10 +29,16 @@ if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
       await new Promise(resolve => setTimeout(resolve, 1000));
       const start = () => device!.launch();
       await captureNativeTransition(device, 'native-launch-and-staging-notice', testInfo,
-        screenBounds(device, { x: 70, y: 155, width: 580, height: 900 }), start,
-        [], [screenBounds(device, { x: 110, y: 170, width: 500, height: 145 }),
-          screenBounds(device, { x: 110, y: 360, width: 500, height: 550 })],
-        1500, 'launchFrames', verifyLaunchArtwork);
+        { x: 0, y: 0, ...device.screenSize }, start, [], [], 1500, 'launchFrames',
+        async (frames, info) => {
+          const dialog = await device!.info({ res: 'staging-dialog' });
+          const brand = await device!.marker('launch-brand-name');
+          // iOS may hide background accessibility nodes while a modal is active.
+          // In that case omit the area above the actual dialog, which contains the
+          // brand text, and match the still-visible forest sides and water below.
+          const brandBounds = brand?.bounds ?? { x: 0, y: 0, width: device!.screenSize.width, height: dialog.bounds.y };
+          await verifyLaunchArtwork(frames, info, [dialog.bounds, brandBounds]);
+        }, () => device!.wait({ res: 'staging-confirmation-input' }, { timeout: 120_000 }));
       await device.wait({ res: 'staging-confirmation-input' }, { timeout: 120_000 });
     } finally { await device?.close(); }
   });
