@@ -11,6 +11,7 @@ import { recordNativeVideoFrames } from '../video-frames';
 import { launchArtworkTemplate } from '../launch-artwork';
 import { frameColorDistance } from '../animation-transition';
 import { setTimeout as delay } from 'node:timers/promises';
+import { stagingCardBounds } from '../staging-card';
 
 const locale = process.env.IOS_LOCALE || 'en';
 const group = process.env.IOS_GROUP || 'all';
@@ -110,7 +111,7 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
       expect(frameColorDistance(before, frames[0]), '录像必须包含activate前的真实屏幕').toBeLessThan(10);
       await device.wait({ res: 'staging-confirmation-input' }); await delay(1200);
       const finalFrame = await device.nativeScreenshot();
-      const dialog = (await device.info({ res: 'staging-dialog' })).bounds;
+      const dialog = stagingCardBounds(await device.nodes(), device.screenSize);
       await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM'); await device.hideKeyboard();
       await expect.poll(async () => {
         const network = await proxy.command<{ requested: number; lastRequestedAt: number }>('android/launch-network');

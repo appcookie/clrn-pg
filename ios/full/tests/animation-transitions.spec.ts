@@ -5,6 +5,8 @@ import type { NativeDevice as AndroidDevice } from '../native-device';
 import { compareScreenshot, launchApplication, waitForHall } from '../device';
 import { captureNativeTransition } from '../animation-transition';
 import { verifyLaunchArtwork } from '../launch-artwork';
+import { stagingCardBounds } from '../staging-card';
+import { captureFailure } from '../diagnostics';
 import { withAndroidProxy } from '../proxy';
 import { signIn, navigateScenario, tap, reveal } from '../navigation';
 import { androidScenarios } from '../scenarios';
@@ -31,15 +33,18 @@ if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'native-launch-and-staging-notice', testInfo,
         { x: 0, y: 0, ...device.screenSize }, start, [], [], 1500, 'launchFrames',
         async (frames, info) => {
-          const dialog = await device!.info({ res: 'staging-dialog' });
+          const dialog = stagingCardBounds(await device!.nodes(), device!.screenSize);
           const brand = await device!.marker('launch-brand-name');
           // iOS may hide background accessibility nodes while a modal is active.
           // In that case omit the area above the actual dialog, which contains the
           // brand text, and match the still-visible forest sides and water below.
-          const brandBounds = brand?.bounds ?? { x: 0, y: 0, width: device!.screenSize.width, height: dialog.bounds.y };
-          await verifyLaunchArtwork(frames, info, [dialog.bounds, brandBounds]);
+          const brandBounds = brand?.bounds ?? { x: 0, y: 0, width: device!.screenSize.width, height: dialog.y };
+          await verifyLaunchArtwork(frames, info, [dialog, brandBounds]);
         }, () => device!.wait({ res: 'staging-confirmation-input' }, { timeout: 120_000 }));
       await device.wait({ res: 'staging-confirmation-input' }, { timeout: 120_000 });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { PNG } from 'pngjs';
 import { compareScreenshot, launchApplication, waitForHall } from '../device';
 import { captureFailure } from '../diagnostics';
-import { selectLanguage } from '../navigation';
+import { selectLanguage, tap } from '../navigation';
 import { withAndroidProxy } from '../proxy';
 import { gameReady } from '../game-controls';
 
@@ -30,7 +30,7 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
           expect(network.requested).toBeGreaterThan(0);
           return Date.now() - network.lastRequestedAt;
         }, { timeout: 30000, intervals: [500] }).toBeGreaterThan(6000);
-        await device.input.tap({ x: button.bounds.x + button.bounds.width / 2, y: button.bounds.y + button.bounds.height / 2 });
+        await tap(device, 'confirm-button');
         await device.wait({ res: 'launch-screen-container' }, { timeout: 4000 });
         await device.wait({ res: 'staging-dialog' }, { state: 'gone', timeout: 4000 });
         const assertBranding = async () => {
@@ -39,14 +39,13 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
           expect(await device.alertText(), '不能把系统错误弹窗当品牌页').toBeNull();
         };
         const fullScreen = async () => {
-          await assertBranding();
           const bytes = await device.nativeScreenshot();
-          await assertBranding();
           const picture = PNG.sync.read(bytes);
           expect({ width: picture.width, height: picture.height }).toEqual(device.screenSize);
           return bytes;
         };
-        await compareScreenshot(device, `${locale}-launch-branding`, info, [], undefined, fullScreen);
+        // 初始化的真实超时窗口很短；使用瞬态截图的前后断言，避免重复读取整棵树耗尽窗口。
+        await compareScreenshot(device, `${locale}-launch-branding`, info, [], assertBranding, fullScreen);
         await proxy.command('android/launch-network', { hold: false });
         await device.wait({ res: 'settings-tab' }, { timeout: 120000 });
       } catch (error) { await captureFailure(device, info); throw error; }

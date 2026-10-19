@@ -6,14 +6,19 @@ import type { ScreenshotBounds } from './screenshot';
 import { exists, waitAbsent } from './native-state';
 import { nativeSelector } from './scenarios';
 import { scrollToEnd } from './scroll-end';
+import { fullyInside, intersectBounds, nativeViewport } from './native-viewport';
 export { dismissKeyboard } from './keyboard';
 
 export async function reveal(device: NativeDevice, selector: NativeSelector, fullyVisible = false) {
   for (let attempt = 0; attempt < 10; attempt++) {
+    let geometry: ReturnType<typeof nativeViewport> | undefined;
+    const screen = { x: 0, y: 0, width: device.screenSize.width,
+      height: device.screenSize.height * (fullyVisible ? 0.93 : 0.98) };
     try {
       await device.wait(selector, { timeout: attempt === 0 ? 5000 : 1000 });
-      const { bounds } = await device.info(selector);
-      if (bounds.y >= 0 && bounds.y + bounds.height <= device.screenSize.height * (fullyVisible ? 0.93 : 0.98)) return;
+      const target = await device.info(selector);
+      geometry = nativeViewport(await device.nodes(), target, screen);
+      if (fullyInside(geometry.node.bounds, geometry.viewport)) return;
     } catch (error) { if ((error as { code?: string }).code !== 'no such element') throw error; }
     if (attempt === 9) throw new Error(`滚动后仍未显示控件：${JSON.stringify(selector)}`);
     await device.hideKeyboard();
@@ -21,12 +26,16 @@ export async function reveal(device: NativeDevice, selector: NativeSelector, ful
       await tap(device, await exists(device, { res: 'tooltip-finish-button' }) ? 'tooltip-finish-button' : 'tooltip-next-button');
       continue;
     }
-    const scrollable = (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
+    // Scroll inside the target's nearest ancestor, not a background/sibling list.
+    const ancestor = geometry?.scrollables.slice().reverse().find(item => item.viewport.width > 20 && item.viewport.height > 20);
+    const fallback = !geometry && (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
       && node.bounds.height > device.screenSize.height * 0.3);
-    if (!scrollable) { await device.wait(selector); return; }
-    const { x, y, width, height } = scrollable.bounds;
-    await device.input.swipe({ x1: x + width * 0.97, y1: y + height * 0.85,
-      x2: x + width * 0.97, y2: y + height * 0.2, duration: 600 });
+    const viewport = ancestor?.viewport ?? (fallback ? intersectBounds(screen, fallback.bounds) : undefined);
+    if (!viewport) throw new Error(`控件被裁切且无可滚动祖先：${JSON.stringify(selector)}`);
+    const { x, y, width, height } = viewport;
+    const upward = !geometry || geometry.node.bounds.y >= geometry.viewport.y;
+    await device.input.swipe({ x1: x + width * 0.97, y1: y + height * (upward ? 0.85 : 0.2),
+      x2: x + width * 0.97, y2: y + height * (upward ? 0.2 : 0.85), duration: 600 });
   }
 }
 export async function tap(device: NativeDevice, identifier: string) {
@@ -39,8 +48,12 @@ export async function tap(device: NativeDevice, identifier: string) {
     expect(node.enabled, `${identifier} 应启用`).toBe(true);
     expect(node.bounds, '点击前等待原生布局稳定').toEqual(before);
   }).toPass({ timeout: 10_000, intervals: [200] });
-  const { bounds } = await device.info({ res: identifier });
-  const warning = (await device.nodes()).find(node => node.res === 'switch-to-production-tip-container');
+  const target = await device.info({ res: identifier });
+  const nodes = await device.nodes();
+  const { node, viewport } = nativeViewport(nodes, target, { x: 0, y: 0, ...device.screenSize });
+  const { bounds } = node;
+  if (!fullyInside(bounds, viewport)) throw new Error(`点击前控件仍被祖先裁切：${identifier}`);
+  const warning = nodes.find(node => node.res === 'switch-to-production-tip-container');
   const overlaps = warning && bounds.y < warning.bounds.y + warning.bounds.height && bounds.y + bounds.height > warning.bounds.y;
   await device.input.tap({ x: bounds.x + bounds.width * (overlaps || identifier === 'username-or-email-sign-in-button' ? 0.95 : 0.5),
     y: bounds.y + bounds.height / 2 });
