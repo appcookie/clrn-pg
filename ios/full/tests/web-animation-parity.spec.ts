@@ -12,6 +12,7 @@ import { launchArtworkTemplate } from '../launch-artwork';
 import { frameColorDistance } from '../animation-transition';
 import { setTimeout as delay } from 'node:timers/promises';
 import { stagingCardBounds } from '../staging-card';
+import { brandFadeEvidence, captureBrandFadeWithStartRecapture } from '../brand-fade';
 
 const locale = process.env.IOS_LOCALE || 'en';
 const group = process.env.IOS_GROUP || 'all';
@@ -102,35 +103,46 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
     const device = await launchApplication();
     try {
       await device.wait({ res: 'staging-confirmation-input' });
-      await proxy.command('android/launch-network', { hold: true });
-      await device.terminate(); await device.home(); await delay(1000);
-      const before = await device.nativeScreenshot();
-      // 品牌淡入发生在真正启动时；模态框后的原生子树仍提供文字的真实布局。
-      const frames = await recordNativeVideoFrames(device, 'independent-launch-branding-enter',
-        { x: 0, y: 0, ...device.screenSize }, () => device.launch(), info, 7000);
-      expect(frameColorDistance(before, frames[0]), '录像必须包含activate前的真实屏幕').toBeLessThan(10);
-      await device.wait({ res: 'staging-confirmation-input' }); await delay(1200);
-      const finalFrame = await device.nativeScreenshot();
-      const nodes = await device.nodes();
-      const dialog = stagingCardBounds(nodes, device.screenSize);
-      const brand = launchBrandPixelBounds(nodes, device.screenSize);
-      await expect.poll(async () => {
-        const network = await proxy.command<{ requested: number; lastRequestedAt: number }>('android/launch-network');
-        expect(network.requested).toBeGreaterThan(0); return Date.now() - network.lastRequestedAt;
-      }, { timeout: 30_000 }).toBeGreaterThan(6000);
-      // 旧请求已过期；在确认提示并触发下一次健康检查前释放网络，避免布局查询
-      // 消耗应用自身的 5 秒请求窗口。不可吞掉真正的系统网络错误弹窗。
-      await proxy.command('android/launch-network', { hold: false });
-      await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM'); await device.hideKeyboard();
-      await tap(device, 'confirm-button'); await device.wait({ res: 'staging-dialog' }, { state: 'gone' });
-      await device.wait({ res: 'hall-tab' }, { timeout: 120_000 });
-      const region = { ...brand, height: Math.min(brand.y + brand.height, dialog.y - 4) - brand.y };
-      expect(region.height, '遮罩上方须有足够真实品牌文字可测').toBeGreaterThan(20);
-      const { width, height } = device.screenSize;
-      const exclusions = [dialog, { x: 0, y: 0, width, height: Math.ceil(height * .08) },
-        { x: 0, y: Math.floor(height * .96), width, height: Math.ceil(height * .04) }];
-      await info.attach('launch-branding-native-region', { body: JSON.stringify({ brand, dialog, region }), contentType: 'application/json' });
-      await assertBrandFade(frames, finalFrame, launchArtworkTemplate(await simulatorAppPath(), width, height), region, exclusions, info);
+      const captured = await captureBrandFadeWithStartRecapture(async attempt => {
+        await proxy.command('android/launch-network', { hold: true });
+        await device.terminate(); await device.home(); await delay(1000);
+        const before = await device.nativeScreenshot();
+        // 品牌淡入发生在真正启动时；模态框后的原生子树仍提供文字的真实布局。
+        const frames = await recordNativeVideoFrames(device, `independent-launch-branding-enter-attempt-${attempt}`,
+          { x: 0, y: 0, ...device.screenSize }, () => device.launch(), info, 7000);
+        expect(frameColorDistance(before, frames[0]), '录像必须包含activate前的真实屏幕').toBeLessThan(10);
+        await device.wait({ res: 'staging-confirmation-input' }); await delay(1200);
+        const finalFrame = await device.nativeScreenshot();
+        const nodes = await device.nodes();
+        const dialog = stagingCardBounds(nodes, device.screenSize);
+        const brand = launchBrandPixelBounds(nodes, device.screenSize);
+        await expect.poll(async () => {
+          const network = await proxy.command<{ requested: number; lastRequestedAt: number }>('android/launch-network');
+          expect(network.requested).toBeGreaterThan(0); return Date.now() - network.lastRequestedAt;
+        }, { timeout: 30_000 }).toBeGreaterThan(6000);
+        // 旧请求已过期；在确认提示并触发下一次健康检查前释放网络，避免布局查询
+        // 消耗应用自身的 5 秒请求窗口。不可吞掉真正的系统网络错误弹窗。
+        await proxy.command('android/launch-network', { hold: false });
+        await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM'); await device.hideKeyboard();
+        await tap(device, 'confirm-button'); await device.wait({ res: 'staging-dialog' }, { state: 'gone' });
+        await device.wait({ res: 'hall-tab' }, { timeout: 120_000 });
+        const region = { ...brand, height: Math.min(brand.y + brand.height, dialog.y - 4) - brand.y };
+        expect(region.height, '遮罩上方须有足够真实品牌文字可测').toBeGreaterThan(20);
+        const { width, height } = device.screenSize;
+        const exclusions = [dialog, { x: 0, y: 0, width, height: Math.ceil(height * .08) },
+          { x: 0, y: Math.floor(height * .96), width, height: Math.ceil(height * .04) }];
+        await info.attach(`launch-branding-native-region-attempt-${attempt}`, { body: JSON.stringify({ brand, dialog, region }), contentType: 'application/json' });
+        const reference = launchArtworkTemplate(await simulatorAppPath(), width, height);
+        const evidence = brandFadeEvidence(frames, finalFrame, reference, region, exclusions);
+        await info.attach(`launch-branding-fade-opacity-fit-attempt-${attempt}`, {
+          body: JSON.stringify(evidence), contentType: 'application/json',
+        });
+        return { frames, finalFrame, reference, region, exclusions, evidence };
+      }, reason => info.attach('launch-branding-start-recapture-reason', {
+        body: reason, contentType: 'text/plain',
+      }));
+      await assertBrandFade(captured.frames, captured.finalFrame, captured.reference,
+        captured.region, captured.exclusions, info, captured.evidence);
     } catch (error) { await captureFailure(device, info); throw error; }
     finally { try { await proxy.command('android/launch-network', { hold: false }); } finally { await device.close(); } }
   });

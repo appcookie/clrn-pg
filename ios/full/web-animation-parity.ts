@@ -56,9 +56,10 @@ export function requireFade(frames: Buffer[]) {
   return { samples, middle: pair.index };
 }
 export async function assertBrandFade(frames: Buffer[], finalFrame: Buffer, reference: PNG,
-  region: ScreenshotBounds, exclusions: ScreenshotBounds[], info: TestInfo) {
+  region: ScreenshotBounds, exclusions: ScreenshotBounds[], info: TestInfo,
+  evidence?: ReturnType<typeof brandFadeEvidence>) {
   const cropped = frames.map(frame => motionParts(frame, [region]).regions[0]);
-  const result = brandFadeEvidence(frames, finalFrame, reference, region, exclusions);
+  const result = evidence ?? brandFadeEvidence(frames, finalFrame, reference, region, exclusions);
   await info.attach('launch-branding-fade-opacity-fit', { body: JSON.stringify(result.samples), contentType: 'application/json' });
   expect(result.complete, '必须在发布包背景已出现后采到品牌自身从透明、两个半透明相位到不透明；不能用系统转场或遮罩消退代替').toBe(true);
   for (const [phase, index] of [['start', result.start!], ['middle', result.middle!], ['end', result.end!]] as const) {

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
-import { brandFadeEvidence } from './brand-fade.ts';
+import { brandFadeEvidence, captureBrandFadeWithStartRecapture } from './brand-fade.ts';
 
 const region = { x: 25, y: 20, width: 50, height: 20 };
 const reference = new PNG({ width: 100, height: 160 });
@@ -83,4 +83,56 @@ test('品牌区域拒绝越界、非整数、空范围和非有限坐标', () =>
   for (const invalid of invalidRegions) {
     assert.throws(() => brandFadeEvidence([bytes], bytes, reference, invalid, []), /非空整数像素矩形/);
   }
+});
+
+
+function captureEvidence(phases) {
+  return brandFadeEvidence(phases.map(alpha => frame(alpha)), frame(1), reference, region, []);
+}
+
+test('只为缺透明起点重采一次，并只返回第二段独立完整证据', async () => {
+  const first = { evidence: captureEvidence([0.34, 0.55, 0.8, 1]), video: 'first' };
+  const second = { evidence: captureEvidence([0, 0.25, 0.55, 0.8, 1]), video: 'second' };
+  const attempts = [], reasons = [];
+  const result = await captureBrandFadeWithStartRecapture(async attempt => {
+    attempts.push(attempt);
+    return attempt === 1 ? first : second;
+  }, async reason => { reasons.push(reason); });
+  assert.deepEqual(attempts, [1, 2]);
+  assert.equal(reasons.length, 1);
+  assert.equal(first.evidence.complete, false);
+  assert.equal(result, second);
+  assert.equal(result.evidence.complete, true);
+});
+
+test('第二次仍不完整时保留失败，不第三次重采或与首段拼接', async () => {
+  for (const secondPhases of [[0.34, 0.55, 0.8, 1], [0, 0.25, 0.55, 0.8]]) {
+    const attempts = [];
+    const second = { evidence: captureEvidence(secondPhases) };
+    const result = await captureBrandFadeWithStartRecapture(async attempt => {
+      attempts.push(attempt);
+      return attempt === 1 ? { evidence: captureEvidence([0.34, 0.55, 0.8, 1]) } : second;
+    }, async () => {});
+    assert.deepEqual(attempts, [1, 2]);
+    assert.equal(result, second);
+    assert.equal(result.evidence.complete, false);
+  }
+});
+
+test('完整、缺中间相位、缺终态或真实驱动异常不触发重采', async () => {
+  for (const phases of [[0, 0.25, 0.55, 0.8, 1], [0, 0, 1, 1], [0.34, 1, 1], [0.34, 0.55, 0.8]]) {
+    let attempts = 0;
+    await captureBrandFadeWithStartRecapture(async () => {
+      attempts++;
+      return { evidence: captureEvidence(phases) };
+    }, async () => assert.fail('不应重采'));
+    assert.equal(attempts, 1);
+  }
+  let attempts = 0;
+  const driverFailure = new Error('模拟器会话已失效');
+  await assert.rejects(captureBrandFadeWithStartRecapture(async () => {
+    attempts++;
+    throw driverFailure;
+  }, async () => assert.fail('不能吞掉驱动异常')), error => error === driverFailure);
+  assert.equal(attempts, 1);
 });

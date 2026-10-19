@@ -99,3 +99,27 @@ export function brandFadeEvidence(frames: Buffer[], finalFrame: Buffer, referenc
     complete: !!start && !!middle && !!later && !!endPhase,
   };
 }
+
+
+/** A missed transparent start may be sampled once more, never spliced across launches. */
+export async function captureBrandFadeWithStartRecapture<T extends { evidence: ReturnType<typeof brandFadeEvidence> }>(
+  capture: (attempt: number) => Promise<T>,
+  recordReason: (reason: string) => Promise<void>,
+): Promise<T> {
+  const first = await capture(1);
+  const evidence = first.evidence;
+  if (evidence.complete || evidence.start !== undefined) return first;
+
+  const valid = evidence.samples.filter(sample => sample.alpha !== null
+    && sample.residual !== null && sample.residual < 12);
+  const middle = valid.find(sample => sample.alpha! > 0.2 && sample.alpha! < 0.6);
+  const later = middle && valid.find(sample => sample.index > middle.index
+    && sample.alpha! > middle.alpha! + 0.2 && sample.alpha! < 0.9);
+  const end = later && valid.find(sample => sample.index > later.index
+    && sample.alpha! >= 0.95 && sample.alpha! <= 1.1);
+  if (!middle || !later || !end) return first;
+
+  await recordReason('第一段真实录像缺少透明起点，但已采到匹配发布包背景的两个半透明相位及终态；'
+    + '只重采一次完整启动，保留第一段证据，第二段必须独立满足全部原断言。');
+  return capture(2);
+}
