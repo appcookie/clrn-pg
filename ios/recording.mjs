@@ -23,9 +23,10 @@ export async function recordAnimation(udid, directory) {
   // 从创建进程起监听 close，避免漏掉提前退出。
   const closed = new Promise(resolve => child.on('close', (code, signal) => resolve({ code, signal })));
   try {
+    // CI 首帧实际曾等待 12.6 秒；允许 30 秒启动，仍须收到真实开始信号。
     for (let attempt = 0; recordingStarted === undefined; attempt++) {
       if (failure) throw failure;
-      if (child.exitCode !== null || attempt >= 100) throw new Error(`录屏未能启动：${stderr}`);
+      if (child.exitCode !== null || attempt >= 300) throw new Error(`录屏未能启动：${stderr}`);
       await delay(100);
     }
     // CI 实测 4 秒墙钟时间只得到 2 秒媒体；媒体时长不等同于墙钟时间。
@@ -43,7 +44,8 @@ export async function recordAnimation(udid, directory) {
     const finished = performance.now();
     writeFileSync(join(directory, 'recording.json'), JSON.stringify({ startedAt,
       startupMs: recordingStarted === undefined ? null : Math.round(recordingStarted - started),
-      recordingMs: recordingStarted === undefined ? null : Math.round(stopping - recordingStarted),
+      recordingMs: recordingStarted === undefined || recordingStarted > stopping ? null : Math.round(stopping - recordingStarted),
+      startedAfterStop: recordingStarted !== undefined && recordingStarted > stopping,
       stoppingMs: Math.round(finished - stopping), totalMs: Math.round(finished - started),
       code: result.code, signal: result.signal, fileSize, stderr,
       ...(failure ? { processError: failure.message } : {}) }, null, 2));

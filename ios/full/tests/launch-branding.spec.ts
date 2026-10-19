@@ -34,9 +34,10 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
         await device.wait({ res: 'launch-screen-container' }, { timeout: 4000 });
         await device.wait({ res: 'staging-dialog' }, { state: 'gone', timeout: 4000 });
         const assertBranding = async () => {
-          expect(await device.marker('launch-screen-container')).not.toBeNull();
-          expect(await device.marker('staging-dialog')).toBeNull();
-          expect(await device.alertText(), '不能把系统错误弹窗当品牌页').toBeNull();
+          const nodes = await device.nodes();
+          expect(nodes.some(node => node.res === 'launch-screen-container')).toBe(true);
+          expect(nodes.some(node => node.res === 'staging-dialog')).toBe(false);
+          expect(nodes.some(node => node.clazz === 'XCUIElementTypeAlert'), '不能把系统错误弹窗当品牌页').toBe(false);
         };
         const fullScreen = async () => {
           const bytes = await device.nativeScreenshot();

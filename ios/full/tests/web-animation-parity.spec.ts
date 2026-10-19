@@ -5,7 +5,7 @@ import { selectLanguage, signIn, tap, navigateScenario } from '../navigation';
 import { iosScenarios } from '../scenarios';
 import { captureNativeTransition } from '../animation-transition';
 import { captureFailure } from '../diagnostics';
-import { assertBrandFade, clickNode } from '../web-animation-parity';
+import { assertBrandFade, clickNode, launchBrandPixelBounds } from '../web-animation-parity';
 import type { ScreenshotMask } from '../screenshot';
 import { recordNativeVideoFrames } from '../video-frames';
 import { launchArtworkTemplate } from '../launch-artwork';
@@ -105,22 +105,25 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
       await proxy.command('android/launch-network', { hold: true });
       await device.terminate(); await device.home(); await delay(1000);
       const before = await device.nativeScreenshot();
-      // 品牌淡入发生在真正启动时；确认按钮只在录制结束后用于读取被模态框隐藏的品牌边界。
+      // 品牌淡入发生在真正启动时；模态框后的原生子树仍提供文字的真实布局。
       const frames = await recordNativeVideoFrames(device, 'independent-launch-branding-enter',
         { x: 0, y: 0, ...device.screenSize }, () => device.launch(), info, 7000);
       expect(frameColorDistance(before, frames[0]), '录像必须包含activate前的真实屏幕').toBeLessThan(10);
       await device.wait({ res: 'staging-confirmation-input' }); await delay(1200);
       const finalFrame = await device.nativeScreenshot();
-      const dialog = stagingCardBounds(await device.nodes(), device.screenSize);
-      await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM'); await device.hideKeyboard();
+      const nodes = await device.nodes();
+      const dialog = stagingCardBounds(nodes, device.screenSize);
+      const brand = launchBrandPixelBounds(nodes, device.screenSize);
       await expect.poll(async () => {
         const network = await proxy.command<{ requested: number; lastRequestedAt: number }>('android/launch-network');
         expect(network.requested).toBeGreaterThan(0); return Date.now() - network.lastRequestedAt;
       }, { timeout: 30_000 }).toBeGreaterThan(6000);
-      await clickNode(device, { res: 'confirm-button' }); await device.wait({ res: 'staging-dialog' }, { state: 'gone' });
-      const brand = (await device.info({ res: 'launch-brand-name' })).bounds;
-      // 录屏和边界均已取得，先释放真实请求；离线像素分析不能占用应用的网络超时窗口。
+      // 旧请求已过期；在确认提示并触发下一次健康检查前释放网络，避免布局查询
+      // 消耗应用自身的 5 秒请求窗口。不可吞掉真正的系统网络错误弹窗。
       await proxy.command('android/launch-network', { hold: false });
+      await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM'); await device.hideKeyboard();
+      await tap(device, 'confirm-button'); await device.wait({ res: 'staging-dialog' }, { state: 'gone' });
+      await device.wait({ res: 'hall-tab' }, { timeout: 120_000 });
       const region = { ...brand, height: Math.min(brand.y + brand.height, dialog.y - 4) - brand.y };
       expect(region.height, '遮罩上方须有足够真实品牌文字可测').toBeGreaterThan(20);
       const { width, height } = device.screenSize;
@@ -128,7 +131,6 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
         { x: 0, y: Math.floor(height * .96), width, height: Math.ceil(height * .04) }];
       await info.attach('launch-branding-native-region', { body: JSON.stringify({ brand, dialog, region }), contentType: 'application/json' });
       await assertBrandFade(frames, finalFrame, launchArtworkTemplate(await simulatorAppPath(), width, height), region, exclusions, info);
-      await device.wait({ res: 'hall-tab' }, { timeout: 120_000 });
     } catch (error) { await captureFailure(device, info); throw error; }
     finally { try { await proxy.command('android/launch-network', { hold: false }); } finally { await device.close(); } }
   });

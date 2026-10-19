@@ -30,9 +30,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     recorder.once('close', (code, signal) => resolve({ code, signal })));
   let triggerAt = 0, stoppedAt = 0;
   try {
+    // The first recorded frame took 12.6s on a real CI runner; allow up to 30s.
     for (let attempt = 0; !recordingStartedAt; attempt++) {
       if (failed) throw failed;
-      if (recorder.exitCode !== null || attempt >= 100) throw new Error(`iOS 录屏未启动：${stderr}`);
+      if (recorder.exitCode !== null || attempt >= 300) throw new Error(`iOS 录屏未启动：${stderr}`);
       await delay(100);
     }
     // simctl documents this message as the first processed frame. Actual CI media
@@ -55,7 +56,8 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     try { videoBytes = statSync(video).size; } catch {}
     writeFileSync(diagnostic, JSON.stringify({ processStartedUtc,
       startupMs: recordingStartedAt ? recordingStartedAt - processStartedAt : null,
-      recordingMs: recordingStartedAt ? stoppedAt - recordingStartedAt : null,
+      recordingMs: recordingStartedAt && recordingStartedAt <= stoppedAt ? stoppedAt - recordingStartedAt : null,
+      startedAfterStop: recordingStartedAt > stoppedAt,
       stopMs: performance.now() - stoppedAt, ...result, videoBytes, stderr }, null, 2));
     await testInfo.attach(`${name}-recorder-process`, { path: diagnostic, contentType: 'application/json' });
     if (result.signal === 'SIGKILL' || (result.code !== 0 && result.code !== 130 && result.signal !== 'SIGINT')) {

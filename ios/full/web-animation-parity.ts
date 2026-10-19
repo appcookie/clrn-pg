@@ -2,11 +2,32 @@ import { PNG } from 'pngjs';
 import { readFileSync } from 'node:fs';
 import { frameColorDistance } from './animation-transition';
 import { expect, type TestInfo } from '@playwright/test';
-import type { NativeDevice } from './native-device';
+import type { NativeDevice, NativeNode } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { motionParts } from './motion-regions';
 import { assertVisual } from './device';
 import { brandFadeEvidence } from './brand-fade';
+
+/** Modal-hidden native descendants retain layout, not visibility or clickability. */
+export function launchBrandPixelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const seen = new Set<NativeNode>();
+  const candidates = new Map<string, ScreenshotBounds>();
+  function visit(node: NativeNode) {
+    if (seen.has(node)) return;
+    seen.add(node);
+    if (node.res === 'launch-brand-name') {
+      const { x, y, width, height } = node.bounds;
+      if (![x, y, width, height].every(Number.isFinite) || x < 0 || y < 0 || width <= 0 || height <= 0
+        || x + width > screen.width || y + height > screen.height) throw new Error('原生品牌文字边界必须完整位于截图内。');
+      const bounds = { x, y, width, height };
+      candidates.set(JSON.stringify(bounds), bounds);
+    }
+    node.children.forEach(visit);
+  }
+  nodes.forEach(visit);
+  if (candidates.size !== 1) throw new Error('必须从当前原生布局取得唯一的品牌文字像素边界。');
+  return [...candidates.values()][0];
+}
 
 /** 用原始首尾像素拟合固定位置淡入；移动、闪屏或只有终态不能冒充透明度变化。 */
 export function fadeSamples(frames: Buffer[]) {
