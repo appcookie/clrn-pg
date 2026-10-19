@@ -31,11 +31,23 @@ if (enabled('guest', 'zh-Hans')) test('zh-Hans mobile guest search prompt fades 
       await device.wait({ res: 'pop-up-message-text', text: '请先登录以使用搜索功能' });
       const region = (await device.info({ res: 'confirm-pop-up-image-background' })).bounds;
       await tap(device, 'cancel-button'); await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
+      // 先读取真实点击目标，录制过渡期间不查询AX树，避免snapshot阻塞短动画。
+      const prepareTap = async (res: string) => {
+        const target = await device.info({ res });
+        expect(target.enabled).toBe(true);
+        expect(target.bounds.width).toBeGreaterThan(0); expect(target.bounds.height).toBeGreaterThan(0);
+        const point = { x: target.bounds.x + target.bounds.width / 2, y: target.bounds.y + target.bounds.height / 2 };
+        expect(point.x).toBeGreaterThanOrEqual(0); expect(point.x).toBeLessThan(device.screenSize.width);
+        expect(point.y).toBeGreaterThanOrEqual(0); expect(point.y).toBeLessThan(device.screenSize.height);
+        return () => device.input.tap(point);
+      };
+      const openSearch = await prepareTap('hall-search-button');
       await captureNativeTransition(device, 'zh-Hans-search-confirmation-enter', info, region,
-        () => clickNode(device, { res: 'hall-search-button' }), [], [], 0, 'videoFrames', undefined,
-        () => device.wait({ res: 'pop-up-message-text', text: '请先登录以使用搜索功能' }));
+        openSearch);
+      await device.wait({ res: 'pop-up-message-text', text: '请先登录以使用搜索功能' });
+      const cancelSearch = await prepareTap('cancel-button');
       await captureNativeTransition(device, 'zh-Hans-search-confirmation-exit', info, region,
-        () => clickNode(device, { res: 'cancel-button' }));
+        cancelSearch);
       await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
       await tap(device, 'hall-search-button');
       await device.wait({ res: 'pop-up-message-text', text: '请先登录以使用搜索功能' });
