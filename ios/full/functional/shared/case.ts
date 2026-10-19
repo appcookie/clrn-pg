@@ -65,13 +65,21 @@ export class NativeCase {
   async hall(): Promise<void> {
     // 全新安装的 Release 必须通过测试环境确认；不得跳过真实对话框。
     await this.device.wait({ res: /^(staging-confirmation-input|hall-tab)$/ }, { timeout: 120_000 });
-    if ((await this.nodes('staging-confirmation-input')).length) { await this.fill('staging-confirmation-input', 'CONFIRM'); await this.tap('confirm-button'); }
+    if ((await this.nodes('staging-confirmation-input')).length) {
+      await this.fill('staging-confirmation-input', 'CONFIRM');
+      await this.device.hideKeyboard();
+      await this.tap('confirm-button');
+    }
     await this.visible('hall-tab');
   }
   async guest(): Promise<void> { await this.device.reset(); await this.hall(); await this.tap('hall-tab'); this.session = undefined; }
   async signIn(account: Credentials = credentials()): Promise<Session> {
     try {
-      await this.loginForm(); await this.fill('username-input', account.username); await this.fill('password-input', account.password);
+      await this.loginForm();
+      await this.fill('username-input', account.username);
+      await this.device.hideKeyboard();
+      await this.fill('password-input', account.password);
+      await this.device.hideKeyboard();
       const response = await this.network.waitForResponse({ method: 'POST', path: '/public/v10/user/login/username/password' }, () => this.tap('sign-in-button'));
       success(response as ApiResponse);
       await this.visible('hall-auth-state-signed-in');
