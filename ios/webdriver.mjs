@@ -9,11 +9,11 @@ export class WebDriver {
     this.session = undefined;
   }
 
-  async request(method, path, body) {
+  async request(method, path, body, timeout = 180_000) {
     const response = await fetch(`${this.server}${path}`, {
       method, headers: { 'Content-Type': 'application/json' },
       body: body === undefined ? undefined : JSON.stringify(body),
-      signal: AbortSignal.timeout(180_000),
+      signal: AbortSignal.timeout(timeout),
     });
     const payload = await response.json();
     if (!response.ok || payload.value?.error) {
@@ -30,7 +30,7 @@ export class WebDriver {
   }
 
   async start(capabilities) {
-    const result = await this.request('POST', '/session', { capabilities: { alwaysMatch: capabilities } });
+    const result = await this.request('POST', '/session', { capabilities: { alwaysMatch: capabilities } }, 600_000);
     this.session = result.sessionId;
     if (!this.session) throw new Error('XCUITest 没有返回会话 ID。');
   }
@@ -60,7 +60,12 @@ export class WebDriver {
   async fill(identifier, value) {
     const element = await this.find(identifier);
     await this.request('POST', this.path(`/element/${element}/clear`), {});
-    await this.request('POST', this.path(`/element/${element}/value`), { text: value });
+    for (const character of value) {
+      await this.request('POST', this.path(`/element/${element}/value`), { text: character });
+      await delay(150);
+    }
+    const actual = await this.request('GET', this.path(`/element/${element}/attribute/value`));
+    if (actual !== value) throw new Error(`原生输入未完整写入：${identifier}`);
   }
 
   async screenshot() {

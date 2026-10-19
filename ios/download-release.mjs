@@ -1,9 +1,11 @@
-// 执行于构建前：读取公开 Release 的构建身份，保存供构建及报告核对；不把真机 IPA 安装到模拟器。
+// 从公开 Release 下载构建身份和可选模拟器包；测试仓库不读取应用源码。
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { artifactDirectory, deployment, githubRelease, releaseRepository, validateBuild } from './release.mjs';
+import { artifactDirectory, deployment, githubRelease, releaseRepository, simulatorPackageName,
+  validateBuild, verifySimulatorPackage } from './release.mjs';
 
+const includeSimulator = process.argv.includes('--simulator');
 const record = deployment();
 const release = githubRelease(record);
 mkdirSync(dirname(artifactDirectory), { recursive: true });
@@ -12,6 +14,11 @@ try {
   execFileSync('gh', ['release', 'download', record.release_tag, '--repo', releaseRepository,
     '--dir', temporary, '--pattern', 'build-info.json'], { stdio: 'inherit' });
   const information = validateBuild(JSON.parse(readFileSync(join(temporary, 'build-info.json'))), release, record);
+  if (includeSimulator) {
+    execFileSync('gh', ['release', 'download', record.release_tag, '--repo', releaseRepository,
+      '--dir', temporary, '--pattern', simulatorPackageName], { stdio: 'inherit' });
+    await verifySimulatorPackage(join(temporary, simulatorPackageName), information);
+  }
   writeFileSync(join(temporary, 'release.json'), `${JSON.stringify(release, null, 2)}\n`);
   rmSync(artifactDirectory, { recursive: true, force: true });
   renameSync(temporary, artifactDirectory);

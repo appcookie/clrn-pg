@@ -1,4 +1,4 @@
-# 校验 iOS 测试框架；配置私有应用源码凭据后执行固定 Release 对应的模拟器页面测试。
+# 直接消费公开 Release 模拟器包，执行游客页面截图和动画回归。
 name: iOS Staging 模拟器回归
 
 on:
@@ -12,7 +12,7 @@ on:
         type: string
         default: ''
       mode:
-        description: 截图模式
+        description: 视觉模式（reference 生成待审查基准，compare 比较已提交基准）
         type: choice
         options: [smoke, reference, compare]
         default: smoke
@@ -20,11 +20,13 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ios-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check:
     runs-on: ubuntu-latest
-    outputs:
-      app_sha: ${{ steps.deployment.outputs.sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,25 +38,17 @@ jobs:
       - name: 核对公开 iOS Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node ios/download-release.mjs
-      - id: deployment
-        run: |
-          # shellcheck disable=SC2016
-          node -e 'const d=require("./deployments/ios-staging.json");require("fs").appendFileSync(process.env.GITHUB_OUTPUT,`sha=${d.sha}\n`)'
+        run: node ios/download-release.mjs --simulator
 
   simulator:
     needs: check
-    if: >-
-      (vars.IOS_SIMULATOR_ENABLED == 'true' || github.event_name == 'workflow_dispatch') &&
-      (github.event_name != 'pull_request' ||
-       (github.event.pull_request.head.repo.full_name == github.repository && !github.event.pull_request.draft))
-    runs-on: macos-latest
-    timeout-minutes: 120
+    runs-on: macos-15
+    timeout-minutes: 35
     env:
       APPIUM_HOME: ${{ github.workspace }}/.appium
       IOS_VISUAL_MODE: ${{ inputs.mode || 'smoke' }}
       IOS_FILTER: ${{ inputs.filter || '' }}
-      IOS_APP_SOURCE_DIR: ${{ github.workspace }}/application
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -62,64 +56,31 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci
-      - name: 校验公开 iOS Release 元数据
+      - name: 下载并校验模拟器包
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node ios/download-release.mjs
-      - name: 读取私有应用源码
-        env:
-          APP_SOURCE_TOKEN: ${{ secrets.APP_SOURCE_TOKEN }}
-        run: test -n "$APP_SOURCE_TOKEN" || { echo '缺少 APP_SOURCE_TOKEN'; exit 1; }
-      - uses: actions/checkout@v4
-        with:
-          repository: kevinanew/laiwan_react_native
-          token: ${{ secrets.APP_SOURCE_TOKEN }}
-          ref: ${{ needs.check.outputs.app_sha }}
-          path: application
-          persist-credentials: false
-      - name: 准备 Staging 构建环境
-        env:
-          IOS_STAGING_ENV_FILE: ${{ secrets.IOS_STAGING_ENV_FILE }}
+        run: node ios/download-release.mjs --simulator
+      - name: 安装截图和录屏依赖
         run: |
-          test -n "$IOS_STAGING_ENV_FILE" || { echo '缺少 IOS_STAGING_ENV_FILE'; exit 1; }
-          printf '%s\n' "$IOS_STAGING_ENV_FILE" > application/.env
-          chmod 600 application/.env
-      - uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3.5'
-          bundler-cache: false
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20.19.4'
-      - name: 安装应用原生依赖
-        working-directory: application
+          npx appium driver install xcuitest@12.19.1
+          brew install ffmpeg
+      - name: 创建固定型号和系统的专用模拟器
         run: |
-          corepack enable
-          yarn install --frozen-lockfile
-          bundle install
-          bundle exec pod install --project-directory=ios
-      - name: 构建 Release Simulator 应用
-        run: node ios/build-simulator.mjs
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: 安装 Appium XCUITest 驱动
-        run: npx appium driver install xcuitest@12.19.1
-      - name: 选择专用 iPhone 模拟器
-        run: |
-          xcrun simctl list -j devices available > ios/artifacts/devices.json
-          # shellcheck disable=SC2016
-          node -e 'const d=require("./ios/artifacts/devices.json");const a=Object.values(d.devices).flat().find(x=>x.name.startsWith("iPhone")&&x.isAvailable);if(!a)throw Error("缺少 iPhone Simulator runtime");require("fs").appendFileSync(process.env.GITHUB_ENV,`IOS_SIMULATOR_UDID=${a.udid}\n`)'
-      - name: 运行游客页面测试
+          xcrun simctl list runtimes
+          udid=$(xcrun simctl create clrn-visual com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
+          echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
+      - name: 运行游客页面与动画测试
         run: npm run test:ios
-      - name: 保存截图、页面层级和构建身份
+      - name: 保存截图、动画、页面层级和构建身份
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ios-simulator-${{ github.run_id }}-${{ github.run_attempt }}
-          retention-days: 14
+          retention-days: 30
           path: |
             ios/artifacts/results/
             ios/artifacts/release/build-info.json
-            ios/artifacts/simulator-app.json
             ios/snapshots/
+      - name: 删除专用模拟器
+        if: always() && env.IOS_SIMULATOR_UDID != ''
+        run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
