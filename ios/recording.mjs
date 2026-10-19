@@ -25,7 +25,8 @@ export async function recordAnimation(udid, directory) {
     await delay(8000);
   } finally {
     child.kill('SIGINT');
-    const timeout = setTimeout(() => child.kill('SIGKILL'), 15_000);
+    // CI 编码器收尾偶尔超过 15 秒，等待最终 MP4 写完再读取。
+    const timeout = setTimeout(() => child.kill('SIGKILL'), 60_000);
     const result = await closed;
     clearTimeout(timeout);
     if (result.signal === 'SIGKILL') throw new Error('模拟器录屏停止超时。');

@@ -41,7 +41,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   } finally {
     stoppedAt = performance.now();
     if (recorder.exitCode === null) recorder.kill('SIGINT');
-    const timeout = setTimeout(() => recorder.kill('SIGKILL'), 15000);
+    const timeout = setTimeout(() => recorder.kill('SIGKILL'), 60_000);
     const result = await finished;
     clearTimeout(timeout);
     if (result.signal === 'SIGKILL' || (result.code !== 0 && result.code !== 130 && result.signal !== 'SIGINT')) {
