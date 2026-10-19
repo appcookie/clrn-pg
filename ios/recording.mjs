@@ -20,8 +20,8 @@ export async function recordAnimation(udid, directory) {
       if (child.exitCode !== null || attempt >= 100) throw new Error(`录屏未能启动：${stderr}`);
       await delay(100);
     }
-    // “Recording started” 早于编码器的首帧；CI 实测 4 秒墙钟时间只有 2 秒媒体。
-    // 留足启动余量，仍严格检查原始视频能提供完整采样窗口，不补帧掩盖缺失。
+    // CI 实测 4 秒墙钟时间只得到 2 秒媒体；媒体时长不等同于墙钟时间。
+    // 延长录制，仍严格检查原始视频能提供完整采样窗口，不补帧掩盖缺失。
     await delay(8000);
   } finally {
     child.kill('SIGINT');

@@ -4,6 +4,8 @@ const artifactPath = (name: string) => fileURLToPath(new URL(`../artifacts/${nam
 export default defineConfig({
   testDir: '.', testMatch: ['tests/**/*.spec.ts', 'functional/**/*.spec.ts'],
   timeout: 180_000, expect: { timeout: 30_000 }, workers: 1, fullyParallel: false, retries: 0,
+  // 同一组首次失败后保存证据，避免反复启动 Simulator；修复后重跑整组。
+  maxFailures: process.env.CI ? 1 : undefined,
   forbidOnly: !!process.env.CI,
   outputDir: artifactPath('full-results'),
   reporter: [['list'], ['html', { outputFolder: artifactPath('full-report'), open: 'never' }],
