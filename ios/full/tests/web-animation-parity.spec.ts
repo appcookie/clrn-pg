@@ -119,6 +119,8 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
       }, { timeout: 30_000 }).toBeGreaterThan(6000);
       await clickNode(device, { res: 'confirm-button' }); await device.wait({ res: 'staging-dialog' }, { state: 'gone' });
       const brand = (await device.info({ res: 'launch-brand-name' })).bounds;
+      // 录屏和边界均已取得，先释放真实请求；离线像素分析不能占用应用的网络超时窗口。
+      await proxy.command('android/launch-network', { hold: false });
       const region = { ...brand, height: Math.min(brand.y + brand.height, dialog.y - 4) - brand.y };
       expect(region.height, '遮罩上方须有足够真实品牌文字可测').toBeGreaterThan(20);
       const { width, height } = device.screenSize;
@@ -126,7 +128,7 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
         { x: 0, y: Math.floor(height * .96), width, height: Math.ceil(height * .04) }];
       await info.attach('launch-branding-native-region', { body: JSON.stringify({ brand, dialog, region }), contentType: 'application/json' });
       await assertBrandFade(frames, finalFrame, launchArtworkTemplate(await simulatorAppPath(), width, height), region, exclusions, info);
-      await proxy.command('android/launch-network', { hold: false }); await device.wait({ res: 'hall-tab' }, { timeout: 120_000 });
+      await device.wait({ res: 'hall-tab' }, { timeout: 120_000 });
     } catch (error) { await captureFailure(device, info); throw error; }
     finally { try { await proxy.command('android/launch-network', { hold: false }); } finally { await device.close(); } }
   });

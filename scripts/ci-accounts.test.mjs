@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { ciAccounts, executionAccounts, allocateCiAccount, iosAccountMatrix, ciAccountCredentials, availableCiAccounts } from './ci-accounts.mjs';
 
 test('iOS预留池与Web/Android公开账号分区不重叠且轮转稳定', () => {
@@ -17,12 +20,67 @@ test('完整iOS池矩阵分配不同账号，guest不需要账号，功能组固
   assert.ok(include.filter(item => item.group === 'guest').every(item => item.account === ''));
   for (const group of ['functional', 'functional-creation', 'interaction', 'network']) {
     const entries = include.filter(item => item.group === group);
-    assert.equal(entries.length, 1);
-    assert.equal(entries[0].locale, 'en');
+    assert.equal(entries.length, group === 'functional' ? 5 : 1);
+    assert.ok(entries.every(entry => entry.locale === 'en'));
   }
   assert.equal(iosAccountMatrix('1', 'guest', 'en').include.length, 1);
   assert.throws(() => iosAccountMatrix('1', 'unknown'));
   assert.throws(() => iosAccountMatrix('1', 'all', 'unknown'));
+});
+
+test('functional五片账号槽位独立稳定，少量账号只复用已配置池，其余功能组保持原槽位', () => {
+  const all = iosAccountMatrix('123', 'all', 'all', ciAccounts).include;
+  const functional = iosAccountMatrix('123', 'functional', 'en', ciAccounts).include;
+  assert.deepEqual(functional, all.filter(entry => entry.group === 'functional'));
+  assert.deepEqual(functional.map(entry => entry.playwrightShard), ['1/5', '2/5', '3/5', '4/5', '5/5']);
+  assert.deepEqual(functional.map(entry => entry.account), [35, 39, 40, 41, 42].map(offset => allocateCiAccount('123', offset)));
+  assert.ok(functional.every(entry => entry.filter === ''));
+  assert.ok(all.filter(entry => entry.group !== 'functional').every(entry => entry.playwrightShard === ''));
+  for (const [index, group] of ['functional-creation', 'interaction', 'network'].entries()) {
+    assert.equal(all.find(entry => entry.group === group).account, allocateCiAccount('123', 36 + index));
+  }
+  for (const available of [[ciAccounts[0]], [ciAccounts[2], ciAccounts[5]]]) {
+    const entries = iosAccountMatrix('123', 'functional', 'en', available).include;
+    assert.equal(entries.length, 5);
+    assert.ok(entries.every(entry => available.includes(entry.account)));
+    assert.deepEqual(entries, iosAccountMatrix('123', 'all', 'all', available).include.filter(entry => entry.group === 'functional'));
+  }
+  const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /group: ios-account-\$\{\{ matrix\.account \|\|/);
+  assert.match(workflow, /queue: max/);
+  assert.match(workflow, /IOS_PLAYWRIGHT_SHARD: \$\{\{ matrix\.playwrightShard \}\}/);
+  assert.match(workflow, /args\+=\(--shard "\$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1\)/);
+});
+
+test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或重复', { timeout: 120_000 }, () => {
+  const root = fileURLToPath(new URL('../', import.meta.url));
+  function collect(shard) {
+    const args = ['node_modules/playwright/cli.js', 'test', '--config', 'ios/full/playwright.config.ts',
+      '--list', '--reporter=json', '--grep', '', '--fully-parallel', '--workers', '1'];
+    if (shard) args.push('--shard', shard);
+    const report = JSON.parse(execFileSync(process.execPath, args, {
+      cwd: root, encoding: 'utf8', timeout: 60_000,
+      env: { ...process.env, IOS_GROUP: 'functional', IOS_LOCALE: 'en' },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }));
+    const titles = [];
+    function visit(suite) {
+      for (const spec of suite.specs || []) {
+        assert.equal(spec.tests.length, 1);
+        assert.equal(spec.tests[0].expectedStatus, 'passed', spec.title);
+        titles.push(`${spec.file}:${spec.title}`);
+      }
+      for (const child of suite.suites || []) visit(child);
+    }
+    for (const suite of report.suites) visit(suite);
+    return titles;
+  }
+  const complete = collect();
+  const parts = iosAccountMatrix('123', 'functional', 'en', ciAccounts).include.map(entry => collect(entry.playwrightShard));
+  assert.equal(complete.length, 53);
+  assert.deepEqual(parts.map(part => part.length).sort((a, b) => a - b), [10, 10, 11, 11, 11]);
+  assert.equal(new Set(parts.flat()).size, 53);
+  assert.deepEqual(parts.flat().sort(), complete.sort());
 });
 test('凭据接受任意非空ready独立iOS子池，拒绝原仓库账号或损坏Secret且不泄露正文', () => {
   const accounts = ciAccounts.map(username => ({ username, password: 'fake-password', status: 'ready' }));

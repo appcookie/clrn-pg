@@ -121,7 +121,14 @@ jobs:
         env:
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
           IOS_FILTER: ${{ matrix.filter }}
-        run: npm run test:ios:full -- --grep "$IOS_FILTER"
+          IOS_PLAYWRIGHT_SHARD: ${{ matrix.playwrightShard }}
+        run: |
+          args=(--grep "$IOS_FILTER")
+          if [ -n "$IOS_PLAYWRIGHT_SHARD" ]; then
+            # 按测试均衡分片；每个 runner 仍只有一个 worker，顺序执行用例。
+            args+=(--shard "$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1)
+          fi
+          npm run test:ios:full -- "${args[@]}"
       - name: 恢复 runner 代理设置
         if: always()
         run: node ios/full/system-proxy.mjs restore

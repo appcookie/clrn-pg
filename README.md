@@ -45,6 +45,8 @@ npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 
 完整原生测试通过「iOS 完整回归」工作流运行。每个 job 明确一个 `IOS_GROUP`，全量模式拆成三语言、业务组和牌桌分片。代理仅允许 GitHub 托管临时 macOS runner，保存并恢复系统代理；本机默认拒绝更改日常网络。
 
+普通功能组的 53 例使用 Playwright 原生分片分成 5 个 job（11 / 11 / 11 / 10 / 10 例），各自分配账号槽位。仅该组开启按测试分片，每个 job 仍以一个 worker 顺序执行；多账号用例按需创建额外的独立模拟器。账号较少时，相同账号的 job 通过账号锁排队。创建、交互和弱网组保持原有独立 job。
+
 游客组不需要凭据。登录组需要仓库 Secret `CLRN_IOS_CI_TEST_ACCOUNTS`（至少一个独立 iOS 测试账号），以及余额准备/创建数据所需的 `TESTING_API_TOKEN`。账号池格式为 `{"accounts":[{"username":"clrnciios001","password":"实际密码","status":"ready"}]}`；只配置确实已创建的账号，禁止借用 Web/Android 并发占用的账号。账号级排队锁保证同一账号不会被多个 job 同时使用。
 
 未配置凭据时，PR 明确只运行游客矩阵，并在 Actions summary 记录未运行的登录/创建组。配置两项 Secrets 后，PR 默认展开完整矩阵；手动选择 all 但缺凭据会直接失败。`smoke` 保留语义/运动断言及原始证据，首次 `reference` 输出须审查后入库，后续 `compare` 才进行版本视觉比较。不会自动接受变化或用跳过充当业务通过。

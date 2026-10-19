@@ -42,6 +42,8 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
   const texasTable = 'signed_in_texas_(?:pre_game|optional_pre_game|game|panels)$';
   const texasOther = 'signed_in_texas_(?:hall|records_v2|controls|table_states|panel_variants|hall_variants)$';
   const shards = {
+    // Playwright 按真实测试分片，不依赖容易漏项的标题正则。
+    'functional/en': Array.from({ length: 5 }, (_, index) => [`part-${index + 1}`, '', `${index + 1}/5`]),
     'texas/zh-Hans': [['table', texasTable], ['other', texasOther]],
     'texas/zh-Hant': [['table', texasTable], ['other', texasOther]],
     'texas/en': [
@@ -71,9 +73,11 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
       .flatMap(locale => {
         const key = `${group}/${locale}`;
         const parts = shards[key] || [['all', '']];
-        return parts.map(([shard, filter], index) => ({ group, locale, shard, filter,
+        return parts.map(([shard, filter, playwrightShard = ''], index) => ({ group, locale, shard, filter, playwrightShard,
           label: `${group} / ${locale}${shard === 'all' ? '' : ` / ${shard}`}`,
-          account: group === 'guest' ? '' : allocateCiAccount(runId, functionalGroups.includes(group)
+          // 原 functional 槽位 35 留给第一片；新片使用 39–42，保留其余组槽位。
+          account: group === 'guest' ? '' : allocateCiAccount(runId, group === 'functional' && index > 0
+            ? 38 + index : functionalGroups.includes(group)
             ? 35 + functionalGroups.indexOf(group) : index === 0
               ? groups.indexOf(group) * 3 + locales.indexOf(locale) : shardOffsets[key] + index - 1, available) }));
       })) };
