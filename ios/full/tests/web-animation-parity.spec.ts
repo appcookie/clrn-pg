@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { launchApplication, waitForHall } from '../device';
+import { launchApplication, waitForHall, simulatorAppPath } from '../device';
 import { withIosProxy } from '../proxy';
 import { selectLanguage, signIn, tap, navigateScenario } from '../navigation';
 import { iosScenarios } from '../scenarios';
@@ -7,6 +7,10 @@ import { captureNativeTransition } from '../animation-transition';
 import { captureFailure } from '../diagnostics';
 import { assertBrandFade, clickNode } from '../web-animation-parity';
 import type { ScreenshotMask } from '../screenshot';
+import { recordNativeVideoFrames } from '../video-frames';
+import { launchArtworkTemplate } from '../launch-artwork';
+import { frameColorDistance } from '../animation-transition';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const locale = process.env.IOS_LOCALE || 'en';
 const group = process.env.IOS_GROUP || 'all';
@@ -96,20 +100,31 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
   await withIosProxy(async proxy => {
     const device = await launchApplication();
     try {
-      await waitForHall(device); await proxy.command('android/launch-network', { hold: true }); await device.restart();
       await device.wait({ res: 'staging-confirmation-input' });
+      await proxy.command('android/launch-network', { hold: true });
+      await device.terminate(); await device.home(); await delay(1000);
+      const before = await device.nativeScreenshot();
+      // 品牌淡入发生在真正启动时；确认按钮只在录制结束后用于读取被模态框隐藏的品牌边界。
+      const frames = await recordNativeVideoFrames(device, 'independent-launch-branding-enter',
+        { x: 0, y: 0, ...device.screenSize }, () => device.launch(), info, 7000);
+      expect(frameColorDistance(before, frames[0]), '录像必须包含activate前的真实屏幕').toBeLessThan(10);
+      await device.wait({ res: 'staging-confirmation-input' }); await delay(1200);
+      const finalFrame = await device.nativeScreenshot();
+      const dialog = (await device.info({ res: 'staging-dialog' })).bounds;
       await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM'); await device.hideKeyboard();
       await expect.poll(async () => {
         const network = await proxy.command<{ requested: number; lastRequestedAt: number }>('android/launch-network');
         expect(network.requested).toBeGreaterThan(0); return Date.now() - network.lastRequestedAt;
       }, { timeout: 30_000 }).toBeGreaterThan(6000);
-      await captureNativeTransition(device, 'independent-launch-branding-enter', info, { x: 0, y: 0, ...device.screenSize },
-        () => clickNode(device, { res: 'confirm-button' }), [], [], 0, 'videoFrames',
-        async frames => {
-          await device.wait({ res: 'launch-brand-name' });
-          await device.wait({ res: 'staging-dialog' }, { state: 'gone' });
-          await assertBrandFade(frames, (await device.info({ res: 'launch-brand-name' })).bounds, info);
-        }, () => device.wait({ res: 'launch-screen-container' }));
+      await clickNode(device, { res: 'confirm-button' }); await device.wait({ res: 'staging-dialog' }, { state: 'gone' });
+      const brand = (await device.info({ res: 'launch-brand-name' })).bounds;
+      const region = { ...brand, height: Math.min(brand.y + brand.height, dialog.y - 4) - brand.y };
+      expect(region.height, '遮罩上方须有足够真实品牌文字可测').toBeGreaterThan(20);
+      const { width, height } = device.screenSize;
+      const exclusions = [dialog, { x: 0, y: 0, width, height: Math.ceil(height * .08) },
+        { x: 0, y: Math.floor(height * .96), width, height: Math.ceil(height * .04) }];
+      await info.attach('launch-branding-native-region', { body: JSON.stringify({ brand, dialog, region }), contentType: 'application/json' });
+      await assertBrandFade(frames, finalFrame, launchArtworkTemplate(await simulatorAppPath(), width, height), region, exclusions, info);
       await proxy.command('android/launch-network', { hold: false }); await device.wait({ res: 'hall-tab' }, { timeout: 120_000 });
     } catch (error) { await captureFailure(device, info); throw error; }
     finally { try { await proxy.command('android/launch-network', { hold: false }); } finally { await device.close(); } }

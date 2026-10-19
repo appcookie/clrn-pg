@@ -6,6 +6,7 @@ import type { NativeDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { motionParts } from './motion-regions';
 import { assertVisual } from './device';
+import { brandFadeEvidence } from './brand-fade';
 
 /** 用原始首尾像素拟合固定位置淡入；移动、闪屏或只有终态不能冒充透明度变化。 */
 export function fadeSamples(frames: Buffer[]) {
@@ -33,16 +34,19 @@ export function requireFade(frames: Buffer[]) {
   if (!pair) throw new Error('未采到固定品牌像素从半透明逐步变清晰的两个相位');
   return { samples, middle: pair.index };
 }
-export async function assertBrandFade(frames: Buffer[], region: ScreenshotBounds, info: TestInfo) {
+export async function assertBrandFade(frames: Buffer[], finalFrame: Buffer, reference: PNG,
+  region: ScreenshotBounds, exclusions: ScreenshotBounds[], info: TestInfo) {
   const cropped = frames.map(frame => motionParts(frame, [region]).regions[0]);
-  const result = requireFade(cropped);
+  const result = brandFadeEvidence(frames, finalFrame, reference, region, exclusions);
   await info.attach('launch-branding-fade-opacity-fit', { body: JSON.stringify(result.samples), contentType: 'application/json' });
-  for (const [phase, index] of [['start', 0], ['middle', result.middle], ['end', cropped.length - 1]] as const) {
+  expect(result.complete, '必须在发布包背景已出现后采到品牌自身从透明、两个半透明相位到不透明；不能用系统转场或遮罩消退代替').toBe(true);
+  for (const [phase, index] of [['start', result.start!], ['middle', result.middle!], ['end', result.end!]] as const) {
     const name = `launch-branding-fade-${phase}.png`;
     if (phase !== 'middle' || process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(cropped[index], name, info);
     else {
       const reviewed = readFileSync(info.snapshotPath(name));
-      const candidates = result.samples.flatMap((sample, i) => sample.alpha > .1 && sample.alpha < .9 && sample.residual < 12 ? [cropped[i]] : []);
+      const candidates = result.samples.flatMap((sample, i) => sample.alpha !== null && sample.residual !== null
+        && sample.alpha > .1 && sample.alpha < .9 && sample.residual < 12 ? [cropped[i]] : []);
       expect(Math.min(...candidates.map(frame => frameColorDistance(frame, reviewed))), '品牌真实半透明相位须匹配已审查基准').toBeLessThanOrEqual(12);
       await info.attach(name, { body: cropped[index], contentType: 'image/png' });
     }
