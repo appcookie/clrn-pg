@@ -38,3 +38,8 @@ export function fullyInside(bounds: Bounds, viewport: Bounds) {
     && bounds.x + bounds.width <= viewport.x + viewport.width
     && bounds.y + bounds.height <= viewport.y + viewport.height;
 }
+
+export function pointInside(point: { x: number; y: number }, viewport: Bounds) {
+  return viewport.width > 0 && viewport.height > 0 && point.x >= viewport.x && point.y >= viewport.y
+    && point.x < viewport.x + viewport.width && point.y < viewport.y + viewport.height;
+}

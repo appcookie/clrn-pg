@@ -12,16 +12,11 @@ function requireSimulator(): string {
   const udid = process.env.IOS_SIMULATOR_UDID || '';
   if (!/^[0-9a-f-]{36}$/i.test(udid)) throw new Error('必须指定专用 IOS_SIMULATOR_UDID');
   const list = JSON.parse(execFileSync('xcrun', ['simctl', 'list', 'devices', '--json'], { encoding: 'utf8' }));
-  const devices = Object.values(list.devices).flat() as { udid: string; state: string; isAvailable: boolean }[];
-  if (!devices.some(device => device.udid === udid && device.isAvailable && device.state === 'Booted')) {
-    throw new Error('指定 iOS Simulator 尚未启动或不可用');
+  const devices = Object.values(list.devices).flat() as { udid: string; isAvailable: boolean }[];
+  if (!devices.some(device => device.udid === udid && device.isAvailable)) {
+    throw new Error('指定 iOS Simulator 不存在或不可用');
   }
   return udid;
-}
-function configureProxy(directory: string, server: string): void {
-  execFileSync('xcrun', ['simctl', 'keychain', requireSimulator(), 'add-root-cert',
-    path.join(directory, 'mitmproxy-ca-cert.pem')]);
-  configureSystemProxy(server);
 }
 
 /**
@@ -86,12 +81,12 @@ export async function withIosProxy<T>(task: (proxy: Mitmproxy) => Promise<T>,
         IOS_FIXTURE_TOKEN: token,
         IOS_FIXTURE_URL: `http://127.0.0.1:${address.port}/` },
       /**
-       * 将本轮临时证书和端口配置到专用模拟器。
+       * 配置 runner 代理并提供临时 CA，由 XCUITest 在 fullReset 后安装。
        * @param directory - 代理临时目录。
        * @param proxy - 本轮代理连接。
        */
       prepare: async (directory, proxy) => {
-        configureProxy(directory, proxy.server);
+        configureSystemProxy(proxy.server);
         process.env.IOS_PROXY_CA_CERT = path.join(directory, 'mitmproxy-ca-cert.pem');
       },
       cleanup: async () => {

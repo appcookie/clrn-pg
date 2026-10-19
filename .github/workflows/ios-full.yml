@@ -111,12 +111,10 @@ jobs:
           CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
         run: node scripts/configure-ci-account.mjs
-      - name: 创建并启动专用模拟器
+      - name: 创建专用模拟器
         run: |
           udid=$(xcrun simctl create clrn-full com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
           echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
-          xcrun simctl boot "$udid"
-          xcrun simctl bootstatus "$udid" -b
       - name: 执行原生业务、视觉及动画断言
         env:
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}

@@ -88,11 +88,6 @@ export async function launchApplication(options: { isolated?: boolean; gameDrive
     if (!device?.isAvailable || device.deviceTypeIdentifier !== 'com.apple.CoreSimulator.SimDeviceType.iPhone-16') {
       throw new Error('全量基准固定 iPhone 16 / iOS 18.5，请创建专用模拟器。');
     }
-    if (device.state !== 'Booted') execFileSync('xcrun', ['simctl', 'boot', udid], { timeout: 60_000 });
-    execFileSync('xcrun', ['simctl', 'bootstatus', udid, '-b'], { timeout: 180_000, stdio: 'inherit' });
-    if (process.env.IOS_PROXY_CA_CERT) execFileSync('xcrun', ['simctl', 'keychain', udid, 'add-root-cert', process.env.IOS_PROXY_CA_CERT]);
-    execFileSync('xcrun', ['simctl', 'status_bar', udid, 'override', '--time', '9:41', '--batteryState', 'charged',
-      '--batteryLevel', '100', '--wifiBars', '3', '--cellularBars', '4']);
     const app = await simulatorAppPath();
     const server = await acquireServer();
     serverAcquired = true;

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { nativeViewport, fullyInside } from './native-viewport.ts';
-import { tap } from './navigation.ts';
+import { nativeViewport, fullyInside, pointInside } from './native-viewport.ts';
+import { reveal, tap } from './navigation.ts';
 
 function node(res, clazz, bounds, children = []) {
   return { res, clazz, bounds, children, visible: true, enabled: true, attributes: {} };
@@ -23,7 +23,28 @@ test('真实CI按钮虽然在屏幕内，仍必须按祖先滚动viewport判定�
   assert.deepEqual(result.viewport, scroll.bounds);
   assert.equal(result.visibleBounds.height, 51);
   assert.equal(fullyInside(button.bounds, result.viewport), false);
+  assert.equal(pointInside({ x: 589, y: 1810.5 }, result.viewport), false);
   assert.deepEqual(result.scrollables.map(item => item.node.res), ['modal-scroll']);
+});
+
+test('英文语言入口右侧溢出3px时点击可见中心；要求完整显示时仍拒绝', async () => {
+  const button = node('switch-language-button', 'XCUIElementTypeOther', { x: 983, y: 264, width: 198, height: 54 });
+  const root = node('app', 'XCUIElementTypeApplication', screen, [button]);
+  const points = [];
+  const device = {
+    screenSize: { width: screen.width, height: screen.height },
+    nodes: async () => [root, button], wait: async () => {}, hideKeyboard: async () => {},
+    info: async selector => {
+      if (selector.res === button.res) return button;
+      throw Object.assign(new Error('missing'), { code: 'no such element' });
+    },
+    input: { swipe: async () => { throw new Error('不应滚动可点击的语言入口'); }, tap: async point => points.push(point) },
+  };
+  assert.equal(fullyInside(button.bounds, screen), false);
+  assert.equal(pointInside({ x: 1082, y: 291 }, screen), true);
+  await tap(device, button.res);
+  assert.deepEqual(points, [{ x: 1082, y: 291 }]);
+  await assert.rejects(reveal(device, { res: button.res }, true), /控件被裁切且无可滚动祖先/);
 });
 
 test('嵌套滚动区必须取全部祖先交集，不能只判断最近滚动容器', () => {
