@@ -2,7 +2,7 @@
 
 与 [clrn-az](https://github.com/albitsj/clrn-az) 对应，直接下载 [clrn Release](https://github.com/kevinanew/clrn/releases) 的 `ios-staging-simulator.zip`，不检出应用源码、不构建 React Native、不需要应用配置密钥。`deployments/ios-staging.json` 固定待测版本；下载时验证 Release 身份、构建提交、包大小和 SHA-256，解压后验证 bundle ID、版本及 Mach-O 的 IOSSIMULATOR 平台。
 
-首批覆盖游客大厅、消息、私人房、俱乐部、我的和登录欢迎页。每页检查原生可访问性标识，保存 PNG、4 秒 MP4，并抽取六张动画帧。失败时保留截图、页面层级、Appium 日志和 JSON 报告。
+首批覆盖游客大厅、消息、私人房、俱乐部、我的和登录欢迎页。每页检查原生可访问性标识，保存 PNG 和原始 MP4，并从视频的 0.5～3.5 秒区间抽取六张动画帧。录制等待 8 秒，为 CI 编码器首帧延迟留出余量；缺帧仍会失败。失败时保留截图、页面层级、Appium 日志和 JSON 报告。
 
 ## 本机运行
 
