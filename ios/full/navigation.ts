@@ -1,6 +1,6 @@
 // 沿用共享业务 testID，通过真实 iOS 导航、滑动和输入进入每个状态。
 import { expect } from '@playwright/test';
-import type { NativeDevice, NativeSelector } from './native-device';
+import type { NativeDevice, NativeNode, NativeSelector } from './native-device';
 import type { VisualScenario } from '../../visual/scenarioTypes';
 import type { ScreenshotBounds } from './screenshot';
 import { exists, waitAbsent } from './native-state';
@@ -107,8 +107,7 @@ export async function revealScenarioReady(device: NativeDevice, scenario: Pick<V
     return;
   }
   if (selector.res === 'pick-country-code-container') {
-    await waitForCountryPicker(device);
-    return;
+    return waitForCountryPicker(device);
   }
   if (selector.res === 'club-tab-screen') {
     if (scenario.signIn !== true && !(scenario.pageLabel === 'guest_club' && scenario.signIn === false)) {
@@ -132,7 +131,8 @@ export async function revealScenarioReady(device: NativeDevice, scenario: Pick<V
   }
   await reveal(device, selector);
 }
-export async function navigateScenario(device: NativeDevice, scenario: VisualScenario): Promise<ScreenshotBounds | undefined> {
+export type NavigationResult = { backgroundBanner?: ScreenshotBounds; readySnapshot?: NativeNode[] };
+export async function navigateScenario(device: NativeDevice, scenario: VisualScenario): Promise<NavigationResult> {
   await returnToTabs(device);
   await tap(device, scenario.tabTestId || 'hall-tab');
   for (let reset = 0; reset < 3; reset++) {
@@ -172,7 +172,17 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
     } else await tap(device, identifier);
   }
   if (!filled) await fillScenarioInputs(device, scenario);
-  await revealScenarioReady(device, scenario);
+  const readySnapshot = await revealScenarioReady(device, scenario);
+  if (readySnapshot) {
+    // This country's readiness snapshot already checks loading, errors, keyboard
+    // and actionable geometry. There is no UI action before screenshot masking.
+    // New constraints must be implemented explicitly rather than silently omitted.
+    if (scenario.pageLabel !== 'login_pick_country_code' || scenario.readyText || scenario.visualGoneSelector
+      || scenario.fixedTexts.length || scenario.navClickTestIds.includes('advanced-options-button')) {
+      throw new Error('国家区号快照就绪分支尚未覆盖新增场景约束');
+    }
+    return { backgroundBanner, readySnapshot };
+  }
   if (scenario.pageLabel === 'hall') await scrollToEnd(device, { res: 'hall-content-list' }, { res: 'hall-sign-in-button' });
   if (scenario.navClickTestIds.includes('advanced-options-button')) {
     await scrollToEnd(device, { scrollable: true }, { res: 'create-room-tips-text' });
@@ -182,7 +192,7 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
   if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
   await waitAbsent(device, { res: 'alert-message-text' });
   await device.hideKeyboard();
-  return backgroundBanner;
+  return { backgroundBanner };
 }
 export async function signIn(device: NativeDevice, username = process.env.VISUAL_USERNAME, password = process.env.VISUAL_PASSWORD) {
   if (!username || !password) throw new Error('登录测试必须提供本轮独占的测试账户。');

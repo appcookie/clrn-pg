@@ -1,19 +1,33 @@
 import type { NativeDevice, NativeNode } from './native-device';
 import { intersectBounds, nativeViewport, pointInside } from './native-viewport';
+import { setTimeout as delay } from 'node:timers/promises';
 
 /** 国家列表是整页容器；就绪取决于真实可操作列表行，不要求整页容器可滚动到中心。 */
-export async function waitForCountryPicker(device: Pick<NativeDevice, 'wait' | 'nodes' | 'screenSize'>) {
+export async function waitForCountryPicker(device: Pick<NativeDevice, 'nodes' | 'screenSize'>,
+  { timeout = 10_000 }: { timeout?: number } = {}) {
   const itemId = /^country-code-list-item-\d+$/;
-  // Real iOS CI exposes the list and back control; the outer Web screen ID is hidden.
-  await device.wait({ res: 'country-code-list' }, { timeout: 10_000 });
-  await device.wait({ res: 'back-button', enabled: true }, { timeout: 10_000 });
-  await device.wait({ res: itemId, enabled: true }, { timeout: 10_000 });
-  const nodes = await device.nodes();
+  // CI reached all three real markers, then timed out while requesting a fourth
+  // AX snapshot of this large list. Check readiness and geometry on one snapshot;
+  // only request another while the sheet's required controls are still missing.
+  const deadline = Date.now() + timeout;
+  let nodes: NativeNode[];
+  do {
+    nodes = await device.nodes();
+    if (nodes.some(node => node.clazz === 'XCUIElementTypeAlert')) throw new Error('国家区号选择页被原生错误弹窗遮挡');
+    if (nodes.some(node => node.res === 'alert-message-text')) throw new Error('国家区号选择页显示应用错误提示');
+    if (nodes.some(node => node.res === 'country-code-list' && node.visible !== false)
+      && nodes.some(node => node.res === 'back-button' && node.enabled && node.visible !== false)
+      && nodes.some(node => itemId.test(node.res || '') && node.enabled && node.visible !== false)
+      && !nodes.some(node => /^(XCUIElementTypeActivityIndicator|XCUIElementTypeKeyboard)$/.test(node.clazz))) break;
+    if (Date.now() >= deadline) break;
+    await delay(250);
+  } while (true);
+  if (nodes.some(node => node.clazz === 'XCUIElementTypeActivityIndicator')) throw new Error('国家区号选择页仍在加载');
+  if (nodes.some(node => node.clazz === 'XCUIElementTypeKeyboard')) throw new Error('国家区号选择页仍被键盘遮挡');
   const list = nodes.find(node => node.res === 'country-code-list' && node.visible !== false);
   const back = nodes.find(node => node.res === 'back-button' && node.visible !== false && node.enabled
     && node.bounds.width > 0 && node.bounds.height > 0);
   if (!list || !back) throw new Error('国家区号选择页的真实列表及返回按钮未显示');
-  if (nodes.some(node => node.clazz === 'XCUIElementTypeAlert')) throw new Error('国家区号选择页被原生错误弹窗遮挡');
   const screen = { x: 0, y: 0, ...device.screenSize };
   const backViewport = nativeViewport(nodes, back, screen);
   if (!pointInside({ x: back.bounds.x + back.bounds.width / 2, y: back.bounds.y + back.bounds.height / 2 }, backViewport.viewport)) {
@@ -31,4 +45,5 @@ export async function waitForCountryPicker(device: Pick<NativeDevice, 'wait' | '
   })) {
     throw new Error('国家区号选择页没有可见且启用的区号选项');
   }
+  return nodes;
 }

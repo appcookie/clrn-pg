@@ -1,5 +1,5 @@
 import { PNG } from 'pngjs';
-import type { NativeDevice as AndroidDevice } from './native-device';
+import type { NativeDevice as AndroidDevice, NativeNode } from './native-device';
 import type { VisualScenario } from '../../visual/scenarioTypes';
 import { nativeSelector } from './scenarios';
 import { setTimeout } from 'node:timers/promises';
@@ -12,8 +12,11 @@ export type ScreenshotBounds = Omit<ScreenshotMask, 'reason'>;
  * 从两帧真实截图识别聚焦输入框的光标，保留原输入边界以适配键盘收起后的窗口位移。
  * @param device - 专用模拟器连接。
  */
-export async function focusedCaretMask(device: AndroidDevice) {
-  let input = await device.info({ clazz: /XCUIElementType(?:Secure)?TextField|XCUIElementTypeTextView/, focused: true }).catch(error => { if (error?.code === 'no such element') return undefined; throw error; });
+export async function focusedCaretMask(device: AndroidDevice, readySnapshot?: NativeNode[]) {
+  const inputClass = /XCUIElementType(?:Secure)?TextField|XCUIElementTypeTextView/;
+  let input = readySnapshot
+    ? readySnapshot.find(node => inputClass.test(node.clazz) && node.focused)
+    : await device.info({ clazz: inputClass, focused: true }).catch(error => { if (error?.code === 'no such element') return undefined; throw error; });
   if (input) {
     let before = await device.screenshot();
     // 键盘转场会改变输入框边界；重建基准帧，并用不同采样间隔避免与光标周期重合。
@@ -36,9 +39,10 @@ export async function focusedCaretMask(device: AndroidDevice) {
  * @param scenario - 共用的页面场景。
  * @param backgroundBanner - 打开原生弹窗前保存的背景横幅边界。
  */
-export async function screenshotMasks(device: AndroidDevice, scenario: VisualScenario, backgroundBanner?: ScreenshotBounds): Promise<ScreenshotMask[]> {
+export async function screenshotMasks(device: AndroidDevice, scenario: VisualScenario, backgroundBanner?: ScreenshotBounds,
+  readySnapshot?: NativeNode[]): Promise<ScreenshotMask[]> {
   const masks: ScreenshotMask[] = [];
-  const caret = await focusedCaretMask(device);
+  const caret = await focusedCaretMask(device, readySnapshot);
   if (caret) masks.push(caret.mask);
   for (const rule of scenario.fixedTexts) {
     if (!/(?:version-text|current-server-text|checkInDetailDate)/.test(rule.selector)) continue;
