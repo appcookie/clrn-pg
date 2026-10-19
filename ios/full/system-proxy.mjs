@@ -4,6 +4,18 @@ import { existsSync, readFileSync, writeFileSync, renameSync, unlinkSync } from 
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+// GitHub runner 不信任仅安装到 Simulator 的临时 CA，控制/日志/制品流量必须直连。
+// 官方稳定通配列表：https://api.github.com/meta -> domains.actions_inbound.wildcard_domains
+// 补充 LFS/VNet：https://docs.github.com/en/actions/reference/runners/larger-runners#communication-requirements-for-larger-runners
+// 在开启 HTTP/HTTPS 代理前写入，防止 runner 的 .NET HTTPS 心跳被 TLS 拦截。
+export const runnerBypassDomains = Object.freeze([
+  'github.com', '*.github.com', '*.githubusercontent.com', '*.core.windows.net',
+  '*.githubapp.com', 'ghcr.io', 'github-cloud.s3.amazonaws.com', 'api.snapcraft.io',
+]);
+export function proxyBypassDomains(original) {
+  return [...new Set([...original, 'localhost', '127.0.0.1', '::1', ...runnerBypassDomains])];
+}
+
 export function assertHostedRunner(environment = process.env, platform = process.platform) {
   if (platform !== 'darwin' || environment.GITHUB_ACTIONS !== 'true'
     || environment.RUNNER_ENVIRONMENT !== 'github-hosted' || !environment.RUNNER_TEMP) {
@@ -50,7 +62,7 @@ export function readSnapshot(run = command) {
 }
 export function applySnapshot(snapshot, port, run = command) {
   for (const { service, bypass } of snapshot) {
-    run(['-setproxybypassdomains', service, ...new Set([...bypass, 'localhost', '127.0.0.1', '::1'])], true);
+    run(['-setproxybypassdomains', service, ...proxyBypassDomains(bypass)], true);
     run(['-setautoproxystate', service, 'off'], true);
     run(['-setproxyautodiscovery', service, 'off'], true);
     run(['-setwebproxy', service, '127.0.0.1', String(port), 'off'], true);

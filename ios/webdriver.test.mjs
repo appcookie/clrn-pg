@@ -32,3 +32,24 @@ test('WebDriver 使用原生 accessibility id 并能保存截图', async () => {
     server.close();
   }
 });
+
+test('WebDriver 的请求预算覆盖慢响应头与响应体，并保留 W3C 错误', async () => {
+  const server = createServer((request, response) => {
+    if (request.url === '/missing') {
+      response.writeHead(404).end(JSON.stringify({ value: { error: 'no such element', message: 'missing' } }));
+    } else if (request.url === '/body') {
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.flushHeaders();
+      setTimeout(() => response.end('{"value":"ready"}'), 100);
+    } else setTimeout(() => response.end('{"value":"ready"}'), 100);
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const driver = new WebDriver(`http://127.0.0.1:${server.address().port}`);
+    assert.equal(await driver.request('GET', '/slow', undefined, 500), 'ready');
+    for (const path of ['/slow', '/body']) {
+      await assert.rejects(driver.request('GET', path, undefined, 20), error => error.code === 'ABORT_ERR' || error.code === 'ECONNRESET');
+    }
+    await assert.rejects(driver.request('GET', '/missing'), { code: 'no such element' });
+  } finally { server.closeAllConnections(); server.close(); }
+});
