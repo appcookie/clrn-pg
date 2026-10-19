@@ -1,11 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { PNG } from 'pngjs';
-import { compareScreenshot, launchApplication, waitForHall } from '../device';
+import { assertVisual, launchApplication, simulatorAppPath, waitForHall } from '../device';
 import { captureFailure } from '../diagnostics';
 import { selectLanguage, tap } from '../navigation';
 import { withAndroidProxy } from '../proxy';
 import { gameReady } from '../game-controls';
 import { waitForHallAfterLaunchHold } from '../launch-recovery';
+import { captureLaunchBranding, launchScreenshot, verifyLaunchCapture } from '../launch-capture';
+import { launchArtworkTemplate } from '../launch-artwork';
 
 const locale = process.env.IOS_LOCALE || 'en';
 if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
@@ -32,23 +33,17 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
           return Date.now() - network.lastRequestedAt;
         }, { timeout: 30000, intervals: [500] }).toBeGreaterThan(6000);
         await tap(device, 'confirm-button');
-        await device.wait({ res: 'launch-screen-container' }, { timeout: 4000 });
-        await device.wait({ res: 'staging-dialog' }, { state: 'gone', timeout: 4000 });
-        const assertBranding = async () => {
-          const nodes = await device.nodes();
-          expect(nodes.some(node => node.res === 'launch-screen-container')).toBe(true);
-          expect(nodes.some(node => node.res === 'staging-dialog')).toBe(false);
-          expect(nodes.some(node => node.clazz === 'XCUIElementTypeAlert'), '不能把系统错误弹窗当品牌页').toBe(false);
-        };
-        const fullScreen = async () => {
-          const bytes = await device.nativeScreenshot();
-          const picture = PNG.sync.read(bytes);
-          expect({ width: picture.width, height: picture.height }).toEqual(device.screenSize);
-          return bytes;
-        };
-        // 初始化的真实超时窗口很短；使用瞬态截图的前后断言，避免重复读取整棵树耗尽窗口。
-        await compareScreenshot(device, `${locale}-launch-branding`, info, [], assertBranding, fullScreen);
-        await proxy.command('android/launch-network', { hold: false });
+        // 健康请求只有5秒窗口：一轮并行采集后即释放，所有像素与baseline验证离线执行。
+        const capture = await captureLaunchBranding({ nodes: () => device.nodes(),
+          screenshot: () => launchScreenshot(device.udid, device.screenSize),
+          release: () => proxy.command('android/launch-network', { hold: false }) });
+        await info.attach('launch-capture-window', { body: JSON.stringify({ elapsedMs: capture.elapsedMs,
+          releasedByBudget: capture.releasedByBudget }), contentType: 'application/json' });
+        await info.attach('launch-branding-captured', { body: capture.bytes, contentType: 'image/png' });
+        const reference = launchArtworkTemplate(await simulatorAppPath(), device.screenSize.width, device.screenSize.height);
+        const evidence = verifyLaunchCapture(capture.bytes, capture.nodes, device.screenSize, reference);
+        await info.attach('launch-capture-evidence', { body: JSON.stringify(evidence), contentType: 'application/json' });
+        await assertVisual(capture.bytes, `${locale}-launch-branding`, info);
         const recovery = await waitForHallAfterLaunchHold(device);
         await info.attach('launch-health-recovery', { body: JSON.stringify(recovery), contentType: 'application/json' });
       } catch (error) { await captureFailure(device, info); throw error; }

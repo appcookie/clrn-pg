@@ -69,7 +69,7 @@ jobs:
     needs: [plan, proxy-check]
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 5
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     concurrency:
       group: ios-account-${{ matrix.account || format('{0}-{1}-{2}-{3}', github.run_id, matrix.group, matrix.locale, matrix.shard) }}

@@ -24,6 +24,29 @@ test('真实繁体几何的html-render/WKWebView正文可读，无需Web专用sc
   assert.ok(!evidence.nodes.some(node => /user-(agreement|privacy)-screen/.test(node.res || '')));
 });
 
+test('真实WKWebView的超长不可访问文档聚合层，不遮蔽实际可见的完整正文叶子', () => {
+  for (const height of [15915, 8679]) {
+    const evidence = tree();
+    const aggregate = { res: '隱私政策', clazz: 'XCUIElementTypeOther', visible: false, enabled: true,
+      bounds: { x: 0, y: 375, width: 1178, height }, children: [evidence.text] };
+    evidence.web.children = [aggregate];
+    assert.ok(!evidence.nodes.includes(aggregate));
+    assert.equal(visibleLegalDocumentText(evidence.nodes, size), body);
+    evidence.text.visible = false;
+    assert.equal(visibleLegalDocumentText(evidence.nodes, size), '');
+  }
+});
+
+test('WebView子树中不在可见flat列表的叶子，不能借同文字副本冒充真实可读正文', () => {
+  const evidence = tree();
+  const copy = structuredClone(evidence.text);
+  const nodes = evidence.nodes.filter(node => node !== evidence.text);
+  nodes.push(copy);
+  assert.equal(visibleLegalDocumentText(nodes, size), '');
+  evidence.web.visible = false;
+  assert.equal(visibleLegalDocumentText(evidence.nodes, size), '');
+});
+
 test('空文档、隐藏或屏外正文、同屏其他子树文案及不可用返回按钮不能冒充已加载文档', () => {
   for (const mutate of [
     item => { item.web.children = []; },

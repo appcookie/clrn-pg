@@ -13,13 +13,17 @@ export function visibleLegalDocumentText(nodes: NativeNode[], size: { width: num
   if (!render || !back) return '';
   if (!fullyInside(render.bounds, nativeViewport(nodes, render, screen).viewport)
     || !fullyInside(back.bounds, nativeViewport(nodes, back, screen).viewport)) return '';
+  const visibleNodes = new Set(nodes);
   const text = new Set<string>();
   function visit(node: NativeNode, viewport: typeof screen, insideWebView: boolean) {
-    if (node.visible === false) return;
+    // WDA marks the tall HTML document aggregate as invisible even while its
+    // paragraphs are individually visible. Traverse only these WebView Other
+    // wrappers; visibility of WebViews and actual text leaves remains required.
+    if (node.visible === false && !(insideWebView && node.clazz === 'XCUIElementTypeOther')) return;
     const webView = node.clazz === 'XCUIElementTypeWebView';
     const visible = webView ? intersectBounds(viewport, node.bounds) : viewport;
     if (visible.width <= 0 || visible.height <= 0) return;
-    if (insideWebView && node.clazz === 'XCUIElementTypeStaticText'
+    if (insideWebView && node.clazz === 'XCUIElementTypeStaticText' && visibleNodes.has(node)
       && fullyInside(node.bounds, visible) && node.text?.trim()) text.add(node.text.trim());
     for (const child of node.children) visit(child, visible, insideWebView || webView);
   }

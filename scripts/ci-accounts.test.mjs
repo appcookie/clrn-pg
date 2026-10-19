@@ -119,7 +119,7 @@ test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰�
     assert.deepEqual(combined.sort(), keys(complete).sort());
   }
   const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /max-parallel: 3/);
+  assert.match(workflow, /max-parallel: 5/);
   assert.match(workflow, /github\.run_id, matrix\.group, matrix\.locale, matrix\.shard/);
 });
 test('凭据接受任意非空ready独立iOS子池，拒绝原仓库账号或损坏Secret且不泄露正文', () => {
