@@ -79,7 +79,7 @@ export function maskScreenshot(bytes: Buffer, masks: ScreenshotMask[]): Buffer {
 /** Apply the same screen-coordinate masks to decoded pixels before cropping.
  * The 12% limit always uses the original full screenshot, including off-crop masks.
  */
-export function applyScreenshotMasks(picture: PNG, masks: ScreenshotMask[]): void {
+export function applyScreenshotMasks(picture: Pick<PNG, 'width' | 'height' | 'data'>, masks: ScreenshotMask[]): void {
   masks = masks.filter(mask => !mask.unverifiedLayout);
   let area = 0;
   for (const mask of masks) {

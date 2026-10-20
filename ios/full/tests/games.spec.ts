@@ -58,6 +58,10 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
               .includes(scenario.pageLabel));
           const device = await launchApplication({ gameDriver: true,
             enableSystemAnimations: panelAnimation || gameAnimation });
+          // Use the same Apple 60 fps recorder already exercised by the native
+          // panel cases; simctl's four-second startup buffer adds hundreds of
+          // idle frames per game panel. All recorded frames remain validated.
+          if (panelAnimation || gameAnimation) device.nativeVideoBackend = 'xctest';
           let room: RoomSession | null = null;
           let index = 0;
           try {

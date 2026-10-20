@@ -8,7 +8,8 @@ import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameScreenshot } from './game-controls';
-import { cropMotionRegion, cropMotionRegions, motionParts, samePixels } from './motion-regions';
+import { cropNativeFrame, cropMotionRegions, motionParts, samePixels } from './motion-regions';
+import { decodeFrame, type FramePixels } from './native-frame';
 import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
@@ -21,11 +22,13 @@ import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThum
 export function frameColorDistance(left: Buffer, right: Buffer): number {
   return pixelColorDistance(PNG.sync.read(left), PNG.sync.read(right));
 }
-function pixelColorDistance(a: PNG, b: PNG): number {
+function pixelColorDistance(a: FramePixels, b: FramePixels): number {
   if (a.width !== b.width || a.height !== b.height) throw new Error('动画帧尺寸变化');
   let difference = 0;
   for (let offset = 0; offset < a.data.length; offset += 4) {
-    for (let channel = 0; channel < 3; channel++) difference += Math.abs(a.data[offset + channel] - b.data[offset + channel]);
+    difference += Math.abs(a.data[offset] - b.data[offset])
+      + Math.abs(a.data[offset + 1] - b.data[offset + 1])
+      + Math.abs(a.data[offset + 2] - b.data[offset + 2]);
   }
   return difference / (a.width * a.height * 3);
 }
@@ -96,6 +99,24 @@ export function transitionEvidence(before: Buffer, after: Buffer, timeline: Buff
       && item.fromStart > minimum && item.fromEnd > minimum)
     .map(({ frame, index, progress, remaining }) => ({ frame, index, progress, remaining }));
   return { total, progress: measurements.map(item => item.progress), candidates };
+}
+
+/** Same arithmetic and candidate rules; decode sequentially to bound raw-frame memory. */
+export async function nativeTransitionEvidence(before: Buffer, after: Buffer, timeline: Buffer[]) {
+  const start = await decodeFrame(before), end = await decodeFrame(after);
+  const total = pixelColorDistance(start, end), minimum = Math.min(7, total * 0.2);
+  const progress: number[] = [];
+  const candidates: { frame: Buffer; index: number; progress: number; remaining: number }[] = [];
+  for (const [index, frame] of timeline.entries()) {
+    const picture = await decodeFrame(frame);
+    const fromStart = pixelColorDistance(start, picture), fromEnd = pixelColorDistance(end, picture);
+    const value = fromStart / total, remaining = fromEnd / total;
+    progress.push(value);
+    if (value > 0.02 && remaining > 0.02 && fromStart > minimum && fromEnd > minimum) {
+      candidates.push({ frame, index, progress: value, remaining });
+    }
+  }
+  return { total, progress, candidates };
 }
 
 /** Require a recorded frame to follow an approved spatial phase, away from both endpoints.
@@ -178,7 +199,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
    * 截出固定的动画绘制区域。
    * @param bytes - 原生完整屏幕 PNG。
    */
-  const crop = (bytes: Buffer) => cropMotionRegion(bytes, region, masks);
+  const crop = (bytes: Buffer) => cropNativeFrame(bytes, region, masks);
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
     body: JSON.stringify(startCompareMasks), contentType: 'application/json',
@@ -206,9 +227,10 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const startMasks = endpointMasksInRegion(startCompareMasks, region);
   const endMasks = endpointMasksInRegion(endCompareMasks, region);
   await testInfo.attach(`${name}-capture-region`, { body: JSON.stringify(selectedRegion), contentType: 'application/json' });
-  const before = crop(beforeScreen);
-  const timeline = originals.map(crop);
-  const after = crop(afterScreen);
+  const before = await crop(beforeScreen);
+  const timeline: Buffer[] = [];
+  for (const frame of originals) timeline.push(await crop(frame));
+  const after = await crop(afterScreen);
   console.log(`IOS > 录屏 ${name}：完成 ${timeline.length} 张遮罩裁图`);
   await testInfo.attach(`${name}-timeline`, {
     body: JSON.stringify(recorded.map((_, index) => recorded.timestampsMs?.[index] ?? null)), contentType: 'application/json',
@@ -228,7 +250,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         `${name} 第 ${index + 1} 个区域必须独立运动`).toBe(true);
     }
   }
-  const { total, progress, candidates } = transitionEvidence(before, after, timeline, 'videoFrames');
+  const { total, progress, candidates } = await nativeTransitionEvidence(before, after, timeline);
   console.log(`IOS > 录屏 ${name}：完成轨迹分析，${candidates.length} 张中间帧`);
   expect(total, '入口点击必须产生足够大的可见变化').toBeGreaterThan(3);
   expect(frameColorDistance(timeline[0], before), '录屏首帧必须更接近起点，不能只有动作后的画面')

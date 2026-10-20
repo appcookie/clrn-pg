@@ -1,5 +1,22 @@
 import { PNG } from 'pngjs';
 import { applyScreenshotMasks, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
+import { decodeFrame, encodeFrame, type FramePixels } from './native-frame';
+
+/** Use native codecs for hundreds of video frames, preserving every source pixel. */
+export async function cropNativeFrame(bytes: Buffer, region: ScreenshotBounds,
+  masks: ScreenshotMask[] = []): Promise<Buffer> {
+  const picture = await decodeFrame(bytes);
+  applyScreenshotMasks(picture, masks);
+  const { x, y, width, height } = region;
+  if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
+    || x + width > picture.width || y + height > picture.height) throw new Error('动画比较分区超出实际截图');
+  const part: FramePixels = { width, height, data: Buffer.alloc(width * height * 4) };
+  for (let row = 0; row < height; row++) {
+    const offset = ((y + row) * picture.width + x) * 4;
+    picture.data.copy(part.data, row * width * 4, offset, offset + width * 4);
+  }
+  return encodeFrame(part);
+}
 
 /** Crop the same original pixels without encoding an unused full-screen complement for every video frame. */
 export function cropMotionRegion(bytes: Buffer, region: ScreenshotBounds, masks: ScreenshotMask[] = []): Buffer {
