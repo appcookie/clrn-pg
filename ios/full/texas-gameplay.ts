@@ -90,11 +90,17 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
           regions.preflop = current.bounds;
         }).toPass({ timeout: 30_000, intervals: [250] });
       } else {
+        const previousCount = { flop: 0, turn: 3, river: 4 }[street];
+        await gameCardNames(device, 'community_card', 'community_card_name_text',
+          ['ah', 'kd', '7c', '2s', 'qs'].map((card, index) => index < previousCount ? card : 'back'));
         regions[street] = nativeCommunityCardRegion(await gameNodes(device), street, device.screenSize);
       }
       const publish = () => street === 'preflop'
         ? send(events([{ event: 'deal_hole_card', player_id: self, hole_card: ['as', 'ad'] }]))
-        : send(restoreTable(self, street, opponent));
+        // game_status restores public cards with show(); only start_street calls
+        // deal() and the actual 300 ms CardFlip transition in the pinned app.
+        : send(events([{ event: 'start_street', street,
+          community_card: ['ah', 'kd', '7c', '2s', 'qs'].slice(0, { flop: 3, turn: 4, river: 5 }[street]) }]));
       /** 四种翻牌动作均可能短于原生截图间隔，改用持续录屏。 */
       await captureNativeTransition(device, `texas-${street}-cards`, animationInfo, regions[street], publish,
         [], [], 0, 'videoFrames', undefined, undefined,
@@ -102,6 +108,10 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       if (street === 'preflop') {
         expect(nativeOwnCardRegion(await gameNodes(device), self, device.screenSize).cards.sort(),
           '实时发牌完成后必须显示指定的两张本人手牌').toEqual(['ad', 'as']);
+      } else {
+        // Restore pots/actions for the separate static scenario only after the
+        // real flip recording and all its motion assertions have passed.
+        await send(restoreTable(self, street, opponent));
       }
     } else await send(restoreTable(self, street, opponent));
     const count = { preflop: 0, flop: 3, turn: 4, river: 5 }[street];
