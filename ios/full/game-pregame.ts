@@ -8,6 +8,7 @@ import presentation from '../../visual/fixtures/account-presentation.json' with 
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
 import { seatGuideMotionBounds } from './game-masks';
+import { gameMaskPoint } from './game-mask-point';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 
@@ -34,15 +35,7 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
 async function gameMaskClosePoint(device: AndroidDevice, marker: string): Promise<{ x: number; y: number }> {
   const { bounds } = await gameReady(device, 'screen-mask-touch-to-close');
   const panel = (await gameReady(device, marker)).bounds;
-  const points = [
-    { x: bounds.x + bounds.width - 8, y: bounds.y + Math.min(80, bounds.height / 2) },
-    { x: bounds.x + 8, y: bounds.y + Math.min(80, bounds.height / 2) },
-    { x: bounds.x + bounds.width - 8, y: bounds.y + bounds.height - 32 },
-  ];
-  const point = points.find(item => item.x < panel.x || item.x > panel.x + panel.width
-    || item.y < panel.y || item.y > panel.y + panel.height);
-  expect(point, '遮罩上应有未被当前面板覆盖的区域').toBeDefined();
-  return point!;
+  return gameMaskPoint(bounds, panel, device.screenSize);
 }
 
 /** 点击已定位的遮罩空白处，并等待当前面板关闭。
