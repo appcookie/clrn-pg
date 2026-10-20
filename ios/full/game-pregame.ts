@@ -9,6 +9,7 @@ import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
 import { seatGuideMotionBounds } from './game-masks';
 import { gameMaskPoint } from './game-mask-point';
+import { nativeReviewPanelBounds } from './animation-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 
@@ -32,8 +33,9 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
  * @param device - 专用模拟器连接。
  * @param marker - 当前面板标记。
  */
-async function gameMaskClosePoint(device: AndroidDevice, marker: string): Promise<{ x: number; y: number }> {
-  const { bounds } = await gameReady(device, 'screen-mask-touch-to-close');
+async function gameMaskClosePoint(device: AndroidDevice, marker: string,
+  maskMarker = 'screen-mask-touch-to-close'): Promise<{ x: number; y: number }> {
+  const { bounds } = await gameReady(device, maskMarker);
   const panel = (await gameReady(device, marker)).bounds;
   return gameMaskPoint(bounds, panel, device.screenSize);
 }
@@ -42,8 +44,9 @@ async function gameMaskClosePoint(device: AndroidDevice, marker: string): Promis
  * @param device - 专用模拟器连接。
  * @param marker - 当前面板标记。
  */
-export async function closeGameMask(device: AndroidDevice, marker: string): Promise<void> {
-  const point = await gameMaskClosePoint(device, marker);
+export async function closeGameMask(device: AndroidDevice, marker: string,
+  maskMarker = 'screen-mask-touch-to-close'): Promise<void> {
+  const point = await gameMaskClosePoint(device, marker, maskMarker);
   await device.input.tap({ x: Number(String(Math.round(point!.x))), y: Number(String(Math.round(point!.y))) });
   await gameGone(device, marker);
 }
@@ -209,8 +212,9 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await capture('game_record');
   // 战绩从右侧展开；说明文字只占面板中间，不能用其边界判断遮罩位置。
   const reviewMask = (await gameReady(device, 'screen-mask-touch-to-close')).bounds;
+  const reviewPoint = gameMaskPoint(reviewMask, nativeReviewPanelBounds(await device.nodes(), device.screenSize), device.screenSize);
   /** 点击侧栏外的遮罩，触发真实侧滑退出。 */
-  const closeRecord = () => device.input.tap({ x: Number(String(Math.round(reviewMask.x + 8))), y: Number(String(Math.round(reviewMask.y + 80))) });
+  const closeRecord = () => device.input.tap(reviewPoint);
   if (animationInfo) await captureNativeTransition(device, `${game}-game-record-exit`, animationInfo,
     screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), closeRecord, [], [], 0,
     game === 'zhajinhua' ? 'videoFrames' : 'motionFrames');
@@ -220,9 +224,9 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
     screenBounds(device, { x: 110, y: 860, width: 140, height: 310 }), animationInfo, 'enter', 'videoFrames');
   await gameReady(device, 'in-game-chat-container');
   await capture('chat');
-  const chat = (await gameReady(device, 'in-game-chat-mask')).bounds;
+  const chatPoint = await gameMaskClosePoint(device, 'in-game-chat-container', 'in-game-chat-mask');
   /** 点击聊天抽屉外的真实遮罩。 */
-  const closeChat = () => device.input.tap({ x: Number(String(Math.round(chat.x + 8))), y: Number(String(Math.round(chat.y + 80))) });
+  const closeChat = () => device.input.tap(chatPoint);
   if (animationInfo) await captureNativeTransition(device, `${game}-chat-exit`, animationInfo,
     screenBounds(device, { x: 110, y: 760, width: 140, height: 500 }), closeChat, [], [], 0, 'videoFrames');
   else await closeChat();

@@ -91,8 +91,25 @@ export function nativeAudioPanelBounds(nodes: NativeNode[], screen: { width: num
 }
 
 /** 已有原生标记的面板用实际 bounds，包含 iOS safe area 和真实布局位置。 */
+export function nativeReviewPanelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const controls = ['review-board-description-text', 'review-board-slider', 'review-board-share-button']
+    .map(res => nodes.find(node => node.res === res && node.visible !== false));
+  if (controls.some(node => !node)) throw new Error('空牌谱侧栏缺少可见说明、滑块或分享按钮');
+  const panel = nodes.find(node => node.visible !== false && node.clazz === 'XCUIElementTypeOther'
+    && node.bounds.x > 0 && node.bounds.y === 0 && node.bounds.height === screen.height
+    && node.bounds.x + node.bounds.width === screen.width
+    && controls.every(control => control!.bounds.x >= node.bounds.x
+      && control!.bounds.x + control!.bounds.width <= screen.width));
+  if (!panel) throw new Error('找不到完整原生牌谱侧栏');
+  return { ...panel.bounds };
+}
+
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  if (/^(?:texas-holdem|zhajinhua)-game-record-/.test(name)) return {
+    bounds: nativeReviewPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-review-content-container',
+  };
   if (/^texas-holdem-voice-/.test(name)) return {
     bounds: nativeAudioPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-audio-content-container',

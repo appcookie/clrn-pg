@@ -109,9 +109,7 @@ export async function texasPanels(context: TexasContext): Promise<void> {
     screenBounds(device, { x: 20, y: 410, width: 680, height: 470 }), animationInfo, 'exit', 'motionFrames',
     [screenBounds(device, { x: 334, y: 720, width: 110, height: 47, reason: '聊天屏障后面的房间计时独立跳秒' })]);
   await gameGone(device, 'BlockPlayerConfirmPopup:title');
-  const chat = (await gameReady(device, 'in-game-chat-mask')).bounds;
-  await device.input.tap({ x: Number(String(chat.x + 8)), y: Number(String(chat.y + 80)) });
-  await gameGone(device, 'in-game-chat-container');
+  await closeGameMask(device, 'in-game-chat-container', 'in-game-chat-mask');
   const application = { stream: 'buy_in', payload: { action: 'apply_buy_in', content: {
     application_id: 'visual-application', user_id: REPLAY_PLAYER_IDS[1],
     user_nickname: 'Player2', nickname: 'Player2', amount: 500,
