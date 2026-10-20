@@ -101,25 +101,52 @@ export function brandFadeEvidence(frames: Buffer[], finalFrame: Buffer, referenc
 }
 
 
-/** A missed transparent start may be sampled once more, never spliced across launches. */
-export async function captureBrandFadeWithStartRecapture<T extends { evidence: ReturnType<typeof brandFadeEvidence> }>(
-  capture: (attempt: number) => Promise<T>,
-  recordReason: (reason: string) => Promise<void>,
-): Promise<T> {
+/** A missing sample may be captured once more, never spliced across launches. */
+export async function captureBrandFadeWithSamplingRecapture<T extends {
+  evidence: ReturnType<typeof brandFadeEvidence>;
+  frames?: { length: number; timestampsMs?: readonly number[] };
+}>(capture: (attempt: number) => Promise<T>, recordReason: (reason: string) => Promise<void>): Promise<T> {
   const first = await capture(1);
   const evidence = first.evidence;
-  if (evidence.complete || evidence.start !== undefined) return first;
+  if (evidence.complete) return first;
 
-  const valid = evidence.samples.filter(sample => sample.alpha !== null
+  let reason: string | undefined;
+  const valid = evidence.samples.filter(sample => sample.background.valid && sample.alpha !== null
     && sample.residual !== null && sample.residual < 12);
-  const middle = valid.find(sample => sample.alpha! > 0.2 && sample.alpha! < 0.6);
-  const later = middle && valid.find(sample => sample.index > middle.index
-    && sample.alpha! > middle.alpha! + 0.2 && sample.alpha! < 0.9);
-  const end = later && valid.find(sample => sample.index > later.index
-    && sample.alpha! >= 0.95 && sample.alpha! <= 1.1);
-  if (!middle || !later || !end) return first;
+  if (evidence.start === undefined) {
+    const middle = valid.find(sample => sample.alpha! > 0.2 && sample.alpha! < 0.6);
+    const later = middle && valid.find(sample => sample.index > middle.index
+      && sample.alpha! > middle.alpha! + 0.2 && sample.alpha! < 0.9);
+    const end = later && valid.find(sample => sample.index > later.index
+      && sample.alpha! >= 0.95 && sample.alpha! <= 1.1);
+    if (middle && later && end) {
+      reason = '第一段真实录像缺少透明起点，但已采到匹配发布包背景的两个半透明相位及终态。';
+    }
+  } else if (evidence.middle !== undefined && evidence.later === undefined) {
+    const times = first.frames?.timestampsMs;
+    const validTimeline = Array.isArray(times) && times.length === first.frames!.length
+      && times.length === evidence.samples.length
+      && Array.from(times).every((time, index) => Number.isFinite(time) && (index === 0 || time >= times[index - 1]))
+      && evidence.samples.every((sample, index) => sample.index === index);
+    if (validTimeline) {
+      const validIndices = new Set(valid.map(sample => sample.index));
+      if (!validIndices.has(evidence.start) || !validIndices.has(evidence.middle)) return first;
+      for (let index = evidence.middle; index + 1 < evidence.samples.length; index++) {
+        const before = evidence.samples[index];
+        const after = evidence.samples[index + 1];
+        const gap = times[index + 1] - times[index];
+        if (!validIndices.has(index) || !validIndices.has(index + 1)
+          || before.alpha! <= 0.2 || before.alpha! >= 0.6
+          || after.alpha! < 0.95 || after.alpha! > 1.1 || gap < 200) continue;
+        reason = `第一段有透明起点和中间相位，但相邻原始帧${index}与${index + 1}`
+          + `的PTS从${times[index]}ms到${times[index + 1]}ms，间隔${gap}ms；`
+          + `品牌alpha从${before.alpha}直接到${after.alpha}，缺少第二个中间相位。`;
+        break;
+      }
+    }
+  }
+  if (!reason) return first;
 
-  await recordReason('第一段真实录像缺少透明起点，但已采到匹配发布包背景的两个半透明相位及终态；'
-    + '只重采一次完整启动，保留第一段证据，第二段必须独立满足全部原断言。');
+  await recordReason(reason + '只重采一次完整启动，保留第一段证据，第二段必须独立满足全部原断言。');
   return capture(2);
 }

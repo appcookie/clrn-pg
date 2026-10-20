@@ -12,7 +12,7 @@ import { launchArtworkTemplate } from '../launch-artwork';
 import { frameColorDistance } from '../animation-transition';
 import { setTimeout as delay } from 'node:timers/promises';
 import { stagingCardBounds } from '../staging-card';
-import { brandFadeEvidence, captureBrandFadeWithStartRecapture } from '../brand-fade';
+import { brandFadeEvidence, captureBrandFadeWithSamplingRecapture } from '../brand-fade';
 
 const locale = process.env.IOS_LOCALE || 'en';
 const group = process.env.IOS_GROUP || 'all';
@@ -115,7 +115,7 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
     const device = await launchApplication();
     try {
       await device.wait({ res: 'staging-confirmation-input' });
-      const captured = await captureBrandFadeWithStartRecapture(async attempt => {
+      const captured = await captureBrandFadeWithSamplingRecapture(async attempt => {
         await proxy.command('android/launch-network', { hold: true });
         await device.terminate(); await device.home(); await delay(1000);
         const before = await device.nativeScreenshot();
@@ -150,7 +150,7 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
           body: JSON.stringify(evidence), contentType: 'application/json',
         });
         return { frames, finalFrame, reference, region, exclusions, evidence };
-      }, reason => info.attach('launch-branding-start-recapture-reason', {
+      }, reason => info.attach('launch-branding-sampling-recapture-reason', {
         body: reason, contentType: 'text/plain',
       }));
       await assertBrandFade(captured.frames, captured.finalFrame, captured.reference,
