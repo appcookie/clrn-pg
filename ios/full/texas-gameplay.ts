@@ -76,23 +76,9 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
         await send(events([hand]));
       };
       /** 四种翻牌动作均可能短于原生截图间隔，改用持续录屏。 */
-      for (let attempt = 0; attempt < 2; attempt++) {
-        try {
-          await captureNativeTransition(device, `texas-${street}-cards`, animationInfo, regions[street], publish,
-            [], [], 0, 'videoFrames', undefined, undefined,
-            street === 'preflop' ? ['texas-preflop-cards-backed.png', 'texas-preflop-cards-turning.png'] : []);
-          break;
-        } catch (error) {
-          if (attempt || street === 'preflop' || !/必须采到起点和终点之间的真实动画帧|动画中途帧的实际画面须接近已审查轨迹/
-            .test(String(error))) throw error;
-          const previous = { flop: 'preflop', turn: 'flop', river: 'turn' } as const;
-          await send(restoreTable(self, previous[street]));
-          const count = { preflop: 0, flop: 3, turn: 4 }[previous[street]];
-          await gameCardNames(device, 'community_card', 'community_card_name_text',
-            ['ah', 'kd', '7c', '2s', 'qs'].map((card, index) => index < count ? card : 'back'));
-          await new Promise(resolve => setTimeout(resolve, 400));
-        }
-      }
+      await captureNativeTransition(device, `texas-${street}-cards`, animationInfo, regions[street], publish,
+        [], [], 0, 'videoFrames', undefined, undefined,
+        street === 'preflop' ? ['texas-preflop-cards-backed.png', 'texas-preflop-cards-turning.png'] : []);
     } else await send(restoreTable(self, street, opponent));
     const count = { preflop: 0, flop: 3, turn: 4, river: 5 }[street];
     await gameCardNames(device, 'community_card', 'community_card_name_text', ['ah', 'kd', '7c', '2s', 'qs']

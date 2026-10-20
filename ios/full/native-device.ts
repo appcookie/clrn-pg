@@ -87,6 +87,7 @@ export function keyboardDismissTarget(nodes: NativeNode[]): NativeNode | undefin
 export class NativeDevice {
   screenSize = { width: 0, height: 0 };
   nativeVideoBackend: 'simctl' | 'xctest' = 'simctl';
+  nativeScreenshotBackend: 'simctl' | 'xctest' = 'simctl';
   private scale = { x: 1, y: 1 };
   private timeout = 30_000;
   private lastInput: string | undefined;
@@ -174,6 +175,11 @@ export class NativeDevice {
   }
   screenshot() { return this.driver.screenshot(); }
   async nativeScreenshot(): Promise<Buffer> {
+    // Keep one backend throughout the case: XCTest includes the physical screen
+    // cutout, whereas simctl --mask=ignored does not. Never switch on a mismatch.
+    if (this.nativeScreenshotBackend === 'xctest') {
+      return normalizeNativeScreenshot(await this.driver.screenshot(30_000), this.screenSize);
+    }
     return normalizeNativeScreenshot(execFileSync('xcrun', ['simctl', 'io', this.udid, 'screenshot', '--type=png', '--mask=ignored', '-'],
       { maxBuffer: 32 * 1024 * 1024, timeout: 30_000, stdio: ['ignore', 'pipe', 'ignore'] }), this.screenSize);
   }

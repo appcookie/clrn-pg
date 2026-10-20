@@ -3,6 +3,33 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
 import { parseNativeTree, NativeDevice, keyboardDismissTarget, normalizeNativeScreenshot } from './native-device.ts';
+
+test('游戏 XCTest 截图保留原始像素，并明确限制单次截图为30秒', async () => {
+  const source = new PNG({ width: 5, height: 7 });
+  for (let i = 0; i < source.data.length; i++) source.data[i] = i % 256;
+  const bytes = PNG.sync.write(source);
+  let requests = 0;
+  const device = new NativeDevice({ screenshot: async timeout => {
+    requests++; assert.equal(timeout, 30_000); return bytes;
+  } }, 'test', async () => {}, async () => {}, 'test.app');
+  device.screenSize = { width: 5, height: 7 };
+  device.nativeScreenshotBackend = 'xctest';
+  assert.equal(await device.nativeScreenshot(), bytes);
+  assert.equal(requests, 1);
+});
+
+test('XCTest 截图错误和尺寸异常直接失败，不回退或重复采图掩盖错误', async () => {
+  let requests = 0;
+  const failure = Error('native screenshot unavailable');
+  const device = new NativeDevice({ screenshot: async () => { requests++; throw failure; } },
+    'test', async () => {}, async () => {}, 'test.app');
+  device.screenSize = { width: 5, height: 7 };
+  device.nativeScreenshotBackend = 'xctest';
+  await assert.rejects(device.nativeScreenshot(), error => error === failure);
+  assert.equal(requests, 1);
+  device.driver.screenshot = async () => PNG.sync.write(new PNG({ width: 2, height: 7 }));
+  await assert.rejects(device.nativeScreenshot(), /尺寸不匹配/);
+});
 import { returnToTabs } from './navigation.ts';
 test('原生截图只裁末尾一像素，保留每个内容像素，拒绝其他尺寸变化', () => {
   const source = new PNG({ width: 5, height: 7 });

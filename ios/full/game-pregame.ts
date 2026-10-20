@@ -209,22 +209,9 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await capture('leaderboard');
   await closeAnimatedGameMask(device, game, 'leaderboard', 'public-leader-board-container',
     screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      await animateGamePanel(device, game, 'game-record', 'game-record-button',
-        screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), animationInfo, 'enter', 'videoFrames', [],
-        async () => { await gameReady(device, 'review-board-description-text'); });
-      break;
-    } catch (error) {
-      // 短侧滑偶尔整段落在录屏的两帧之间；只在缺少合格中途帧时关闭真实侧栏并重采。
-      if (attempt === 2 || !String(error).includes('动画中途帧的实际画面须接近已审查轨迹')) throw error;
-      const retryMask = (await gameReady(device, 'screen-mask-touch-to-close')).bounds;
-      await device.input.tap({ x: Number(String(Math.round(retryMask.x + 8))), y: Number(String(Math.round(retryMask.y + 80))) });
-      await gameGone(device, 'screen-mask-touch-to-close');
-      await setTimeout(1_000);
-      await gameConnected(device, 2_000);
-    }
-  }
+  await animateGamePanel(device, game, 'game-record', 'game-record-button',
+    screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), animationInfo, 'enter', 'videoFrames', [],
+    async () => { await gameReady(device, 'review-board-description-text'); });
   await gameReady(device, 'review-board-description-text');
   await capture('game_record');
   // 战绩从右侧展开；说明文字只占面板中间，不能用其边界判断遮罩位置。
@@ -243,21 +230,9 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   const chat = (await gameReady(device, 'in-game-chat-mask')).bounds;
   /** 点击聊天抽屉外的真实遮罩。 */
   const closeChat = () => device.input.tap({ x: Number(String(Math.round(chat.x + 8))), y: Number(String(Math.round(chat.y + 80))) });
-  if (animationInfo) {
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        await captureNativeTransition(device, `${game}-chat-exit`, animationInfo,
-          screenBounds(device, { x: 110, y: 760, width: 140, height: 500 }), closeChat, [], [], 0, 'videoFrames');
-        break;
-      } catch (error) {
-        // 模拟器录屏偶尔在 300ms 退场期间重复上一帧；只对缺失中途采样重新触发真实抽屉。
-        if (attempt === 2 || !String(error).includes('必须采到起点和终点之间的真实动画帧')) throw error;
-        await gameGone(device, 'in-game-chat-container');
-        await tap(device, `${game}-chat-button`);
-        await gameReady(device, 'in-game-chat-container');
-      }
-    }
-  } else await closeChat();
+  if (animationInfo) await captureNativeTransition(device, `${game}-chat-exit`, animationInfo,
+    screenBounds(device, { x: 110, y: 760, width: 140, height: 500 }), closeChat, [], [], 0, 'videoFrames');
+  else await closeChat();
   await gameGone(device, 'in-game-chat-container');
   // 聊天抽屉退场后房间偶尔独立重连；下一段动画的起点必须是无遮挡的真实牌桌。
   await gameConnected(device, 2_000);
