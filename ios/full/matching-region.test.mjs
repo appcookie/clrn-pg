@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { animationRegion, matchingModalBounds, matchingSpinnerRegion } from './animation-region.ts';
+import { animationRegion, matchingModalBounds, matchingSpinnerRegion, matchingModalMotionMasks } from './animation-region.ts';
 
 const screenSize = { width: 1178, height: 2556 };
 const node = (res, bounds, clazz = 'XCUIElementTypeOther') => ({ res, bounds, clazz, children: [], visible: true });
@@ -37,4 +37,18 @@ test('完整旋转范围由原生弹窗和上下控件确定，不随图标旋�
   assert.throws(() => matchingSpinnerRegion([overlay, panel, ...controls], screenSize), /完整位于/);
   assert.throws(() => matchingSpinnerRegion([overlay, panel, ...controls,
     image({ x: 470, y: 1500, width: 240, height: 240 })], screenSize), /完整位于/);
+});
+
+test('弹窗遮罩在真实两次录像的不同旋转外接矩形下保持一致，位置回归仍失败', () => {
+  const image = bounds => node('assets/src/laiwan_resource/hall/image/icon_home_load@3x.png', bounds, 'XCUIElementTypeImage');
+  const first = matchingModalMotionMasks([overlay, panel, ...controls,
+    image({ x: 467, y: 1245, width: 247, height: 246 })], screenSize);
+  const next = matchingModalMotionMasks([overlay, panel, ...controls,
+    image({ x: 470, y: 1251, width: 241, height: 237 })], screenSize);
+  assert.deepEqual(next, first);
+  assert.throws(() => matchingModalMotionMasks([overlay, panel, ...controls,
+    image({ x: 490, y: 1251, width: 241, height: 237 })], screenSize), /中心偏离/);
+  assert.throws(() => matchingModalMotionMasks([overlay,
+    node(undefined, { ...panel.bounds, width: 665 }), ...controls,
+    image({ x: 467, y: 1245, width: 247, height: 246 })], screenSize), /布局偏离/);
 });

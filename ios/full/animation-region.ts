@@ -1,6 +1,29 @@
 import type { NativeDevice, NativeNode } from './native-device';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { slotNoEnergyRegions } from './slot-regions';
+import matchingMaskReference from './matching-mask-reference.json' with { type: 'json' };
+
+/** Preserve the reviewed exclusion across rotation phases. Native accessibility
+ * bounds rotate with the image, while the rendered circle stays in this box.
+ */
+export function matchingModalMotionMasks(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotMask[] {
+  const panel = matchingModalBounds(nodes, screen);
+  if ((['x', 'y', 'width', 'height'] as const).some(key => panel[key] !== matchingMaskReference.panel[key])) {
+    throw new Error('匹配弹窗原生布局偏离已审查基准');
+  }
+  const spinner = nodes.find(node => node.clazz === 'XCUIElementTypeImage'
+    && node.res?.endsWith('/icon_home_load@3x.png'));
+  const fixed = matchingMaskReference.spinner;
+  if (!spinner || Math.abs(spinner.bounds.x + spinner.bounds.width / 2 - fixed.x - fixed.width / 2) > 2
+    || Math.abs(spinner.bounds.y + spinner.bounds.height / 2 - fixed.y - fixed.height / 2) > 2) {
+    throw new Error('匹配旋转图标中心偏离已审查范围');
+  }
+  const countdown = nodes.find(node => node.res === 'game-matching-countdown-text')!;
+  return [
+    { ...countdown.bounds, reason: '独立匹配计时数字' },
+    { ...fixed, reason: '已审查的完整旋转图标固定范围；animation-17 独立验证图标画面与运动' },
+  ];
+}
 
 /** Endpoint exclusions originate in the screen tree; retain the true crop offset. */
 export function endpointMasksInRegion(masks: ScreenshotMask[], region: ScreenshotBounds): ScreenshotMask[] {
