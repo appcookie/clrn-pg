@@ -19,7 +19,11 @@ export async function captureXCTestRecording(device: Pick<NativeDevice, 'execute
     if (!start?.uuid || start.fps !== 60 || !Number.isFinite(start.startedAt)) {
       throw new Error('XCTest 没有确认本轮 60 fps 原生录屏。');
     }
-    await delay(500);
+    // Real CI recordings had a 1.05 s gap after the first encoded frame.
+    // Let the native encoder warm up before triggering a short transition.
+    // This buffer is not evidence of coverage: real middle-frame checks remain
+    // mandatory and will still reject a recording that misses the animation.
+    await delay(2000);
     triggerAt = performance.now();
     await trigger();
     await delay(durationMs);

@@ -7,6 +7,7 @@ import { animateGamePanel } from './game-panel-animation';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
+import { seatGuideMotionBounds } from './game-masks';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 
@@ -104,12 +105,12 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   if (phase !== 'second') {
     if (phase !== 'middle') {
       await capture('waiting_table');
-      if (game === 'zhajinhua' && animationInfo) {
+      if (animationInfo) {
         const arrows = (await gameNodes(device)).filter(node => node.res?.startsWith('seat-guide-')
           && node.bounds.width > 0 && node.bounds.height > 0);
         expect(arrows, '九个空座箭头必须分别可见').toHaveLength(9);
-        await captureMovingKeyframes(device, 'zhajinhua-seat-guides', animationInfo,
-          arrows.map(node => node.bounds));
+        await captureMovingKeyframes(device, `${game}-seat-guides`, animationInfo,
+          arrows.map(node => seatGuideMotionBounds(node.bounds)));
       }
       await animateGamePanel(device, game, 'drawer-menu', 'menu-button',
         screenBounds(device, { x: 120, y: 300, width: 180, height: 500 }), animationInfo, 'enter',

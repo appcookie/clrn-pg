@@ -6,7 +6,7 @@ import { compareScreenshot } from './device';
 import { gameNodes, gameReady, gameMarker, gameScreenshot } from './game-controls';
 import { expect } from '@playwright/test';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
-import { foregroundPanels, visibleMasks, networkStatusMask, countdownMask } from './game-masks';
+import { foregroundPanels, visibleMasks, networkStatusMask, countdownMask, screenshotMaskNodes, seatGuideMotionBounds } from './game-masks';
 import { captureToast } from './game-transient';
 import { captureChallengeAnimation } from './game-animation';
 import { verifyLoopAnimation } from './loop-animation';
@@ -51,7 +51,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   const masks: ScreenshotMask[] = [...inputMasks];
   const panels = foregroundPanels(nodes, device.screenSize);
   await testInfo.attach(`${name}-native-tree`, { body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json' });
-  for (const node of nodes) {
+  for (const node of screenshotMaskNodes(nodes)) {
     /**
      * 只排除仍可见的动态内容，保留覆盖其上的真实弹窗。
      * @param mask - 当前动态控件的范围。
@@ -63,9 +63,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     }
     if (/^seat-guide-\d+$/.test(node.res || '')) {
       // 根据实际箭头宽度留出一轮上下移动范围，不使用 Android 固定像素补偿。
-      const travel = Math.ceil(node.bounds.width * 11 / 24);
-      add({ x: node.bounds.x - 1, y: node.bounds.y - travel - 1,
-        width: node.bounds.width + 2, height: node.bounds.height + travel * 2 + 2,
+      add({ ...seatGuideMotionBounds(node.bounds),
         reason: `${node.res} 完整箭头动画范围` });
       continue;
     }

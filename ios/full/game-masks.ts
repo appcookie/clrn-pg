@@ -1,6 +1,31 @@
 import type { NativeNode } from './game-controls';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
+/** iOS hides background accessibility elements while a modal is open even when
+ * their pixels remain visible. Only recover seat guides for masking, never for
+ * interaction/readiness, and keep their current-tree identity for panel clipping.
+ */
+export function screenshotMaskNodes(nodes: NativeNode[]): NativeNode[] {
+  const result = new Set(nodes);
+  const visited = new Set<NativeNode>();
+  const visit = (node: NativeNode) => {
+    if (visited.has(node)) return;
+    visited.add(node);
+    if (/^seat-guide-\d+$/.test(node.res || '') && node.bounds.width > 0 && node.bounds.height > 0) result.add(node);
+    node.children?.forEach(visit);
+  };
+  nodes.forEach(visit);
+  return [...result];
+}
+
+/** Include the entire vertical arrow travel, not just its layout rectangle. */
+export function seatGuideMotionBounds(bounds: ScreenshotBounds): ScreenshotBounds {
+  const travel = Math.ceil(bounds.width * 11 / 24);
+  const x = Math.floor(bounds.x - 1), y = Math.floor(bounds.y - travel - 1);
+  return { x, y, width: Math.ceil(bounds.x + bounds.width + 1) - x,
+    height: Math.ceil(bounds.y + bounds.height + travel + 1) - y };
+}
+
 /**
  * 根据前景就绪标记找到实际内容容器；Fabric 可能把背景与弹层压平成兄弟节点。
  * @param nodes - 保留父子关系的可见节点。
