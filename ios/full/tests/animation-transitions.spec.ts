@@ -89,6 +89,7 @@ if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       const entrance = await device.info({ res: 'hall-search-button' });
       /** 通过 XCUITest 触发按钮，使 Simulator 同时录制屏幕。 */
