@@ -21,7 +21,9 @@ type NativeFrame = { capturedAt: number; png: string };
  * @param right - 第二张局部 PNG。
  */
 export function frameColorDistance(left: Buffer, right: Buffer): number {
-  const a = PNG.sync.read(left), b = PNG.sync.read(right);
+  return pixelColorDistance(PNG.sync.read(left), PNG.sync.read(right));
+}
+function pixelColorDistance(a: PNG, b: PNG): number {
   if (a.width !== b.width || a.height !== b.height) throw new Error('动画帧尺寸变化');
   let difference = 0;
   for (let offset = 0; offset < a.data.length; offset += 4) {
@@ -77,14 +79,25 @@ export function framePaletteDistance(left: Buffer, right: Buffer): number {
 export function middleCandidates(before: Buffer, after: Buffer, timeline: Buffer[],
   samplingMethod: 'motionFrames' | 'launchFrames' | 'videoFrames'): {
     frame: Buffer; index: number; progress: number; remaining: number }[] {
-  const total = frameColorDistance(before, after);
+  return transitionEvidence(before, after, timeline, samplingMethod).candidates;
+}
+
+/** Decode each frame once while retaining the original per-pixel arithmetic and thresholds. */
+export function transitionEvidence(before: Buffer, after: Buffer, timeline: Buffer[],
+  samplingMethod: 'motionFrames' | 'launchFrames' | 'videoFrames') {
+  const start = PNG.sync.read(before), end = PNG.sync.read(after);
+  const total = pixelColorDistance(start, end);
   const minimum = samplingMethod === 'videoFrames' ? Math.min(7, total * 0.2) : 1;
-  return timeline.map((frame, index) => ({ frame, index,
-    progress: frameColorDistance(before, frame) / total,
-    remaining: frameColorDistance(after, frame) / total }))
+  const measurements = timeline.map((frame, index) => {
+    const picture = PNG.sync.read(frame);
+    const fromStart = pixelColorDistance(start, picture), fromEnd = pixelColorDistance(end, picture);
+    return { frame, index, progress: fromStart / total, remaining: fromEnd / total, fromStart, fromEnd };
+  });
+  const candidates = measurements
     .filter(item => item.progress > 0.02 && item.remaining > 0.02
-      && frameColorDistance(before, item.frame) > minimum
-      && frameColorDistance(after, item.frame) > minimum);
+      && item.fromStart > minimum && item.fromEnd > minimum)
+    .map(({ frame, index, progress, remaining }) => ({ frame, index, progress, remaining }));
+  return { total, progress: measurements.map(item => item.progress), candidates };
 }
 
 /** Require a recorded frame to follow an approved spatial phase, away from both endpoints.
@@ -213,14 +226,13 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         `${name} 第 ${index + 1} 个区域必须独立运动`).toBe(true);
     }
   }
-  const total = frameColorDistance(before, after);
+  const { total, progress, candidates } = transitionEvidence(before, after, timeline, 'videoFrames');
   expect(total, '入口点击必须产生足够大的可见变化').toBeGreaterThan(3);
   expect(frameColorDistance(timeline[0], before), '录屏首帧必须更接近起点，不能只有动作后的画面')
     .toBeLessThan(frameColorDistance(timeline[0], after));
   // BottomSheet 的弹簧轨迹可能越过终点；用“同时区别于首尾”选关键帧。
-  const candidates = middleCandidates(before, after, timeline, 'videoFrames');
   await testInfo.attach(`${name}-progress`, {
-    body: JSON.stringify({ total, frames: timeline.map(frame => frameColorDistance(before, frame) / total) }),
+    body: JSON.stringify({ total, frames: progress }),
     contentType: 'application/json',
   });
   expect(candidates.length, '必须采到起点和终点之间的真实动画帧').toBeGreaterThan(0);

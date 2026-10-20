@@ -86,6 +86,7 @@ export function keyboardDismissTarget(nodes: NativeNode[]): NativeNode | undefin
 
 export class NativeDevice {
   screenSize = { width: 0, height: 0 };
+  nativeVideoBackend: 'simctl' | 'xctest' = 'simctl';
   private scale = { x: 1, y: 1 };
   private timeout = 30_000;
   private lastInput: string | undefined;

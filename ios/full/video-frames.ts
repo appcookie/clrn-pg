@@ -6,6 +6,7 @@ import type { TestInfo } from '@playwright/test';
 import type { NativeDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { validateRecordedTimeline, type ProbeFrame } from './video-timeline';
+import { recordXCTestVideo } from './xctest-video';
 
 export type RecordedFrames = Buffer[] & { timestampsMs?: number[] };
 
@@ -16,52 +17,56 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   const directory = testInfo.outputPath(`video-${name}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
   const video = path.join(directory, 'capture.mp4');
-  const processStartedAt = performance.now();
-  const processStartedUtc = new Date().toISOString();
-  const recorder = spawn('xcrun', ['simctl', 'io', device.udid, 'recordVideo', '--codec=h264', '--mask=ignored', '--force', video],
-    { stdio: ['ignore', 'ignore', 'pipe'] });
-  let stderr = '', failed: Error | undefined, recordingStartedAt = 0;
-  recorder.stderr.on('data', chunk => {
-    stderr = (stderr + String(chunk)).slice(-64 * 1024);
-    if (!recordingStartedAt && stderr.includes('Recording started')) recordingStartedAt = performance.now();
-  });
-  recorder.on('error', error => { failed = error; });
-  const finished = new Promise<{ code: number | null; signal: string | null }>(resolve =>
-    recorder.once('close', (code, signal) => resolve({ code, signal })));
   let triggerAt = 0, stoppedAt = 0;
-  try {
-    // The first recorded frame took 12.6s on a real CI runner; allow up to 30s.
-    for (let attempt = 0; !recordingStartedAt; attempt++) {
-      if (failed) throw failed;
-      if (recorder.exitCode !== null || attempt >= 300) throw new Error(`iOS 录屏未启动：${stderr}`);
-      await delay(100);
-    }
-    // simctl documents this message as the first processed frame. Actual CI media
-    // durations nevertheless differed from wall-clock recording time. This pre-roll
-    // is only a buffer; endpoint pixels and intermediate motion must prove coverage.
-    await delay(4000);
-    if (failed || recorder.exitCode !== null) throw failed ?? new Error(`iOS 录屏提前退出：${stderr}`);
-    triggerAt = performance.now();
-    await trigger();
-    await delay(durationMs);
-  } finally {
-    stoppedAt = performance.now();
-    if (recorder.exitCode === null && recorder.signalCode === null) recorder.kill('SIGINT');
-    // simctl drains in-flight frames after SIGINT; CI exceeded the former 60s budget.
-    const timeout = setTimeout(() => recorder.kill('SIGKILL'), 180_000);
-    const result = await finished;
-    clearTimeout(timeout);
-    const diagnostic = path.join(directory, 'recording.json');
-    let videoBytes = 0;
-    try { videoBytes = statSync(video).size; } catch {}
-    writeFileSync(diagnostic, JSON.stringify({ processStartedUtc,
-      startupMs: recordingStartedAt ? recordingStartedAt - processStartedAt : null,
-      recordingMs: recordingStartedAt && recordingStartedAt <= stoppedAt ? stoppedAt - recordingStartedAt : null,
-      startedAfterStop: recordingStartedAt > stoppedAt,
-      stopMs: performance.now() - stoppedAt, ...result, videoBytes, stderr }, null, 2));
-    await testInfo.attach(`${name}-recorder-process`, { path: diagnostic, contentType: 'application/json' });
-    if (result.signal === 'SIGKILL' || (result.code !== 0 && result.code !== 130 && result.signal !== 'SIGINT')) {
-      throw new Error(`iOS 录屏失败：${stderr}`);
+  if (device.nativeVideoBackend === 'xctest') {
+    ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs));
+  } else {
+    const processStartedAt = performance.now();
+    const processStartedUtc = new Date().toISOString();
+    const recorder = spawn('xcrun', ['simctl', 'io', device.udid, 'recordVideo', '--codec=h264', '--mask=ignored', '--force', video],
+      { stdio: ['ignore', 'ignore', 'pipe'] });
+    let stderr = '', failed: Error | undefined, recordingStartedAt = 0;
+    recorder.stderr.on('data', chunk => {
+      stderr = (stderr + String(chunk)).slice(-64 * 1024);
+      if (!recordingStartedAt && stderr.includes('Recording started')) recordingStartedAt = performance.now();
+    });
+    recorder.on('error', error => { failed = error; });
+    const finished = new Promise<{ code: number | null; signal: string | null }>(resolve =>
+      recorder.once('close', (code, signal) => resolve({ code, signal })));
+    try {
+      // The first recorded frame took 12.6s on a real CI runner; allow up to 30s.
+      for (let attempt = 0; !recordingStartedAt; attempt++) {
+        if (failed) throw failed;
+        if (recorder.exitCode !== null || attempt >= 300) throw new Error(`iOS 录屏未启动：${stderr}`);
+        await delay(100);
+      }
+      // simctl documents this message as the first processed frame. Actual CI media
+      // durations nevertheless differed from wall-clock recording time. This pre-roll
+      // is only a buffer; endpoint pixels and intermediate motion must prove coverage.
+      await delay(4000);
+      if (failed || recorder.exitCode !== null) throw failed ?? new Error(`iOS 录屏提前退出：${stderr}`);
+      triggerAt = performance.now();
+      await trigger();
+      await delay(durationMs);
+    } finally {
+      stoppedAt = performance.now();
+      if (recorder.exitCode === null && recorder.signalCode === null) recorder.kill('SIGINT');
+      // simctl drains in-flight frames after SIGINT; CI exceeded the former 60s budget.
+      const timeout = setTimeout(() => recorder.kill('SIGKILL'), 180_000);
+      const result = await finished;
+      clearTimeout(timeout);
+      const diagnostic = path.join(directory, 'recording.json');
+      let videoBytes = 0;
+      try { videoBytes = statSync(video).size; } catch {}
+      writeFileSync(diagnostic, JSON.stringify({ processStartedUtc,
+        startupMs: recordingStartedAt ? recordingStartedAt - processStartedAt : null,
+        recordingMs: recordingStartedAt && recordingStartedAt <= stoppedAt ? stoppedAt - recordingStartedAt : null,
+        startedAfterStop: recordingStartedAt > stoppedAt,
+        stopMs: performance.now() - stoppedAt, ...result, videoBytes, stderr }, null, 2));
+      await testInfo.attach(`${name}-recorder-process`, { path: diagnostic, contentType: 'application/json' });
+      if (result.signal === 'SIGKILL' || (result.code !== 0 && result.code !== 130 && result.signal !== 'SIGINT')) {
+        throw new Error(`iOS 录屏失败：${stderr}`);
+      }
     }
   }
   await testInfo.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
@@ -77,7 +82,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     || x + width > device.screenSize.width || y + height > device.screenSize.height) throw new Error('动画区域必须在原始截图范围内。');
   try {
     execFileSync('ffmpeg', ['-y', '-v', 'error', '-i', video, '-vf',
-      `crop=${width}:${height}:${x}:${y}:exact=1`, '-fps_mode', 'passthrough', path.join(frames, 'frame-%04d.png')], { timeout: 60000 });
+      `crop=${width}:${height}:${x}:${y}:exact=1`, '-fps_mode', 'passthrough',
+      // PNG compression changes file size, never pixels; avoid spending the
+      // native test budget compressing temporary full-resolution frame files.
+      '-compression_level', '1', path.join(frames, 'frame-%04d.png')], { timeout: 180_000 });
     const files = readdirSync(frames).filter(file => file.endsWith('.png')).sort();
     if (files.length !== timeline.timestampsMs.length) throw new Error('解码帧数与真实录屏时戳不一致。');
     return Object.assign(files.map(file => readFileSync(path.join(frames, file))), { timestampsMs: timeline.timestampsMs });

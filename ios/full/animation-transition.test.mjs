@@ -3,7 +3,7 @@ import test from 'node:test';
 import { PNG } from 'pngjs';
 import { readFileSync } from 'node:fs';
 import { assertReviewedVideoMiddle, frameColorDistance, middleCandidates, reviewedLauncherStart,
-  reviewedVideoMiddleEvidence } from './animation-transition.ts';
+  reviewedVideoMiddleEvidence, transitionEvidence } from './animation-transition.ts';
 
 function picture(top) {
   const png = new PNG({ width: 120, height: 180 });
@@ -15,6 +15,21 @@ function picture(top) {
   return PNG.sync.write(png);
 }
 const before = picture(180), middle = picture(100), after = picture(30);
+
+test('单次解码与原始逐对比较得到完全一致的距离、帧序号和候选结果', () => {
+  const frames = Array.from({ length: 16 }, (_, i) => picture(180 - i * 10));
+  for (const method of ['videoFrames', 'motionFrames', 'launchFrames']) {
+    const total = frameColorDistance(before, after), minimum = method === 'videoFrames' ? Math.min(7, total * .2) : 1;
+    const previous = frames.map((frame, index) => ({ frame, index,
+      progress: frameColorDistance(before, frame) / total, remaining: frameColorDistance(after, frame) / total }));
+    const expected = previous.filter(item => item.progress > .02 && item.remaining > .02
+      && frameColorDistance(before, item.frame) > minimum && frameColorDistance(after, item.frame) > minimum);
+    const actual = transitionEvidence(before, after, frames, method);
+    assert.equal(actual.total, total);
+    assert.deepEqual(actual.progress, previous.map(item => item.progress));
+    assert.deepEqual(actual.candidates, expected);
+  }
+});
 
 test('滑入轨迹必须包含区别于起点和终点的真实中途画面', () => {
   assert.equal(middleCandidates(before, after, [before, before, after], 'videoFrames').length, 0);

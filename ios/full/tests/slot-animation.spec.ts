@@ -15,15 +15,18 @@ import { captureMovingKeyframes } from '../loop-keyframes';
 import { waitAbsent } from '../native-state';
 import { gameReady, gameScreenshot } from '../game-controls';
 import { motionParts, samePixels } from '../motion-regions';
+import { slotReelRegions } from '../slot-regions';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('all three native slot reels and reward types animate from real spin responses', async ({}, testInfo) => {
 
-  test.setTimeout(1_200_000);
+  // Seven independent native transitions plus login and loop recordings.
+  test.setTimeout(2_700_000);
   await withAndroidProxy(async proxy => {
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
       const scenario = androidScenarios('en', 'social').find(item => item.pageLabel === 'signed_in_hall');
@@ -41,12 +44,11 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressBanner, [], [], 0, 'videoFrames',
         undefined, undefined, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
           'slot-popup-enter-reels-blank.png']);
-      await device.wait({ res: 'slot-machine-view' });
-      const reels = [
-        screenBounds(device, { x: 143, y: 420, width: 137, height: 362 }),
-        screenBounds(device, { x: 287, y: 420, width: 137, height: 362 }),
-        screenBounds(device, { x: 431, y: 420, width: 137, height: 362 }),
-      ];
+      await device.wait({ res: 'spin-button' });
+      const { window: reelWindow, reels } = slotReelRegions(await device.nodes());
+      await testInfo.attach('slot-native-reel-regions', {
+        body: JSON.stringify({ window: reelWindow, reels }), contentType: 'application/json',
+      });
       for (const [currency, reward] of [
         ['coin', 'prize_coin_text_animation_text'],
         ['currency_diamond', 'prize_diamond_text_animation_text'],
@@ -57,7 +59,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         /** 点击正式老虎机的旋转按钮，网络夹具只固定奖励响应。 */
         const pressSpin = () => device!.input.tap({ x: Number(String(Math.round(button.bounds.x + button.bounds.width / 2))), y: Number(String(Math.round(button.bounds.y + button.bounds.height / 2))) });
         await captureNativeTransition(device, `slot-${currency}-reels`, testInfo,
-          screenBounds(device, { x: 124, y: 420, width: 469, height: 362 }), pressSpin, [], reels, 1500);
+          reelWindow, pressSpin, [], reels, 1500);
         const prize = await device.info({ res: reward });
         expect(Number(prize.text), `${currency} 应显示真实奖励`).toBeGreaterThan(0);
       }
@@ -68,10 +70,10 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const pressClose = () => device!.input.tap({ x: Number(String(Math.round(close.bounds.x + close.bounds.width / 2))), y: Number(String(Math.round(close.bounds.y + close.bounds.height / 2))) });
       await captureNativeTransition(device, 'slot-popup-exit', testInfo,
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressClose, [], [], 0, 'videoFrames');
-      await waitAbsent(device, { res: 'slot-machine-view' });
+      await waitAbsent(device, { res: 'spin-button' });
       const bannerAgain = await device.info({ res: 'slot-banner' });
       await device.input.tap({ x: Number(String(Math.round(bannerAgain.bounds.x + bannerAgain.bounds.width / 2))), y: Number(String(Math.round(bannerAgain.bounds.y + bannerAgain.bounds.height / 2))) });
-      await device.wait({ res: 'slot-machine-view' });
+      await device.wait({ res: 'spin-button' });
       // 控件树在弹层入场中途已出现；等不受滚轮图案影响的左边框停止移动后再点击。
       const noEnergyRegion = screenBounds(device, { x: 80, y: 510, width: 40, height: 380 });
       /** 只采集不会受滚轮随机停靠图案影响的弹层左边框。 */
@@ -104,7 +106,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         [], [], 0, 'videoFrames');
       const final = await proxy.command<{ spins: number }>('android/slot');
       expect(final.spins, '能量不足由第四次旋转请求触发').toBe(4);
-      await waitAbsent(device, { res: 'slot-machine-view' });
+      await waitAbsent(device, { res: 'spin-button' });
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
       throw error;
