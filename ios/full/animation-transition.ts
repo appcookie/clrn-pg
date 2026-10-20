@@ -8,12 +8,10 @@ import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameScreenshot } from './game-controls';
-import { cropMotionRegion, motionParts, samePixels } from './motion-regions';
+import { cropMotionRegion, cropMotionRegions, motionParts, samePixels } from './motion-regions';
 import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
-
-type NativeFrame = { capturedAt: number; png: string };
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -189,16 +187,14 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const beforeNodes = await device.nodes();
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
   samplingMethod = 'videoFrames';
-  // iOS 的所有轨迹使用 simctl 原分辨率视频，截图通道只用于精确端点。
+  // 使用原分辨率原生视频，截图通道只用于精确端点。
   const recorded = await videoRecorder(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
     await trigger();
     if (settleMs) await setTimeout(settleMs);
     if (afterReady) await afterReady();
   }, testInfo);
-  const frames = recorded.map((png, index) => ({ capturedAt: recorded.timestampsMs?.[index] ?? index * 1000 / 30,
-    png: png.toString('base64') }));
-  expect(frames.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
-  const originals = frames.map(frame => Buffer.from(frame.png, 'base64'));
+  expect(recorded.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
+  const originals = recorded;
   if (inspectFrames) await inspectFrames(originals, testInfo);
   const afterScreen = await gameScreenshot(device);
   const afterNodes = await device.nodes();
@@ -209,7 +205,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const timeline = originals.map(crop);
   const after = crop(afterScreen);
   await testInfo.attach(`${name}-timeline`, {
-    body: JSON.stringify(frames.map(({ capturedAt }) => capturedAt)), contentType: 'application/json',
+    body: JSON.stringify(recorded.map((_, index) => recorded.timestampsMs?.[index] ?? null)), contentType: 'application/json',
   });
   for (const [index, frame] of timeline.entries()) {
     if (samplingMethod === 'videoFrames' && index % 5 !== 0 && index !== timeline.length - 1) continue;
@@ -220,7 +216,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   expect(frameColorDistance(timeline[0], before), '录屏首帧须包含动作前的实际布局').toBeLessThan(10);
   expect(framePaletteDistance(timeline.at(-1)!, after), '录屏结束时动画必须完成').toBeLessThan(10);
   if (requiredRegions.length) {
-    const parts = originals.map(frame => motionParts(maskScreenshot(frame, masks), requiredRegions).regions);
+    const parts = originals.map(frame => cropMotionRegions(maskScreenshot(frame, masks), requiredRegions));
     for (const index of requiredRegions.keys()) {
       expect(parts.some(sample => !samePixels(sample[index], parts[0][index])),
         `${name} 第 ${index + 1} 个区域必须独立运动`).toBe(true);

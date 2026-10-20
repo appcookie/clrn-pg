@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { PNG } from 'pngjs';
 const require = createRequire(import.meta.url);
-const { cropMotionRegion, motionParts, samePixels } = require('./motion-regions.ts');
+const { cropMotionRegion, cropMotionRegions, motionParts, samePixels } = require('./motion-regions.ts');
 const regions = [{ x: 0, y: 0, width: 4, height: 4 }, { x: 4, y: 0, width: 4, height: 4 }];
 
 test('录屏裁图优化保持原始 RGBA 与旧路径 PNG 字节完全一致，不缩放或重绘', () => {
@@ -13,6 +13,9 @@ test('录屏裁图优化保持原始 RGBA 与旧路径 PNG 字节完全一致，
   for (const region of [{ x: 3, y: 7, width: 33, height: 45 }, { x: 0, y: 0, width: 101, height: 87 }]) {
     assert.deepEqual(cropMotionRegion(bytes, region), motionParts(bytes, [region]).regions[0]);
   }
+  const reels = [3, 36, 69].map(x => ({ x, y: 7, width: 30, height: 70 }));
+  assert.deepEqual(cropMotionRegions(bytes, reels), motionParts(bytes, reels).regions);
+  assert.throws(() => cropMotionRegions(bytes, [reels[0], reels[0]]), /不能重叠/);
   for (const region of [{ x: -1, y: 0, width: 5, height: 5 }, { x: 0, y: 0, width: 102, height: 87 },
     { x: 0, y: 0, width: 0, height: 1 }, { x: 0.5, y: 0, width: 2, height: 2 }]) {
     assert.throws(() => cropMotionRegion(bytes, region), /超出实际截图/);
