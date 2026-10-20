@@ -18,6 +18,7 @@ import { captureMovingKeyframes } from './loop-keyframes';
 import { captureAssetSequence } from './asset-sequence';
 import { motionParts, samePixels } from './motion-regions';
 import { maskScreenshot } from './screenshot';
+import { nativeOwnCardRegion } from './texas-card-region';
 
 /**
  * 复用网页的德州消息夹具，覆盖各街、操作、摊牌、结算和玩家资料。
@@ -83,13 +84,11 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
         const state = restoreTable(self, street, opponent);
         await send({ ...state, queue: state.queue.map(item => item.event === 'hand_card'
           ? { ...item, hole_card: ['back', 'back'] } : item) });
-        await expect.poll(async () => (await gameNodes(device))
-          .filter(node => node.res === 'player_card' && node.bounds.x >= regions.preflop.x
-            && node.bounds.y >= regions.preflop.y
-            && node.bounds.x + node.bounds.width <= regions.preflop.x + regions.preflop.width
-            && node.bounds.y + node.bounds.height <= regions.preflop.y + regions.preflop.height)
-          .map(node => gameSemanticText(node, 'player_card_name_text')).sort(),
-        { timeout: 30_000 }).toEqual(['back', 'back']);
+        await expect(async () => {
+          const current = nativeOwnCardRegion(await gameNodes(device), self, device.screenSize);
+          expect(current.cards).toEqual(['back', 'back']);
+          regions.preflop = current.bounds;
+        }).toPass({ timeout: 30_000, intervals: [250] });
       }
       const publish = () => street === 'preflop'
         ? send(events([{ event: 'deal_hole_card', player_id: self, hole_card: ['as', 'ad'] }]))

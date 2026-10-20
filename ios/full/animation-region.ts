@@ -122,6 +122,9 @@ export function nativeReviewPanelBounds(nodes: NativeNode[], screen: { width: nu
 
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  // The preflop caller has already required the current self player's two
+  // semantic back cards and derived this complete pair geometry.
+  if (name === 'texas-preflop-cards') return { bounds: fallback, source: 'native-self-player-card-pair' };
   if (/^(?:texas-holdem|zhajinhua)-chat-(?:enter|exit)$/.test(name)) return {
     bounds: nativeChatPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-chat-content-container',
