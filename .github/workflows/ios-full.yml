@@ -194,7 +194,9 @@ jobs:
         if: always() && env.IOS_SIMULATOR_UDID != ''
         run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
   animation-gate:
-    name: iOS animation gate
+    # GitHub treats skipped checks as successful. Manual diagnostics must never
+    # publish the same check context as the required PR/master aggregate.
+    name: ${{ github.event_name == 'workflow_dispatch' && 'iOS animation diagnostics' || 'iOS animation gate' }}
     if: always() && github.event_name != 'workflow_dispatch'
     needs: [plan, proxy-check, native]
     runs-on: ubuntu-latest
