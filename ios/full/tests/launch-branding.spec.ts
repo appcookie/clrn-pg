@@ -6,6 +6,7 @@ import { withAndroidProxy } from '../proxy';
 import { gameReady } from '../game-controls';
 import { waitForHallAfterLaunchHold } from '../launch-recovery';
 import { captureLaunchBranding, launchScreenshot, verifyLaunchCapture } from '../launch-capture';
+import { recordNativeVideoFrames } from '../video-frames';
 import { launchArtworkTemplate } from '../launch-artwork';
 
 const locale = process.env.IOS_LOCALE || 'en';
@@ -32,18 +33,56 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
           expect(network.requested).toBeGreaterThan(0);
           return Date.now() - network.lastRequestedAt;
         }, { timeout: 30000, intervals: [500] }).toBeGreaterThan(6000);
-        await tap(device, 'confirm-button');
-        // 健康请求只有5秒窗口：一轮并行采集后即释放，所有像素与baseline验证离线执行。
-        const capture = await captureLaunchBranding({ nodes: () => device.nodes(),
-          screenshot: () => launchScreenshot(device.udid, device.screenSize),
-          release: () => proxy.command('android/launch-network', { hold: false }) });
+        // 先让 Simulator 开始录制真实帧，再点确认。慢 runner 的 simctl 单帧截图
+        // 曾耗时 7–10 秒，应用已到大厅；录像保留了同一启动窗口内的原始帧。
+        let captured: Awaited<ReturnType<typeof captureLaunchBranding>> | undefined;
+        const frames = await recordNativeVideoFrames(device, 'launch-branding-window',
+          { x: 0, y: 0, ...device.screenSize }, async () => {
+            await tap(device, 'confirm-button');
+            // 健康请求只有5秒窗口：一轮并行采集后即释放，像素验证离线执行。
+            captured = await captureLaunchBranding({ nodes: () => device.nodes(),
+              screenshot: () => launchScreenshot(device.udid, device.screenSize),
+              release: () => proxy.command('android/launch-network', { hold: false }) });
+          }, info, 500);
+        if (!captured) throw new Error('启动录屏结束后缺少原生截图');
+        const capture = captured;
         await info.attach('launch-capture-window', { body: JSON.stringify({ elapsedMs: capture.elapsedMs,
           releasedByBudget: capture.releasedByBudget }), contentType: 'application/json' });
         await info.attach('launch-branding-captured', { body: capture.bytes, contentType: 'image/png' });
         const reference = launchArtworkTemplate(await simulatorAppPath(), device.screenSize.width, device.screenSize.height);
-        const evidence = verifyLaunchCapture(capture.bytes, capture.nodes, device.screenSize, reference);
+        let bytes = capture.bytes;
+        let evidence: ReturnType<typeof verifyLaunchCapture>;
+        try { evidence = verifyLaunchCapture(bytes, capture.nodes, device.screenSize, reference); }
+        catch (error) {
+          if (!(error instanceof Error) || error.message !== '截图不是完整无遮挡的发布包启动插画'
+            || !capture.releasedByBudget || capture.elapsedMs <= 4000) throw error;
+          // 仅当原图超过健康窗口并已释放 hold，才在同一真实视频里寻找完整
+          // 启动画面。每帧仍通过原有无遮挡、发布包背景与品牌文字断言。
+          let found: { index: number; bytes: Buffer; evidence: ReturnType<typeof verifyLaunchCapture> } | undefined;
+          for (let index = 0; index < frames.length; index++) {
+            try {
+              const candidate = verifyLaunchCapture(frames[index], capture.nodes, device.screenSize, reference);
+              found = { index, bytes: frames[index], evidence: candidate };
+              break;
+            } catch (candidateError) {
+              if (!(candidateError instanceof Error)
+                || !['截图不是完整无遮挡的发布包启动插画', '启动页缺少真实可见的品牌文字像素'].includes(candidateError.message)) {
+                throw candidateError;
+              }
+            }
+          }
+          if (!found) throw error;
+          bytes = found.bytes;
+          evidence = found.evidence;
+          await info.attach('launch-branding-video-frame-selection', { body: JSON.stringify({
+            source: 'same-real-simulator-video', frameIndex: found.index,
+            originalTimestampMs: frames.timestampsMs?.[found.index],
+            lateScreenshotElapsedMs: capture.elapsedMs,
+          }), contentType: 'application/json' });
+          await info.attach('launch-branding-selected-video-frame', { body: bytes, contentType: 'image/png' });
+        }
         await info.attach('launch-capture-evidence', { body: JSON.stringify(evidence), contentType: 'application/json' });
-        await assertVisual(capture.bytes, `${locale}-launch-branding`, info);
+        await assertVisual(bytes, `${locale}-launch-branding`, info);
         const recovery = await waitForHallAfterLaunchHold(device);
         await info.attach('launch-health-recovery', { body: JSON.stringify(recovery), contentType: 'application/json' });
       } catch (error) { await captureFailure(device, info); throw error; }
