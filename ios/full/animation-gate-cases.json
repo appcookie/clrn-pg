@@ -69,7 +69,14 @@
       "group": "rooms",
       "file": "tests/animation-transitions.spec.ts",
       "title": "private room game picker slides into and out of the iOS screen",
-      "images": []
+      "images": [
+        "game-picker-enter-start.png",
+        "game-picker-enter-middle.png",
+        "game-picker-enter-end.png",
+        "game-picker-exit-start.png",
+        "game-picker-exit-middle.png",
+        "game-picker-exit-end.png"
+      ]
     },
     {
       "id": "animation-7",

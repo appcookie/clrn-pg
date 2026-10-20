@@ -617,6 +617,84 @@
         ]
       },
       "review": "逐图审查九张原始帧：俱乐部菜单进入/退出分别保留未显示、真实半透明过渡和完整菜单状态；牌局空态保留原有空俱乐部画面、低透明度英文提示和稳定终态。均取自通过断言的原生录屏，没有插帧或重绘。"
+    },
+    {
+      "path": "private-room/create-room/game-picker-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "1a2087f61a33b25292c87446b79502d11dc0a271c6b3f69e2db64d2fcae75974",
+      "source": {
+        "sourceRun": 39473027457,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473027457",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-6-1"
+        ]
+      },
+      "review": "逐张检查全部6张原生关键帧：进场起点抽屉未出现，中段自底部滑入且背景渐暗，终点完整显示三个游戏；退场从完整抽屉经向下移动恢复原页面。文字图标清晰，无错误页、加载遮罩或隐私输入。"
+    },
+    {
+      "path": "private-room/create-room/game-picker-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "3305f0f4f9c673b8703eb34a537ff97dc9fb41c2535c5972b2af00b7af2f4963",
+      "source": {
+        "sourceRun": 39473027457,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473027457",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-6-1"
+        ]
+      },
+      "review": "逐张检查全部6张原生关键帧：进场起点抽屉未出现，中段自底部滑入且背景渐暗，终点完整显示三个游戏；退场从完整抽屉经向下移动恢复原页面。文字图标清晰，无错误页、加载遮罩或隐私输入。"
+    },
+    {
+      "path": "private-room/create-room/game-picker-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a9f2b58ea95a2a2b26d097b107d8bef30ffa50d60026dbd5f5b19092ca0a0571",
+      "source": {
+        "sourceRun": 39473027457,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473027457",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-6-1"
+        ]
+      },
+      "review": "逐张检查全部6张原生关键帧：进场起点抽屉未出现，中段自底部滑入且背景渐暗，终点完整显示三个游戏；退场从完整抽屉经向下移动恢复原页面。文字图标清晰，无错误页、加载遮罩或隐私输入。"
+    },
+    {
+      "path": "private-room/create-room/game-picker-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a9f2b58ea95a2a2b26d097b107d8bef30ffa50d60026dbd5f5b19092ca0a0571",
+      "source": {
+        "sourceRun": 39473027457,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473027457",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-6-1"
+        ]
+      },
+      "review": "逐张检查全部6张原生关键帧：进场起点抽屉未出现，中段自底部滑入且背景渐暗，终点完整显示三个游戏；退场从完整抽屉经向下移动恢复原页面。文字图标清晰，无错误页、加载遮罩或隐私输入。"
+    },
+    {
+      "path": "private-room/create-room/game-picker-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "9ae21c4bf6e0948b284fb124401ce9dab024579d488f66a136fc89925fc91792",
+      "source": {
+        "sourceRun": 39473027457,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473027457",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-6-1"
+        ]
+      },
+      "review": "逐张检查全部6张原生关键帧：进场起点抽屉未出现，中段自底部滑入且背景渐暗，终点完整显示三个游戏；退场从完整抽屉经向下移动恢复原页面。文字图标清晰，无错误页、加载遮罩或隐私输入。"
+    },
+    {
+      "path": "private-room/create-room/game-picker-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "1a2087f61a33b25292c87446b79502d11dc0a271c6b3f69e2db64d2fcae75974",
+      "source": {
+        "sourceRun": 39473027457,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473027457",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-6-1"
+        ]
+      },
+      "review": "逐张检查全部6张原生关键帧：进场起点抽屉未出现，中段自底部滑入且背景渐暗，终点完整显示三个游戏；退场从完整抽屉经向下移动恢复原页面。文字图标清晰，无错误页、加载遮罩或隐私输入。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
