@@ -19,7 +19,7 @@ on:
       mode:
         description: 视觉基准模式
         type: choice
-        default: smoke
+        default: compare
         options: [smoke, reference, compare]
 permissions:
   contents: read
@@ -41,14 +41,15 @@ jobs:
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
         run: |
           if [ -z "$CI_IOS_GROUP" ]; then
-            if [ -n "$CLRN_IOS_CI_TEST_ACCOUNTS" ] && [ -n "$TESTING_API_TOKEN" ]; then
-              export CI_IOS_GROUP=all
-            else
-              export CI_IOS_GROUP=guest
-              echo '当前仅执行无需账号的游客矩阵；登录/建房/俱乐部等完整组尚未执行，需要 iOS 专用账号池和 TESTING_API_TOKEN。' >> "$GITHUB_STEP_SUMMARY"
-            fi
+            export CI_IOS_GROUP=guest
+            echo 'PR 和 master push 默认执行无需账号的游客矩阵；其他业务组仅在手动指定 group 时运行。' >> "$GITHUB_STEP_SUMMARY"
           fi
           node scripts/plan-ci-accounts.mjs ios
+      - name: compare 基准预检
+        if: inputs.mode == 'compare' || github.event_name != 'workflow_dispatch'
+        env:
+          IOS_CI_MATRIX: ${{ steps.plan.outputs.matrix }}
+        run: node ios/full/baseline-preflight.mjs
   proxy-check:
     runs-on: ubuntu-latest
     steps:
@@ -83,7 +84,7 @@ jobs:
       IOS_SIMULATOR_UDID: ''
       IOS_GROUP: ${{ matrix.group }}
       IOS_LOCALE: ${{ matrix.locale }}
-      IOS_VISUAL_MODE: ${{ inputs.mode || 'smoke' }}
+      IOS_VISUAL_MODE: ${{ inputs.mode || 'compare' }}
       CLRN_CI_ACCOUNT: ${{ matrix.account }}
       CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
     steps:
@@ -140,7 +141,13 @@ jobs:
             ios/artifacts/full-results/
             ios/artifacts/full-report/
             ios/artifacts/release/build-info.json
-            ios/snapshots/full/
+      - name: 保存待审查的视觉基准候选
+        if: always() && inputs.mode == 'reference'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-reference-candidates-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}
+          retention-days: 30
+          path: ios/snapshots/v1/
       - name: 删除专用模拟器
         if: always() && env.IOS_SIMULATOR_UDID != ''
         run: xcrun simctl delete "$IOS_SIMULATOR_UDID"

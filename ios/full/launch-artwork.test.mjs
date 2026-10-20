@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
-import { launchArtworkMatch } from './launch-artwork.ts';
+import { launchArtworkMatch, reviewedLaunchArtworkMatch } from './launch-artwork.ts';
 
 function picture(transform = (values) => values) {
   const png = new PNG({ width: 128, height: 256 });
@@ -37,4 +37,23 @@ test('黑白系统启动页、纯蓝底、水平翻转的同色插画不能冒�
   }
   assert.equal(launchArtworkMatch(mirrored, reference, []).matches, false);
   assert.throws(() => launchArtworkMatch(reference, reference, [{ x: 0, y: 0, width: 128, height: 256 }]), /像素不足/);
+});
+
+test('审查过的裸森林允许真实弹窗暗层，但拒绝空白、错位或替换森林', () => {
+  const reference = picture();
+  const dialog = { x: 30, y: 70, width: 70, height: 150 };
+  const dimmed = picture(values => values.map(value => value * 0.66 + 14));
+  for (let y = dialog.y; y < dialog.y + dialog.height; y++) for (let x = dialog.x; x < dialog.x + dialog.width; x++) {
+    dimmed.data.set([245, 240, 250, 255], (y * dimmed.width + x) * 4);
+  }
+  assert.equal(reviewedLaunchArtworkMatch(dimmed, reference, [dialog]).matches, true);
+  assert.equal(reviewedLaunchArtworkMatch(dimmed, reference, []).matches, false);
+  const blank = picture(() => [60, 95, 155]);
+  assert.equal(reviewedLaunchArtworkMatch(blank, reference, [dialog]).matches, false);
+  const shifted = picture((_, x, y) => {
+    const sourceX = (x + 25) % reference.width;
+    return [...reference.data.subarray((y * reference.width + sourceX) * 4,
+      (y * reference.width + sourceX) * 4 + 3)];
+  });
+  assert.equal(reviewedLaunchArtworkMatch(shifted, reference, [dialog]).matches, false);
 });

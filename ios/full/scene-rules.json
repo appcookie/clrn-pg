@@ -1,0 +1,166 @@
+{
+  "aliases": {
+    "texas-flop-cards": "texas-flop",
+    "texas-turn-cards": "texas-turn",
+    "texas-river-cards": "texas-river",
+    "texas-holdem-accurate-bet": "texas-accurate-raise",
+    "texas-holdem-buy-in-applications": "texas-applications",
+    "texas-holdem-drawer-menu": "texas-menu",
+    "texas-holdem-game-record": "texas-records",
+    "texas-holdem-chat-actions": "texas-message-actions",
+    "texas-holdem-chat-block": "texas-message-block",
+    "texas-holdem-chat-report": "texas-message-report",
+    "zhajinhua-accurate-bet": "zhajinhua-accurate-raise",
+    "zhajinhua-buy-in-applications": "zhajinhua-applications",
+    "zhajinhua-drawer-menu": "zhajinhua-menu",
+    "zhajinhua-game-record": "zhajinhua-records",
+    "slot-popup": "slot-panel",
+    "hall-slot-banner-1": "hall-slot-banner"
+  },
+  "pages": [
+    {
+      "module": "hall",
+      "id": "hall",
+      "title": "大厅与匹配",
+      "pattern": "^(hall|signed-in-hall(?:-match)?|guest-game-sign-in-prompt)(-|$)"
+    },
+    {
+      "module": "hall",
+      "id": "search",
+      "title": "大厅搜索",
+      "pattern": "^(signed-in-hall-search|search)(-|$)"
+    },
+    {
+      "module": "hall",
+      "id": "daily-bonus",
+      "title": "每日签到",
+      "pattern": "^signed-in-daily-bonus$"
+    },
+    {
+      "module": "slot",
+      "id": "slot",
+      "title": "抽奖",
+      "pattern": "^(signed-in-slot|slot)(-|$)"
+    },
+    {
+      "module": "auth",
+      "id": "login",
+      "title": "登录与找回密码",
+      "pattern": "^(login|smoke)(-|$)"
+    },
+    {
+      "module": "account",
+      "id": "profile",
+      "title": "我的与个人资料",
+      "pattern": "^(guest-me|signed-in-(me|profile|update-bio|update-nickname|user-level))$"
+    },
+    {
+      "module": "account",
+      "id": "security",
+      "title": "账号安全",
+      "pattern": "^signed-in-(account-security|bind-email|bind-phone|reset-password|delete-account)(-|$)"
+    },
+    {
+      "module": "club",
+      "id": "club",
+      "title": "俱乐部",
+      "pattern": "^(guest-club|signed-in-(club|create-club)|club)(-|$)"
+    },
+    {
+      "module": "message",
+      "id": "message",
+      "title": "消息中心",
+      "pattern": "^(guest-message|signed-in-message)(-|$)"
+    },
+    {
+      "module": "private-room",
+      "id": "room",
+      "title": "私人房",
+      "pattern": "^(guest-private-room|signed-in-private-room)(-|$)"
+    },
+    {
+      "module": "private-room",
+      "id": "create-room",
+      "title": "创建私人房",
+      "pattern": "^(signed-in-create-room|game-picker)(-|$)"
+    },
+    {
+      "module": "wallet",
+      "id": "gift-card",
+      "title": "礼品卡",
+      "pattern": "^signed-in-gift-card(-|$)"
+    },
+    {
+      "module": "game-record",
+      "id": "records-legacy",
+      "title": "我的战绩 · 旧版",
+      "pattern": "^signed-in-game-records-legacy(-|$)"
+    },
+    {
+      "module": "game-record",
+      "id": "records-v2",
+      "title": "我的战绩 · 新版",
+      "pattern": "^signed-in-game-records-v2(-|$)"
+    },
+    {
+      "module": "texas-holdem",
+      "id": "table",
+      "title": "德州牌桌",
+      "pattern": "^(signed-in-texas|texas)(-|$)"
+    },
+    {
+      "module": "zhajinhua",
+      "id": "table",
+      "title": "拼三张牌桌",
+      "pattern": "^(signed-in-zhajinhua|zhajinhua)(-|$)"
+    },
+    {
+      "module": "help",
+      "id": "share",
+      "title": "分享与邀请好友",
+      "pattern": "^(signed-in-share-app|share-link|invite-friends)(-|$)"
+    },
+    {
+      "module": "help",
+      "id": "download",
+      "title": "下载帮助",
+      "pattern": "^signed-in-download-help(-|$)"
+    },
+    {
+      "module": "help",
+      "id": "faq",
+      "title": "常见问题",
+      "pattern": "^signed-in-faq(-|$)"
+    },
+    {
+      "module": "launch",
+      "id": "transitions",
+      "title": "页面转场",
+      "pattern": "^native(-|$)"
+    },
+    {
+      "module": "launch",
+      "id": "launch",
+      "title": "应用启动",
+      "pattern": "^(launch|native-launch|staging-notice)(-|$)"
+    },
+    {
+      "module": "effects",
+      "id": "props",
+      "title": "通用道具动效",
+      "pattern": "^prop-"
+    },
+    {
+      "module": "assets",
+      "id": "props",
+      "title": "道具素材",
+      "pattern": "^asset-props-"
+    },
+    {
+      "module": "assets",
+      "id": "stickers",
+      "title": "表情素材",
+      "pattern": "^asset-sticker-"
+    }
+  ]
+}

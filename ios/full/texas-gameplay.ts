@@ -1,6 +1,7 @@
 import { screenPoint } from './screen-geometry';
 import { screenBounds } from './screen-geometry';
 import { readFileSync } from 'node:fs';
+import { baselinePath } from './baseline-path.mjs';
 import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { Mitmproxy } from '../../e2e/helpers/mitmproxy-client';
@@ -276,7 +277,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       async () => {
         await gameReady(device, 'PlayerStatisticComponent_Item_Value_0');
         if (!animationInfo || process.env.IOS_VISUAL_MODE !== 'compare') return;
-        const expected = readFileSync(animationInfo.snapshotPath(`texas-holdem-${name}-enter-end.png`));
+        const expected = readFileSync(baselinePath(`texas-holdem-${name}-enter-end.png`));
         // 统计值节点可能先于下方加载圈出现；等整个已审查面板真正绘制完成。
         await expect.poll(async () => {
           const actual = motionParts(maskScreenshot(await gameScreenshot(device), masks), [region]).regions[0];

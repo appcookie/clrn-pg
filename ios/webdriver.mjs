@@ -12,7 +12,7 @@ export class WebDriver {
   }
 
   async request(method, path, body, timeout = 180_000) {
-    // fetch/Undici 的独立 300 秒 headersTimeout 会先于十分钟建会话预算触发。
+    // fetch/Undici 的独立 300 秒 headersTimeout 会先于首次 WDA 编译预算触发。
     // 直接使用 Node HTTP，让一个明确的 deadline 覆盖响应头和响应体。
     const url = new URL(`${this.server}${path}`);
     const bytes = body === undefined ? undefined : JSON.stringify(body);
@@ -46,7 +46,7 @@ export class WebDriver {
   }
 
   async start(capabilities) {
-    const result = await this.request('POST', '/session', { capabilities: { alwaysMatch: capabilities } }, 600_000);
+    const result = await this.request('POST', '/session', { capabilities: { alwaysMatch: capabilities } }, 1_200_000);
     this.session = result.sessionId;
     if (!this.session) throw new Error('XCUITest 没有返回会话 ID。');
   }

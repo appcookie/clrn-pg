@@ -25,7 +25,12 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
           expect({ width: picture.width, height: picture.height }).toEqual(device.screenSize);
           return bytes;
         };
-        await compareScreenshot(device, `${locale}-launch-staging-notice`, info, [], undefined, fullScreen);
+        const { width, height } = device.screenSize;
+        // The iOS Home indicator changes with simulator appearance; it is outside the app canvas.
+        const homeIndicator = { x: Math.floor(width * 0.31), y: height - 48,
+          width: Math.ceil(width * 0.38), height: 32 };
+        await compareScreenshot(device, `${locale}-launch-staging-notice`, info, [], undefined,
+          fullScreen, [], [homeIndicator]);
       } catch (error) { await captureFailure(device, info); throw error; }
       finally { await device.close(); }
     });

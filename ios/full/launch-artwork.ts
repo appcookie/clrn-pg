@@ -4,8 +4,8 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
-import { frameColorDistance } from './animation-transition';
 import type { ScreenshotBounds } from './screenshot';
+import { baselinePath } from './baseline-path.mjs';
 
 /** Reference pixels come from the downloaded .app image, never application source. */
 export function launchArtworkTemplate(application: string, width: number, height: number): PNG {
@@ -45,6 +45,14 @@ export function launchArtworkMatch(picture: PNG, reference: PNG, occlusions: Scr
   return { matches, samples: samples.length, correlation, rmse, gain };
 }
 
+/** A reviewed clear frame and a later uniformly dimmed staging frame share the
+ * same forest/water pixels outside the native dialog and status bars. */
+export function reviewedLaunchArtworkMatch(picture: PNG, reviewed: PNG, occlusions: ScreenshotBounds[]) {
+  const spatial = launchArtworkMatch(picture, reviewed, occlusions);
+  return { ...spatial, matches: spatial.matches && spatial.correlation >= 0.995
+    && spatial.rmse <= 2.5 && spatial.gain >= 0.45 };
+}
+
 /** Verify the rendered iOS artwork behind the staging dialog, not Android colour coordinates. */
 export async function verifyLaunchArtwork(frames: Buffer[], testInfo: TestInfo,
   occlusions: ScreenshotBounds[]): Promise<void> {
@@ -63,8 +71,12 @@ export async function verifyLaunchArtwork(frames: Buffer[], testInfo: TestInfo,
   await testInfo.attach(name, { body: first, contentType: 'image/png' });
   if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(first, name, testInfo);
   else {
-    const baseline = readFileSync(testInfo.snapshotPath(name));
-    expect(Math.min(...candidates.map(candidate => frameColorDistance(candidate, baseline))),
-      `${name} 须在真实启动帧里接近已审查的插画`).toBeLessThanOrEqual(12);
+    const baseline = PNG.sync.read(readFileSync(baselinePath(name)));
+    const reviewed = candidates.map(candidate => reviewedLaunchArtworkMatch(PNG.sync.read(candidate), baseline, exclusions));
+    await testInfo.attach('native-launch-artwork-baseline-matches', {
+      body: JSON.stringify(reviewed), contentType: 'application/json',
+    });
+    expect(reviewed.some(result => result.matches),
+      `${name} 须在无遮挡森林与水波区域匹配已审查的插画`).toBe(true);
   }
 }

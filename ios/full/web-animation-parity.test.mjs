@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { launchBrandPixelBounds } from './web-animation-parity.ts';
+import { readFileSync } from 'node:fs';
+import { PNG } from 'pngjs';
+import { launchBrandPixelBounds, reviewedBrandFrameMatches } from './web-animation-parity.ts';
 
 const screen = { width: 1178, height: 2556 };
 // Fifth English CI: notice still open and notice dismissed both report exactly
@@ -36,4 +38,24 @@ test('缺少品牌、边界为空、非有限数或超出当前截图均失败',
     { ...bounds, x: 1000 }, { ...bounds, y: 2500 }]) {
     assert.throws(() => launchBrandPixelBounds([brand(false, invalid)], screen), /完整位于截图内/);
   }
+});
+
+test('品牌起止相位允许统一色调变化，但拒绝翻转或缺失品牌文字', () => {
+  const base = 'ios/snapshots/v1/launch/launch/launch-branding/ios/iphone16-ios18.5/en/animation/';
+  const start = readFileSync(`${base}start.png`), end = readFileSync(`${base}end.png`);
+  for (const original of [start, end]) {
+    const tinted = PNG.sync.read(original);
+    for (let i = 0; i < tinted.data.length; i += 4) for (let c = 0; c < 3; c++) {
+      tinted.data[i + c] = Math.min(255, Math.max(0, Math.round(tinted.data[i + c] * 1.04 - 3)));
+    }
+    assert.equal(reviewedBrandFrameMatches(PNG.sync.write(tinted), original), true);
+    const flipped = new PNG({ width: tinted.width, height: tinted.height });
+    for (let y = 0; y < tinted.height; y++) for (let x = 0; x < tinted.width; x++) {
+      const from = (y * tinted.width + x) * 4;
+      const to = (y * tinted.width + tinted.width - x - 1) * 4;
+      tinted.data.copy(flipped.data, to, from, from + 4);
+    }
+    assert.equal(reviewedBrandFrameMatches(PNG.sync.write(flipped), original), false);
+  }
+  assert.equal(reviewedBrandFrameMatches(start, end), false);
 });

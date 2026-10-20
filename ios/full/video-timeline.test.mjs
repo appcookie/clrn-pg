@@ -46,3 +46,10 @@ test('原始PTS相同的真实编码帧全部保留，不混入best_effort的DTS
   assert.equal(result.timestampSource, 'pts_time');
   assert.equal(result.durationMs, 6000);
 });
+
+test('静态启动页可接受真实低帧率录屏，动画仍保持默认20帧门槛', () => {
+  const lowRate = frames(16000, 1);
+  assert.throws(() => validateRecordedTimeline(lowRate, 14000), /真实连续帧/);
+  assert.equal(validateRecordedTimeline(lowRate, 14000, 12).timestampsMs.length, 17);
+  assert.throws(() => validateRecordedTimeline(lowRate.slice(0, 11), 14000, 12), /真实连续帧/);
+});

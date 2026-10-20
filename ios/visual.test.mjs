@@ -24,3 +24,15 @@ test('动态基准中的变化帧能识别冻结动画', () => {
   const frozen = [baseline[0], baseline[0]];
   assert.equal(baseline.every((frame, index) => comparePixels(frame, frozen[index]).matches), false);
 });
+test('仅忽略明确指定的系统 Home 指示条区域，页面差异仍失败', () => {
+  const baseline = picture([80, 80, 80]);
+  const actual = PNG.sync.read(baseline);
+  for (let y = 18; y < 20; y++) for (let x = 5; x < 15; x++) {
+    actual.data[(y * 20 + x) * 4] = 255;
+  }
+  const homeIndicator = { x: 5, y: 18, width: 10, height: 2 };
+  assert.equal(comparePixels(baseline, PNG.sync.write(actual)).matches, false);
+  assert.equal(comparePixels(baseline, PNG.sync.write(actual), 12, [homeIndicator]).matches, true);
+  actual.data[(10 * 20 + 10) * 4] = 255;
+  assert.equal(comparePixels(baseline, PNG.sync.write(actual), 12, [homeIndicator]).matches, false);
+});

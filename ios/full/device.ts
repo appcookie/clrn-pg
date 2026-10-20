@@ -10,7 +10,8 @@ import { applicationId, readVerifiedBuild, artifactDirectory } from '../release.
 import { extractSimulator } from '../extract-simulator.mjs';
 import { comparePixels } from '../visual.mjs';
 import { NativeDevice } from './native-device';
-import { maskScreenshot, type ScreenshotMask } from './screenshot';
+import { maskScreenshot, type ScreenshotMask, type ScreenshotBounds } from './screenshot';
+import { baselinePath, baselineRoot } from './baseline-path.mjs';
 
 export { applicationId };
 export const artifacts = artifactDirectory;
@@ -23,7 +24,6 @@ export async function simulatorAppPath(): Promise<string> {
 }
 let nextDevice = 0;
 let appium: { server: ChildProcess; url: string; users: number } | undefined;
-const profile = () => `iphone16-ios18.5-${process.env.IOS_LOCALE || 'en'}`;
 async function freePort() {
   const server = createServer();
   await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
@@ -125,27 +125,29 @@ export async function waitForHall(device: NativeDevice) {
   await device.wait({ res: 'settings-tab' }, { timeout: 120_000 });
 }
 /** smoke 只采集，reference 生成独立 iOS 基准，compare 缺失基准或变化必须失败。 */
-export async function assertVisual(bytes: Buffer, name: string, testInfo: TestInfo) {
+export async function assertVisual(bytes: Buffer, name: string, testInfo: TestInfo,
+  comparisonExclusions: ScreenshotBounds[] = []) {
   const mode = process.env.IOS_VISUAL_MODE || 'smoke';
   if (!['smoke', 'reference', 'compare'].includes(mode)) throw new Error(`未知视觉模式：${mode}`);
   if (name.includes('..') || name.startsWith('/')) throw new Error('视觉产物名称不能越界。');
   const filename = name.endsWith('.png') ? name : `${name}.png`;
   await testInfo.attach(filename, { body: bytes, contentType: 'image/png' });
-  const baseline = resolve('ios/snapshots/full', profile(), filename);
+  // smoke 的合成算法测试也会调用此入口；仅真正存取基准时要求共享场景已归类。
+  const baseline = mode === 'smoke' ? undefined : baselinePath(filename);
   if (mode === 'reference') {
-    mkdirSync(dirname(baseline), { recursive: true });
-    writeFileSync(baseline, bytes);
-    writeFileSync(resolve('ios/snapshots/full', profile(), 'build-info.json'), JSON.stringify(readVerifiedBuild(), null, 2));
+    mkdirSync(dirname(baseline!), { recursive: true });
+    writeFileSync(baseline!, bytes);
+    writeFileSync(resolve(baselineRoot, 'build-info.json'), JSON.stringify(readVerifiedBuild(), null, 2));
   } else if (mode === 'compare') {
-    if (!existsSync(baseline)) throw new Error(`缺少已审查基准：${baseline}`);
-    const comparison = comparePixels(readFileSync(baseline), bytes);
+    if (!existsSync(baseline!)) throw new Error(`缺少已审查基准：${baseline}`);
+    const comparison = comparePixels(readFileSync(baseline!), bytes, 12, comparisonExclusions);
     if (!comparison.matches && comparison.diff) await testInfo.attach(`${filename}-diff`, { body: comparison.diff, contentType: 'image/png' });
     expect(comparison.matches, `${filename} 变化比例 ${comparison.changedRatio}`).toBe(true);
   }
 }
 export async function compareScreenshot(device: NativeDevice, name: string, testInfo: TestInfo,
   masks: ScreenshotMask[] = [], transientState?: () => Promise<void>, takeScreenshot: () => Promise<Buffer> = () => device.screenshot(),
-  _alternateSnapshots: string[] = []) {
+  _alternateSnapshots: string[] = [], comparisonExclusions: ScreenshotBounds[] = []) {
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   await transientState?.();
   let previous = maskScreenshot(await takeScreenshot(), masks);
@@ -163,5 +165,5 @@ export async function compareScreenshot(device: NativeDevice, name: string, test
     expect(Date.now() - stableSince).toBeGreaterThanOrEqual(transientState ? 250 : 1500);
   }).toPass({ timeout: 30_000, intervals: [transientState ? 100 : 500] });
   if (masks.length) await testInfo.attach(`${name}-original`, { body: original, contentType: 'image/png' });
-  await assertVisual(result, name, testInfo);
+  await assertVisual(result, name, testInfo, comparisonExclusions);
 }

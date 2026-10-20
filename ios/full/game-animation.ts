@@ -1,5 +1,6 @@
 import { assertVisual } from './device';
 import { readFileSync } from 'node:fs';
+import { baselinePath } from './baseline-path.mjs';
 import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameNodes } from './game-controls';
@@ -23,7 +24,7 @@ export async function captureChallengeAnimation(device: AndroidDevice, name: str
   await testInfo.attach(`${name}-animation-regions`, { body: JSON.stringify(regions), contentType: 'application/json' });
   await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   const reference = process.env.IOS_VISUAL_MODE !== 'compare';
-  const expected = reference ? undefined : motionParts(readFileSync(testInfo.snapshotPath(`${name}.png`)), regions);
+  const expected = reference ? undefined : motionParts(readFileSync(baselinePath(`${name}.png`)), regions);
   const matched = regions.map(() => false);
   const moving = regions.map(() => false);
   const matchingFrames: Buffer[] = [];

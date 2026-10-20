@@ -906,6 +906,8 @@ Navigation and visual state overlap; full functional assertion parity is NOT est
 - Known SETTINGS-010 Web expected failure is product default coin-mall category bug; verify iOS independently.
 - Game replay is UI verification via precise staging room UUID/HTTP/WS fixtures, not real multiuser financial settlement. Own account data/wallet passes through; delete only room created by this test.
 - Native baselines must use fixed simulator model/runtime/language. Existing Web PNGs cannot serve as iOS pixel baselines. Raw video alone is not animation regression comparison.
+- iOS 的已审查参考图只保存一套，使用 `ios/snapshots/v1/<module>/<page>/<state>/ios/iphone16-ios18.5/<locale>/<page|animation|asset>/<sample>.png`，与 `laiwan_screenshot` 的统一路径一致。`smoke` 仅保存原始证据；`reference` 产生待审查候选；`compare` 在缺基准或图像变化时失败。PR 与 master push 默认以 `compare` 运行游客矩阵，账号业务组需要手动指定。
+- 已通过的 6 组游客报告可用 `node ios/full/export-candidates.mjs <新目录> <artifact目录>...` 无损导出 PNG 候选；工具验证全部用例通过、同一模拟器 Release、PNG 数据与重名场景哈希，并写 `status: unreviewed` 的 manifest。人工逐图核对后才将 `v1/` 内容放入 `ios/snapshots/v1/`，由 PR 的 `compare` 自动验证。已知的现版布局问题：三语言 Staging 提示卡的“进入测试版”按钮被内层圆角卡遮住；参考图如收录仅记录当前真实画面，不表示接受此产品缺陷，修复后应审查视觉差异。
 
 ## 原始覆盖文档（包括全部动画子效果与当前局限）
 

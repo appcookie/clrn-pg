@@ -1,0 +1,374 @@
+{
+  "schemaVersion": 1,
+  "status": "approved-current-release",
+  "sourceRun": 39357619309,
+  "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39357619309",
+  "sourceArtifacts": [
+    "ios-guest-en-pages-1",
+    "ios-guest-en-startup-1",
+    "ios-guest-zh-Hans-pages-1",
+    "ios-guest-zh-Hans-startup-1",
+    "ios-guest-zh-Hant-pages-1",
+    "ios-guest-zh-Hant-startup-1"
+  ],
+  "releaseTag": "ios-staging-6-1-36142b647703",
+  "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+  "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9",
+  "simulator": "iPhone 16 / iOS 18.5",
+  "review": "83 个真实原始 PNG 已逐项校验路径唯一性和 SHA-256；人工查看三语言核心页面与启动/搜索/品牌动画关键帧。",
+  "knownIssues": [
+    {
+      "id": "staging-cta-obscured",
+      "type": "current-release-product-defect",
+      "description": "Staging 提示卡的内层圆角卡遮住“进入测试版”按钮；英文完全不可见，中文只露出顶部。这是原始发布包的现状，参考图不代表认可该布局。",
+      "paths": [
+        "launch/launch/launch-staging-notice/ios/iphone16-ios18.5/en/page/default.png",
+        "launch/launch/launch-staging-notice/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+        "launch/launch/launch-staging-notice/ios/iphone16-ios18.5/zh-Hant/page/default.png"
+      ]
+    },
+    {
+      "id": "native-launch-black-middle",
+      "type": "reviewed-transition-frame",
+      "description": "英文原生启动过渡的 middle 是真实瞬时黑帧，含系统状态栏；保留为该版本实际过渡相位。",
+      "paths": [
+        "launch/launch/native-launch-and-staging-notice/ios/iphone16-ios18.5/en/animation/middle.png"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "club/club/guest-club/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "4c9913f87ab7498baed75e10d8e5b9ed9ede974de11cb2c0436429266a9a32a5"
+    },
+    {
+      "path": "hall/hall/guest-game-sign-in-prompt/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "d4d64bdf17a1d76a58963317510de88bcb4dab079d84e22bfe95e81c34f61f89"
+    },
+    {
+      "path": "account/profile/guest-me/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "3ce7b4ed34902a976a1b4f2655cbd5ba66ee9946bdf925dbae6162999b45c394"
+    },
+    {
+      "path": "message/message/guest-message/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "530477ed64e70178f9b5f6df06ec50b973139077dd65dd951db74b7260dcdd74"
+    },
+    {
+      "path": "private-room/room/guest-private-room/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "de14c0e17130ea5ac54d05e94ab3f051dc4836a71be886b5ac69caa59167b6b4"
+    },
+    {
+      "path": "hall/hall/hall/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "fd7edc5f44ec4e0e2e83eff355672f0212d03f6316672ed0e695535a919972e5"
+    },
+    {
+      "path": "launch/launch/launch-branding/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "c6f06a675e9808481198d188cd2c4bcc03be27f7852c57cbcd2f91616cca931a"
+    },
+    {
+      "path": "launch/launch/launch-staging-notice/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "3f0c06311a872bf3c87dd25d0e34070652b065b359ab0fe9ba39c211bbd0cdf7"
+    },
+    {
+      "path": "auth/login/login-forgot-password-email/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "20f18b3ca9fd6a63d95012e5383f670a55088c608fb1640072121250f56b8e8e"
+    },
+    {
+      "path": "auth/login/login-forgot-password-sms/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "ad28c25a737584728288b3a98f1a262f545484025720e22ac8225ba9f58faac0"
+    },
+    {
+      "path": "auth/login/login-forgot-password/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "40d947a3ffad9f8ac91e1098637a026dfb123e9e836b684a834644c286b5ee7d"
+    },
+    {
+      "path": "auth/login/login-language/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "3c3a60cebfab7dccf56eb89aa884f22a081ea4903700e8e4eaad16d136a1b9c0"
+    },
+    {
+      "path": "auth/login/login-phone-password/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "3ef854b4a62bc23a7e8b116c219408d6814193e450eaa50b560b8af77551cdb3"
+    },
+    {
+      "path": "auth/login/login-phone/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "6aeb524cbc2d7f7544c9696dea156de318054bdcb7199a4859fb58e9acda4e7c"
+    },
+    {
+      "path": "auth/login/login-pick-country-code/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "85e827b5b26ea6a04042aa962bc1a374b3e38055104b4f84bc037a57ecf63a55"
+    },
+    {
+      "path": "auth/login/login-user-agreement/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "f88edb84d37d5a8f3e68783e3a60f0ead2d84ce9dfc05b6d5d613845b323633b"
+    },
+    {
+      "path": "auth/login/login-user-privacy/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "34d01934936793d13ac0a3d8f9b66a9d3010f927d559397251eec34114ec125d"
+    },
+    {
+      "path": "auth/login/login-username/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "b5e25b142c61ab5dbd7cde75b6ab517a48841259b4053a4e340e7a974f265a47"
+    },
+    {
+      "path": "auth/login/login/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "6be28911f90a44b478ba837069a048966923624d54f3d7239a63efc98032c02b"
+    },
+    {
+      "path": "hall/search/search-sign-in-prompt/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "69f37e78bbbc49c653fa2d3f25e5f27721a3ac1f20887d202312b950cdfb10c5"
+    },
+    {
+      "path": "auth/login/smoke-forgot-password-email/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "20f18b3ca9fd6a63d95012e5383f670a55088c608fb1640072121250f56b8e8e"
+    },
+    {
+      "path": "auth/login/smoke-forgot-password-method/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "40d947a3ffad9f8ac91e1098637a026dfb123e9e836b684a834644c286b5ee7d"
+    },
+    {
+      "path": "launch/launch/launch-branding/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "1e64605fd1c4c74ecb8828aa291f09381b63dab570a135bffb6cc98c65b983dc"
+    },
+    {
+      "path": "launch/launch/launch-branding/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "f1f1e679e1e524a070bdb69dc202bfbd09ea76fdbe78f7c1eb9c9703433d9c7f"
+    },
+    {
+      "path": "launch/launch/launch-branding/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "565adaafa93f3c0eea6851658a39210daa94e427f3e9af0dd5cfa109360d5a0e"
+    },
+    {
+      "path": "auth/login/smoke-login-username/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "b5e25b142c61ab5dbd7cde75b6ab517a48841259b4053a4e340e7a974f265a47"
+    },
+    {
+      "path": "auth/login/smoke-login-welcome/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "6be28911f90a44b478ba837069a048966923624d54f3d7239a63efc98032c02b"
+    },
+    {
+      "path": "launch/launch/native-launch-and-staging-notice/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "3f0c06311a872bf3c87dd25d0e34070652b065b359ab0fe9ba39c211bbd0cdf7"
+    },
+    {
+      "path": "launch/launch/native-launch-and-staging-notice/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "a6a9757a308f5e5ef911ce70bf6d3df111edf356437a87d51ed05f154552578e"
+    },
+    {
+      "path": "launch/launch/native-launch-and-staging-notice/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "e5e4a2b5134e71345313826010b40bf5afb8b17b12cdde6fa3d7551e9fa21635"
+    },
+    {
+      "path": "launch/launch/native-launch-artwork-visible/ios/iphone16-ios18.5/en/animation/visible.png",
+      "sha256": "ab44046ae98302963297e975185f99ae773ac6d38bbe726ef864b3ca1e014f7a"
+    },
+    {
+      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "da2c39c1ac58fff2f181c2a58decea8f68e55b8561939a24b7b68ad52524bc56"
+    },
+    {
+      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "50818161097c14ec1ff504b2d2972a58e7268d7794021a6f8b099f26eff12384"
+    },
+    {
+      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a852fae2b4e929320ec2204979219d2629f7059a297fc6ea1b2d39564ec7ba60"
+    },
+    {
+      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "99d34c80ef8e474d72d14f61eba9a5fab02384ff25fb886cb5ab502a2f13e7fd"
+    },
+    {
+      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "269d8b89e815898e0c8e5339123faf46390691ade61b1e5b2618c09de01472a7"
+    },
+    {
+      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "da2c39c1ac58fff2f181c2a58decea8f68e55b8561939a24b7b68ad52524bc56"
+    },
+    {
+      "path": "club/club/guest-club/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "f1735a91f4e11643950d555605760a8df2b99d3cdde6298c110e2b28ae5382e5"
+    },
+    {
+      "path": "hall/hall/guest-game-sign-in-prompt/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "39e36c9460cc3c6537f33be2dc1af14687546bddf91cf9010e551ff7c6733338"
+    },
+    {
+      "path": "account/profile/guest-me/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "f78295f190d5ca0e0a3289fa123dc7f47a068296e2c1db12d98b0b1fbdfcfb1e"
+    },
+    {
+      "path": "message/message/guest-message/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "b65121dadf839ff52da6d75e09ee96a585557ab729f07763f814b2d2acbaa00d"
+    },
+    {
+      "path": "private-room/room/guest-private-room/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "13e377957b1b95e350dfe15e83e4cc26d1318143d114426e482fe078453d6032"
+    },
+    {
+      "path": "hall/hall/hall/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "47d6839c8937339e142164532ea45c4d579d19191eae184d9c911ba5dbfb609a"
+    },
+    {
+      "path": "launch/launch/launch-branding/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "c6f06a675e9808481198d188cd2c4bcc03be27f7852c57cbcd2f91616cca931a"
+    },
+    {
+      "path": "launch/launch/launch-staging-notice/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "994ab8efb873250626cc71f9f24c7458e3830707376b41696fef2d5b964fbe7e"
+    },
+    {
+      "path": "auth/login/login-forgot-password-email/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "570524be76ea49dba9f7469160a6cf61736811d7d22d38a90dc1c551cf9de128"
+    },
+    {
+      "path": "auth/login/login-forgot-password-sms/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "43a7cb798737048d7428f996952a12dd8b2648cb7d0ba72f3388b66c97315db6"
+    },
+    {
+      "path": "auth/login/login-forgot-password/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "925b08552ca5ed9206220590ba4b8282077d699f461f7d7a327011a4bc4df3e6"
+    },
+    {
+      "path": "auth/login/login-language/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "bf3021c531a9bdb92a02b2ec410fd8c9686a4dbc40ef416c8ebb8d1823c2bebb"
+    },
+    {
+      "path": "auth/login/login-phone-password/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "071324c782481120e88994adaaaa8d9a3561be7e2a0f8f1d752f0c5e06c85aa4"
+    },
+    {
+      "path": "auth/login/login-phone/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "b939f50817989c2552d6ad555b4ce48219de96f00e83361d0335afaa60151cbc"
+    },
+    {
+      "path": "auth/login/login-pick-country-code/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "b2cd986dcc2d04f5c36e237eb379b8399080f8453d8f4f22441c645020443197"
+    },
+    {
+      "path": "auth/login/login-user-agreement/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "40c00c60aa9e0aeb8e359e08abff7e6a18a4c3dd2bd97943b6107ac6f6892bed"
+    },
+    {
+      "path": "auth/login/login-user-privacy/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "d23abfb8769ebe4840772765ad62b1dc1ce0dfef92fb62df6f34845711f41071"
+    },
+    {
+      "path": "auth/login/login-username/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "e55da4a4fa8fbc0ed341deb7d3e7198d551b8bb2f0bbc444a94ad83892e72585"
+    },
+    {
+      "path": "auth/login/login/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "8491cc6f37cdf544777863f96251dc8312e96061861add72cd19a1fe26b7d8bf"
+    },
+    {
+      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/zh-Hans/animation/end.png",
+      "sha256": "ca3489819f330d6ed346d031ee210df0f6d3decfea85fe4efbfe84b3f1aa4a69"
+    },
+    {
+      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/zh-Hans/animation/middle.png",
+      "sha256": "837e328397a2eeaabd2c868cb8ad7f3387b9ae64d1d7f5c973db98c490b72f13"
+    },
+    {
+      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/zh-Hans/animation/start.png",
+      "sha256": "eb4c153e5dc66320bb67880ab649ceb20b588bc5a2b690e7afcbd56ac12afd39"
+    },
+    {
+      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/zh-Hans/animation/end.png",
+      "sha256": "78a0ba5d034afdb7c3e288639ea2108cd3644d3274e4c52f6bfd1b46bac99b6e"
+    },
+    {
+      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/zh-Hans/animation/middle.png",
+      "sha256": "81fa1345df80752f4fd945e5af203b5f1b31b8c26b232656e3b93180e741b4f7"
+    },
+    {
+      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/zh-Hans/animation/start.png",
+      "sha256": "ca3489819f330d6ed346d031ee210df0f6d3decfea85fe4efbfe84b3f1aa4a69"
+    },
+    {
+      "path": "hall/search/search-sign-in-prompt/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "6ca3119486f676eda2a4b3a90cd31d060913a082f6c219ce085703159c59d401"
+    },
+    {
+      "path": "club/club/guest-club/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "33e004821412f759b61b7ded3fe2dc47f50f55979e35ef736edaacf921281eb5"
+    },
+    {
+      "path": "hall/hall/guest-game-sign-in-prompt/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "dc156ddaf4b86317a83e547479b0e2e9e0486b94bc0a392b94a07cc405f69e1e"
+    },
+    {
+      "path": "account/profile/guest-me/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "fc2089c22d0121a9230473cbc957392770bb73e2ac6213b3a7f35c6829dd1da1"
+    },
+    {
+      "path": "message/message/guest-message/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "81d269c0be0f99ffba6ec6471d76e32545564a47a035a674e1cda0491ad9b0ff"
+    },
+    {
+      "path": "private-room/room/guest-private-room/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "08f327e68ccd1a962b079d3925cff2584a7a756bfbc6b81867321ad70e214f7d"
+    },
+    {
+      "path": "hall/hall/hall/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "6f2319cb1de430ca32fdc1627bc8d48822ed07e9e97424b5112b915a522b1f87"
+    },
+    {
+      "path": "launch/launch/launch-branding/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "c6f06a675e9808481198d188cd2c4bcc03be27f7852c57cbcd2f91616cca931a"
+    },
+    {
+      "path": "launch/launch/launch-staging-notice/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "085dad39e92266308d5e6c66c29df0b5b05c080dc98dea5605d9a245d73838d0"
+    },
+    {
+      "path": "auth/login/login-forgot-password-email/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "ab74404e732b117732c709f772e9d6a15c1cc6a3dba558e972ebefb792aea48c"
+    },
+    {
+      "path": "auth/login/login-forgot-password-sms/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "024597ec8f47a8f63d188dabb817482a16c0128ac7cc71b48a6d7df33829a5ca"
+    },
+    {
+      "path": "auth/login/login-forgot-password/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "ed152e0cec0ed00e7e3f38fee5028ba246be62cc7426df6be5e0fbdaf9f984d4"
+    },
+    {
+      "path": "auth/login/login-language/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "d4498b2f83121cdd63bb88641b09d0cfc49823b955daf36769e3dceefb6625f1"
+    },
+    {
+      "path": "auth/login/login-phone-password/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "b24e58c498b0498e1e1119f36c8031ebff043808ad0590472ce224b2e6df211c"
+    },
+    {
+      "path": "auth/login/login-phone/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "e7c166eaada18953d216e148bddb2d04e7a06a40eda1642e11357b35f2b98e0a"
+    },
+    {
+      "path": "auth/login/login-pick-country-code/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "2741e58da0a2c5e6dadd900999174b9d0f69c39cfec3c692eb750002126cf20e"
+    },
+    {
+      "path": "auth/login/login-user-agreement/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "5e74884df6f5b960192893d36fbf3c3fc393f326776222c6d7e462b452e821ef"
+    },
+    {
+      "path": "auth/login/login-user-privacy/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "7a634e8e7342e90966d2bb456bf6780b97c0f6f7821f1b9a3504111be7b1f31c"
+    },
+    {
+      "path": "auth/login/login-username/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "f3169a677d957258c1493e06646cd1dd6fe6d7c510735dd7b7af3515ab607cc8"
+    },
+    {
+      "path": "auth/login/login/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "c3cf3e3cdbe6946f8e3255aba5ddef496d770a07b2ebd730231bc348f523b834"
+    },
+    {
+      "path": "hall/search/search-sign-in-prompt/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "7ebb1fdfc4c545c6ab7d615a942cc37f7c5902fe6fb98801c46c7b1f737f5086"
+    }
+  ],
+  "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
+}
