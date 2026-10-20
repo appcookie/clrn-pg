@@ -44,17 +44,31 @@ export async function reveal(device: NativeDevice, selector: NativeSelector, ful
       x2: x + width * 0.97, y2: y + height * (upward ? 0.2 : 0.85), duration: 600 });
   }
 }
+/** Seed the first real observation before polling; a slow first XCTest tree is
+ * not evidence of movement. Still require a later, enabled observation to agree.
+ */
+export async function stableNativeTarget(device: Pick<NativeDevice, 'info'>, identifier: string,
+  { timeout = 10_000, interval = 200 } = {}): Promise<NativeNode> {
+  let target = await device.info({ res: identifier });
+  const deadline = Date.now() + timeout;
+  for (;;) {
+    await delay(interval);
+    const before = target.bounds;
+    // Complete each driver query under its own request timeout. Aborting a
+    // snapshot halfway through the first comparison leaves no stability evidence.
+    target = await device.info({ res: identifier });
+    try {
+      expect(target.enabled, `${identifier} 应启用`).toBe(true);
+      expect(target.bounds, '点击前等待原生布局稳定').toEqual(before);
+      return target;
+    } catch (error) {
+      if (Date.now() >= deadline) throw error;
+    }
+  }
+}
 export async function tap(device: NativeDevice, identifier: string) {
   await reveal(device, { res: identifier });
-  let previous: unknown;
-  await expect(async () => {
-    const node = await device.info({ res: identifier });
-    const before = previous;
-    previous = node.bounds;
-    expect(node.enabled, `${identifier} 应启用`).toBe(true);
-    expect(node.bounds, '点击前等待原生布局稳定').toEqual(before);
-  }).toPass({ timeout: 10_000, intervals: [200] });
-  const target = await device.info({ res: identifier });
+  const target = await stableNativeTarget(device, identifier);
   const nodes = await device.nodes();
   const { node, viewport } = nativeViewport(nodes, target, { x: 0, y: 0, ...device.screenSize });
   const { bounds } = node;
