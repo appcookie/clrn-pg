@@ -14,6 +14,7 @@ export function animationCase(id) {
 }
 
 export function validateAnimationReport(report, id, mode = 'compare') {
+  if (!['compare', 'reference', 'smoke'].includes(mode)) throw new Error(`未知动画验收模式：${mode}`);
   const entry = animationCase(id);
   const specs = [...reportSpecs(report)];
   if (specs.length !== 1 || screenshotTestKey(specs[0]) !== screenshotTestKey(entry)
@@ -25,7 +26,10 @@ export function validateAnimationReport(report, id, mode = 'compare') {
   if (specs[0].tests.length !== 1 || test.expectedStatus !== 'passed' || test.status !== 'expected'
     || test.results.length !== 1 || result.status !== 'passed') throw new Error(`${id} 动画未实际通过`);
   if (mode === 'compare' && entry.images.length === 0) throw new Error(`${id} 尚无完整审查后的截图清单`);
-  for (const name of entry.images) {
+  const images = entry.images.length ? entry.images : [...new Set((result.attachments || [])
+    .filter(a => a.contentType === 'image/png' && a.name.endsWith('.png')).map(a => a.name))];
+  if (!images.length) throw new Error(`${id} 首次采集缺少可审查的候选 PNG 截图`);
+  for (const name of images) {
     const attachments = (result.attachments || []).filter(a => a.contentType === 'image/png'
       && a.name.replace(/\.png$/, '') === name.replace(/\.png$/, ''));
     if (!attachments.length) throw new Error(`${id} 缺少本轮动画截图：${name}`);
@@ -37,13 +41,15 @@ export function validateAnimationReport(report, id, mode = 'compare') {
   if (!(result.attachments || []).some(a => a.contentType === 'video/mp4' && a.path)) {
     throw new Error(`${id} 缺少真实原生录屏`);
   }
-  return entry;
+  // Discovery only describes this run; it must never approve the inventory.
+  return { ...entry, images };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const [file, id] = process.argv.slice(2);
   const report = JSON.parse(readFileSync(file, 'utf8'));
-  const entry = validateAnimationReport(report, id, process.env.IOS_VISUAL_MODE);
+  const mode = process.env.IOS_VISUAL_MODE || 'compare';
+  const entry = validateAnimationReport(report, id, mode);
   const root = resolve(dirname(file));
   for (const attachment of [...reportSpecs(report)][0].tests[0].results[0].attachments) {
     if (attachment.contentType !== 'video/mp4') continue;
@@ -57,5 +63,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       }
     } finally { closeSync(descriptor); }
   }
-  console.log(`动画实际执行并通过：${entry.title}；${entry.images.length} 张必需截图齐全。`);
+  console.log(`动画本轮验收（${mode}）：${entry.title}；${entry.images.length} 张截图有效。`
+    + (mode === 'compare' ? '已完成基准比较。' : '本模式不代表已完成基准比较或批准新基准。'));
 }

@@ -103,3 +103,26 @@ test('动画 CI 验收必须读取本轮录像文件，不能仅凭报告中的�
     assert.match(run().stderr, /本轮结果目录/);
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });
+
+test('首次采集清单为空时仍必须输出有效候选 PNG，且不能自动批准清单', () => {
+  const entry = animationCases[0], reviewedImages = entry.images;
+  const attachments = [{ name: 'native-video', contentType: 'video/mp4', path: '/tmp/capture.mp4' }];
+  const report = { stats: { expected: 1, unexpected: 0, skipped: 0, flaky: 0 },
+    suites: [{ specs: [{ file: entry.file, title: entry.title, tests: [{
+      expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', attachments }],
+    }] }] }] };
+  entry.images = [];
+  try {
+    assert.throws(() => validateAnimationReport(report, entry.id, 'reference'), /候选 PNG/);
+    const image = { name: 'new-phase.png', contentType: 'image/png', body: 'invalid' };
+    attachments.push(image);
+    assert.throws(() => validateAnimationReport(report, entry.id, 'reference'));
+    image.body = PNG.sync.write(new PNG({ width: 3, height: 7 })).toString('base64');
+    assert.deepEqual(validateAnimationReport(report, entry.id, 'reference').images, ['new-phase.png']);
+    assert.deepEqual(entry.images, [], '发现候选不能变成已审查基准');
+    assert.throws(() => validateAnimationReport(report, entry.id, 'compare'), /完整审查/);
+    assert.throws(() => validateAnimationReport(report, entry.id, 'typo'), /未知动画验收模式/);
+    image.name = 'raw-video-frame-0';
+    assert.throws(() => validateAnimationReport(report, entry.id, 'reference'), /候选 PNG/);
+  } finally { entry.images = reviewedImages; }
+});
