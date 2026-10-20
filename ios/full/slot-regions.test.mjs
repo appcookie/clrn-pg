@@ -1,6 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { slotReelRegions } from './slot-regions.ts';
+import { slotReelRegions, slotNoEnergyRegions } from './slot-regions.ts';
+import { animationRegion } from './animation-region.ts';
+
+test('能量不足提示采用真实原生内容与关闭按钮范围，动画左边框不包含随机滚轮', () => {
+  const node = (res, bounds, text) => ({ res, bounds, text, clazz: 'XCUIElementTypeOther', children: [] });
+  const screenSize = { width: 1178, height: 2556 };
+  const nodes = [
+    node(undefined, { x: 0, y: 0, ...screenSize }),
+    node(undefined, { x: 137, y: 828, width: 904, height: 903 }),
+    node('close-button', { x: 947, y: 768, width: 154, height: 150 }),
+    node('assets/slot-machine/page/screen/image/img_out_of_spins@3x.png', { x: 302, y: 984, width: 574, height: 363 }),
+    node('confirm-button', { x: 362, y: 1539, width: 454, height: 153 }, 'Confirm'),
+    node('Out of Spins?', { x: 416, y: 864, width: 349, height: 69 }, 'Out of Spins?'),
+  ];
+  const regions = slotNoEnergyRegions(nodes, screenSize);
+  assert.deepEqual(regions.full, { x: 133, y: 764, width: 972, height: 971 });
+  assert.deepEqual(regions.border, { x: 137, y: 828, width: 82, height: 903 });
+  assert.ok(regions.border.x + regions.border.width < 281, '第一列随机图案从真实 x=281 开始');
+  const enter = animationRegion('slot-no-energy-enter', [], nodes, { screenSize }, screenSize);
+  assert.deepEqual(enter.bounds, regions.border);
+  assert.deepEqual(animationRegion('slot-no-energy-exit', nodes, [], { screenSize }, screenSize), enter);
+  assert.throws(() => slotNoEnergyRegions(nodes.filter(n => n.res !== 'confirm-button'), screenSize), /缺少原生/);
+  assert.throws(() => slotNoEnergyRegions(nodes.filter(n => n.bounds.width !== 904), screenSize), /真实原生面板/);
+});
 
 test('老虎机按真实 iOS 裁剪窗口识别三个滚轮，排除屏幕外长条图案与单行容器', () => {
   const symbols = [281, 506, 731].flatMap(x => [1176, 1356, 1536, 1716, 1896].map(y => ({

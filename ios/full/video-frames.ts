@@ -17,6 +17,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   const directory = testInfo.outputPath(`video-${name}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
   const video = path.join(directory, 'capture.mp4');
+  console.log(`IOS > 录屏 ${name}：${device.nativeVideoBackend}`);
   let triggerAt = 0, stoppedAt = 0;
   if (device.nativeVideoBackend === 'xctest') {
     ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs));
@@ -77,6 +78,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     body: JSON.stringify(probe.frames), contentType: 'application/json',
   });
   const timeline = validateRecordedTimeline(probe.frames, stoppedAt - triggerAt, minimumDistinctFrames);
+  console.log(`IOS > 录屏 ${name}：${probe.frames.length} 帧，媒体时长 ${Math.round(timeline.durationMs)} ms`);
   await testInfo.attach(`${name}-encoded-timeline`, { body: JSON.stringify(timeline), contentType: 'application/json' });
   const frames = path.join(directory, 'frames');
   mkdirSync(frames);
@@ -91,6 +93,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
       '-compression_level', '1', path.join(frames, 'frame-%04d.png')], { timeout: 180_000 });
     const files = readdirSync(frames).filter(file => file.endsWith('.png')).sort();
     if (files.length !== timeline.timestampsMs.length) throw new Error('解码帧数与真实录屏时戳不一致。');
+    console.log(`IOS > 录屏 ${name}：完成 ${files.length} 张原始帧解码`);
     return Object.assign(files.map(file => readFileSync(path.join(frames, file))), { timestampsMs: timeline.timestampsMs });
   } finally { rmSync(frames, { recursive: true, force: true }); }
 }

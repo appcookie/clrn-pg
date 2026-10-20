@@ -1,5 +1,40 @@
 import type { Bounds, NativeNode } from './native-device';
 
+export const slotNoEnergyImage = /\/slot-machine\/.*\/img_out_of_spins@3x\.png$/;
+
+/** The released iOS popup has no slot-no-energy-popup-container identifier.
+ * Its content, close control and static left gutter remain measurable natively.
+ */
+export function slotNoEnergyRegions(nodes: NativeNode[], screen: { width: number; height: number }) {
+  const content = [
+    nodes.find(node => slotNoEnergyImage.test(node.res || '')),
+    nodes.find(node => node.res === 'confirm-button'),
+    nodes.find(node => node.text === 'Out of Spins?'),
+  ];
+  const close = nodes.find(node => node.res === 'close-button');
+  if (content.some(node => !node) || !close) throw new Error('能量不足提示缺少原生图片、标题、确认或关闭控件');
+  const containers = nodes.filter(node => node.clazz === 'XCUIElementTypeOther'
+    && node.bounds.width > 0 && node.bounds.height > 0
+    && node.bounds.width * node.bounds.height < screen.width * screen.height
+    && content.every(child => {
+      const a = node.bounds, b = child!.bounds;
+      return a.x <= b.x && a.y <= b.y && a.x + a.width >= b.x + b.width
+        && a.y + a.height >= b.y + b.height;
+    })).sort((a, b) => a.bounds.width * a.bounds.height - b.bounds.width * b.bounds.height);
+  if (!containers.length) throw new Error('无法定位能量不足提示的真实原生面板');
+  const panel = containers[0].bounds;
+  // Use half of the empty left gutter: exclude text/artwork and the random reels
+  // behind the entering prompt. The whole prompt is compared separately.
+  const border = { x: panel.x, y: panel.y,
+    width: Math.floor((Math.min(...content.map(node => node!.bounds.x)) - panel.x) / 2), height: panel.height };
+  if (border.width <= 0) throw new Error('能量不足提示没有可独立采样的静态左边框');
+  const x = Math.max(0, Math.min(panel.x, close.bounds.x) - 4);
+  const y = Math.max(0, Math.min(panel.y, close.bounds.y) - 4);
+  const right = Math.min(screen.width, Math.max(panel.x + panel.width, close.bounds.x + close.bounds.width) + 4);
+  const bottom = Math.min(screen.height, Math.max(panel.y + panel.height, close.bounds.y + close.bounds.height) + 4);
+  return { border, full: { x, y, width: right - x, height: bottom - y } };
+}
+
 /** Derive the three reels from their real native image children and clipping window.
  * Offscreen symbols in each long rolling strip cannot expand the visible crop.
  */

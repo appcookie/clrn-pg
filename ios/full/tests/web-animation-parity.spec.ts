@@ -4,6 +4,7 @@ import { withIosProxy } from '../proxy';
 import { signIn, tap, navigateScenario } from '../navigation';
 import { iosScenarios } from '../scenarios';
 import { captureNativeTransition } from '../animation-transition';
+import { matchingModalBounds } from '../animation-region';
 import { captureFailure } from '../diagnostics';
 import { assertBrandFade, clickNode, launchBrandPixelBounds } from '../web-animation-parity';
 import type { ScreenshotMask } from '../screenshot';
@@ -55,8 +56,9 @@ if (enabled('social', 'en')) test('hall matching modal records its native entran
     try {
       await waitForHall(device); await signIn(device); await tap(device, 'hall-tab');
       await tap(device, 'match-game-item-texas_holdem-tourists'); await device.wait({ res: 'game-matching-loading-view' });
-      const region = (await device.info({ res: 'game-matching-loading-view' })).bounds;
-      const masks: ScreenshotMask[] = (await device.nodes()).filter(node => node.res === 'game-matching-countdown-text'
+      const nodes = await device.nodes();
+      const region = matchingModalBounds(nodes, device.screenSize);
+      const masks: ScreenshotMask[] = nodes.filter(node => node.res === 'game-matching-countdown-text'
         || (/Image|ActivityIndicator/.test(node.clazz) && node.bounds.x >= region.x && node.bounds.y >= region.y
           && node.bounds.x + node.bounds.width <= region.x + region.width && node.bounds.y + node.bounds.height <= region.y + region.height))
         .map(node => ({ ...node.bounds, reason: '独立旋转图标/计时数字由原有hall-matching循环动画案例比较' }));

@@ -14,8 +14,8 @@ import { verifyLoopAnimation } from '../loop-animation';
 import { captureMovingKeyframes } from '../loop-keyframes';
 import { waitAbsent } from '../native-state';
 import { gameReady, gameScreenshot } from '../game-controls';
-import { motionParts, samePixels } from '../motion-regions';
-import { slotReelRegions } from '../slot-regions';
+import { cropMotionRegion, samePixels } from '../motion-regions';
+import { slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('all three native slot reels and reward types animate from real spin responses', async ({}, testInfo) => {
@@ -75,9 +75,11 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await device.input.tap({ x: Number(String(Math.round(bannerAgain.bounds.x + bannerAgain.bounds.width / 2))), y: Number(String(Math.round(bannerAgain.bounds.y + bannerAgain.bounds.height / 2))) });
       await device.wait({ res: 'spin-button' });
       // 控件树在弹层入场中途已出现；等不受滚轮图案影响的左边框停止移动后再点击。
-      const noEnergyRegion = screenBounds(device, { x: 80, y: 510, width: 40, height: 380 });
+      const reopened = slotReelRegions(await device.nodes());
+      const noEnergyRegion = { ...reopened.window, width: reopened.reels[0].x - reopened.window.x };
+      expect(noEnergyRegion.width, '滚轮裁剪窗口左侧应有独立静态边框').toBeGreaterThan(0);
       /** 只采集不会受滚轮随机停靠图案影响的弹层左边框。 */
-      const border = async () => motionParts(await gameScreenshot(device!), [noEnergyRegion]).regions[0];
+      const border = async () => cropMotionRegion(await gameScreenshot(device!), noEnergyRegion);
       let stableBorder = await border();
       let stableSince = Date.now();
       await expect(async () => {
@@ -90,11 +92,13 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       /** 真实能量不足 RPC 触发老虎机窗口切换到专用提示。 */
       const pressEmptySpin = () => device!.input.tap({ x: Number(String(Math.round(spin.bounds.x + spin.bounds.width / 2))), y: Number(String(Math.round(spin.bounds.y + spin.bounds.height / 2))) });
       // 左侧边框不受每次打开时滚轮随机停靠图案影响；完整提示另做逐像素基准。
-      await captureNativeTransition(device, 'slot-no-energy-enter', testInfo, noEnergyRegion, pressEmptySpin);
-      const prompt = await device.info({ res: 'slot-no-energy-popup-container' });
-      expect(prompt.bounds.width).toBeGreaterThan(0);
-      const promptImage = motionParts(await gameScreenshot(device),
-        [screenBounds(device, { x: 80, y: 510, width: 560, height: 380 })]).regions[0];
+      await captureNativeTransition(device, 'slot-no-energy-enter', testInfo, noEnergyRegion, pressEmptySpin,
+        [], [], 0, 'videoFrames', undefined, async () => {
+          await device!.wait({ res: slotNoEnergyImage });
+          await device!.wait({ res: 'confirm-button' });
+        });
+      const prompt = slotNoEnergyRegions(await device.nodes(), device.screenSize);
+      const promptImage = cropMotionRegion(await gameScreenshot(device), prompt.full);
       await testInfo.attach('slot-no-energy-visible', { body: promptImage, contentType: 'image/png' });
       if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(promptImage, 'slot-no-energy-visible.png', testInfo);
       else expect(samePixels(promptImage, readFileSync(baselinePath('slot-no-energy-visible.png'))),
@@ -103,7 +107,10 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       /** 通过真实确认按钮关闭能量不足提示。 */
       const pressConfirm = () => device!.input.tap({ x: Number(String(Math.round(confirm.bounds.x + confirm.bounds.width / 2))), y: Number(String(Math.round(confirm.bounds.y + confirm.bounds.height / 2))) });
       await captureNativeTransition(device, 'slot-no-energy-exit', testInfo, noEnergyRegion, pressConfirm,
-        [], [], 0, 'videoFrames');
+        [], [], 0, 'videoFrames', undefined, async () => {
+          await device!.wait({ res: slotNoEnergyImage }, { state: 'gone' });
+          await device!.wait({ res: 'confirm-button' }, { state: 'gone' });
+        });
       const final = await proxy.command<{ spins: number }>('android/slot');
       expect(final.spins, '能量不足由第四次旋转请求触发').toBe(4);
       await waitAbsent(device, { res: 'spin-button' });

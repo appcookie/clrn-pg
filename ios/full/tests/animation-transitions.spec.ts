@@ -213,10 +213,17 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       const region = screenBounds(device, { x: 0, y: 632, width: 720, height: 648 });
       await captureNativeTransition(device, 'game-picker-enter', testInfo, region, pressCreate);
       await device.wait({ res: 'select-game-category-text' });
-      /** 使用选玩法抽屉的真实 Android 返回处理关闭它。 */
-      const pressBack = () => device!.input.press('Back');
-      await captureNativeTransition(device, 'game-picker-exit', testInfo, region, pressBack,
-        [], [], 0, 'videoFrames');
+      // iOS's navigation Back gesture leaves this modal open. Dismiss through
+      // its real backdrop, above the handle rather than inside the drawer.
+      const backdrop = await device.info({ clazz: 'XCUIElementTypeButton', text: 'Bottom sheet backdrop' });
+      const handle = await device.info({ text: 'Bottom sheet handle' });
+      const top = Math.max(0, backdrop.bounds.y);
+      expect(handle.bounds.y, '抽屉上方必须有可点击遮罩').toBeGreaterThan(top);
+      const dismiss = { x: backdrop.bounds.x + backdrop.bounds.width / 2, y: (top + handle.bounds.y) / 2 };
+      const pressBackdrop = () => device!.input.tap(dismiss);
+      await captureNativeTransition(device, 'game-picker-exit', testInfo, region, pressBackdrop,
+        [], [], 0, 'videoFrames', undefined,
+        () => device!.wait({ res: 'select-game-category-text' }, { state: 'gone' }));
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
       throw error;
