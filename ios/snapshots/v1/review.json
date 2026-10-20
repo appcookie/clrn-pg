@@ -1007,6 +1007,45 @@
         ]
       },
       "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "hall/hall/hall-matching-modal-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6539cca2e5c19869523cc26644e8844f406e9970fab4ef1766444492348e36f1",
+      "source": {
+        "sourceRun": 39478679178,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39478679178",
+        "sourceWorkflowHead": "b894fec32dbdd444a9ede94d0cdb01a4b67814b0",
+        "sourceArtifacts": [
+          "ios-social-en-animation-7-1"
+        ]
+      },
+      "review": "逐张检查3张完整原生弹窗关键帧：起点是大厅，中段弹窗半透明且标题/匹配队列/取消文字渐入，终点弹窗完整且无裁边。倒计时和独立转圈使用明确遮罩，转圈另由独立门禁负责；其余标题、布局、背景和取消按钮均保留。"
+    },
+    {
+      "path": "hall/hall/hall-matching-modal-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8518f73aaf1f6a2e4ca918207f48b28a9e40fe5fc3aab57fc9d08dd55ea8079f",
+      "source": {
+        "sourceRun": 39478679178,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39478679178",
+        "sourceWorkflowHead": "b894fec32dbdd444a9ede94d0cdb01a4b67814b0",
+        "sourceArtifacts": [
+          "ios-social-en-animation-7-1"
+        ]
+      },
+      "review": "逐张检查3张完整原生弹窗关键帧：起点是大厅，中段弹窗半透明且标题/匹配队列/取消文字渐入，终点弹窗完整且无裁边。倒计时和独立转圈使用明确遮罩，转圈另由独立门禁负责；其余标题、布局、背景和取消按钮均保留。"
+    },
+    {
+      "path": "hall/hall/hall-matching-modal-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "015b5d743dd8c443630fc3ef3d67cf3bcb55ab1beaa2c339d32aadd61fd0301b",
+      "source": {
+        "sourceRun": 39478679178,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39478679178",
+        "sourceWorkflowHead": "b894fec32dbdd444a9ede94d0cdb01a4b67814b0",
+        "sourceArtifacts": [
+          "ios-social-en-animation-7-1"
+        ]
+      },
+      "review": "逐张检查3张完整原生弹窗关键帧：起点是大厅，中段弹窗半透明且标题/匹配队列/取消文字渐入，终点弹窗完整且无裁边。倒计时和独立转圈使用明确遮罩，转圈另由独立门禁负责；其余标题、布局、背景和取消按钮均保留。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"

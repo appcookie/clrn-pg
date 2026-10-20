@@ -108,7 +108,11 @@
       "group": "social",
       "file": "tests/web-animation-parity.spec.ts",
       "title": "hall matching modal records its native entrance before cancellation",
-      "images": []
+      "images": [
+        "hall-matching-modal-enter-start.png",
+        "hall-matching-modal-enter-middle.png",
+        "hall-matching-modal-enter-end.png"
+      ]
     },
     {
       "id": "animation-8",
