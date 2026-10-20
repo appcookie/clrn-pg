@@ -45,7 +45,14 @@
       "group": "rooms",
       "file": "tests/animation-transitions.spec.ts",
       "title": "private room invite sheet slides into and out of the iOS screen",
-      "images": []
+      "images": [
+        "invite-friends-enter-start.png",
+        "invite-friends-enter-middle.png",
+        "invite-friends-enter-end.png",
+        "invite-friends-exit-start.png",
+        "invite-friends-exit-middle.png",
+        "invite-friends-exit-end.png"
+      ]
     },
     {
       "id": "animation-6",

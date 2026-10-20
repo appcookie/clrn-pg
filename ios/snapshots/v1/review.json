@@ -15,7 +15,7 @@
   "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
   "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9",
   "simulator": "iPhone 16 / iOS 18.5",
-  "review": "77 个真实原始 PNG 已逐项校验路径唯一性和 SHA-256；人工查看三语言核心页面与启动/搜索/品牌动画关键帧。动画统一保留英文，移除 6 张简体中文搜索动画关键帧；保留其余原始图片的来源与审查记录。",
+  "review": "原有 77 张真实 PNG 保留原始来源与审查结论。新增图片逐图查看真实动画相位，单独在 files[].source 记录通过的采集运行、工作流提交和产物；所有 PNG 校验原始 SHA-256。动画仅保留英文。",
   "knownIssues": [
     {
       "id": "staging-cta-obscured",
@@ -344,6 +344,84 @@
     {
       "path": "hall/search/search-sign-in-prompt/ios/iphone16-ios18.5/zh-Hant/page/default.png",
       "sha256": "7ebb1fdfc4c545c6ab7d615a942cc37f7c5902fe6fb98801c46c7b1f737f5086"
+    },
+    {
+      "path": "help/share/invite-friends-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "b60084987e35c0e127937886587065cf3bb1f70e2c0eae520291031a378d3f58",
+      "source": {
+        "sourceRun": 39459632914,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39459632914",
+        "sourceWorkflowHead": "7b298b7dc7385880095ec4e649a606f7e572d801",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-5-1"
+        ]
+      },
+      "review": "逐图查看本轮英文私人房邀请面板：进入和退出各有起点、真实半透明/位移中间相位、终点；终态完整显示 Send Message、Copy invite pin 和 Cancel。保留原始 PNG 字节，发布包身份与既有基准一致。"
+    },
+    {
+      "path": "help/share/invite-friends-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "f9f0a3ee0dc6a22d56339c35fe9b07922a3e549b423a9e7bf4d7721b6873669d",
+      "source": {
+        "sourceRun": 39459632914,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39459632914",
+        "sourceWorkflowHead": "7b298b7dc7385880095ec4e649a606f7e572d801",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-5-1"
+        ]
+      },
+      "review": "逐图查看本轮英文私人房邀请面板：进入和退出各有起点、真实半透明/位移中间相位、终点；终态完整显示 Send Message、Copy invite pin 和 Cancel。保留原始 PNG 字节，发布包身份与既有基准一致。"
+    },
+    {
+      "path": "help/share/invite-friends-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "4b1b9bc080ea5923c969097367a1d9c3d0e3302ec0be944b7b90d03068ecbfe5",
+      "source": {
+        "sourceRun": 39459632914,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39459632914",
+        "sourceWorkflowHead": "7b298b7dc7385880095ec4e649a606f7e572d801",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-5-1"
+        ]
+      },
+      "review": "逐图查看本轮英文私人房邀请面板：进入和退出各有起点、真实半透明/位移中间相位、终点；终态完整显示 Send Message、Copy invite pin 和 Cancel。保留原始 PNG 字节，发布包身份与既有基准一致。"
+    },
+    {
+      "path": "help/share/invite-friends-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "4b1b9bc080ea5923c969097367a1d9c3d0e3302ec0be944b7b90d03068ecbfe5",
+      "source": {
+        "sourceRun": 39459632914,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39459632914",
+        "sourceWorkflowHead": "7b298b7dc7385880095ec4e649a606f7e572d801",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-5-1"
+        ]
+      },
+      "review": "逐图查看本轮英文私人房邀请面板：进入和退出各有起点、真实半透明/位移中间相位、终点；终态完整显示 Send Message、Copy invite pin 和 Cancel。保留原始 PNG 字节，发布包身份与既有基准一致。"
+    },
+    {
+      "path": "help/share/invite-friends-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "da202d90cab2c14d7fb32b2b8d85fb335a00753dec0c87b0bb1e7ff549631d3a",
+      "source": {
+        "sourceRun": 39459632914,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39459632914",
+        "sourceWorkflowHead": "7b298b7dc7385880095ec4e649a606f7e572d801",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-5-1"
+        ]
+      },
+      "review": "逐图查看本轮英文私人房邀请面板：进入和退出各有起点、真实半透明/位移中间相位、终点；终态完整显示 Send Message、Copy invite pin 和 Cancel。保留原始 PNG 字节，发布包身份与既有基准一致。"
+    },
+    {
+      "path": "help/share/invite-friends-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "b60084987e35c0e127937886587065cf3bb1f70e2c0eae520291031a378d3f58",
+      "source": {
+        "sourceRun": 39459632914,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39459632914",
+        "sourceWorkflowHead": "7b298b7dc7385880095ec4e649a606f7e572d801",
+        "sourceArtifacts": [
+          "ios-rooms-en-animation-5-1"
+        ]
+      },
+      "review": "逐图查看本轮英文私人房邀请面板：进入和退出各有起点、真实半透明/位移中间相位、终点；终态完整显示 Send Message、Copy invite pin 和 Cancel。保留原始 PNG 字节，发布包身份与既有基准一致。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
