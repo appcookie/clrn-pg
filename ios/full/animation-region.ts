@@ -91,6 +91,22 @@ export function nativeAudioPanelBounds(nodes: NativeNode[], screen: { width: num
 }
 
 /** 已有原生标记的面板用实际 bounds，包含 iOS safe area 和真实布局位置。 */
+export function nativeChatPanelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const controls = ['in-game-chat-send-message', '-in-game-chat-record-tab', 'in-game-chat-content-container']
+    .map(res => nodes.find(node => node.res === res && node.visible !== false));
+  if (controls.some(node => !node)) throw new Error('聊天面板缺少可见发送按钮、标签或内容');
+  const containers = nodes.filter(node => node.visible !== false && node.clazz === 'XCUIElementTypeOther'
+    && node.bounds.x === 0 && node.bounds.width === screen.width && node.bounds.y > 0
+    && node.bounds.height > 0 && node.bounds.y + node.bounds.height <= screen.height
+    && controls.every(control => {
+      const a = node.bounds, b = control!.bounds;
+      return b.width > 0 && b.height > 0 && a.x <= b.x && a.y <= b.y
+        && a.x + a.width >= b.x + b.width && a.y + a.height >= b.y + b.height;
+    })).sort((a, b) => a.bounds.height - b.bounds.height);
+  if (!containers.length) throw new Error('找不到完整聊天原生面板');
+  return { ...containers[0].bounds };
+}
+
 export function nativeReviewPanelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
   const controls = ['review-board-description-text', 'review-board-slider', 'review-board-share-button']
     .map(res => nodes.find(node => node.res === res && node.visible !== false));
@@ -106,6 +122,10 @@ export function nativeReviewPanelBounds(nodes: NativeNode[], screen: { width: nu
 
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  if (/^(?:texas-holdem|zhajinhua)-chat-(?:enter|exit)$/.test(name)) return {
+    bounds: nativeChatPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-chat-content-container',
+  };
   if (/^(?:texas-holdem|zhajinhua)-game-record-/.test(name)) return {
     bounds: nativeReviewPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-review-content-container',

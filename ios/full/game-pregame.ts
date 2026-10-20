@@ -9,7 +9,7 @@ import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
 import { seatGuideMotionBounds } from './game-masks';
 import { gameMaskPoint } from './game-mask-point';
-import { nativeReviewPanelBounds } from './animation-region';
+import { nativeReviewPanelBounds, nativeChatPanelBounds } from './animation-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 
@@ -36,7 +36,8 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
 async function gameMaskClosePoint(device: AndroidDevice, marker: string,
   maskMarker = 'screen-mask-touch-to-close'): Promise<{ x: number; y: number }> {
   const { bounds } = await gameReady(device, maskMarker);
-  const panel = (await gameReady(device, marker)).bounds;
+  const panel = marker === 'in-game-chat-content-container'
+    ? nativeChatPanelBounds(await device.nodes(), device.screenSize) : (await gameReady(device, marker)).bounds;
   return gameMaskPoint(bounds, panel, device.screenSize);
 }
 
@@ -222,15 +223,15 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await gameGone(device, 'review-board-description-text');
   await animateGamePanel(device, game, 'chat', `${game}-chat-button`,
     screenBounds(device, { x: 110, y: 860, width: 140, height: 310 }), animationInfo, 'enter', 'videoFrames');
-  await gameReady(device, 'in-game-chat-container');
+  await gameReady(device, 'in-game-chat-content-container');
   await capture('chat');
-  const chatPoint = await gameMaskClosePoint(device, 'in-game-chat-container', 'in-game-chat-mask');
+  const chatPoint = await gameMaskClosePoint(device, 'in-game-chat-content-container', 'in-game-chat-mask');
   /** 点击聊天抽屉外的真实遮罩。 */
   const closeChat = () => device.input.tap(chatPoint);
   if (animationInfo) await captureNativeTransition(device, `${game}-chat-exit`, animationInfo,
     screenBounds(device, { x: 110, y: 760, width: 140, height: 500 }), closeChat, [], [], 0, 'videoFrames');
   else await closeChat();
-  await gameGone(device, 'in-game-chat-container');
+  await gameGone(device, 'in-game-chat-content-container');
   // 聊天抽屉退场后房间偶尔独立重连；下一段动画的起点必须是无遮挡的真实牌桌。
   await gameConnected(device, 2_000);
   await animateGamePanel(device, game, 'buy-in-applications', 'buy-in-application-button',

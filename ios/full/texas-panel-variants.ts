@@ -57,7 +57,7 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
   await capture('chat_audio_history', tableBackMasks);
   await gameTap(device, 'in-game-chat-barrage-switch');
   await capture('chat_barrage_off', tableBackMasks);
-  await closeGameMask(device, 'in-game-chat-container', 'in-game-chat-mask');
+  await closeGameMask(device, 'in-game-chat-content-container', 'in-game-chat-mask');
   await proxy.command('texas/ui', { rpcError: 'retry' });
   await gameConnected(device);
   if (animationInfo) await captureNativeTransition(device, 'texas-alert-retry-enter', animationInfo,

@@ -57,7 +57,7 @@ export function leaderboardRoomIdentityMask(node: NativeNode,
 export function foregroundPanels(nodes: NativeNode[], screen: { width: number; height: number }): NativeNode[] {
   const markers = new Set(['drawer-menu-item-exit', 'card-rank-list', 'game-settings-close-button',
     'buy-in-title', 'renew-popup-close-button', 'public-leader-board-container', 'review-board-close-button',
-    'review-board-description-text', 'in-game-chat-animated-view', 'buy-in-application-list',
+    'review-board-description-text', 'in-game-chat-animated-view', 'in-game-chat-content-container', 'buy-in-application-list',
     'player-profile-popup-close', 'report-field-input', 'accurate-bet-popup-container', 'raise-bet-popup',
     'in-game-audio-microphone-button', 'report-popup-title', 'BlockPlayerConfirmPopup:title', 'buy-in-review-close-button',
     'view-community-close-button', 'raise-blind-detail', 'auto-rebuy-popup', 'report-pair-play-close-button',
