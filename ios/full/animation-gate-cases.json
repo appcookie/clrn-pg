@@ -190,7 +190,14 @@
       "group": "account",
       "file": "tests/animation-transitions.spec.ts",
       "title": "native account stack slides in and out",
-      "images": []
+      "images": [
+        "native-stack-enter-start.png",
+        "native-stack-enter-middle.png",
+        "native-stack-enter-end.png",
+        "native-stack-exit-start.png",
+        "native-stack-exit-middle.png",
+        "native-stack-exit-end.png"
+      ]
     }
   ]
 }

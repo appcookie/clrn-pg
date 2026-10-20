@@ -422,6 +422,84 @@
         ]
       },
       "review": "逐图查看本轮英文私人房邀请面板：进入和退出各有起点、真实半透明/位移中间相位、终点；终态完整显示 Send Message、Copy invite pin 和 Cancel。保留原始 PNG 字节，发布包身份与既有基准一致。"
+    },
+    {
+      "path": "launch/transitions/native-stack-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "2c0b8ca42205148227bda8ccad53d981e3d20adac43954a5a71b86ba85afaca6",
+      "source": {
+        "sourceRun": 39460003284,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39460003284",
+        "sourceWorkflowHead": "732149edae8c5da38a6de0ad157b0416743c0930",
+        "sourceArtifacts": [
+          "ios-account-en-animation-24-1"
+        ]
+      },
+      "review": "逐图查看真实 iOS 账号页入栈与出栈：完整个人页与账号安全页首尾、水平移动中的两页重叠中间相位均可见；底部导航位于采集区域之外。用户名及余额是既有固定视觉夹具。保留原始 PNG 与本次通过采集的来源。"
+    },
+    {
+      "path": "launch/transitions/native-stack-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "1e5799196e96f232a86d2c4e49b874a3114e1a57ec7d5a6f3a7fafaccbe7d2d9",
+      "source": {
+        "sourceRun": 39460003284,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39460003284",
+        "sourceWorkflowHead": "732149edae8c5da38a6de0ad157b0416743c0930",
+        "sourceArtifacts": [
+          "ios-account-en-animation-24-1"
+        ]
+      },
+      "review": "逐图查看真实 iOS 账号页入栈与出栈：完整个人页与账号安全页首尾、水平移动中的两页重叠中间相位均可见；底部导航位于采集区域之外。用户名及余额是既有固定视觉夹具。保留原始 PNG 与本次通过采集的来源。"
+    },
+    {
+      "path": "launch/transitions/native-stack-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "19fa94bab7e1ec67ae3698cf91088dc85811261d16f4af0b975a565a53d178d0",
+      "source": {
+        "sourceRun": 39460003284,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39460003284",
+        "sourceWorkflowHead": "732149edae8c5da38a6de0ad157b0416743c0930",
+        "sourceArtifacts": [
+          "ios-account-en-animation-24-1"
+        ]
+      },
+      "review": "逐图查看真实 iOS 账号页入栈与出栈：完整个人页与账号安全页首尾、水平移动中的两页重叠中间相位均可见；底部导航位于采集区域之外。用户名及余额是既有固定视觉夹具。保留原始 PNG 与本次通过采集的来源。"
+    },
+    {
+      "path": "launch/transitions/native-stack-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "19fa94bab7e1ec67ae3698cf91088dc85811261d16f4af0b975a565a53d178d0",
+      "source": {
+        "sourceRun": 39460003284,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39460003284",
+        "sourceWorkflowHead": "732149edae8c5da38a6de0ad157b0416743c0930",
+        "sourceArtifacts": [
+          "ios-account-en-animation-24-1"
+        ]
+      },
+      "review": "逐图查看真实 iOS 账号页入栈与出栈：完整个人页与账号安全页首尾、水平移动中的两页重叠中间相位均可见；底部导航位于采集区域之外。用户名及余额是既有固定视觉夹具。保留原始 PNG 与本次通过采集的来源。"
+    },
+    {
+      "path": "launch/transitions/native-stack-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "5ece5d287d48c45f8a6efe9660c1b4c4faacda5126856f38dc5f7bd434942cfa",
+      "source": {
+        "sourceRun": 39460003284,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39460003284",
+        "sourceWorkflowHead": "732149edae8c5da38a6de0ad157b0416743c0930",
+        "sourceArtifacts": [
+          "ios-account-en-animation-24-1"
+        ]
+      },
+      "review": "逐图查看真实 iOS 账号页入栈与出栈：完整个人页与账号安全页首尾、水平移动中的两页重叠中间相位均可见；底部导航位于采集区域之外。用户名及余额是既有固定视觉夹具。保留原始 PNG 与本次通过采集的来源。"
+    },
+    {
+      "path": "launch/transitions/native-stack-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "331f2364277856cc2a015e3b072a652277ab2dbd77b927021ec95153cea42802",
+      "source": {
+        "sourceRun": 39460003284,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39460003284",
+        "sourceWorkflowHead": "732149edae8c5da38a6de0ad157b0416743c0930",
+        "sourceArtifacts": [
+          "ios-account-en-animation-24-1"
+        ]
+      },
+      "review": "逐图查看真实 iOS 账号页入栈与出栈：完整个人页与账号安全页首尾、水平移动中的两页重叠中间相位均可见；底部导航位于采集区域之外。用户名及余额是既有固定视觉夹具。保留原始 PNG 与本次通过采集的来源。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
