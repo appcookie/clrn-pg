@@ -15,7 +15,8 @@ import { verifyLoopAnimation } from '../loop-animation';
 import { gameScreenshot } from '../game-controls';
 import { gameReady } from '../game-controls';
 import { waitAbsent } from '../native-state';
-import { captureMovingKeyframes, framePaletteDistance } from '../loop-keyframes';
+import { captureMovingKeyframes } from '../loop-keyframes';
+import { matchingSpinnerRegion } from '../animation-region';
 
 if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('native launch artwork and staging notice appear on a real app start', async ({}, testInfo) => {
@@ -133,11 +134,12 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const masks = await screenshotMasks(device, hall!);
       await tap(device, 'match-game-item-texas_holdem-tourists');
       await device.wait({ res: 'game-matching-loading-view' });
-      const countdown = await device.info({ res: 'game-matching-countdown-text' });
-      const cancel = await device.info({ res: 'quick-start-room-cancel' });
-      const spinner = { x: Math.round(cancel.bounds.x + cancel.bounds.width / 2 - device.screenSize.width * 60 / 720),
-        y: Math.round(cancel.bounds.y - device.screenSize.height * 178 / 1280),
-        width: Math.round(device.screenSize.width * 120 / 720), height: Math.round(device.screenSize.height * 140 / 1280) };
+      const nodes = await device.nodes();
+      const countdown = nodes.find(node => node.res === 'game-matching-countdown-text')!;
+      const spinner = matchingSpinnerRegion(nodes, device.screenSize);
+      await testInfo.attach('hall-matching-spinner-native-region', {
+        body: JSON.stringify(spinner), contentType: 'application/json',
+      });
       masks.push({ ...countdown.bounds, x: countdown.bounds.x - 4, width: countdown.bounds.width + 8,
         reason: '匹配计时数字' }, { ...spinner, reason: '匹配图标旋转范围' });
       /** 保留原生匹配窗口实际绘制的每一帧。 */
@@ -145,7 +147,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await verifyLoopAnimation(device, 'en-hall-matching', testInfo, [spinner], masks,
         { takeScreenshot: capture, timeoutMs: 4_000 });
       await captureMovingKeyframes(device, 'hall-matching-spinner', testInfo,
-        [spinner], 2, framePaletteDistance);
+        [spinner], 2);
       await compareScreenshot(device, 'en-hall-matching', testInfo, masks, undefined, capture);
       await tap(device, 'quick-start-room-cancel');
       await waitAbsent(device, { res: 'game-matching-loading-view' });

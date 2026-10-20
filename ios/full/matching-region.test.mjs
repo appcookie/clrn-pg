@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { animationRegion, matchingModalBounds } from './animation-region.ts';
+import { animationRegion, matchingModalBounds, matchingSpinnerRegion } from './animation-region.ts';
 
 const screenSize = { width: 1178, height: 2556 };
 const node = (res, bounds, clazz = 'XCUIElementTypeOther') => ({ res, bounds, clazz, children: [], visible: true });
@@ -25,4 +25,16 @@ test('匹配弹窗取完整原生内容边界，不能把超出截图的全屏�
 test('缺失语义控件或实际内容容器时失败，不能静默退回全屏', () => {
   assert.throws(() => matchingModalBounds([overlay, ...controls], screenSize), /真实原生弹窗/);
   assert.throws(() => matchingModalBounds([overlay, panel, ...controls.slice(1)], screenSize), /缺少标题/);
+});
+
+test('完整旋转范围由原生弹窗和上下控件确定，不随图标旋转外接矩形变化或裁掉边缘', () => {
+  const image = bounds => node('assets/src/laiwan_resource/hall/image/icon_home_load@3x.png', bounds, 'XCUIElementTypeImage');
+  const expected = { x: 253, y: 1126, width: 672, height: 391 };
+  for (const bounds of [{ x: 473, y: 1254, width: 235, height: 228 },
+    { x: 470, y: 1248, width: 240, height: 240 }]) {
+    assert.deepEqual(matchingSpinnerRegion([overlay, panel, ...controls, image(bounds)], screenSize), expected);
+  }
+  assert.throws(() => matchingSpinnerRegion([overlay, panel, ...controls], screenSize), /完整位于/);
+  assert.throws(() => matchingSpinnerRegion([overlay, panel, ...controls,
+    image({ x: 470, y: 1500, width: 240, height: 240 })], screenSize), /完整位于/);
 });

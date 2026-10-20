@@ -33,6 +33,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         const nodes = await gameNodes(device!);
         const placeholders = nodes.filter(node => node.res === 'ClubItemPlaceholder_container' && node.bounds.width > 0);
         expect(placeholders, '两个真实俱乐部 ID 都应绘出各自的骨架').toHaveLength(2);
+        expect(nodes.filter(node => node.res === 'club-title'), '挂起响应时不能已显示俱乐部内容').toHaveLength(0);
         expect(nodes.some(node => /network issue/i.test(node.text || '')), '采样前不能已进入超时错误页').toBe(false);
         regions = placeholders.map(node => node.bounds);
       }).toPass({ timeout: 30_000, intervals: [200] });
@@ -41,8 +42,10 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await captureLoopKeyframes(device, 'club-list-skeleton', testInfo, regions, 1, samples);
       await expect.poll(async () => (await proxy.command<{ loaded: number }>('android/skeleton')).loaded,
         { timeout: 30_000 }).toBeGreaterThan(initial);
-      await device.wait({ res: 'ClubItemPlaceholder_container' }, { state: 'gone' });
-      for (const text of ['TestClub1', 'TestClub2']) await device.wait({ text });
+      // The native card keeps its Placeholder_container testID after loading.
+      // Require both actual fixture titles instead of waiting for that wrapper.
+      await expect.poll(async () => (await gameNodes(device!)).filter(node => node.res === 'club-title')
+        .map(node => node.text).sort(), { timeout: 30_000 }).toEqual(['TestClub1', 'TestClub2']);
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
       throw error;

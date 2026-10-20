@@ -30,6 +30,24 @@ export function matchingModalBounds(nodes: NativeNode[], screen: { width: number
   return { x, y, width: right - x, height: bottom - y };
 }
 
+/** Bound the full rotating image by stable native dialog controls, not the
+ * instantaneous transformed image rectangle or an Android screen proportion.
+ */
+export function matchingSpinnerRegion(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const panel = matchingModalBounds(nodes, screen);
+  const countdown = nodes.find(node => node.res === 'game-matching-countdown-text')!;
+  const cancel = nodes.find(node => node.res === 'quick-start-room-cancel')!;
+  const icon = nodes.find(node => node.clazz === 'XCUIElementTypeImage'
+    && node.res?.endsWith('/icon_home_load@3x.png'));
+  const top = Math.ceil(countdown.bounds.y + countdown.bounds.height) + 1;
+  const bottom = Math.floor(cancel.bounds.y) - 1;
+  const region = { x: panel.x, y: top, width: panel.width, height: bottom - top };
+  if (!icon || region.height <= 0 || icon.bounds.x < region.x || icon.bounds.y < top
+    || icon.bounds.x + icon.bounds.width > region.x + region.width
+    || icon.bounds.y + icon.bounds.height > bottom) throw new Error('匹配旋转图标必须完整位于原生内容区内');
+  return region;
+}
+
 /** 已有原生标记的面板用实际 bounds，包含 iOS safe area 和真实布局位置。 */
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
