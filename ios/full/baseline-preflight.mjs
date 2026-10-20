@@ -2,7 +2,8 @@
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
-import { baselineRoot } from './baseline-path.mjs';
+import { baselineRoot, baselineRelativePath } from './baseline-path.mjs';
+import { guestScreenshotTests } from './guest-screenshot-contract.mjs';
 
 const matrix = JSON.parse(process.env.IOS_CI_MATRIX || '{}');
 if (!Array.isArray(matrix.include) || matrix.include.length === 0) throw new Error('iOS CI 矩阵为空。');
@@ -56,6 +57,14 @@ function* pngFiles(directory) {
   }
 }
 for (const file of pngFiles(baselineRoot)) if (!paths.has(file)) throw new Error(`未审查 PNG 混入基准：${file}`);
+for (const item of matrix.include.filter(item => item.group === 'guest')) {
+  for (const test of guestScreenshotTests(item.locale, item.shard)) {
+    for (const image of test.images) {
+      const path = baselineRelativePath(image, item.locale);
+      if (!paths.has(path)) throw new Error(`游客验收清单缺少基准：${path}（${test.title}）`);
+    }
+  }
+}
 for (const locale of locales) {
   if (!['en', 'zh-Hans', 'zh-Hant'].includes(locale)) throw new Error(`未知 iOS 基准语言：${locale}`);
   if (!reviewedLocales.has(locale)) throw new Error(`compare 缺少已审查的 ${locale} PNG 基准：${baselineRoot}`);

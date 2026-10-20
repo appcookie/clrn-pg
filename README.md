@@ -55,4 +55,8 @@ PR 和 master push 默认以 `compare` 运行游客矩阵；手动选择 `group=
 
 完整回归的参考图只使用 `ios/snapshots/v1/<module>/<page>/<state>/ios/iphone16-ios18.5/<locale>/<kind>/<sample>.png`，可被 `laiwan_screenshot` 直接读取。已通过的 `smoke` CI 报告也可用 `node ios/full/export-candidates.mjs <新目录> <下载后的 artifact 目录>...` 导出真实候选；工具核对所有测试通过、同一 Release 与每张 PNG，并标记 `unreviewed`。逐图审查后将候选的 `v1/` 放入 `ios/snapshots/v1/`；PR 的 `compare` 会自动运行，缺少基准会在分配 macOS runner 前失败。当前 Staging 提示卡 CTA 被遮挡属于已记录的发布包布局缺陷，保存其真实参考图不代表认可该布局。
 
+PR 游客矩阵现在要求 **77 张本轮截图**（英文页面 18 / 启动 19，简中和繁中各页面 18 / 启动 2）。独立验收清单同时核对基准预检、实际测试身份及报告附件；缺图、缺录屏、测试删除/跳过、损坏 PNG 或附件文件丢失都会失败。不能通过只删 `review.json` 条目让缺失基准通过预检。登录业务组不包含在这 77 张游客截图内。
+
+本轮截图在每个 job 的 Summary 中提供下载入口，产物名为 `ios-current-screenshots-<语言>-<分片>-<attempt>`。解压后打开 `index.html` 可逐图查看，`v1/` 可供截图中心读取，`manifest.json` 记录本轮 CI、发布包及原图 SHA-256。`compare` 使用已有基准并发布新采集结果，不会自动改写仓库基准；所以 PR 文件差异中不一定有新增 PNG。手动导出也支持 compare 转场中没有 `.png` 后缀的关键帧，以及 Actions 实际下载的目录结构。
+
 全量覆盖契约按三语言逐个核对 Web 的 91 个流程/260 个状态，并为 21 项动画关联实际注册的原生执行入口。英文升级提示以真实动态关键帧替代同名静态图；Web 分享复制确认框映射为 iOS 系统分享面板的显示、选项和取消。游客搜索动画统一使用英文并验证关闭后重开，保留匹配面板入场和独立品牌淡入检查，保存原始录屏与关键帧。类型、算法和收集检查核对覆盖清单；各原生业务组是否通过，以对应提交的 CI 报告与截图、录像为准。无需凭据的游客矩阵和需账号的登录业务组分别记录，未配置账号的业务组尚未实测；详细映射和限制见 [覆盖说明](docs/coverage.md)。

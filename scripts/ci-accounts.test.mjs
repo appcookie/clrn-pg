@@ -83,7 +83,8 @@ test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或�
   assert.deepEqual(parts.flat().sort(), complete.sort());
 });
 
-test('guest每语言18页独立于启动动画，实际25/20/20项跨两片恰好覆盖一次', { timeout: 180_000 }, () => {
+test('guest每语言18页独立于启动动画，实际25/20/20项跨两片恰好覆盖一次', { timeout: 180_000 }, async () => {
+  const { guestScreenshotTests, screenshotTestKey } = await import('../ios/full/guest-screenshot-contract.mjs');
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(locale, filter = '') {
     const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts',
@@ -109,6 +110,10 @@ test('guest每语言18页独立于启动动画，实际25/20/20项跨两片恰�
     const complete = collect(locale);
     const pages = collect(locale, entries.find(entry => entry.shard === 'pages').filter);
     const startup = collect(locale, entries.find(entry => entry.shard === 'startup').filter);
+    for (const [shard, specs] of [['pages', pages], ['startup', startup]]) {
+      assert.deepEqual(specs.map(screenshotTestKey).sort(),
+        guestScreenshotTests(locale, shard).map(screenshotTestKey).sort(), `${locale}/${shard} 截图验收清单`);
+    }
     assert.equal(complete.length, count);
     assert.equal(pages.length, 18);
     assert.ok(pages.every(spec => spec.file === 'tests/parity.spec.ts'));

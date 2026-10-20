@@ -131,12 +131,41 @@ jobs:
       - name: 恢复 runner 代理设置
         if: always()
         run: node ios/full/system-proxy.mjs restore
+      - name: 校验本轮游客截图并导出可浏览原图
+        if: matrix.group == 'guest'
+        env:
+          IOS_SHARD: ${{ matrix.shard }}
+        run: node ios/full/screenshot-evidence.mjs ios/artifacts ios/artifacts/current-screenshots "$IOS_LOCALE" "$IOS_SHARD"
+      - name: 发布本轮截图与录像
+        if: matrix.group == 'guest'
+        id: screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-current-screenshots-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: error
+          path: ios/artifacts/current-screenshots/
+      - name: 截图入口
+        if: matrix.group == 'guest'
+        env:
+          SCREENSHOTS_URL: ${{ steps.screenshots.outputs.artifact-url }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync, readFileSync } from 'node:fs';
+          const manifest = JSON.parse(readFileSync('ios/artifacts/current-screenshots/manifest.json', 'utf8'));
+          appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+            `### 本轮游客截图 · ${manifest.locale} · ${manifest.shard}\n\n` +
+            `${manifest.passedTests} 项测试通过，${manifest.screenshots} 张预期原图齐全。\n\n` +
+            `[下载截图与录像](${process.env.SCREENSHOTS_URL})，解压后打开 index.html；v1/ 为统一截图目录，manifest.json 记录本轮来源和 SHA-256。\n\n` +
+            `这是本轮实际采集结果，尚未批准为基准。此检查只覆盖游客组，其他登录业务组未由默认 PR 矩阵执行。\n`);
+          NODE
       - name: 保存测试产物
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ios-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
           retention-days: 30
+          if-no-files-found: error
           path: |
             ios/artifacts/full-results/
             ios/artifacts/full-report/
