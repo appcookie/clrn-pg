@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "animation-1",
+      "group": "guest",
+      "file": "tests/web-animation-parity.spec.ts",
+      "title": "launch branding independently fades in while real initialization waits",
+      "images": [
+        "launch-branding-fade-start.png",
+        "launch-branding-fade-middle.png",
+        "launch-branding-fade-end.png"
+      ]
+    },
+    {
+      "id": "animation-2",
+      "group": "social",
+      "file": "tests/slot-animation.spec.ts",
+      "title": "all three native slot reels and reward types animate from real spin responses",
+      "images": []
+    },
+    {
+      "id": "animation-3",
+      "group": "guest",
+      "file": "tests/animation-transitions.spec.ts",
+      "title": "guest search confirmation animates into and out of the iOS screen",
+      "images": [
+        "search-confirmation-enter-start.png",
+        "search-confirmation-enter-middle.png",
+        "search-confirmation-enter-end.png",
+        "search-confirmation-exit-start.png",
+        "search-confirmation-exit-middle.png",
+        "search-confirmation-exit-end.png"
+      ]
+    },
+    {
+      "id": "animation-4",
+      "group": "social",
+      "file": "tests/animation-transitions.spec.ts",
+      "title": "club more menu fades into and out of the iOS screen",
+      "images": []
+    },
+    {
+      "id": "animation-5",
+      "group": "rooms",
+      "file": "tests/animation-transitions.spec.ts",
+      "title": "private room invite sheet slides into and out of the iOS screen",
+      "images": []
+    },
+    {
+      "id": "animation-6",
+      "group": "rooms",
+      "file": "tests/animation-transitions.spec.ts",
+      "title": "private room game picker slides into and out of the iOS screen",
+      "images": []
+    },
+    {
+      "id": "animation-7",
+      "group": "social",
+      "file": "tests/web-animation-parity.spec.ts",
+      "title": "hall matching modal records its native entrance before cancellation",
+      "images": []
+    },
+    {
+      "id": "animation-8",
+      "group": "guest",
+      "file": "tests/animation-transitions.spec.ts",
+      "title": "native launch artwork and staging notice appear on a real app start",
+      "images": [
+        "native-launch-artwork-visible.png",
+        "native-launch-and-staging-notice-start.png",
+        "native-launch-and-staging-notice-middle.png",
+        "native-launch-and-staging-notice-end.png"
+      ]
+    },
+    {
+      "id": "animation-9",
+      "group": "wallet-help",
+      "file": "tests/web-animation-parity.spec.ts",
+      "title": "share link opens and closes the real iOS share sheet",
+      "images": []
+    },
+    {
+      "id": "animation-10",
+      "group": "social",
+      "file": "tests/club-skeleton-animation.spec.ts",
+      "title": "every native club placeholder pulses while detail response is pending",
+      "images": []
+    },
+    {
+      "id": "animation-11",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_pre_game_first",
+      "images": []
+    },
+    {
+      "id": "animation-12",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_game_table",
+      "images": []
+    },
+    {
+      "id": "animation-13",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_game_effects",
+      "images": []
+    },
+    {
+      "id": "animation-14",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_hall",
+      "images": []
+    },
+    {
+      "id": "animation-15",
+      "group": "zhajinhua",
+      "file": "tests/games.spec.ts",
+      "title": "en / zhajinhua / signed_in_zhajinhua_pre_game_first",
+      "images": []
+    },
+    {
+      "id": "animation-16",
+      "group": "zhajinhua",
+      "file": "tests/games.spec.ts",
+      "title": "en / zhajinhua / signed_in_zhajinhua_game_table",
+      "images": []
+    },
+    {
+      "id": "animation-17",
+      "group": "social",
+      "file": "tests/animation-transitions.spec.ts",
+      "title": "hall matching spinner animates while the real waiting dialog is visible",
+      "images": []
+    },
+    {
+      "id": "animation-18",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_pre_game_middle",
+      "images": []
+    },
+    {
+      "id": "animation-19",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_pre_game_second",
+      "images": []
+    },
+    {
+      "id": "animation-20",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_panels",
+      "images": []
+    },
+    {
+      "id": "animation-21",
+      "group": "texas",
+      "file": "tests/games.spec.ts",
+      "title": "en / texas / signed_in_texas_panel_variants",
+      "images": []
+    },
+    {
+      "id": "animation-22",
+      "group": "zhajinhua",
+      "file": "tests/games.spec.ts",
+      "title": "en / zhajinhua / signed_in_zhajinhua_pre_game_second",
+      "images": []
+    },
+    {
+      "id": "animation-23",
+      "group": "zhajinhua",
+      "file": "tests/games.spec.ts",
+      "title": "en / zhajinhua / signed_in_zhajinhua_game_effects",
+      "images": []
+    }
+  ]
+}

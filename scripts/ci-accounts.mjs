@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import animationInventory from '../ios/full/animation-gate-cases.json' with { type: 'json' };
 
 // 这里只维护公开账号名，密码统一保存在 CLRN_IOS_CI_TEST_ACCOUNTS Secret。
 export const ciAccounts = JSON.parse(readFileSync(new URL('./ci-test-accounts.json', import.meta.url), 'utf8')).accounts;
@@ -34,6 +35,17 @@ export function allocateCiAccount(runId, offset = 0, available = executionAccoun
  * @param selectedLocale - 全部语言或一种指定语言。
  */
 export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 'all', available = []) {
+  if (selectedGroup === 'animations' || selectedGroup === 'pr') {
+    if (!['all', 'en'].includes(selectedLocale)) throw new Error('动画门禁固定使用英文');
+    const animationJobs = animationInventory.cases.map((entry, index) => ({
+      group: entry.group, locale: 'en', shard: entry.id, animation: entry.id,
+      filter: `${entry.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, playwrightShard: '',
+      label: `animation / ${entry.id} / ${entry.title}`,
+      account: entry.group === 'guest' ? '' : allocateCiAccount(runId, index, available),
+    }));
+    return { include: [...(selectedGroup === 'pr' ? iosAccountMatrix(runId, 'guest', 'all').include : []),
+      ...animationJobs] };
+  }
   // 保留业务组的固定槽位，德州、拼三张的全部语言优先进入矩阵。
   const functionalGroups = ['functional', 'functional-creation', 'interaction', 'network'];
   const groups = ['guest', 'account', 'social', 'rooms', 'wallet-help', 'records', 'texas', 'zhajinhua', ...functionalGroups];

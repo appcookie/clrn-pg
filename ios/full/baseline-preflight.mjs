@@ -4,6 +4,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { baselineRoot, baselineRelativePath } from './baseline-path.mjs';
 import { guestScreenshotTests } from './guest-screenshot-contract.mjs';
+import { animationCase } from './animation-gate.mjs';
 
 const matrix = JSON.parse(process.env.IOS_CI_MATRIX || '{}');
 if (!Array.isArray(matrix.include) || matrix.include.length === 0) throw new Error('iOS CI 矩阵为空。');
@@ -57,7 +58,15 @@ function* pngFiles(directory) {
   }
 }
 for (const file of pngFiles(baselineRoot)) if (!paths.has(file)) throw new Error(`未审查 PNG 混入基准：${file}`);
-for (const item of matrix.include.filter(item => item.group === 'guest')) {
+for (const item of matrix.include.filter(item => item.animation)) {
+  const entry = animationCase(item.animation);
+  if (!entry.images.length) throw new Error(`${entry.id} 缺少完整审查后的动画基准清单：${entry.title}`);
+  for (const image of entry.images) {
+    const path = baselineRelativePath(image, 'en');
+    if (!paths.has(path)) throw new Error(`动画门禁缺少基准：${path}（${entry.title}）`);
+  }
+}
+for (const item of matrix.include.filter(item => item.group === 'guest' && !item.animation)) {
   for (const test of guestScreenshotTests(item.locale, item.shard)) {
     for (const image of test.images) {
       const path = baselineRelativePath(image, item.locale);

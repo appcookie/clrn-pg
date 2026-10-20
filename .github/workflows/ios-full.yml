@@ -7,10 +7,10 @@ on:
   workflow_dispatch:
     inputs:
       group:
-        description: all 覆盖全部业务；guest 无需账号
+        description: pr 为游客及全部英文动画；animations 仅完整动画；guest 无需账号
         type: choice
-        default: guest
-        options: [all, guest, account, social, rooms, wallet-help, records, texas, zhajinhua, functional, functional-creation, interaction, network]
+        default: pr
+        options: [pr, animations, all, guest, account, social, rooms, wallet-help, records, texas, zhajinhua, functional, functional-creation, interaction, network]
       locale:
         description: 视觉语言；功能组固定 en
         type: choice
@@ -41,15 +41,17 @@ jobs:
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
         run: |
           if [ -z "$CI_IOS_GROUP" ]; then
-            export CI_IOS_GROUP=guest
-            echo 'PR 和 master push 默认执行无需账号的游客矩阵；其他业务组仅在手动指定 group 时运行。' >> "$GITHUB_STEP_SUMMARY"
+            export CI_IOS_GROUP=pr
+            echo 'PR 和 master push 执行三语言游客矩阵及全部英文动画；缺账号、缺基准、漏跑或视觉差异均失败。' >> "$GITHUB_STEP_SUMMARY"
           fi
           node scripts/plan-ci-accounts.mjs ios
       - name: compare 基准预检
         if: inputs.mode == 'compare' || github.event_name != 'workflow_dispatch'
         env:
           IOS_CI_MATRIX: ${{ steps.plan.outputs.matrix }}
-        run: node ios/full/baseline-preflight.mjs
+        run: |
+          npm ci
+          node ios/full/baseline-preflight.mjs
   proxy-check:
     runs-on: ubuntu-latest
     steps:
@@ -132,12 +134,12 @@ jobs:
         if: always()
         run: node ios/full/system-proxy.mjs restore
       - name: 校验本轮游客截图并导出可浏览原图
-        if: matrix.group == 'guest'
+        if: matrix.group == 'guest' && !matrix.animation
         env:
           IOS_SHARD: ${{ matrix.shard }}
         run: node ios/full/screenshot-evidence.mjs ios/artifacts ios/artifacts/current-screenshots "$IOS_LOCALE" "$IOS_SHARD"
       - name: 发布本轮截图与录像
-        if: matrix.group == 'guest'
+        if: matrix.group == 'guest' && !matrix.animation
         id: screenshots
         uses: actions/upload-artifact@v4
         with:
@@ -146,7 +148,7 @@ jobs:
           if-no-files-found: error
           path: ios/artifacts/current-screenshots/
       - name: 截图入口
-        if: matrix.group == 'guest'
+        if: matrix.group == 'guest' && !matrix.animation
         env:
           SCREENSHOTS_URL: ${{ steps.screenshots.outputs.artifact-url }}
         run: |
@@ -157,8 +159,13 @@ jobs:
             `### 本轮游客截图 · ${manifest.locale} · ${manifest.shard}\n\n` +
             `${manifest.passedTests} 项测试通过，${manifest.screenshots} 张预期原图齐全。\n\n` +
             `[下载截图与录像](${process.env.SCREENSHOTS_URL})，解压后打开 index.html；v1/ 为统一截图目录，manifest.json 记录本轮来源和 SHA-256。\n\n` +
-            `这是本轮实际采集结果，尚未批准为基准。此检查只覆盖游客组，其他登录业务组未由默认 PR 矩阵执行。\n`);
+            `这是本轮实际采集结果，尚未批准为基准。全部英文动画由独立 animation 分片执行并对比已提交基准。\n`);
           NODE
+      - name: 验收本轮动画执行与截图
+        if: matrix.animation
+        env:
+          ANIMATION_CASE: ${{ matrix.animation }}
+        run: node ios/full/animation-gate.mjs ios/artifacts/full-results/report.json "$ANIMATION_CASE"
       - name: 保存测试产物
         if: always()
         uses: actions/upload-artifact@v4
@@ -180,3 +187,15 @@ jobs:
       - name: 删除专用模拟器
         if: always() && env.IOS_SIMULATOR_UDID != ''
         run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
+  animation-gate:
+    name: iOS animation gate
+    if: always() && github.event_name != 'workflow_dispatch'
+    needs: [plan, proxy-check, native]
+    runs-on: ubuntu-latest
+    steps:
+      - name: 所有动画分片必须成功；取消、跳过和缺基准均阻断
+        env:
+          PLAN: ${{ needs.plan.result }}
+          PROXY: ${{ needs.proxy-check.result }}
+          NATIVE: ${{ needs.native.result }}
+        run: test "$PLAN" = success && test "$PROXY" = success && test "$NATIVE" = success
