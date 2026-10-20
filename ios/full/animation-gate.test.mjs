@@ -15,7 +15,7 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
   const matrix = iosAccountMatrix('123', 'pr', 'all', ciAccounts).include;
   const jobs = matrix.filter(entry => entry.animation);
   assert.equal(source.animations.length, 21);
-  assert.equal(animationCases.length, 23);
+  assert.equal(animationCases.length, 24);
   assert.equal(jobs.length, animationCases.length);
   assert.equal(new Set(jobs.map(entry => entry.animation)).size, jobs.length);
   for (const row of source.animations) {
@@ -43,6 +43,16 @@ test('动画矩阵每片选中唯一指定的真实测试，无跳过或错误�
     assert.equal(matched.length, 1, entry.title);
     assert.equal(screenshotTestKey(matched[0]), screenshotTestKey(entry));
     assert.equal(matched[0].tests[0].expectedStatus, 'passed');
+  }
+  const all = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
+    { cwd: process.cwd(), env: { ...process.env, IOS_GROUP: 'all', IOS_LOCALE: 'en' } }));
+  const dedicated = new Set(['tests/animation-transitions.spec.ts', 'tests/web-animation-parity.spec.ts',
+    'tests/slot-animation.spec.ts', 'tests/club-skeleton-animation.spec.ts']);
+  for (const spec of reportSpecs(all)) {
+    if (dedicated.has(spec.file)) {
+      assert.ok(animationCases.some(entry => screenshotTestKey(entry) === screenshotTestKey(spec)),
+        `原生独立动画用例漏出 CI 门禁：${spec.title}`);
+    }
   }
 });
 

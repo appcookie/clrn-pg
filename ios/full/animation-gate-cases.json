@@ -177,6 +177,13 @@
       "file": "tests/games.spec.ts",
       "title": "en / zhajinhua / signed_in_zhajinhua_game_effects",
       "images": []
+    },
+    {
+      "id": "animation-24",
+      "group": "account",
+      "file": "tests/animation-transitions.spec.ts",
+      "title": "native account stack slides in and out",
+      "images": []
     }
   ]
 }

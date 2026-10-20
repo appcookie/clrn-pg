@@ -5,6 +5,7 @@ import { relative, resolve } from 'node:path';
 import { baselineRoot, baselineRelativePath } from './baseline-path.mjs';
 import { guestScreenshotTests } from './guest-screenshot-contract.mjs';
 import { animationCase } from './animation-gate.mjs';
+import { validateBaselineSource } from './baseline-source.mjs';
 
 const matrix = JSON.parse(process.env.IOS_CI_MATRIX || '{}');
 if (!Array.isArray(matrix.include) || matrix.include.length === 0) throw new Error('iOS CI 矩阵为空。');
@@ -20,11 +21,8 @@ if (build.platform !== 'ios' || build.packageKind !== 'simulator'
 const reviewFile = `${baselineRoot}/review.json`;
 if (!existsSync(reviewFile)) throw new Error(`compare 缺少人工审查记录：${reviewFile}`);
 const review = JSON.parse(readFileSync(reviewFile, 'utf8'));
+validateBaselineSource(review);
 if (review.status !== 'approved-current-release' || !Array.isArray(review.files) || !review.files.length
-  || !Number.isSafeInteger(review.sourceRun) || review.sourceRun < 1
-  || review.sourceUrl !== `https://github.com/appcookie/clrn-pg/actions/runs/${review.sourceRun}`
-  || !/^[a-f0-9]{40}$/.test(review.sourceWorkflowHead || '')
-  || !Array.isArray(review.sourceArtifacts) || review.sourceArtifacts.length < 1
   || review.releaseTag !== build.releaseTag || review.applicationCommit !== build.applicationCommit
   || review.packageSha256 !== build.package?.sha256) {
   throw new Error('compare 的审查记录与参考图来源不匹配。');
@@ -32,6 +30,7 @@ if (review.status !== 'approved-current-release' || !Array.isArray(review.files)
 const paths = new Set();
 const reviewedLocales = new Set();
 for (const entry of review.files) {
+  if (Object.hasOwn(entry, 'source')) validateBaselineSource(entry.source);
   if (typeof entry.path !== 'string' || !/^[a-f0-9]{64}$/.test(entry.sha256 || '')
     || !entry.path.endsWith('.png') || entry.path.includes('..') || entry.path.startsWith('/')) {
     throw new Error('审查记录含无效图片路径或 SHA。');

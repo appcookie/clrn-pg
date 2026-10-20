@@ -51,9 +51,9 @@ npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 
 游客组不需要凭据。登录组需要仓库 Secret `CLRN_IOS_CI_TEST_ACCOUNTS`（至少一个独立 iOS 测试账号），以及余额准备/创建数据所需的 `TESTING_API_TOKEN`。账号池格式为 `{"accounts":[{"username":"clrnciios001","password":"实际密码","status":"ready"}]}`；只配置确实已创建的账号，禁止借用 Web/Android 并发占用的账号。账号级排队锁保证同一账号不会被多个 job 同时使用。
 
-PR 和 master push 默认以 `compare` 运行三语言游客矩阵，以及 `ios/full/animation-gate-cases.json` 中的全部 23 个英文动画分片，覆盖 21 项 Web 动画映射及原生后续分片。每个动画 job 必须实际运行指定用例、通过视觉与运动断言，并提供清单内的全部 PNG 和录屏；缺账号、缺基准、测试跳过或重试均不能通过。固定名称 `iOS animation gate` 汇总所有分片，任一失败、取消或未运行都会失败。管理员还须在 master 分支保护中将该检查设为必需检查，否则 GitHub 不会强制阻止合并。
+PR 和 master push 默认以 `compare` 运行三语言游客矩阵，以及 `ios/full/animation-gate-cases.json` 中的全部 24 个英文动画分片，覆盖 21 项 Web 动画映射、原生后续分片和账号页面入栈/出栈。每个动画 job 必须实际运行指定用例、通过视觉与运动断言，并提供清单内的全部 PNG 和录屏；缺账号、缺基准、测试跳过或重试均不能通过。固定名称 `iOS animation gate` 汇总所有分片，任一失败、取消或未运行都会失败。管理员还须在 master 分支保护中将该检查设为必需检查，否则 GitHub 不会强制阻止合并。
 
-完整动画基准仍在补齐：当前仅游客动画有已审查基准，其余条目的 `images: []` 表示尚未完成基准采集，**预检会主动失败**，不能据此声称全部动画已验证。2026-10-20 的首次完整采集暴露了登录前的 staging API 连接故障；需要服务恢复后完成真实采集、审查和 compare 实测。此状态不能用删除门禁条目、跳过账号准备或自动接受本轮截图绕过。
+完整动画基准仍在补齐：当前仅游客动画有已审查基准，其余条目的 `images: []` 表示尚未完成基准采集，**预检会主动失败**，不能据此声称全部动画已验证。2026-10-20 首次完整采集遇到的 staging API 故障已恢复，账号准备已通过；后续真实执行发现登录页收键盘误点空导航标题，正在修正并继续采集、审查和 compare 实测。此状态不能用删除门禁条目、跳过账号准备或自动接受本轮截图绕过。
 
 手动 `group=animations` 可独立执行所有英文动画；仅手动诊断允许指定 `animation_case=animation-编号`，不能缩减 PR 门禁。`group=all` 还包括其他业务和功能测试。`smoke` 保留语义/运动断言及原始证据，首次 `reference` 输出须审查后入库，`compare` 进行版本视觉比较。普通比较运行不会修改基准。
 
