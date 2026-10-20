@@ -19,7 +19,7 @@ on:
       mode:
         description: 视觉基准模式
         type: choice
-        default: smoke
+        default: compare
         options: [smoke, reference, compare]
 permissions:
   contents: read
@@ -46,7 +46,7 @@ jobs:
           fi
           node scripts/plan-ci-accounts.mjs ios
       - name: compare 基准预检
-        if: inputs.mode == 'compare'
+        if: inputs.mode == 'compare' || github.event_name != 'workflow_dispatch'
         env:
           IOS_CI_MATRIX: ${{ steps.plan.outputs.matrix }}
         run: node ios/full/baseline-preflight.mjs
@@ -84,7 +84,7 @@ jobs:
       IOS_SIMULATOR_UDID: ''
       IOS_GROUP: ${{ matrix.group }}
       IOS_LOCALE: ${{ matrix.locale }}
-      IOS_VISUAL_MODE: ${{ inputs.mode || 'smoke' }}
+      IOS_VISUAL_MODE: ${{ inputs.mode || 'compare' }}
       CLRN_CI_ACCOUNT: ${{ matrix.account }}
       CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
     steps:

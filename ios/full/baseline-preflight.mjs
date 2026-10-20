@@ -19,6 +19,10 @@ const reviewFile = `${baselineRoot}/review.json`;
 if (!existsSync(reviewFile)) throw new Error(`compare 缺少人工审查记录：${reviewFile}`);
 const review = JSON.parse(readFileSync(reviewFile, 'utf8'));
 if (review.status !== 'approved-current-release' || !Array.isArray(review.files) || !review.files.length
+  || !Number.isSafeInteger(review.sourceRun) || review.sourceRun < 1
+  || review.sourceUrl !== `https://github.com/appcookie/clrn-pg/actions/runs/${review.sourceRun}`
+  || !/^[a-f0-9]{40}$/.test(review.sourceWorkflowHead || '')
+  || !Array.isArray(review.sourceArtifacts) || review.sourceArtifacts.length < 1
   || review.releaseTag !== build.releaseTag || review.applicationCommit !== build.applicationCommit
   || review.packageSha256 !== build.package?.sha256) {
   throw new Error('compare 的审查记录与参考图来源不匹配。');
