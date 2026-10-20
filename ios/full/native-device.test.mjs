@@ -64,6 +64,18 @@ test('收键盘命令返回成功但键盘仍可见时，必须执行安全备�
     assert.equal(taps, 1);
   }
 });
+test('真实登录页顺序中的空导航标题和状态栏不能抢占表单标题的收键盘点击', () => {
+  const node = (clazz, text, y, children = []) => ({ clazz, text, visible: true, enabled: true,
+    bounds: { x: 272, y, width: 631, height: 66 }, children });
+  const empty = node('XCUIElementTypeStaticText', undefined, 258);
+  const whitespace = node('XCUIElementTypeStaticText', ' ', 258);
+  const clock = node('XCUIElementTypeStaticText', '9:41', 60);
+  const status = node('XCUIElementTypeStatusBar', undefined, 0, [clock]);
+  const title = node('XCUIElementTypeStaticText', 'Welcome to GoPlay360', 633);
+  const keyboard = node('XCUIElementTypeKeyboard', undefined, 1548);
+  assert.equal(keyboardDismissTarget([status, clock, empty, whitespace, title, keyboard]), title);
+  assert.equal(keyboardDismissTarget([status, clock, empty, whitespace, keyboard]), undefined);
+});
 test('可见性查询不会将隐藏节点作为ready，驱动错误不会变成空树', async () => {
   const device = new NativeDevice({ source: async () => xml }, 'test', async () => {}, async () => {}, 'test.app');
   device.screenSize = { width: 393, height: 852 };
