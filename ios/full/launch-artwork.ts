@@ -6,6 +6,7 @@ import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 import { frameColorDistance } from './animation-transition';
 import type { ScreenshotBounds } from './screenshot';
+import { baselinePath } from './baseline-path.mjs';
 
 /** Reference pixels come from the downloaded .app image, never application source. */
 export function launchArtworkTemplate(application: string, width: number, height: number): PNG {
@@ -63,7 +64,7 @@ export async function verifyLaunchArtwork(frames: Buffer[], testInfo: TestInfo,
   await testInfo.attach(name, { body: first, contentType: 'image/png' });
   if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(first, name, testInfo);
   else {
-    const baseline = readFileSync(testInfo.snapshotPath(name));
+    const baseline = readFileSync(baselinePath(name));
     expect(Math.min(...candidates.map(candidate => frameColorDistance(candidate, baseline))),
       `${name} 须在真实启动帧里接近已审查的插画`).toBeLessThanOrEqual(12);
   }

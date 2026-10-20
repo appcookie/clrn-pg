@@ -1,5 +1,6 @@
 import { animationRegion } from './animation-region';
 import { assertVisual } from './device';
+import { baselinePath } from './baseline-path.mjs';
 import { screenBounds } from './screen-geometry';
 import { existsSync, readFileSync } from 'node:fs';
 import { setTimeout } from 'node:timers/promises';
@@ -203,17 +204,17 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     await assertVisual(middle.frame, `${name}-middle.png`, testInfo);
     await assertVisual(after, `${name}-end.png`, testInfo);
   } else {
-    expect([`${name}-start.png`, ...startPhaseAnchors.filter(file => existsSync(testInfo.snapshotPath(file)))]
+    expect([`${name}-start.png`, ...startPhaseAnchors.filter(file => existsSync(baselinePath(file)))]
       .some(file => samePixels(maskScreenshot(before, startCompareMasks),
-        maskScreenshot(readFileSync(testInfo.snapshotPath(file)), startCompareMasks))), '动画起点视觉回归').toBe(true);
-    expect([`${name}-end.png`, ...endPhaseAnchors.filter(file => existsSync(testInfo.snapshotPath(file)))]
+        maskScreenshot(readFileSync(baselinePath(file)), startCompareMasks))), '动画起点视觉回归').toBe(true);
+    expect([`${name}-end.png`, ...endPhaseAnchors.filter(file => existsSync(baselinePath(file)))]
       .some(file => samePixels(maskScreenshot(after, endCompareMasks),
-        maskScreenshot(readFileSync(testInfo.snapshotPath(file)), endCompareMasks))),
+        maskScreenshot(readFileSync(baselinePath(file)), endCompareMasks))),
     '动画终点视觉回归').toBe(true);
-    const reference = readFileSync(testInfo.snapshotPath(`${name}-middle.png`));
+    const reference = readFileSync(baselinePath(`${name}-middle.png`));
     // 原生截图可能落在已审查中途相位的两侧，但靠近起止帧的无关闪屏不能冒充转场。
     // 非录屏路径要求基准变化幅度；录屏路径在空间匹配时逐个检查已审查相位。
-    const anchors = [reference, ...videoPhaseAnchors.filter(file => existsSync(testInfo.snapshotPath(file))).map(file => readFileSync(testInfo.snapshotPath(file)))];
+    const anchors = [reference, ...videoPhaseAnchors.filter(file => existsSync(baselinePath(file))).map(file => readFileSync(baselinePath(file)))];
     if (samplingMethod === 'videoFrames') assertReviewedVideoMiddle(before, after, candidates, anchors);
     else {
       const reviewedDistances = candidates.flatMap(item => anchors
@@ -266,7 +267,7 @@ export async function captureTransientTransition(device: AndroidDevice, name: st
     await testInfo.attach(file, { body: frame, contentType: 'image/png' });
     if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(frame, file, testInfo);
     else {
-      const reference = readFileSync(testInfo.snapshotPath(file));
+      const reference = readFileSync(baselinePath(file));
       expect(Math.min(...(phase === 'start' ? [before] : frames)
         .map(candidate => frameColorDistance(candidate, reference))),
       `${name} ${phase} 视觉关键帧须匹配基准`).toBeLessThanOrEqual(12);
@@ -326,9 +327,9 @@ export async function captureTimedPrompt(device: AndroidDevice, name: string, te
     const file = `${name}-${phase}.png`;
     await testInfo.attach(file, { body: frame, contentType: 'image/png' });
     if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(frame, file, testInfo);
-    else if (phase === 'start' || phase === 'end') expect(samePixels(frame, readFileSync(testInfo.snapshotPath(file)))).toBe(true);
+    else if (phase === 'start' || phase === 'end') expect(samePixels(frame, readFileSync(baselinePath(file)))).toBe(true);
     else {
-      const reference = readFileSync(testInfo.snapshotPath(file));
+      const reference = readFileSync(baselinePath(file));
       expect(Math.min(...visible.map(candidate => frameColorDistance(candidate, reference))),
         `${name} ${phase} 视觉回归`).toBeLessThanOrEqual(12);
     }

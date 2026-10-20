@@ -1,4 +1,5 @@
 import { assertVisual } from '../device';
+import { baselinePath } from '../baseline-path.mjs';
 import { screenBounds } from '../screen-geometry';
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
@@ -93,7 +94,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         [screenBounds(device, { x: 80, y: 510, width: 560, height: 380 })]).regions[0];
       await testInfo.attach('slot-no-energy-visible', { body: promptImage, contentType: 'image/png' });
       if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(promptImage, 'slot-no-energy-visible.png', testInfo);
-      else expect(samePixels(promptImage, readFileSync(testInfo.snapshotPath('slot-no-energy-visible.png'))),
+      else expect(samePixels(promptImage, readFileSync(baselinePath('slot-no-energy-visible.png'))),
         '能量不足提示完整画面视觉回归').toBe(true);
       const confirm = await device.info({ res: 'confirm-button' });
       /** 通过真实确认按钮关闭能量不足提示。 */

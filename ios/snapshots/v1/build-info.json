@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 2,
+  "packageKind": "simulator",
+  "platform": "ios",
+  "environment": "staging",
+  "applicationId": "com.ac.laiwanDev",
+  "version": "2.0.2610200111",
+  "applicationBuildNumber": "2610200111",
+  "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+  "buildNumber": 6,
+  "buildAttempt": 1,
+  "releaseTag": "ios-staging-6-1-36142b647703",
+  "package": {
+    "name": "ios-staging-simulator.zip",
+    "size": 50696868,
+    "sha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+  }
+}

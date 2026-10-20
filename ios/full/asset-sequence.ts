@@ -8,6 +8,7 @@ import { frameColorDistance, framePaletteDistance } from './animation-transition
 import { gameScreenshot } from './game-controls';
 import { motionParts, samePixels } from './motion-regions';
 import type { ScreenshotBounds } from './screenshot';
+import { baselinePath } from './baseline-path.mjs';
 
 type NativeFrame = { capturedAt: number; png: string };
 
@@ -48,8 +49,8 @@ export async function captureAssetSequence(device: AndroidDevice, name: string, 
     await info.attach(file, { body: frame, contentType: 'image/png' });
     if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(frame, file, info);
     else {
-      const references = [readFileSync(info.snapshotPath(file))];
-      const alternate = info.snapshotPath(`${name}-${phase}-alternate.png`);
+      const references = [readFileSync(baselinePath(file))];
+      const alternate = baselinePath(`${name}-${phase}-alternate.png`);
       if (phase !== 'start' && existsSync(alternate)) references.push(readFileSync(alternate));
       // 飞行道具在接收者身上经过的时刻可变；颜色构成锁定素材，下面的飞行区域另锁定位置。
       const compare = flightRegion && phase !== 'start' ? framePaletteDistance : frameColorDistance;
@@ -82,10 +83,10 @@ export async function captureAssetSequence(device: AndroidDevice, name: string, 
       await info.attach(file, { body: frame, contentType: 'image/png' });
       if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(frame, file, info);
       else {
-        const references = [readFileSync(info.snapshotPath(file))];
-        const alternate = info.snapshotPath(`${name}-flight-${phase}-alternate.png`);
+        const references = [readFileSync(baselinePath(file))];
+        const alternate = baselinePath(`${name}-flight-${phase}-alternate.png`);
         if (phase !== 'start' && existsSync(alternate)) references.push(readFileSync(alternate));
-        const secondAlternate = info.snapshotPath(`${name}-flight-${phase}-alternate-2.png`);
+        const secondAlternate = baselinePath(`${name}-flight-${phase}-alternate-2.png`);
         if (phase !== 'start' && existsSync(secondAlternate)) references.push(readFileSync(secondAlternate));
         expect(Math.min(...(phase === 'start' ? [flightStart] : moving.map(item => item.frame))
           .flatMap(candidate => references.map(reference => frameColorDistance(candidate, reference)))),

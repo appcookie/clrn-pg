@@ -1,4 +1,5 @@
 import { assertVisual } from './device';
+import { baselinePath } from './baseline-path.mjs';
 import { recordScreenSamples } from './video-frames';
 import { existsSync, readFileSync } from 'node:fs';
 import { expect, type TestInfo } from '@playwright/test';
@@ -68,7 +69,7 @@ export async function captureLoopKeyframes(device: AndroidDevice, name: string, 
       await testInfo.attach(`${name}-${index + 1}-${phase}`, { body: selected.frame, contentType: 'image/png' });
       const file = `${name}-${index + 1}-${phase}.png`;
       if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(selected.frame, file, testInfo);
-      else expect(Math.min(...frames.map(frame => frameColorDistance(frame, readFileSync(testInfo.snapshotPath(file))))),
+      else expect(Math.min(...frames.map(frame => frameColorDistance(frame, readFileSync(baselinePath(file))))),
         `${name} 第 ${index + 1} 个控件的${phase}相位须匹配基准`).toBeLessThanOrEqual(10);
     }
   }
@@ -108,7 +109,7 @@ export async function captureMovingKeyframes(device: AndroidDevice, name: string
       await testInfo.attach(file, { body: selected, contentType: 'image/png' });
       if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(selected, file, testInfo);
       else {
-        const references = [file, ...phaseAnchors.filter(anchor => existsSync(testInfo.snapshotPath(anchor)))].map(anchor => readFileSync(testInfo.snapshotPath(anchor)));
+        const references = [file, ...phaseAnchors.filter(anchor => existsSync(baselinePath(anchor)))].map(anchor => readFileSync(baselinePath(anchor)));
         expect(Math.min(...references.flatMap(reference => frames.map(frame => compareDistance(frame, reference)))),
           `${name} 第 ${index + 1} 个控件的${phase}相位须匹配基准`).toBeLessThanOrEqual(distanceLimit);
       }
@@ -135,7 +136,7 @@ export async function captureConcurrentMotion(frames: Buffer[], name: string, te
     await testInfo.attach(file, { body: selected, contentType: 'image/png' });
     if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(selected, file, testInfo);
     else {
-      const reference = readFileSync(testInfo.snapshotPath(file));
+      const reference = readFileSync(baselinePath(file));
       expect(Math.min(...pictures.map(frame => frameColorDistance(frame, reference))),
         `${name} ${phase} 视觉回归`).toBeLessThanOrEqual(18);
     }

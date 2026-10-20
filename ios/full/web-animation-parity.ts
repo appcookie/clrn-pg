@@ -7,6 +7,7 @@ import type { ScreenshotBounds } from './screenshot';
 import { motionParts } from './motion-regions';
 import { assertVisual } from './device';
 import { brandFadeEvidence } from './brand-fade';
+import { baselinePath } from './baseline-path.mjs';
 
 /** Modal-hidden native descendants retain layout, not visibility or clickability. */
 export function launchBrandPixelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
@@ -66,7 +67,7 @@ export async function assertBrandFade(frames: Buffer[], finalFrame: Buffer, refe
     const name = `launch-branding-fade-${phase}.png`;
     if (phase !== 'middle' || process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(cropped[index], name, info);
     else {
-      const reviewed = readFileSync(info.snapshotPath(name));
+      const reviewed = readFileSync(baselinePath(name));
       const candidates = result.samples.flatMap((sample, i) => sample.alpha !== null && sample.residual !== null
         && sample.alpha > .1 && sample.alpha < .9 && sample.residual < 12 ? [cropped[i]] : []);
       expect(Math.min(...candidates.map(frame => frameColorDistance(frame, reviewed))), '品牌真实半透明相位须匹配已审查基准').toBeLessThanOrEqual(12);

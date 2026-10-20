@@ -51,6 +51,8 @@ npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 
 游客组不需要凭据。登录组需要仓库 Secret `CLRN_IOS_CI_TEST_ACCOUNTS`（至少一个独立 iOS 测试账号），以及余额准备/创建数据所需的 `TESTING_API_TOKEN`。账号池格式为 `{"accounts":[{"username":"clrnciios001","password":"实际密码","status":"ready"}]}`；只配置确实已创建的账号，禁止借用 Web/Android 并发占用的账号。账号级排队锁保证同一账号不会被多个 job 同时使用。
 
-未配置凭据时，PR 明确只运行游客矩阵，并在 Actions summary 记录未运行的登录/创建组。配置两项 Secrets 后，PR 默认展开完整矩阵；手动选择 all 但缺凭据会直接失败。`smoke` 保留语义/运动断言及原始证据，首次 `reference` 输出须审查后入库，后续 `compare` 才进行版本视觉比较。不会自动接受变化或用跳过充当业务通过。
+PR 和 master push 默认运行游客矩阵；手动选择 `group=all` 或单个账号业务组才会运行其他测试，缺凭据直接失败。这个默认范围是当前已实测的原生验证边界。`smoke` 保留语义/运动断言及原始证据，首次 `reference` 输出须审查后入库，后续 `compare` 才进行版本视觉比较。不会自动接受变化或用跳过充当业务通过。
+
+完整回归的参考图只使用 `ios/snapshots/v1/<module>/<page>/<state>/ios/iphone16-ios18.5/<locale>/<kind>/<sample>.png`，可被 `laiwan_screenshot` 直接读取。已通过的 `smoke` CI 报告也可用 `node ios/full/export-candidates.mjs <新目录> <下载后的 artifact 目录>...` 导出真实候选；工具核对所有测试通过、同一 Release 与每张 PNG，并标记 `unreviewed`。逐图审查后将候选的 `v1/` 放入 `ios/snapshots/v1/`，再手动运行 `mode=compare`；缺少基准会在分配 macOS runner 前失败。当前 Staging 提示卡 CTA 被遮挡属于已记录的发布包布局缺陷，保存其真实参考图不代表认可该布局。
 
 全量覆盖契约按三语言逐个核对 Web 的 91 个流程/260 个状态，并为 21 项动画关联实际注册的原生执行入口。英文升级提示以真实动态关键帧替代同名静态图；Web 分享复制确认框映射为 iOS 系统分享面板的显示、选项和取消。新增简体中文游客搜索、匹配面板入场和独立品牌淡入检查，保存原始录屏与关键帧。类型、算法和收集检查核对覆盖清单；各原生业务组是否通过，以对应提交的 CI 报告与截图、录像为准。无需凭据的游客矩阵和需账号的登录业务组分别记录，未配置账号的业务组尚未实测；详细映射和限制见 [覆盖说明](docs/coverage.md)。

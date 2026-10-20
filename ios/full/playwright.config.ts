@@ -8,9 +8,10 @@ export default defineConfig({
   // 其他业务组仍限制失败后的 Simulator 重启成本；CI job 总时限保持不变。
   maxFailures: process.env.CI && process.env.IOS_GROUP !== 'guest' ? 3 : undefined,
   forbidOnly: !!process.env.CI,
+  // 只有显式 IOS_VISUAL_MODE=reference 才能写候选图；Playwright 自身不得隐式接受变化。
+  updateSnapshots: 'none',
   outputDir: artifactPath('full-results'),
   reporter: [['list'], ['html', { outputFolder: artifactPath('full-report'), open: 'never' }],
     ['json', { outputFile: artifactPath('full-results/report.json') }]],
-  snapshotPathTemplate: `{testDir}/../snapshots/full/iphone16-ios18.5-${process.env.IOS_LOCALE || 'en'}/{arg}{ext}`,
   use: { trace: 'off' },
 });
