@@ -38,7 +38,17 @@
       "group": "social",
       "file": "tests/animation-transitions.spec.ts",
       "title": "club more menu fades into and out of the iOS screen",
-      "images": []
+      "images": [
+        "club-more-enter-start.png",
+        "club-more-enter-middle.png",
+        "club-more-enter-end.png",
+        "club-more-exit-start.png",
+        "club-more-exit-middle.png",
+        "club-more-exit-end.png",
+        "club-rooms-empty-enter-start.png",
+        "club-rooms-empty-enter-middle.png",
+        "club-rooms-empty-enter-end.png"
+      ]
     },
     {
       "id": "animation-5",

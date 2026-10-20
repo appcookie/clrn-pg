@@ -33,6 +33,8 @@ test('时戳缺失、倒序和没有时间进展均不能通过真实视频覆�
   assert.throws(() => validateRecordedTimeline(Array.from({ length: 30 }, () => ({ pts_time: '1' })), 3500), /真实连续帧/);
   assert.throws(() => validateRecordedTimeline(frames(500), 0), /真实连续帧/);
   assert.throws(() => validateRecordedTimeline(frames(6000), NaN), /有效的非负毫秒数/);
+  assert.throws(() => validateRecordedTimeline([{ pts_time: '0.000000' }], 4500),
+    /"encodedFrames":1,"distinctFrames":1,"minimumDistinctFrames":20/);
 });
 
 // Captured simctl encoding: best_effort switches to DTS at the repeated PTS.

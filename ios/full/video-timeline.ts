@@ -10,9 +10,14 @@ export function validateRecordedTimeline(frames: ProbeFrame[], postTriggerWallMs
   // after an equal PTS and introduce a false backwards jump in Simulator video.
   // Equal PTS retain both encoded frames; they do not count as elapsed motion.
   const timestampsMs = frames.map(frame => Number(frame.pts_time) * 1000);
-  if (frames.length < minimumDistinctFrames || timestampsMs.some((time, index) => !Number.isFinite(time)
-    || (index > 0 && time < timestampsMs[index - 1])) || new Set(timestampsMs).size < minimumDistinctFrames) {
-    throw new Error('模拟器录屏缺少足够的真实连续帧或有效时戳。');
+  const invalidIndex = timestampsMs.findIndex((time, index) => !Number.isFinite(time)
+    || (index > 0 && time < timestampsMs[index - 1]));
+  const distinctFrames = new Set(timestampsMs).size;
+  if (frames.length < minimumDistinctFrames || invalidIndex !== -1 || distinctFrames < minimumDistinctFrames) {
+    throw new Error(`模拟器录屏缺少足够的真实连续帧或有效时戳。${JSON.stringify({
+      encodedFrames: frames.length, distinctFrames, minimumDistinctFrames, invalidIndex,
+      firstPts: frames[0]?.pts_time ?? null, lastPts: frames.at(-1)?.pts_time ?? null,
+    })}`);
   }
   const durationMs = timestampsMs.at(-1)! - timestampsMs[0];
   // Simulator media time and wall time differed in actual CI recordings. Keep both

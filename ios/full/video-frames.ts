@@ -73,6 +73,9 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   const probe = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
     '-show_frames', '-show_entries', 'frame=pts_time', '-of', 'json', video],
   { timeout: 60000, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })) as { frames: ProbeFrame[] };
+  await testInfo.attach(`${name}-raw-frame-timestamps`, {
+    body: JSON.stringify(probe.frames), contentType: 'application/json',
+  });
   const timeline = validateRecordedTimeline(probe.frames, stoppedAt - triggerAt, minimumDistinctFrames);
   await testInfo.attach(`${name}-encoded-timeline`, { body: JSON.stringify(timeline), contentType: 'application/json' });
   const frames = path.join(directory, 'frames');
