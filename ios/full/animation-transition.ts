@@ -30,16 +30,16 @@ export function frameColorDistance(left: Buffer, right: Buffer): number {
   return difference / (a.width * a.height * 3);
 }
 
-/** The simulator launcher changes wallpaper tint independently of this app.
- * Keep the reviewed Maps widget and two app icons as fixed spatial anchors;
+/** The simulator launcher changes wallpaper tint and asynchronously loads Maps.
+ * Keep three reviewed system app icons as fixed spatial anchors;
  * the first recorded video frame must still match this real pre-launch screen.
  */
 export function reviewedLauncherStart(actual: Buffer, reference: Buffer): boolean {
   const a = PNG.sync.read(actual), b = PNG.sync.read(reference);
   if (a.width !== b.width || a.height !== b.height) return false;
   // Coordinates are from the reviewed iPhone 16 launcher at 1178 × 2556.
-  // The interiors avoid the independently tinted wallpaper and today's date.
-  const stable = [[120, 280, 390, 410], [370, 850, 160, 150], [370, 2290, 160, 170]];
+  // Photos, Reminders and Safari interiors avoid the wallpaper, date and Maps load.
+  const stable = [[370, 850, 160, 150], [650, 840, 160, 160], [370, 2290, 160, 170]];
   return stable.every(([x, y, width, height]) => {
     const bounds = { x: Math.round(x * a.width / 1178), y: Math.round(y * a.height / 2556),
       width: Math.round(width * a.width / 1178), height: Math.round(height * a.height / 2556) };
