@@ -14,6 +14,7 @@ import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './sc
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
 import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask } from './game-masks';
+import { shortAnimationMinimumFrames } from './video-timeline';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -213,7 +214,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     await trigger();
     if (settleMs) await setTimeout(settleMs);
     if (afterReady) await afterReady();
-  }, testInfo);
+  }, testInfo, 3500, shortAnimationMinimumFrames);
   await afterRecording?.();
   expect(recorded.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
   const originals = recorded;

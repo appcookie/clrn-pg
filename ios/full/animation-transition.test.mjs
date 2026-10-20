@@ -143,3 +143,32 @@ test('异步面板就绪发生在录像停止前，检查帧与终点截图发�
     else process.env.IOS_VISUAL_MODE = previousMode;
   }
 });
+
+
+test('短录像必须保留真实中途过程，14帧首尾硬切仍失败', async () => {
+  const { captureNativeTransition } = await import('./animation-transition.ts');
+  const { validateRecordedTimeline } = await import('./video-timeline.ts');
+  const previousMode = process.env.IOS_VISUAL_MODE;
+  process.env.IOS_VISUAL_MODE = 'smoke';
+  const info = { attach: async () => {} };
+  const run = async frames => {
+    let screenshots = 0;
+    const device = { nodes: async () => [], screenSize: { width: 120, height: 180 },
+      nativeScreenshot: async () => screenshots++ ? after : before };
+    return captureNativeTransition(device, 'short-native-slide', info,
+      { x: 0, y: 0, width: 120, height: 180 }, () => {}, [], [], 0, 'videoFrames',
+      undefined, undefined, [], [], [], [], [], async (_device, _name, _region, trigger, _info, _duration, minimum) => {
+        validateRecordedTimeline(frames.map((_, index) => ({ pts_time: String(index / 30) })), 3500, minimum);
+        await trigger(); return frames;
+      });
+  };
+  try {
+    await run([before, ...Array(12).fill(middle), after]);
+    await assert.rejects(run([...Array(7).fill(before), ...Array(7).fill(after)]), /真实动画帧/);
+    await assert.rejects(run(Array(14).fill(after)), /首帧/);
+    await assert.rejects(run([before, middle, after]), /真实连续帧/);
+  } finally {
+    if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
+    else process.env.IOS_VISUAL_MODE = previousMode;
+  }
+});

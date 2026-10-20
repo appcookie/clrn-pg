@@ -109,8 +109,8 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
 
 /** 连续帧使用同一真实视频的编码时戳，不补帧或推算 30fps。 */
 export async function recordScreenSamples(device: NativeDevice, name: string, info: TestInfo,
-  trigger: () => unknown = () => {}, durationMs = 2500, onRecorded?: () => Promise<void>) {
+  trigger: () => unknown = () => {}, durationMs = 2500, onRecorded?: () => Promise<void>, minimumDistinctFrames = 20) {
   const frames = await recordNativeVideoFrames(device, name,
-    { x: 0, y: 0, ...device.screenSize }, trigger, info, durationMs, 20, onRecorded);
+    { x: 0, y: 0, ...device.screenSize }, trigger, info, durationMs, minimumDistinctFrames, onRecorded);
   return frames.map((png, index) => ({ capturedAt: frames.timestampsMs![index], png: png.toString('base64') }));
 }

@@ -9,6 +9,7 @@ import { gameScreenshot } from './game-controls';
 import { motionParts, samePixels } from './motion-regions';
 import type { ScreenshotBounds } from './screenshot';
 import { baselinePath } from './baseline-path.mjs';
+import { shortAnimationMinimumFrames } from './video-timeline';
 
 type NativeFrame = { capturedAt: number; png: string };
 
@@ -31,8 +32,8 @@ export async function captureAssetSequence(device: AndroidDevice, name: string, 
   const beforeScreen = await gameScreenshot(device);
   const before = crop(beforeScreen);
   // XCTest 在静止区间输出稀疏帧；真实 puchi 录像在 2.5 秒窗口仅得到 19 帧。
-  // 给短表情 5 秒的完整观察窗口，保留原有 20 帧门槛及独立出现、变化、恢复断言。
-  const screens = (await recordScreenSamples(device, name, info, trigger, 5000)).map(frame => Buffer.from(frame.png, 'base64'));
+  // 短表情保留 5 秒观察窗口、至少 10 个原始采样及独立出现、变化、恢复断言。
+  const screens = (await recordScreenSamples(device, name, info, trigger, 5000, undefined, shortAnimationMinimumFrames)).map(frame => Buffer.from(frame.png, 'base64'));
   const timeline = screens.map(crop);
   expect(timeline.length).toBeGreaterThanOrEqual(10);
   expect(frameColorDistance(before, timeline[0]), `${name} 必须在采样开始后播放`).toBeLessThan(10);

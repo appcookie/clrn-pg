@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { validateRecordedTimeline } from './video-timeline.ts';
+import { validateRecordedTimeline, shortAnimationMinimumFrames } from './video-timeline.ts';
 
 function frames(durationMs, fps = 30) {
   return Array.from({length: Math.floor(durationMs * fps / 1000) + 1}, (_, index) => ({
@@ -54,4 +54,15 @@ test('静态启动页可接受真实低帧率录屏，动画仍保持默认20帧
   assert.throws(() => validateRecordedTimeline(lowRate, 14000), /真实连续帧/);
   assert.equal(validateRecordedTimeline(lowRate, 14000, 12).timestampsMs.length, 17);
   assert.throws(() => validateRecordedTimeline(lowRate.slice(0, 11), 14000, 12), /真实连续帧/);
+});
+
+
+test('真实300ms转场的14帧变帧率时间线按短动画契约保留，不能补帧或复用时间戳', () => {
+  const input = [0, 5.395, 5.436667, 5.505, 5.551667, 5.596667, 5.733333,
+    5.776667, 5.78, 5.798333, 5.8, 5.801667, 6.811667, 6.91].map(time => ({ pts_time: String(time) }));
+  const result = validateRecordedTimeline(input, 3500, shortAnimationMinimumFrames);
+  assert.deepEqual(result.timestampsMs, input.map(frame => Number(frame.pts_time) * 1000));
+  assert.equal(result.timestampsMs.length, 14);
+  assert.throws(() => validateRecordedTimeline(input.slice(0, 9), 3500, shortAnimationMinimumFrames), /真实连续帧/);
+  assert.throws(() => validateRecordedTimeline(input.map(() => input[0]), 3500, shortAnimationMinimumFrames), /真实连续帧/);
 });

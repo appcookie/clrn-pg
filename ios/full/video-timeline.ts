@@ -1,5 +1,8 @@
 export type ProbeFrame = { pts_time?: string };
 
+// 300ms 原生转场的有效录像可少于 20 帧；短动画还必须通过独立的真实中途像素断言。
+export const shortAnimationMinimumFrames = 10;
+
 /** Validate encoded samples only. Media timestamps cannot prove wall-clock action coverage. */
 export function validateRecordedTimeline(frames: ProbeFrame[], postTriggerWallMs: number,
   minimumDistinctFrames = 20) {
