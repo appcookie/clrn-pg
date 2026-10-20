@@ -11,6 +11,7 @@ import { animateGamePanel, captureTimedLevelUp } from './game-panel-animation';
 import { captureConcurrentMotion, captureLoopKeyframes, captureMovingKeyframes } from './loop-keyframes';
 import { captureAssetSequence } from './asset-sequence';
 import type { ScreenshotMask } from './screenshot';
+import { zhajinhuaCardRegions, currentZhajinhuaCards } from './zhajinhua-card-region';
 
 /**
  * 直接使用 Web 八个牌局状态的网络事件，真实点击原生操作按钮。
@@ -50,13 +51,30 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       .find(node => node.res === `zhajinhua-player-container-${self}`), 'player_stack_text'),
     { timeout: 30_000 }).toBe(`${self} 1120`);
   } else {
-    if (animationInfo) await captureNativeTransition(device, 'zhajinhua-deal-cards', animationInfo,
-      screenBounds(device, { x: 360, y: 1054, width: 148, height: 102 }), () => send(restoreTable(self)),
-      [], [], 0, 'videoFrames');
-    else await send(restoreTable(self));
+    await send(restoreTable(self));
+    if (animationInfo) {
+      let regions: ReturnType<typeof zhajinhuaCardRegions> = [];
+      await expect(async () => {
+        regions = zhajinhuaCardRegions(await gameNodes(device), [self, ...PLAYER_IDS], device.screenSize);
+      }).toPass({ timeout: 30_000, intervals: [250] });
+      // The restore path sets noAnimation=true. Clear those entities before
+      // beginning a real round, otherwise begin_play only updates existing cards.
+      await send(events([{ event: 'new_game', game_id: 'visual-fixed-zhajinhua-game',
+        settings: { boot: 1, raise_times: 10, max_round: 20, pot_limit: 2000 } }]));
+      await expect.poll(async () => currentZhajinhuaCards(await gameNodes(device)).length,
+        { timeout: 30_000 }).toBe(0);
+      const table = restoreTable(self).queue.find(item => item.event === 'table_status')!.status as {
+        seats: { player: Record<string, unknown> | null }[];
+      };
+      const players = table.seats.flatMap(seat => seat.player ? [seat.player] : []);
+      await captureNativeTransition(device, 'zhajinhua-deal-cards', animationInfo, regions[0],
+        () => send(events([{ event: 'begin_play', table: { players } }])), [], regions, 0, 'videoFrames');
+      // Separate static scenario data is restored only after live motion passes.
+      await send(restoreTable(self));
+    }
     await expect.poll(async () => (await gameNodes(device))
       .filter(node => node.res?.startsWith('zhajinhua-player-container-')).length, { timeout: 30_000 }).toBe(5);
-    await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'player_card').length,
+    await expect.poll(async () => currentZhajinhuaCards(await gameNodes(device)).length,
       { timeout: 30_000 }).toBe(15);
     await send(events([restoreTable(self).queue[0]]));
     await gameGone(device, 'player_tips_text');
@@ -81,7 +99,8 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
         await send(seeCards);
       };
       await captureNativeTransition(device, 'zhajinhua-flip-cards', animationInfo,
-        screenBounds(device, { x: 360, y: 1054, width: 148, height: 102 }), revealCards, [], [], 800, 'videoFrames');
+        zhajinhuaCardRegions(await gameNodes(device), [self, ...PLAYER_IDS], device.screenSize)[0],
+        revealCards, [], [], 800, 'videoFrames');
     } else {
       await gameTap(device, 'zhajinhua-see-hand-card-button');
       await send(seeCards);

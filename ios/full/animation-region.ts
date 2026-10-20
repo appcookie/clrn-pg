@@ -128,6 +128,9 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
   if (/^texas-(?:flop|turn|river)-cards$/.test(name)) return {
     bounds: fallback, source: 'native-community-card-slots',
   };
+  if (/^zhajinhua-(?:deal|flip)-cards$/.test(name)) return {
+    bounds: fallback, source: 'native-self-player-three-card-slots',
+  };
   if (/^(?:texas-holdem|zhajinhua)-chat-(?:enter|exit)$/.test(name)) return {
     bounds: nativeChatPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-chat-content-container',
