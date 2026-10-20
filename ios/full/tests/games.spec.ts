@@ -49,7 +49,10 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
               : scenario.snapshotStates!;
       const label = part === 'all' ? scenario.pageLabel : `${scenario.pageLabel}_${part}`;
       test(`${locale} / ${suite} / ${label}`, async ({ ownedRoom }, testInfo) => {
-        test.setTimeout(1_200_000);
+        // Multiple native panel recordings, full-resolution frame analysis and
+        // room setup share one test. Match the seven-transition slot budget;
+        // keep all pixel, motion, semantic and per-operation deadlines intact.
+        test.setTimeout(2_700_000);
         await withAndroidProxy(async proxy => {
           if (scenario.pageLabel === 'signed_in_texas_records_v2') await proxy.command('texas/records', { empty: true });
           const panelAnimation = locale === 'en' && scenario.pageLabel.endsWith('_pre_game');
