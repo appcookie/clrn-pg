@@ -57,9 +57,11 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
     try { await enterTexasRoom({ request: observerApi }, room!); }
     finally { await observerApi.dispose(); }
   }
-  await gameReady(device, 'run-game-view');
+  // XCUITest marks the non-accessible outer game view hidden even while its
+  // native menu and room label are visible. Require those actual controls.
   await gameGone(device, 'game-splash-screen-bg');
   await gameReady(device, 'menu-button');
+  await gameReady(device, game === 'texas-holdem' ? 'texas-holdem-room-name-text' : 'zhajinhua-text-room-name', 'TestRoom');
   if (game === 'zhajinhua') {
     // 菜单比真实初始桌况更早挂载；完整九个座位就绪后才能发送牌局回放。
     await expect.poll(async () => (await gameNodes(device)).filter(node => /^zhajinhua-seat-[1-9]$/.test(node.res || '')).length,

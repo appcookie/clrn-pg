@@ -152,10 +152,20 @@ export class NativeDevice {
       element = nested['element-6066-11e4-a52e-4f735466cecf'];
     }
     this.lastInput = element;
+    // Focus the actual input before clearing its controlled React Native value.
+    // Clearing an unfocused room-name field left the default nickname in CI.
+    await this.driver.request('POST', this.driver.path(`/element/${element}/click`), {});
     await this.driver.request('POST', this.driver.path(`/element/${element}/clear`), {});
+    await delay(150);
     for (const character of text) {
       await this.driver.request('POST', this.driver.path(`/element/${element}/value`), { text: character });
       await delay(150);
+    }
+    // Do not include either expected or actual input values in diagnostics.
+    const secure = node.secure || node.children.some(child => child.secure);
+    if (!secure) {
+      const actual = await this.driver.request('GET', this.driver.path(`/element/${element}/attribute/value`));
+      if (actual !== text) throw new Error('原生输入未完整替换，拒绝提交表单。');
     }
   }
   screenshot() { return this.driver.screenshot(); }

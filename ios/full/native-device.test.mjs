@@ -84,6 +84,38 @@ test('可见性查询不会将隐藏节点作为ready，驱动错误不会变成
   device.driver.source = async () => { throw new Error('WDA断开'); };
   await assert.rejects(device.marker('hidden'), /WDA断开/);
 });
+test('游戏外层不可访问时仍能查询真实可见的牌桌控件，不把容器改成可见', async () => {
+  const source = '<AppiumAUT><XCUIElementTypeOther name="run-game-view" visible="false" x="0" y="0" width="393" height="852">'
+    + '<XCUIElementTypeButton name="menu-button" enabled="true" visible="true" x="20" y="45" width="40" height="30"/>'
+    + '</XCUIElementTypeOther></AppiumAUT>';
+  const device = new NativeDevice({ source: async () => source }, 'test', async () => {}, async () => {}, 'test.app');
+  device.screenSize = { width: 393, height: 852 };
+  assert.equal(await device.marker('run-game-view'), null);
+  assert.equal((await device.marker('menu-button')).enabled, true);
+});
+test('先聚焦再清空受控输入，逐字输入后确认替换成功；残留旧内容必须失败且不泄露内容', async () => {
+  for (const keepOldValue of [false, true]) {
+    let focused = false, value = 'old-private-value';
+    const driver = {
+      find: async () => 'input',
+      path: suffix => suffix,
+      request: async (method, path, body) => {
+        if (path.endsWith('/click')) focused = true;
+        else if (path.endsWith('/clear')) { if (focused && !keepOldValue) value = ''; }
+        else if (method === 'POST' && path.endsWith('/value')) value += body.text;
+        else if (method === 'GET') return value;
+      },
+    };
+    const device = new NativeDevice(driver, 'test', async () => {}, async () => {}, 'test.app');
+    device.info = async () => ({ res: 'room-name-input', clazz: 'XCUIElementTypeTextField', children: [] });
+    if (keepOldValue) await assert.rejects(device.fill({ res: 'room-name-input' }, 'AB'),
+      error => error.message === '原生输入未完整替换，拒绝提交表单。');
+    else {
+      await device.fill({ res: 'room-name-input' }, 'AB');
+      assert.equal(value, 'AB');
+    }
+  }
+});
 
 const backNode = (res, x = 30, extra = {}) => ({ res, clazz: 'XCUIElementTypeButton',
   visible: true, enabled: true, bounds: { x, y: 90, width: 60, height: 30 }, children: [], ...extra });
