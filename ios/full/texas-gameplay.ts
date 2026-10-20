@@ -40,6 +40,18 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
   /** 在发送时生成全压事件的时间戳。 */
   const allIn = () => events([{ event: 'all_in', player_id: REPLAY_PLAYER_IDS[0], amount: 960, stack: 0 },
     { event: 'all_in_show_hole_card', players: [{ player_id: REPLAY_PLAYER_IDS[0], hole_card: ['kh', 'ks'] }] }]);
+  /** 明牌会覆盖全压标签；从当前可见玩家的子树确认动作和清零筹码，并确认明牌容器。 */
+  const allInReady = async () => {
+    await expect.poll(async () => {
+      const player = (await gameNodes(device))
+        .find(node => node.res === `texas-holdem-player-container-${REPLAY_PLAYER_IDS[0]}`);
+      return player ? {
+        allIn: flattenNodes(player).some(node => node.res === 'texas-holdem-player-action-all_in'),
+        stack: gameSemanticText(player, 'text-holdem-opponent-balance-text'),
+      } : null;
+    }, { timeout: 45_000 }).toEqual({ allIn: true, stack: '0' });
+    await gameReady(device, 'texas-holdem-player-hole-cards');
+  };
   /** 在发送时生成摊牌事件的时间戳。 */
   const showdown = () => events([{ event: 'showdown', players: [
     { player_id: self, hole_card: ['as', 'ad'], best_cards: ['as', 'ad', 'ah', 'kd', 'qs'],
@@ -198,7 +210,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       screenBounds(device, { x: 0, y: 650, width: 250, height: 225 }), () => send(allIn()),
       [screenBounds(device, { x: 65, y: 695, width: 70, height: 90, reason: '全压特效旁的对手操作秒数独立跳秒' })], [], 1600);
     else await send(allIn());
-    await gameReady(device, 'texas-holdem-player-action-all_in');
+    await allInReady();
     await capture('all_in');
     if (animationInfo) await captureNativeTransition(device, 'texas-showdown', animationInfo,
       screenBounds(device, { x: 0, y: 580, width: 600, height: 600 }), () => send(showdown()),
@@ -223,7 +235,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     // 新房间重建已审查结算画面，再独立验证道具、表情和玩家资料。
     await restore('river', true);
     await send(allIn());
-    await gameReady(device, 'texas-holdem-player-action-all_in');
+    await allInReady();
     await new Promise(resolve => setTimeout(resolve, 1600));
     await send(showdown());
     await new Promise(resolve => setTimeout(resolve, 1600));
