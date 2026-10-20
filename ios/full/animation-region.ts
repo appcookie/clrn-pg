@@ -125,6 +125,9 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
   // The preflop caller has already required the current self player's two
   // semantic back cards and derived this complete pair geometry.
   if (name === 'texas-preflop-cards') return { bounds: fallback, source: 'native-self-player-card-pair' };
+  if (/^texas-(?:flop|turn|river)-cards$/.test(name)) return {
+    bounds: fallback, source: 'native-community-card-slots',
+  };
   if (/^(?:texas-holdem|zhajinhua)-chat-(?:enter|exit)$/.test(name)) return {
     bounds: nativeChatPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-chat-content-container',

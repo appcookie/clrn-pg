@@ -1,6 +1,29 @@
 import { flattenNodes, gameSemanticText, type NativeNode } from './game-controls';
 import type { ScreenshotBounds } from './screenshot';
 
+/** Public cards retain five actual slots across all streets. Crop complete
+ * native slots instead of scaled Android offsets that cut the left card edge.
+ */
+export function nativeCommunityCardRegion(nodes: NativeNode[], street: 'flop' | 'turn' | 'river',
+  screen: { width: number; height: number }): ScreenshotBounds {
+  const cards = nodes.filter(node => node.res === 'community_card').sort((a, b) => a.bounds.x - b.bounds.x);
+  if (cards.length !== 5) throw new Error('必须存在五个当前可见公共牌位');
+  for (const [index, node] of cards.entries()) {
+    const b = node.bounds;
+    if (b.width <= 0 || b.height <= 0 || b.x < 0 || b.y < 0
+      || b.x + b.width > screen.width || b.y + b.height > screen.height
+      || b.y !== cards[0].bounds.y || b.height !== cards[0].bounds.height
+      || (index > 0 && b.x < cards[index - 1].bounds.x + cards[index - 1].bounds.width)) {
+      throw new Error('公共牌位必须是屏幕内完整且不重叠的一行');
+    }
+  }
+  const selected = street === 'flop' ? cards.slice(0, 3) : [cards[street === 'turn' ? 3 : 4]];
+  const first = selected[0].bounds, last = selected.at(-1)!.bounds;
+  const x = Math.max(0, first.x - 4), y = Math.max(0, first.y - 4);
+  return { x, y, width: Math.min(screen.width, last.x + last.width + 4) - x,
+    height: Math.min(screen.height, first.y + first.height + 4) - y };
+}
+
 /** XCTest hides the card-flip wrapper while still drawing it. Locate its current
  * geometry beside the visible self player, then require the two semantic cards.
  * The recording separately proves the actual back → intermediate → face pixels.

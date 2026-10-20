@@ -18,7 +18,7 @@ import { captureMovingKeyframes } from './loop-keyframes';
 import { captureAssetSequence } from './asset-sequence';
 import { motionParts, samePixels } from './motion-regions';
 import { maskScreenshot } from './screenshot';
-import { nativeOwnCardRegion } from './texas-card-region';
+import { nativeOwnCardRegion, nativeCommunityCardRegion } from './texas-card-region';
 
 /**
  * 复用网页的德州消息夹具，覆盖各街、操作、摊牌、结算和玩家资料。
@@ -89,6 +89,8 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
           expect(current.cards).toEqual(['back', 'back']);
           regions.preflop = current.bounds;
         }).toPass({ timeout: 30_000, intervals: [250] });
+      } else {
+        regions[street] = nativeCommunityCardRegion(await gameNodes(device), street, device.screenSize);
       }
       const publish = () => street === 'preflop'
         ? send(events([{ event: 'deal_hole_card', player_id: self, hole_card: ['as', 'ad'] }]))
@@ -97,6 +99,10 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       await captureNativeTransition(device, `texas-${street}-cards`, animationInfo, regions[street], publish,
         [], [], 0, 'videoFrames', undefined, undefined,
         street === 'preflop' ? ['texas-preflop-cards-backed.png', 'texas-preflop-cards-turning.png'] : []);
+      if (street === 'preflop') {
+        expect(nativeOwnCardRegion(await gameNodes(device), self, device.screenSize).cards.sort(),
+          '实时发牌完成后必须显示指定的两张本人手牌').toEqual(['ad', 'as']);
+      }
     } else await send(restoreTable(self, street, opponent));
     const count = { preflop: 0, flop: 3, turn: 4, river: 5 }[street];
     await gameCardNames(device, 'community_card', 'community_card_name_text', ['ah', 'kd', '7c', '2s', 'qs']
