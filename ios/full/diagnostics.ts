@@ -11,7 +11,8 @@ function sensitiveNodes(nodes: DiagnosticNode[]) {
   const containers = new Set<DiagnosticNode>();
   const visit = (node: DiagnosticNode, inherited = false): boolean => {
     const secret = inherited || !!node.secure || /TextField|TextView|Keyboard/.test(node.clazz || '')
-      || /password|username|email|phone|confirmation-input|token/i.test(node.res || '');
+      || (node.res !== 'in-game-audio-microphone-button'
+        && /password|username|email|phone|confirmation-input|token/i.test(node.res || ''));
     if (secret) secrets.add(node);
     const descendants = (node.children || []).map(child => visit(child, secret));
     if (secret || descendants.some(Boolean)) containers.add(node);

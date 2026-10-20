@@ -71,9 +71,32 @@ export function matchingSpinnerRegion(nodes: NativeNode[], screen: { width: numb
   return region;
 }
 
+/** The audio root is hidden in XCTest; its visible content container surrounds
+ * both tips and the microphone. Preserve the entire sheet, including safe area.
+ */
+export function nativeAudioPanelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const controls = ['in-game-audio-top-tips', 'in-game-audio-microphone-button', 'in-game-audio-bottom-tips']
+    .map(res => nodes.find(node => node.res === res && node.visible !== false));
+  if (controls.some(node => !node)) throw new Error('语音面板缺少可见提示或麦克风控件');
+  const containers = nodes.filter(node => node.visible !== false && node.clazz === 'XCUIElementTypeOther'
+    && node.bounds.x === 0 && node.bounds.width === screen.width
+    && node.bounds.y > 0 && node.bounds.height > 0 && node.bounds.y + node.bounds.height <= screen.height
+    && controls.every(control => {
+      const a = node.bounds, b = control!.bounds;
+      return b.width > 0 && b.height > 0 && a.x <= b.x && a.y <= b.y
+        && a.x + a.width >= b.x + b.width && a.y + a.height >= b.y + b.height;
+    })).sort((a, b) => a.bounds.height - b.bounds.height);
+  if (!containers.length) throw new Error('找不到完整语音原生内容面板，不能只截麦克风或全屏遮罩');
+  return { ...containers[0].bounds };
+}
+
 /** 已有原生标记的面板用实际 bounds，包含 iOS safe area 和真实布局位置。 */
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  if (/^texas-holdem-voice-/.test(name)) return {
+    bounds: nativeAudioPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-audio-content-container',
+  };
   if (/^hall-matching-modal-/.test(name)) return {
     bounds: matchingModalBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-matching-content-container',

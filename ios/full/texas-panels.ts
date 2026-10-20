@@ -25,17 +25,17 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   // 专用模拟器已在启动前授予麦克风权限；这里只打开界面，不录制或发送音频。
   // 首次打开完成语音组件初始化；第二次由真实按钮触发同一个入场动画。
   await gameTap(device, 'texas-holdem-voice-button');
-  await gameReady(device, 'in-game-audio-root-container');
+  await gameReady(device, 'in-game-audio-microphone-button');
   await gameTap(device, 'in-game-audio-popup-close');
-  await gameGone(device, 'in-game-audio-root-container');
+  await gameGone(device, 'in-game-audio-microphone-button');
   await animateGamePanel(device, 'texas-holdem', 'voice', 'texas-holdem-voice-button',
     screenBounds(device, { x: 220, y: 820, width: 280, height: 450 }), animationInfo, 'enter', 'videoFrames');
-  await gameReady(device, 'in-game-audio-root-container');
+  await gameReady(device, 'in-game-audio-microphone-button');
   await capture('voice');
   await animateGamePanel(device, 'texas-holdem', 'voice', 'in-game-audio-popup-close',
     screenBounds(device, { x: 220, y: 820, width: 280, height: 450 }), animationInfo, 'exit', 'videoFrames', [],
     undefined, ['texas-holdem-voice-exit-open-phase.png']);
-  await gameGone(device, 'in-game-audio-root-container');
+  await gameGone(device, 'in-game-audio-microphone-button');
   await gameTap(device, 'texas-holdem-leaderboard-button');
   await gameReady(device, 'public-leader-board-item-round-0', '10');
   await capture('leaderboard_players');

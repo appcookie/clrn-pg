@@ -5,6 +5,17 @@ import { safeNativeTree, safeFailureScreenshot, captureFailure } from './diagnos
 import { NativeCase } from './functional/shared/case.ts';
 
 const bounds = { x: 5, y: 5, width: 4, height: 4 };
+test('麦克风按钮不是电话号码，真实敏感输入及安全标记仍脱敏', () => {
+  const mic = { res: 'in-game-audio-microphone-button', text: 'Hold to talk', bounds };
+  const output = JSON.stringify(safeNativeTree([mic,
+    { res: 'phone-number', text: 'synthetic-phone', bounds },
+    { ...mic, secure: true, text: 'synthetic-secure' }]));
+  assert.equal(output.includes('Hold to talk'), true);
+  assert.equal(output.includes('synthetic-phone'), false);
+  assert.equal(output.includes('synthetic-secure'), false);
+  const png = new PNG({ width: 20, height: 20 }); png.data.fill(255);
+  assert.deepEqual(PNG.sync.read(safeFailureScreenshot(PNG.sync.write(png), [mic])).data, png.data);
+});
 test('扁平重复子节点、匿名输入和祖先聚合文本都不泄漏，普通文字保留', () => {
   const child = { clazz: 'XCUIElementTypeTextField', res: 'synthetic-account', text: 'synthetic-account', bounds };
   const nested = { res: 'username-input', text: 'synthetic-account', bounds, children: [child] };
