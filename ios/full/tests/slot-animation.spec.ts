@@ -36,6 +36,8 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const bannerMotion = { x: Math.floor(banner.bounds.x + banner.bounds.width * 0.52),
         y: Math.floor(banner.bounds.y + banner.bounds.height * 0.16),
         width: Math.floor(banner.bounds.width * 0.4), height: Math.floor(banner.bounds.height * 0.48) };
+      const backgroundBannerMasks = [{ ...bannerMotion,
+        reason: '仅弹层前/后大厅端点的横幅轮播；同例独立验证横幅运动和两种基准相位' }];
       await verifyLoopAnimation(device, 'hall-slot-banner', testInfo, [bannerMotion], [], { timeoutMs: 8000 });
       await captureMovingKeyframes(device, 'hall-slot-banner', testInfo, [bannerMotion], 32, undefined, 5);
       /** 从登录大厅的真实横幅打开老虎机窗口。 */
@@ -43,7 +45,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'slot-popup-enter', testInfo,
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressBanner, [], [], 0, 'videoFrames',
         undefined, undefined, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
-          'slot-popup-enter-reels-blank.png']);
+          'slot-popup-enter-reels-blank.png'], [], [], [], backgroundBannerMasks);
       await device.wait({ res: 'spin-button' });
       const { window: reelWindow, reels } = slotReelRegions(await device.nodes());
       await testInfo.attach('slot-native-reel-regions', {
@@ -69,7 +71,8 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       /** 正常关闭老虎机，采集面板退场。能量不足会自动关闭面板，无法再点击该按钮。 */
       const pressClose = () => device!.input.tap({ x: Number(String(Math.round(close.bounds.x + close.bounds.width / 2))), y: Number(String(Math.round(close.bounds.y + close.bounds.height / 2))) });
       await captureNativeTransition(device, 'slot-popup-exit', testInfo,
-        screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressClose, [], [], 0, 'videoFrames');
+        screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressClose, [], [], 0, 'videoFrames',
+        undefined, undefined, [], [], backgroundBannerMasks);
       await waitAbsent(device, { res: 'spin-button' });
       const bannerAgain = await device.info({ res: 'slot-banner' });
       await device.input.tap({ x: Number(String(Math.round(bannerAgain.bounds.x + bannerAgain.bounds.width / 2))), y: Number(String(Math.round(bannerAgain.bounds.y + bannerAgain.bounds.height / 2))) });

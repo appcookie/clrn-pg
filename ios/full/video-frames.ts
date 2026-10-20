@@ -12,7 +12,8 @@ export type RecordedFrames = Buffer[] & { timestampsMs?: number[] };
 
 /** 在真实 Simulator 录屏开始后触发动作，以原始分辨率解码；MP4 永远保留供回看。 */
 export async function recordNativeVideoFrames(device: NativeDevice, name: string, region: ScreenshotBounds,
-  trigger: () => unknown, testInfo: TestInfo, durationMs = 3500, minimumDistinctFrames = 20): Promise<RecordedFrames> {
+  trigger: () => unknown, testInfo: TestInfo, durationMs = 3500, minimumDistinctFrames = 20,
+  onRecorded?: () => Promise<void>): Promise<RecordedFrames> {
   if (!/^[A-Fa-f0-9-]{36}$/.test(device.udid)) throw new Error('录屏需要明确的专用 iOS 模拟器 UUID。');
   const directory = testInfo.outputPath(`video-${name}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
@@ -71,6 +72,9 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     }
   }
   await testInfo.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
+  // Release a held fixture once native recording has stopped, before expensive
+  // decoding. The application must not time out while PNGs are processed.
+  await onRecorded?.();
   const probe = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
     '-show_frames', '-show_entries', 'frame=pts_time', '-of', 'json', video],
   { timeout: 60000, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })) as { frames: ProbeFrame[] };
@@ -100,8 +104,8 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
 
 /** 连续帧使用同一真实视频的编码时戳，不补帧或推算 30fps。 */
 export async function recordScreenSamples(device: NativeDevice, name: string, info: TestInfo,
-  trigger: () => unknown = () => {}, durationMs = 2500) {
+  trigger: () => unknown = () => {}, durationMs = 2500, onRecorded?: () => Promise<void>) {
   const frames = await recordNativeVideoFrames(device, name,
-    { x: 0, y: 0, ...device.screenSize }, trigger, info, durationMs);
+    { x: 0, y: 0, ...device.screenSize }, trigger, info, durationMs, 20, onRecorded);
   return frames.map((png, index) => ({ capturedAt: frames.timestampsMs![index], png: png.toString('base64') }));
 }

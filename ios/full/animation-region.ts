@@ -1,6 +1,11 @@
 import type { NativeDevice, NativeNode } from './native-device';
-import type { ScreenshotBounds } from './screenshot';
+import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { slotNoEnergyRegions } from './slot-regions';
+
+/** Endpoint exclusions originate in the screen tree; retain the true crop offset. */
+export function endpointMasksInRegion(masks: ScreenshotMask[], region: ScreenshotBounds): ScreenshotMask[] {
+  return masks.map(mask => ({ ...mask, x: mask.x - region.x, y: mask.y - region.y }));
+}
 
 /** The loading marker covers the overlay, including pixels below the raster.
  * Locate the smallest native content container holding all dialog controls.

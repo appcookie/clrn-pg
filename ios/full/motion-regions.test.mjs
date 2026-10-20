@@ -4,7 +4,23 @@ import { createRequire } from 'node:module';
 import { PNG } from 'pngjs';
 const require = createRequire(import.meta.url);
 const { cropMotionRegion, cropMotionRegions, motionParts, samePixels } = require('./motion-regions.ts');
+const { endpointMasksInRegion } = require('./animation-region.ts');
+const { maskScreenshot } = require('./screenshot.ts');
 const regions = [{ x: 0, y: 0, width: 4, height: 4 }, { x: 4, y: 0, width: 4, height: 4 }];
+
+test('端点屏幕遮罩随实际裁图原点转换，只排除背景轮播而不遮掉弹窗像素', () => {
+  const picture = new PNG({ width: 100, height: 100 });
+  picture.data.fill(255);
+  const baseline = PNG.sync.write(picture);
+  picture.data.fill(0, (25 * 100 + 35) * 4, (25 * 100 + 35) * 4 + 3);
+  const changedBanner = PNG.sync.write(picture);
+  const masks = endpointMasksInRegion([{ x: 130, y: 70, width: 10, height: 10, reason: '独立轮播' }],
+    { x: 100, y: 50, width: 100, height: 100 });
+  assert.equal(samePixels(changedBanner, baseline), false, '原始帧仍保留完整画面');
+  assert.equal(samePixels(maskScreenshot(changedBanner, masks), maskScreenshot(baseline, masks)), true);
+  picture.data.fill(0, (80 * 100 + 40) * 4, (80 * 100 + 40) * 4 + 3);
+  assert.equal(samePixels(maskScreenshot(PNG.sync.write(picture), masks), maskScreenshot(baseline, masks)), false);
+});
 
 test('录屏裁图优化保持原始 RGBA 与旧路径 PNG 字节完全一致，不缩放或重绘', () => {
   const picture = new PNG({ width: 101, height: 87 });

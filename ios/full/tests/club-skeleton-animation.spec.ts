@@ -6,6 +6,8 @@ import { withAndroidProxy } from '../proxy';
 import { signIn } from '../navigation';
 import { gameNodes } from '../game-controls';
 import { captureLoopKeyframes } from '../loop-keyframes';
+import { recordScreenSamples } from '../video-frames';
+import type { ScreenshotBounds } from '../screenshot';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('every native club placeholder pulses while detail response is pending', async ({}, testInfo) => {
@@ -15,6 +17,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
       await expect.poll(async () => (await proxy.command<{ loaded: number }>('android/skeleton')).loaded,
@@ -24,15 +27,22 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const tab = (await device.info({ res: 'club-tab' })).bounds;
       await proxy.command('android/skeleton', { hold: true });
       await device.input.tap({ x: Number(String(Math.round(tab.x + tab.width / 2))), y: Number(String(Math.round(tab.y + tab.height / 2))) });
-      await device.wait({ res: 'ClubItemPlaceholder_container' });
-      const placeholders = (await gameNodes(device))
-        .filter(node => node.res === 'ClubItemPlaceholder_container' && node.bounds.width > 0);
-      expect(placeholders, '两个真实俱乐部 ID 都应绘出各自的骨架').toHaveLength(2);
-      await captureLoopKeyframes(device, 'club-list-skeleton', testInfo,
-        placeholders.map(node => node.bounds), 3);
-      await proxy.command('android/skeleton', { hold: false });
+      let regions: ScreenshotBounds[] = [];
+      // One native-tree observation, rather than wait() plus a second slow tree.
+      await expect(async () => {
+        const nodes = await gameNodes(device!);
+        const placeholders = nodes.filter(node => node.res === 'ClubItemPlaceholder_container' && node.bounds.width > 0);
+        expect(placeholders, '两个真实俱乐部 ID 都应绘出各自的骨架').toHaveLength(2);
+        expect(nodes.some(node => /network issue/i.test(node.text || '')), '采样前不能已进入超时错误页').toBe(false);
+        regions = placeholders.map(node => node.bounds);
+      }).toPass({ timeout: 30_000, intervals: [200] });
+      const samples = await recordScreenSamples(device, 'club-list-skeleton', testInfo, () => {}, 3500,
+        async () => { await proxy.command('android/skeleton', { hold: false }); });
+      await captureLoopKeyframes(device, 'club-list-skeleton', testInfo, regions, 1, samples);
       await expect.poll(async () => (await proxy.command<{ loaded: number }>('android/skeleton')).loaded,
         { timeout: 30_000 }).toBeGreaterThan(initial);
+      await device.wait({ res: 'ClubItemPlaceholder_container' }, { state: 'gone' });
+      for (const text of ['TestClub1', 'TestClub2']) await device.wait({ text });
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
       throw error;

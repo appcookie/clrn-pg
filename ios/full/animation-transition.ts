@@ -1,4 +1,4 @@
-import { animationRegion } from './animation-region';
+import { animationRegion, endpointMasksInRegion } from './animation-region';
 import { assertVisual } from './device';
 import { baselinePath } from './baseline-path.mjs';
 import { screenBounds } from './screen-geometry';
@@ -160,9 +160,9 @@ export function reviewedVideoMiddleEvidence(before: Buffer, after: Buffer,
  * @param afterReady - 保持录制并等待异步面板语义就绪，然后继续录制稳定尾段。
  * @param videoPhaseAnchors - 独立绘制层可在不同顺序呈现的额外已审查录屏相位。
  * @param endPhaseAnchors - 手势落点离散化造成的已审查终点画面。
- * @param endCompareMasks - 终点独立数值区域；原始终点仍保留在报告中供审查。
+ * @param endCompareMasks - 仅比较终点时排除的独立动态区域，使用原生屏幕坐标；原始终点仍保留。
  * @param startPhaseAnchors - 系统启动器布局不同但均已审查的起点画面。
- * @param startCompareMasks - 仅用于比较触发前桌面帧的系统动态图标区域；坐标相对截图裁切范围。
+ * @param startCompareMasks - 仅比较起点时排除的独立动态区域，使用原生屏幕坐标。
  * @param videoRecorder - 可替换的原生录屏采集器，供完整录屏路径回归测试使用。
  */
 export async function captureNativeTransition(device: AndroidDevice, name: string, testInfo: TestInfo,
@@ -183,6 +183,9 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
     body: JSON.stringify(startCompareMasks), contentType: 'application/json',
   });
+  if (endCompareMasks.length) await testInfo.attach(`${name}-end-masks`, {
+    body: JSON.stringify(endCompareMasks), contentType: 'application/json',
+  });
   const beforeScreen = await gameScreenshot(device);
   const beforeNodes = await device.nodes();
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
@@ -200,6 +203,8 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const afterNodes = await device.nodes();
   const selectedRegion = animationRegion(name, beforeNodes, afterNodes, device, region);
   region = selectedRegion.bounds;
+  const startMasks = endpointMasksInRegion(startCompareMasks, region);
+  const endMasks = endpointMasksInRegion(endCompareMasks, region);
   await testInfo.attach(`${name}-capture-region`, { body: JSON.stringify(selectedRegion), contentType: 'application/json' });
   const before = crop(beforeScreen);
   const timeline = originals.map(crop);
@@ -249,12 +254,12 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         const reference = readFileSync(baselinePath(file));
         return name === 'native-launch-and-staging-notice'
           ? reviewedLauncherStart(before, reference)
-          : samePixels(maskScreenshot(before, startCompareMasks),
-            maskScreenshot(reference, startCompareMasks));
+          : samePixels(maskScreenshot(before, startMasks),
+            maskScreenshot(reference, startMasks));
       }), '动画起点视觉回归').toBe(true);
     expect([`${name}-end.png`, ...endPhaseAnchors.filter(file => existsSync(baselinePath(file)))]
-      .some(file => samePixels(maskScreenshot(after, endCompareMasks),
-        maskScreenshot(readFileSync(baselinePath(file)), endCompareMasks))),
+      .some(file => samePixels(maskScreenshot(after, endMasks),
+        maskScreenshot(readFileSync(baselinePath(file)), endMasks))),
     '动画终点视觉回归').toBe(true);
     const reference = readFileSync(baselinePath(`${name}-middle.png`));
     // 原生截图可能落在已审查中途相位的两侧，但靠近起止帧的无关闪屏不能冒充转场。

@@ -13,6 +13,10 @@ test('共享场景使用 laiwan_screenshot 的 v1 路径，语言和设备不进
 });
 
 test('原始录像相位不伪装成时间戳，重复的登录入口归于同一状态', () => {
+  for (const direction of ['enter', 'exit']) for (const phase of ['start', 'middle', 'end']) {
+    assert.equal(baselineRelativePath(`ios-share-sheet-${direction}-${phase}.png`, 'en'),
+      `help/share/ios-share-sheet-${direction}/ios/iphone16-ios18.5/en/animation/${phase}.png`);
+  }
   assert.equal(baselineRelativePath('search-confirmation-enter-middle.png', 'en'),
     'hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/middle.png');
   assert.equal(baselineRelativePath('native-launch-artwork-visible.png', 'en'),

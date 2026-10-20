@@ -7,13 +7,18 @@ export function cropMotionRegion(bytes: Buffer, region: ScreenshotBounds): Buffe
 }
 
 /** Decode once for independent reels; do not encode an unused full-screen complement. */
-export function cropMotionRegions(bytes: Buffer, regions: ScreenshotBounds[]): Buffer[] {
+export function cropMotionRegions(bytes: Buffer, regions: ScreenshotBounds[],
+  { maxSharedBorder = 0 } = {}): Buffer[] {
   const picture = PNG.sync.read(bytes);
   return regions.map(({ x, y, width, height }, index) => {
     if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
       || x + width > picture.width || y + height > picture.height) throw new Error('动画比较分区超出实际截图');
-    if (regions.slice(0, index).some(other => x < other.x + other.width && x + width > other.x
-      && y < other.y + other.height && y + height > other.y)) throw new Error('动画比较分区不能重叠');
+    if (regions.slice(0, index).some(other => {
+      const w = Math.min(x + width, other.x + other.width) - Math.max(x, other.x);
+      const h = Math.min(y + height, other.y + other.height) - Math.max(y, other.y);
+      return w > 0 && h > 0 && (Math.min(w, h) > maxSharedBorder
+        || w * h >= Math.min(width * height, other.width * other.height));
+    })) throw new Error('动画比较分区不能重叠（仅允许明确声明的原生共享边界）');
     const part = new PNG({ width, height });
     PNG.bitblt(picture, part, x, y, width, height, 0, 0);
     return PNG.sync.write(part);

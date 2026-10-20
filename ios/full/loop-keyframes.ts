@@ -35,15 +35,19 @@ export { framePaletteDistance } from './animation-transition';
  * @param maxAttempts - 启动相位未知时可跨多个采样窗口寻找完整明暗周期。
  */
 export async function captureLoopKeyframes(device: AndroidDevice, name: string, testInfo: TestInfo,
-  regions: ScreenshotBounds[], maxAttempts = 1): Promise<void> {
+  regions: ScreenshotBounds[], maxAttempts = 1, recordedSamples?: NativeFrame[]): Promise<void> {
   expect(regions.length).toBeGreaterThan(0);
+  if (recordedSamples && maxAttempts !== 1) throw new Error('已有真实录像只能分析一次，不能伪装成多个采样窗口');
+  await testInfo.attach(`${name}-regions`, { body: JSON.stringify(regions), contentType: 'application/json' });
   const timeline: NativeFrame[] = [];
   const pictures: Buffer[][] = [];
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const samples = await recordScreenSamples(device, name, testInfo);
+    const samples = recordedSamples ?? await recordScreenSamples(device, name, testInfo);
     expect(samples.length).toBeGreaterThanOrEqual(10);
     timeline.push(...samples);
-    pictures.push(...samples.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions)));
+    // Native cells can share a border. Preserve every pixel of both independent
+    // controls; these are complete crops, not a partition with an outside image.
+    pictures.push(...samples.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions, { maxSharedBorder: 3 })));
     if (regions.every((_, index) => {
       const levels = pictures.map(parts => brightness(parts[index]));
       return Math.max(...levels) - Math.min(...levels) > 0.5;
@@ -52,7 +56,6 @@ export async function captureLoopKeyframes(device: AndroidDevice, name: string, 
   await testInfo.attach(`${name}-timeline`, {
     body: JSON.stringify(timeline.map(({ capturedAt }) => capturedAt)), contentType: 'application/json',
   });
-  await testInfo.attach(`${name}-regions`, { body: JSON.stringify(regions), contentType: 'application/json' });
   for (const index of regions.keys()) {
     const frames = pictures.map(parts => parts[index]);
     const phases = frames.map((frame, position) => ({ frame, position, light: brightness(frame) }));
