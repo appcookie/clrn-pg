@@ -201,6 +201,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
       const detail = androidScenarios('en', 'rooms').find(scenario => scenario.pageLabel === 'signed_in_private_room_detail');

@@ -6,7 +6,7 @@ import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { PNG } from 'pngjs';
 import { frameColorDistance } from './animation-transition';
-import { motionParts } from './motion-regions';
+import { cropMotionRegion, cropMotionRegions } from './motion-regions';
 import type { ScreenshotBounds } from './screenshot';
 
 type NativeFrame = { capturedAt: number; png: string };
@@ -43,7 +43,7 @@ export async function captureLoopKeyframes(device: AndroidDevice, name: string, 
     const samples = await recordScreenSamples(device, name, testInfo);
     expect(samples.length).toBeGreaterThanOrEqual(10);
     timeline.push(...samples);
-    pictures.push(...samples.map(frame => motionParts(Buffer.from(frame.png, 'base64'), regions).regions));
+    pictures.push(...samples.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions)));
     if (regions.every((_, index) => {
       const levels = pictures.map(parts => brightness(parts[index]));
       return Math.max(...levels) - Math.min(...levels) > 0.5;
@@ -95,7 +95,7 @@ export async function captureMovingKeyframes(device: AndroidDevice, name: string
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const timeline = await recordScreenSamples(device, name, testInfo);
     expect(timeline.length).toBeGreaterThanOrEqual(10);
-    pictures.push(...timeline.map(frame => motionParts(Buffer.from(frame.png, 'base64'), regions).regions));
+    pictures.push(...timeline.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions)));
     if (regions.every((_, index) => pictures.some(parts => frameColorDistance(parts[index], pictures[0][index]) > 1))) break;
   }
   for (const index of regions.keys()) {
@@ -126,7 +126,7 @@ export async function captureMovingKeyframes(device: AndroidDevice, name: string
  */
 export async function captureConcurrentMotion(frames: Buffer[], name: string, testInfo: TestInfo,
   region: ScreenshotBounds): Promise<void> {
-  const pictures = frames.map(frame => motionParts(frame, [region]).regions[0]);
+  const pictures = frames.map(frame => cropMotionRegion(frame, region));
   const first = pictures[0];
   const distances = pictures.map(frame => frameColorDistance(first, frame));
   const moved = pictures[distances.indexOf(Math.max(...distances))];

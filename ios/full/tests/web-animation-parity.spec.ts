@@ -25,6 +25,7 @@ if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS
   test.setTimeout(1_200_000);
   await withIosProxy(async () => {
     const device = await launchApplication();
+    device.nativeVideoBackend = 'xctest';
     const copy = { clazz: /XCUIElementType(Button|Cell)/, text: /^(Copy|Copy Link)$/ };
     const close = { clazz: 'XCUIElementTypeButton', text: /^(Close|Cancel)$/ };
     try {
