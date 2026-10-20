@@ -183,11 +183,12 @@ jobs:
             ios/artifacts/full-report/
             ios/artifacts/release/build-info.json
       - name: 保存待审查的视觉基准候选
-        if: always() && inputs.mode == 'reference'
+        if: success() && inputs.mode == 'reference'
         uses: actions/upload-artifact@v4
         with:
           name: ios-reference-candidates-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}
           retention-days: 30
+          if-no-files-found: error
           path: ios/snapshots/v1/
       - name: 删除专用模拟器
         if: always() && env.IOS_SIMULATOR_UDID != ''

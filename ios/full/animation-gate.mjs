@@ -1,6 +1,6 @@
 // 独立的运行清单；收集测试标题不能代替执行、基准和本轮截图验收。
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { closeSync, openSync, readFileSync, readSync } from 'node:fs';
+import { dirname, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { PNG } from 'pngjs';
 import inventory from './animation-gate-cases.json' with { type: 'json' };
@@ -42,6 +42,20 @@ export function validateAnimationReport(report, id, mode = 'compare') {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const [file, id] = process.argv.slice(2);
-  const entry = validateAnimationReport(JSON.parse(readFileSync(file, 'utf8')), id, process.env.IOS_VISUAL_MODE);
+  const report = JSON.parse(readFileSync(file, 'utf8'));
+  const entry = validateAnimationReport(report, id, process.env.IOS_VISUAL_MODE);
+  const root = resolve(dirname(file));
+  for (const attachment of [...reportSpecs(report)][0].tests[0].results[0].attachments) {
+    if (attachment.contentType !== 'video/mp4') continue;
+    const path = resolve(attachment.path);
+    if (!path.startsWith(root + sep)) throw new Error(`${id} 录屏不在本轮结果目录内`);
+    const descriptor = openSync(path, 'r');
+    try {
+      const header = Buffer.alloc(12);
+      if (readSync(descriptor, header, 0, 12, 0) !== 12 || header.toString('ascii', 4, 8) !== 'ftyp') {
+        throw new Error(`${id} 原生录屏文件无效`);
+      }
+    } finally { closeSync(descriptor); }
+  }
   console.log(`动画实际执行并通过：${entry.title}；${entry.images.length} 张必需截图齐全。`);
 }

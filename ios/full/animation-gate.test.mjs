@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { PNG } from 'pngjs';
 import { animationCases, validateAnimationReport } from './animation-gate.mjs';
 import { iosAccountMatrix, ciAccounts } from '../../scripts/ci-accounts.mjs';
 import { collectPlaywright } from '../../scripts/playwright-collection.mjs';
@@ -11,6 +15,7 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
   const matrix = iosAccountMatrix('123', 'pr', 'all', ciAccounts).include;
   const jobs = matrix.filter(entry => entry.animation);
   assert.equal(source.animations.length, 21);
+  assert.equal(animationCases.length, 23);
   assert.equal(jobs.length, animationCases.length);
   assert.equal(new Set(jobs.map(entry => entry.animation)).size, jobs.length);
   for (const row of source.animations) {
@@ -60,4 +65,31 @@ test('动画验收拒绝只收集未执行、跳过、失败、重试和缺图�
     assert.throws(() => validateAnimationReport(copy, entry.id, 'reference'));
   }
   assert.throws(() => validateAnimationReport(report, 'unknown'));
+});
+
+test('动画 CI 验收必须读取本轮录像文件，不能仅凭报告中的附件名称通过', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'animation-gate-'));
+  const entry = animationCases[0];
+  const movie = join(directory, 'capture.mp4'), file = join(directory, 'report.json');
+  const png = PNG.sync.write(new PNG({ width: 1, height: 1 })).toString('base64');
+  const attachments = [...entry.images.map(name => ({ name, contentType: 'image/png', body: png })),
+    { name: 'actual-native-video', contentType: 'video/mp4', path: movie }];
+  const report = { stats: { expected: 1, unexpected: 0, skipped: 0, flaky: 0 },
+    suites: [{ specs: [{ file: entry.file, title: entry.title, tests: [{
+      expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', attachments }],
+    }] }] }] };
+  const run = () => spawnSync(process.execPath, [resolve('ios/full/animation-gate.mjs'), file, entry.id],
+    { encoding: 'utf8', env: { ...process.env, IOS_VISUAL_MODE: 'compare' } });
+  try {
+    writeFileSync(file, JSON.stringify(report));
+    assert.notEqual(run().status, 0, '报告有附件但视频丢失必须失败');
+    writeFileSync(movie, 'invalid-video');
+    assert.notEqual(run().status, 0, '损坏视频必须失败');
+    const header = Buffer.alloc(12); header.write('ftyp', 4);
+    writeFileSync(movie, header);
+    assert.equal(run().status, 0);
+    attachments.at(-1).path = join(tmpdir(), 'another-run.mp4');
+    writeFileSync(file, JSON.stringify(report));
+    assert.match(run().stderr, /本轮结果目录/);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
 });
