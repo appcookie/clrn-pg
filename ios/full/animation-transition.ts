@@ -8,7 +8,7 @@ import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameScreenshot } from './game-controls';
-import { motionParts, samePixels } from './motion-regions';
+import { cropMotionRegion, motionParts, samePixels } from './motion-regions';
 import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
@@ -167,7 +167,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
    * 截出固定的动画绘制区域。
    * @param bytes - 原生完整屏幕 PNG。
    */
-  const crop = (bytes: Buffer) => motionParts(maskScreenshot(bytes, masks), [region]).regions[0];
+  const crop = (bytes: Buffer) => cropMotionRegion(maskScreenshot(bytes, masks), region);
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
     body: JSON.stringify(startCompareMasks), contentType: 'application/json',
