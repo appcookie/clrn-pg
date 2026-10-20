@@ -20,7 +20,7 @@ IOS_SIMULATOR_UDID=<专用模拟器 UUID> npm run test:ios
 
 ## 视觉与动画基准
 
-`IOS_VISUAL_MODE` 支持：
+本节描述 `npm run test:ios` 基础冒烟脚本；完整 PR 动画门禁使用下文的 `ios/full/`，默认自动执行 `compare`。基础脚本的 `IOS_VISUAL_MODE` 支持：
 
 - `smoke`：页面断言、截图和录屏采集，默认模式，不代表视觉基准已通过。
 - `reference`：额外将截图、MP4 和采样帧写入 `ios/snapshots/<设备型号及系统>/`，用于人工审查。
@@ -30,7 +30,7 @@ IOS_SIMULATOR_UDID=<专用模拟器 UUID> npm run test:ios
 
 ## CI
 
-PR、master 推送及手动运行均执行公开包校验和真实模拟器任务，无需自定义 Secrets。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
+`ios-simulator.yml` 是无需自定义 Secrets 的基础冒烟工作流。PR、master 推送还会执行 `ios-full.yml` 的完整动画门禁，其中登录动画需要下文列出的测试账号 Secrets；基础冒烟通过不能代替该门禁。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
 
 扩展页面见 `ios/scenarios.mjs`；更新应用只需修改部署记录，不需要修改业务代码。
 
