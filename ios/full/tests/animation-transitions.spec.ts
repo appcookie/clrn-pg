@@ -74,6 +74,9 @@ if (!(!['all', 'account'].includes(process.env.IOS_GROUP || 'all')
       const exit = () => device!.input.press('Back');
       await captureNativeTransition(device, 'native-stack-exit', testInfo, region, exit);
       await gameReady(device, 'account-security');
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -106,6 +109,9 @@ if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
       await device.wait({ res: 'pop-up-message-text', text: 'Please sign in to use search' });
       await tap(device, 'cancel-button');
       await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -142,6 +148,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await compareScreenshot(device, 'en-hall-matching', testInfo, masks, undefined, capture);
       await tap(device, 'quick-start-room-cancel');
       await waitAbsent(device, { res: 'game-matching-loading-view' });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   }, false, true);
 });
@@ -174,6 +183,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'club-rooms-empty-enter', testInfo,
         screenBounds(device, { x: 100, y: 420, width: 520, height: 200 }), pressRoomsTab);
       await device.wait({ res: 'club-rooms-empty-view' });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -201,6 +213,9 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       const pressBack = () => device!.input.press('Back');
       await captureNativeTransition(device, 'game-picker-exit', testInfo, region, pressBack,
         [], [], 0, 'videoFrames');
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -235,6 +250,9 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       /** 通过抽屉中的取消按钮触发同一组件的退场动画。 */
       const pressCancel = () => device!.input.tap({ x: Number(String(Math.round(cancel.bounds.x + cancel.bounds.width / 2))), y: Number(String(Math.round(cancel.bounds.y + cancel.bounds.height / 2))) });
       await captureNativeTransition(device, 'invite-friends-exit', testInfo, region, pressCancel);
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   }, false, false, false, false, true);
 });

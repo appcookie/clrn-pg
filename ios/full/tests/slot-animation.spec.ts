@@ -1,3 +1,4 @@
+import { captureFailure } from '../diagnostics';
 import { assertVisual } from '../device';
 import { baselinePath } from '../baseline-path.mjs';
 import { screenBounds } from '../screen-geometry';
@@ -104,6 +105,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const final = await proxy.command<{ spins: number }>('android/slot');
       expect(final.spins, '能量不足由第四次旋转请求触发').toBe(4);
       await waitAbsent(device, { res: 'slot-machine-view' });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   }, false, false, true);
 });

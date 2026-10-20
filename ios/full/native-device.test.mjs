@@ -43,6 +43,27 @@ test('隐藏键盘不会点击 Return 或提交按钮中的文本', () => {
   key.text = 'Done';
   assert.equal(keyboardDismissTarget([button, submit, keyboard, key, title]), key);
 });
+test('收键盘命令返回成功但键盘仍可见时，必须执行安全备用点击并确认消失', async () => {
+  const keyboard = { clazz: 'XCUIElementTypeKeyboard', visible: true, enabled: true,
+    bounds: { x: 0, y: 600, width: 393, height: 250 }, children: [] };
+  const title = { clazz: 'XCUIElementTypeStaticText', text: 'Welcome', visible: true, enabled: true,
+    bounds: { x: 80, y: 100, width: 200, height: 40 }, children: [] };
+  for (const fallbackWorks of [true, false]) {
+    const device = new NativeDevice({}, 'test', async () => {}, async () => {}, 'test.app');
+    let visible = true, taps = 0, commands = 0;
+    device.nodes = async () => visible ? [title, keyboard] : [title];
+    device.execute = async () => { commands++; }; // CI: success response, no visible effect.
+    device.wait = async () => { if (visible) throw new Error('keyboard remains visible'); };
+    device.input.tap = async point => {
+      assert.deepEqual(point, { x: 180, y: 120 });
+      taps++; if (fallbackWorks) visible = false;
+    };
+    if (fallbackWorks) await device.hideKeyboard();
+    else await assert.rejects(device.hideKeyboard(), /keyboard remains visible/);
+    assert.equal(commands, 1);
+    assert.equal(taps, 1);
+  }
+});
 test('可见性查询不会将隐藏节点作为ready，驱动错误不会变成空树', async () => {
   const device = new NativeDevice({ source: async () => xml }, 'test', async () => {}, async () => {}, 'test.app');
   device.screenSize = { width: 393, height: 852 };

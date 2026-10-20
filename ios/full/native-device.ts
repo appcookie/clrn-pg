@@ -164,9 +164,17 @@ export class NativeDevice {
   }
   async hideKeyboard() {
     if (!(await this.nodes()).some(node => node.clazz === 'XCUIElementTypeKeyboard')) return;
-    try { await this.execute('mobile: hideKeyboard'); }
-    catch (error) {
-      const target = keyboardDismissTarget(await this.nodes());
+    try {
+      await this.execute('mobile: hideKeyboard');
+      // XCUITest can return success while an input still owns the keyboard.
+      // Check the visible tree before accepting the command as completed.
+      await this.wait({ clazz: 'XCUIElementTypeKeyboard' }, { state: 'gone', timeout: 1500 });
+      return;
+    } catch (error) {
+      const nodes = await this.nodes();
+      // The tree may have changed while the command returned an error.
+      if (!nodes.some(node => node.clazz === 'XCUIElementTypeKeyboard')) return;
+      const target = keyboardDismissTarget(nodes);
       if (!target) throw error;
       await this.input.tap({ x: target.bounds.x + target.bounds.width / 2, y: target.bounds.y + target.bounds.height / 2 });
     }

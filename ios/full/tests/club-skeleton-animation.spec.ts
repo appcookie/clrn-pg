@@ -1,3 +1,4 @@
+import { captureFailure } from '../diagnostics';
 import { expect, test } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from '../native-device';
 import { launchApplication, waitForHall } from '../device';
@@ -32,6 +33,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await proxy.command('android/skeleton', { hold: false });
       await expect.poll(async () => (await proxy.command<{ loaded: number }>('android/skeleton')).loaded,
         { timeout: 30_000 }).toBeGreaterThan(initial);
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally {
       await proxy.command('android/skeleton', { hold: false }).catch(() => {});
       await device?.close();
