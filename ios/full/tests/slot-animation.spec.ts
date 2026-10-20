@@ -4,8 +4,9 @@ import { baselinePath } from '../baseline-path.mjs';
 import { screenBounds } from '../screen-geometry';
 import { expect, test } from '@playwright/test';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import type { NativeDevice as AndroidDevice } from '../native-device';
-import { launchApplication, waitForHall } from '../device';
+import { launchApplication, waitForHall, simulatorAppPath } from '../device';
 import { withAndroidProxy } from '../proxy';
 import { signIn, navigateScenario } from '../navigation';
 import { androidScenarios } from '../scenarios';
@@ -16,6 +17,7 @@ import { waitAbsent } from '../native-state';
 import { gameReady, gameScreenshot } from '../game-controls';
 import { cropMotionRegion, samePixels } from '../motion-regions';
 import { slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
+import { slotBackgroundMasks, slotHeadReference, verifySlotHeadGeometry } from '../slot-background';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('all three native slot reels and reward types animate from real spin responses', async ({}, testInfo) => {
@@ -38,14 +40,22 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         width: Math.floor(banner.bounds.width * 0.4), height: Math.floor(banner.bounds.height * 0.48) };
       const backgroundBannerMasks = [{ ...bannerMotion,
         reason: '仅弹层前/后大厅端点的横幅轮播；同例独立验证横幅运动和两种基准相位' }];
+      const exposedBannerMasks = slotBackgroundMasks(
+        readFileSync(join(await simulatorAppPath(), slotHeadReference.asset)), bannerMotion);
       await verifyLoopAnimation(device, 'hall-slot-banner', testInfo, [bannerMotion], [], { timeoutMs: 8000 });
       await captureMovingKeyframes(device, 'hall-slot-banner', testInfo, [bannerMotion], 32, undefined, 5);
       /** 从登录大厅的真实横幅打开老虎机窗口。 */
       const pressBanner = () => device!.input.tap({ x: Number(String(Math.round(banner.bounds.x + banner.bounds.width / 2))), y: Number(String(Math.round(banner.bounds.y + banner.bounds.height / 2))) });
       await captureNativeTransition(device, 'slot-popup-enter', testInfo,
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressBanner, [], [], 0, 'videoFrames',
-        undefined, undefined, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
-          'slot-popup-enter-reels-blank.png'], [], [], [], backgroundBannerMasks);
+        undefined, async () => {
+          await expect(async () => {
+            const nodes = await device!.nodes();
+            verifySlotHeadGeometry(nodes);
+            expect(nodes.some(node => node.res === 'spin-button' && node.enabled)).toBe(true);
+          }).toPass({ timeout: 30_000, intervals: [250] });
+        }, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
+          'slot-popup-enter-reels-blank.png'], [], exposedBannerMasks, [], backgroundBannerMasks);
       await device.wait({ res: 'spin-button' });
       const { window: reelWindow, reels } = slotReelRegions(await device.nodes());
       await testInfo.attach('slot-native-reel-regions', {
@@ -72,7 +82,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const pressClose = () => device!.input.tap({ x: Number(String(Math.round(close.bounds.x + close.bounds.width / 2))), y: Number(String(Math.round(close.bounds.y + close.bounds.height / 2))) });
       await captureNativeTransition(device, 'slot-popup-exit', testInfo,
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressClose, [], [], 0, 'videoFrames',
-        undefined, undefined, [], [], backgroundBannerMasks);
+        undefined, undefined, [], [], backgroundBannerMasks, [], exposedBannerMasks);
       await waitAbsent(device, { res: 'spin-button' });
       const bannerAgain = await device.info({ res: 'slot-banner' });
       await device.input.tap({ x: Number(String(Math.round(bannerAgain.bounds.x + bannerAgain.bounds.width / 2))), y: Number(String(Math.round(bannerAgain.bounds.y + bannerAgain.bounds.height / 2))) });

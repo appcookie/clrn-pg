@@ -27,8 +27,7 @@ if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS
   await withIosProxy(async () => {
     const device = await launchApplication();
     device.nativeVideoBackend = 'xctest';
-    const copy = { clazz: /XCUIElementType(Button|Cell)/, text: /^(Copy|Copy Link)$/ };
-    const close = { clazz: 'XCUIElementTypeButton', text: /^(Close|Cancel)$/ };
+    const copy = { res: 'actionGroupCell', clazz: 'XCUIElementTypeCell', text: /^Copy$/ };
     try {
       await waitForHall(device); await signIn(device);
       const scenario = iosScenarios('en', 'wallet-help').find(item => item.pageLabel === 'signed_in_share_app');
@@ -42,8 +41,15 @@ if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS
       expect(options.some(node => node.clazz === 'XCUIElementTypeCell' && node.res === 'shareCell'
         && node.enabled && !!node.text?.trim() && node.text !== 'More'), '必须有原生系统分享目标').toBe(true);
       expect((await device.info(copy)).enabled, '系统复制链接选项须可用').toBe(true);
+      // The share sheet lives in a remote system container. Activate its actual
+      // native element rather than tapping coordinates in the application view.
+      const close = await device.driver.find('header.closeButton');
       await captureNativeTransition(device, 'ios-share-sheet-exit', info, { x: 0, y: 0, ...device.screenSize },
-        () => clickNode(device, close), [], [], 0, 'videoFrames', undefined, () => device.wait(copy, { state: 'gone' }));
+        () => device.driver.request('POST', device.driver.path(`/element/${close}/click`), {}),
+        [], [], 0, 'videoFrames', undefined, async () => {
+          await device.wait({ res: 'ActivityListView' }, { state: 'gone' });
+          await device.wait(copy, { state: 'gone' });
+        });
       await device.wait({ res: 'share-button' });
     } catch (error) { await captureFailure(device, info); throw error; }
     finally { await device.close(); }
