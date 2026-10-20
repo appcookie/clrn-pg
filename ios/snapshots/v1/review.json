@@ -1098,6 +1098,45 @@
         ]
       },
       "review": "逐张检查两组骨架的4张原始PNG：每组完整保留圆形头像、两条文本占位及右侧方块，分别呈现明确深浅灰变化，未混入已加载内容或网络错误条。原生用例同时验证释放响应后两个指定俱乐部加载成功。"
+    },
+    {
+      "path": "hall/hall/hall-matching-spinner-1/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "5111dbfa71027baa8cf728d72b9063d57002512404d126d03946daf5a2bd5158",
+      "source": {
+        "sourceRun": 39480452362,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39480452362",
+        "sourceWorkflowHead": "1c675d88df9c1eaf7521aee2340d6031267e3b3f",
+        "sourceArtifacts": [
+          "ios-social-en-animation-17-1"
+        ]
+      },
+      "review": "逐张检查3张去重后的PNG：两个旋转相位均包含完整圆点环与匹配文字，图标四边有余量且无裁切；圆点位置和大小分布发生真实变化。整页基准对独立转圈/倒计时/横幅使用明确遮罩，其余弹窗和大厅布局保留。此批替代未入库的旧缺边候选。"
+    },
+    {
+      "path": "hall/hall/hall-matching-spinner-1/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "421c4fc6c1ff46d2c3b403b988c3325e8342a404e7207ba3140c854e830c77ab",
+      "source": {
+        "sourceRun": 39480452362,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39480452362",
+        "sourceWorkflowHead": "1c675d88df9c1eaf7521aee2340d6031267e3b3f",
+        "sourceArtifacts": [
+          "ios-social-en-animation-17-1"
+        ]
+      },
+      "review": "逐张检查3张去重后的PNG：两个旋转相位均包含完整圆点环与匹配文字，图标四边有余量且无裁切；圆点位置和大小分布发生真实变化。整页基准对独立转圈/倒计时/横幅使用明确遮罩，其余弹窗和大厅布局保留。此批替代未入库的旧缺边候选。"
+    },
+    {
+      "path": "hall/hall/hall-matching/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "abb73b4252ab7158cf667d8e05797a2e1a8bf0e72f7266ec86662ddca22d0d42",
+      "source": {
+        "sourceRun": 39480452362,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39480452362",
+        "sourceWorkflowHead": "1c675d88df9c1eaf7521aee2340d6031267e3b3f",
+        "sourceArtifacts": [
+          "ios-social-en-animation-17-1"
+        ]
+      },
+      "review": "逐张检查3张去重后的PNG：两个旋转相位均包含完整圆点环与匹配文字，图标四边有余量且无裁切；圆点位置和大小分布发生真实变化。整页基准对独立转圈/倒计时/横幅使用明确遮罩，其余弹窗和大厅布局保留。此批替代未入库的旧缺边候选。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"

@@ -192,7 +192,11 @@
       "group": "social",
       "file": "tests/animation-transitions.spec.ts",
       "title": "hall matching spinner animates while the real waiting dialog is visible",
-      "images": []
+      "images": [
+        "hall-matching-spinner-1-first.png",
+        "hall-matching-spinner-1-moved.png",
+        "en-hall-matching.png"
+      ]
     },
     {
       "id": "animation-18",
