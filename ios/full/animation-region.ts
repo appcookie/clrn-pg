@@ -6,7 +6,8 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
   const entries: [RegExp, RegExp][] = [
     [/search-confirmation/, /^confirm-pop-up-image-background$/],
-    [/club-more/, /^club-more-popup$/], [/club-rooms-empty/, /^club-rooms-empty-view$/],
+    [/club-more/, /^popup-content-container$/],
+    [/club-rooms-empty/, /^club-rooms-empty-view-container$/],
     [/slot-popup/, /^slot-machine-view$/], [/slot-no-energy/, /^slot-no-energy-popup-container$/],
     [/drawer-menu/, /^drawer-menu-item-/],
     [/accurate-bet/, /^accurate-bet-popup-container$/], [/raise-bet|raise-slider/, /^raise-bet-popup$/],

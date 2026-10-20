@@ -173,16 +173,18 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const pressMore = () => device!.input.tap({ x: Number(String(Math.round(more.bounds.x + more.bounds.width / 2))), y: Number(String(Math.round(more.bounds.y + more.bounds.height / 2))) });
       const region = screenBounds(device, { x: 446, y: 170, width: 250, height: 250 });
       await captureNativeTransition(device, 'club-more-enter', testInfo, region, pressMore, [], [], 800);
-      await device.wait({ res: 'club-more-popup' });
+      await device.wait({ res: 'popup-content-container' });
+      await device.wait({ res: 'popup-backdrop', text: /Create Club, Search Club, Scan/ });
       /** 点击菜单外的真实遮罩关闭弹层。 */
       const pressBackdrop = () => device!.input.tap(screenPoint(device!, 300, 300));
       await captureNativeTransition(device, 'club-more-exit', testInfo, region, pressBackdrop, [], [], 800);
+      await device.wait({ res: 'popup-content-container' }, { state: 'gone' });
       const roomsTab = await device.info({ res: 'club_tab_room' });
       /** 从我的俱乐部切换到牌局空态。 */
       const pressRoomsTab = () => device!.input.tap({ x: Number(String(Math.round(roomsTab.bounds.x + roomsTab.bounds.width / 2))), y: Number(String(Math.round(roomsTab.bounds.y + roomsTab.bounds.height / 2))) });
       await captureNativeTransition(device, 'club-rooms-empty-enter', testInfo,
         screenBounds(device, { x: 100, y: 420, width: 520, height: 200 }), pressRoomsTab);
-      await device.wait({ res: 'club-rooms-empty-view' });
+      await device.wait({ res: 'club-rooms-empty-title' });
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
       throw error;
