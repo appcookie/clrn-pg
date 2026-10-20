@@ -49,10 +49,9 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
               : scenario.snapshotStates!;
       const label = part === 'all' ? scenario.pageLabel : `${scenario.pageLabel}_${part}`;
       test(`${locale} / ${suite} / ${label}`, async ({ ownedRoom }, testInfo) => {
-        // Multiple native panel recordings, full-resolution frame analysis and
-        // room setup share one test. Match the seven-transition slot budget;
-        // keep all pixel, motion, semantic and per-operation deadlines intact.
-        test.setTimeout(2_700_000);
+        // 炸金花首组含 13 次转场，真实 CI 在第 7 次处理原始帧时用完 45 分钟。
+        // 多面板整例预留 90 分钟，仍低于 job 的 120 分钟；单次操作及所有视觉断言不变。
+        test.setTimeout(5_400_000);
         await withAndroidProxy(async proxy => {
           if (scenario.pageLabel === 'signed_in_texas_records_v2') await proxy.command('texas/records', { empty: true });
           const panelAnimation = locale === 'en' && scenario.pageLabel.endsWith('_pre_game');
@@ -60,7 +59,8 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
             || ['signed_in_texas_hall', 'signed_in_texas_panels', 'signed_in_texas_panel_variants']
               .includes(scenario.pageLabel));
           const device = await launchApplication({ gameDriver: true,
-            enableSystemAnimations: panelAnimation || gameAnimation });
+            enableSystemAnimations: panelAnimation || gameAnimation,
+            microphonePermission: scenario.pageLabel === 'signed_in_texas_panels' });
           // Use the same Apple 60 fps recorder already exercised by the native
           // panel cases; simctl's four-second startup buffer adds hundreds of
           // idle frames per game panel. All recorded frames remain validated.
@@ -75,7 +75,7 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
             const guest = scenario.pageLabel === 'signed_in_texas_table_states';
             if (hall || guest) await proxy.command('texas/view', { mode: hall ? 'hall' : 'guest' });
             await createGameRoom(device, proxy, game, created => { room = created; ownedRoom.value = created; },
-              scenario.pageLabel === 'signed_in_texas_optional_pre_game', hall || guest);
+              scenario.pageLabel === 'signed_in_texas_optional_pre_game', hall ? 'hall' : guest ? 'guest' : 'private');
             await testInfo.attach('created-room', { body: JSON.stringify({ roomId: room!.roomId }), contentType: 'application/json' });
             /**
              * 校验每个状态与 Web 清单的顺序一致。

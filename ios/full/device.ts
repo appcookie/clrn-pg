@@ -59,7 +59,7 @@ async function releaseServer() {
   await Promise.race([done, delay(15_000)]);
   clearTimeout(force);
 }
-export async function launchApplication(options: { isolated?: boolean; gameDriver?: boolean; enableSystemAnimations?: boolean } = {}): Promise<NativeDevice> {
+export async function launchApplication(options: { isolated?: boolean; gameDriver?: boolean; enableSystemAnimations?: boolean; microphonePermission?: boolean } = {}): Promise<NativeDevice> {
   if (process.platform !== 'darwin') throw new Error('原生测试需要 macOS Simulator。');
   const parent = process.env.IOS_SIMULATOR_UDID || '';
   if (!/^[\da-f-]{36}$/i.test(parent)) throw new Error('必须指定 IOS_SIMULATOR_UDID。');
@@ -97,6 +97,8 @@ export async function launchApplication(options: { isolated?: boolean; gameDrive
       'appium:bundleId': applicationId, 'appium:fullReset': true, 'appium:language': 'en', 'appium:locale': 'en_US',
       'appium:maxTypingFrequency': 8, 'appium:autoAcceptAlerts': false, 'appium:isHeadless': true, 'appium:waitForIdleTimeout': 0,
       'appium:appTimeZone': 'UTC',
+      // 在安装后、首次启动前授权，避免运行中变更 TCC 权限终止当前牌桌进程。
+      ...(options.microphonePermission ? { 'appium:permissions': JSON.stringify({ [applicationId]: { microphone: 'yes' } }) } : {}),
       // fullReset 会清空模拟器信任库；由 XCUITest 在 reset 后重装本轮临时 CA。
       ...(process.env.IOS_PROXY_CA_CERT ? { 'appium:customSSLCert': readFileSync(process.env.IOS_PROXY_CA_CERT, 'utf8') } : {}),
       'appium:wdaLaunchTimeout': 240_000, 'appium:newCommandTimeout': 1800,

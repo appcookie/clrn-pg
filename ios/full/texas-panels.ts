@@ -22,9 +22,8 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await captureGameThemes(device, capture);
   await gameTap(device, 'game-settings-close-button');
   await gameGone(device, 'game-settings-popup-container');
-  // 仅向专用模拟器授权；界面测试不录制或发送真实音频。
-  await device.grantPermission('microphone');
-  // 首次打开需完成 Android 权限服务初始化；第二次仍由真实按钮触发相同入场动画。
+  // 专用模拟器已在启动前授予麦克风权限；这里只打开界面，不录制或发送音频。
+  // 首次打开完成语音组件初始化；第二次由真实按钮触发同一个入场动画。
   await gameTap(device, 'texas-holdem-voice-button');
   await gameReady(device, 'in-game-audio-root-container');
   await gameTap(device, 'in-game-audio-popup-close');

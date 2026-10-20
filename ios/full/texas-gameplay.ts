@@ -65,16 +65,23 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       river: screenBounds(device, { x: 492, y: 603, width: 78, height: 117 }),
     };
     if (animationInfo && !opponent) {
-      /** 起手牌先建立背面牌位，再下发手牌；整批状态与手牌同帧渲染会跳过翻牌中间帧。 */
-      const publish = async () => {
+      // hand_card 是恢复快照，只在座位状态提交时读取；单独延后发送不会翻牌。
+      // 先恢复两张背面牌，确认真实牌位后，再用实时 deal_hole_card 消息触发翻牌。
+      if (street === 'preflop') {
         const state = restoreTable(self, street, opponent);
-        if (street !== 'preflop') { await send(state); return; }
-        const hand = state.queue.find(item => item.event === 'hand_card');
-        if (!hand) throw new Error('起手牌回放缺少 hand_card 事件。');
-        await send({ ...state, queue: state.queue.filter(item => item !== hand) });
-        await new Promise(resolve => setTimeout(resolve, 400));
-        await send(events([hand]));
-      };
+        await send({ ...state, queue: state.queue.map(item => item.event === 'hand_card'
+          ? { ...item, hole_card: ['back', 'back'] } : item) });
+        await expect.poll(async () => (await gameNodes(device))
+          .filter(node => node.res === 'player_card' && node.bounds.x >= regions.preflop.x
+            && node.bounds.y >= regions.preflop.y
+            && node.bounds.x + node.bounds.width <= regions.preflop.x + regions.preflop.width
+            && node.bounds.y + node.bounds.height <= regions.preflop.y + regions.preflop.height)
+          .map(node => gameSemanticText(node, 'player_card_name_text')).sort(),
+        { timeout: 30_000 }).toEqual(['back', 'back']);
+      }
+      const publish = () => street === 'preflop'
+        ? send(events([{ event: 'deal_hole_card', player_id: self, hole_card: ['as', 'ad'] }]))
+        : send(restoreTable(self, street, opponent));
       /** 四种翻牌动作均可能短于原生截图间隔，改用持续录屏。 */
       await captureNativeTransition(device, `texas-${street}-cards`, animationInfo, regions[street], publish,
         [], [], 0, 'videoFrames', undefined, undefined,
