@@ -1137,6 +1137,84 @@
         ]
       },
       "review": "逐张检查3张去重后的PNG：两个旋转相位均包含完整圆点环与匹配文字，图标四边有余量且无裁切；圆点位置和大小分布发生真实变化。整页基准对独立转圈/倒计时/横幅使用明确遮罩，其余弹窗和大厅布局保留。此批替代未入库的旧缺边候选。"
+    },
+    {
+      "path": "help/share/ios-share-sheet-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "9705ba0edd189ef6cb421103cdb8da9ad324ee7b197ba457df72d285a89aec6e",
+      "source": {
+        "sourceRun": 39482887371,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39482887371",
+        "sourceWorkflowHead": "76b5b504f30c54c29602e5af309d04d88fe860b0",
+        "sourceArtifacts": [
+          "ios-wallet-help-en-animation-9-1"
+        ]
+      },
+      "review": "逐张审查真实 iOS 分享面板入场及退场六帧：英文分享页与二维码完整；面板起始隐藏、中间滑入、终点显示 Reminders/More 与 Copy 等系统操作；关闭反向滑出后恢复原分享页，无裁切或错误页。"
+    },
+    {
+      "path": "help/share/ios-share-sheet-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "a2b916c151aaf04b7c39aecf59304dd167740305ac316631df39a2e3dd03c9fc",
+      "source": {
+        "sourceRun": 39482887371,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39482887371",
+        "sourceWorkflowHead": "76b5b504f30c54c29602e5af309d04d88fe860b0",
+        "sourceArtifacts": [
+          "ios-wallet-help-en-animation-9-1"
+        ]
+      },
+      "review": "逐张审查真实 iOS 分享面板入场及退场六帧：英文分享页与二维码完整；面板起始隐藏、中间滑入、终点显示 Reminders/More 与 Copy 等系统操作；关闭反向滑出后恢复原分享页，无裁切或错误页。"
+    },
+    {
+      "path": "help/share/ios-share-sheet-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "95c5b3ff4c2cd73d0532afcf89c2933b79cc07a3beb082d3017128554cf19e53",
+      "source": {
+        "sourceRun": 39482887371,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39482887371",
+        "sourceWorkflowHead": "76b5b504f30c54c29602e5af309d04d88fe860b0",
+        "sourceArtifacts": [
+          "ios-wallet-help-en-animation-9-1"
+        ]
+      },
+      "review": "逐张审查真实 iOS 分享面板入场及退场六帧：英文分享页与二维码完整；面板起始隐藏、中间滑入、终点显示 Reminders/More 与 Copy 等系统操作；关闭反向滑出后恢复原分享页，无裁切或错误页。"
+    },
+    {
+      "path": "help/share/ios-share-sheet-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "95c5b3ff4c2cd73d0532afcf89c2933b79cc07a3beb082d3017128554cf19e53",
+      "source": {
+        "sourceRun": 39482887371,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39482887371",
+        "sourceWorkflowHead": "76b5b504f30c54c29602e5af309d04d88fe860b0",
+        "sourceArtifacts": [
+          "ios-wallet-help-en-animation-9-1"
+        ]
+      },
+      "review": "逐张审查真实 iOS 分享面板入场及退场六帧：英文分享页与二维码完整；面板起始隐藏、中间滑入、终点显示 Reminders/More 与 Copy 等系统操作；关闭反向滑出后恢复原分享页，无裁切或错误页。"
+    },
+    {
+      "path": "help/share/ios-share-sheet-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "c4499df9e487d7afc2fdbf10dc30041f6ee0837fb0a01bb5494c24aca70a85e3",
+      "source": {
+        "sourceRun": 39482887371,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39482887371",
+        "sourceWorkflowHead": "76b5b504f30c54c29602e5af309d04d88fe860b0",
+        "sourceArtifacts": [
+          "ios-wallet-help-en-animation-9-1"
+        ]
+      },
+      "review": "逐张审查真实 iOS 分享面板入场及退场六帧：英文分享页与二维码完整；面板起始隐藏、中间滑入、终点显示 Reminders/More 与 Copy 等系统操作；关闭反向滑出后恢复原分享页，无裁切或错误页。"
+    },
+    {
+      "path": "help/share/ios-share-sheet-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "9705ba0edd189ef6cb421103cdb8da9ad324ee7b197ba457df72d285a89aec6e",
+      "source": {
+        "sourceRun": 39482887371,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39482887371",
+        "sourceWorkflowHead": "76b5b504f30c54c29602e5af309d04d88fe860b0",
+        "sourceArtifacts": [
+          "ios-wallet-help-en-animation-9-1"
+        ]
+      },
+      "review": "逐张审查真实 iOS 分享面板入场及退场六帧：英文分享页与二维码完整；面板起始隐藏、中间滑入、终点显示 Reminders/More 与 Copy 等系统操作；关闭反向滑出后恢复原分享页，无裁切或错误页。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"

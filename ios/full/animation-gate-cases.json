@@ -131,7 +131,14 @@
       "group": "wallet-help",
       "file": "tests/web-animation-parity.spec.ts",
       "title": "share link opens and closes the real iOS share sheet",
-      "images": []
+      "images": [
+        "ios-share-sheet-enter-start.png",
+        "ios-share-sheet-enter-middle.png",
+        "ios-share-sheet-enter-end.png",
+        "ios-share-sheet-exit-start.png",
+        "ios-share-sheet-exit-middle.png",
+        "ios-share-sheet-exit-end.png"
+      ]
     },
     {
       "id": "animation-10",
