@@ -185,6 +185,7 @@ export function reviewedVideoMiddleEvidence(before: Buffer, after: Buffer,
  * @param startPhaseAnchors - 系统启动器布局不同但均已审查的起点画面。
  * @param startCompareMasks - 仅比较起点时排除的独立动态区域，使用原生屏幕坐标。
  * @param videoRecorder - 可替换的原生录屏采集器，供完整录屏路径回归测试使用。
+ * @param afterRecording - 录屏停止后、端点比较前校验静态布局，避免慢速原生树查询阻塞短动画。
  */
 export async function captureNativeTransition(device: AndroidDevice, name: string, testInfo: TestInfo,
   region: ScreenshotBounds, trigger: () => unknown, masks: ScreenshotMask[] = [],
@@ -194,7 +195,8 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   afterReady?: () => Promise<void>, videoPhaseAnchors: string[] = [],
   endPhaseAnchors: string[] = [], endCompareMasks: ScreenshotMask[] = [],
   startPhaseAnchors: string[] = [], startCompareMasks: ScreenshotMask[] = [],
-  videoRecorder: typeof recordNativeVideoFrames = recordNativeVideoFrames): Promise<void> {
+  videoRecorder: typeof recordNativeVideoFrames = recordNativeVideoFrames,
+  afterRecording?: () => Promise<void>): Promise<void> {
   /**
    * 截出固定的动画绘制区域。
    * @param bytes - 原生完整屏幕 PNG。
@@ -217,6 +219,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     if (settleMs) await setTimeout(settleMs);
     if (afterReady) await afterReady();
   }, testInfo);
+  await afterRecording?.();
   expect(recorded.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
   const originals = recorded;
   if (inspectFrames) await inspectFrames(originals, testInfo);

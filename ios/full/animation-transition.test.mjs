@@ -135,9 +135,9 @@ test('异步面板就绪发生在录像停止前，检查帧与终点截图发�
         events.push('stable-tail');
         events.push('record-stop');
         return [before, middle, after];
-      });
+      }, async () => { events.push('static-layout-check'); });
     assert.deepEqual(events, ['start-screenshot', 'record-start', 'trigger', 'ready', 'stable-tail',
-      'record-stop', 'inspect', 'end-screenshot']);
+      'record-stop', 'static-layout-check', 'inspect', 'end-screenshot']);
   } finally {
     if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = previousMode;

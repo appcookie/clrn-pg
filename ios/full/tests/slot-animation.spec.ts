@@ -48,14 +48,17 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const pressBanner = () => device!.input.tap({ x: Number(String(Math.round(banner.bounds.x + banner.bounds.width / 2))), y: Number(String(Math.round(banner.bounds.y + banner.bounds.height / 2))) });
       await captureNativeTransition(device, 'slot-popup-enter', testInfo,
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressBanner, [], [], 0, 'videoFrames',
+        undefined, undefined, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
+          'slot-popup-enter-reels-blank.png'], [], exposedBannerMasks, [], backgroundBannerMasks,
         undefined, async () => {
+          // Querying the full native tree during this short entrance can stall
+          // XCTest video delivery. Validate before pixel comparison, after stop.
           await expect(async () => {
             const nodes = await device!.nodes();
             verifySlotHeadGeometry(nodes);
             expect(nodes.some(node => node.res === 'spin-button' && node.enabled)).toBe(true);
           }).toPass({ timeout: 30_000, intervals: [250] });
-        }, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
-          'slot-popup-enter-reels-blank.png'], [], exposedBannerMasks, [], backgroundBannerMasks);
+        });
       await device.wait({ res: 'spin-button' });
       const { window: reelWindow, reels } = slotReelRegions(await device.nodes());
       await testInfo.attach('slot-native-reel-regions', {
