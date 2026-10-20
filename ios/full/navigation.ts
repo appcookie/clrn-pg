@@ -85,10 +85,10 @@ export async function returnToTabs(device: NativeDevice) {
     } else if (has('select-game-category-text')) {
       await closePicker(device);
     } else if (has('base-create-room-screen')) {
-      await device.input.press('Back');
+      await device.input.press('Back', nodes);
       await waitAbsent(device, { res: 'base-create-room-screen' });
     } else if (has('settings-tab')) return;
-    else await device.input.press('Back');
+    else await device.input.press('Back', nodes);
   }
   throw new Error('未能通过真实导航返回主标签。');
 }

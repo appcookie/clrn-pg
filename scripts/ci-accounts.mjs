@@ -71,10 +71,14 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
   if (selectedLocale !== 'all' && !locales.includes(selectedLocale)) throw new Error('未知 iOS语言。');
   return { include: executionOrder.filter(group => selectedGroup === 'all' || group === selectedGroup)
     .flatMap(group => (functionalGroups.includes(group) ? ['en']
-      : locales.filter(locale => selectedLocale === 'all' || locale === selectedLocale))
+      : (group === 'guest' ? ['en', 'zh-Hans', 'zh-Hant'] : locales)
+        .filter(locale => selectedLocale === 'all' || locale === selectedLocale))
       .flatMap(locale => {
         const key = `${group}/${locale}`;
-        const parts = group === 'guest' ? [['pages', guestPages], ['startup', `^(?!.*${guestPages})`]]
+        // English startup has seven cases (~35 min); queue it before the shorter
+        // Chinese startup shards so max-parallel does not leave it until last.
+        const guestParts = [['pages', guestPages], ['startup', `^(?!.*${guestPages})`]];
+        const parts = group === 'guest' ? (locale === 'en' ? guestParts.slice().reverse() : guestParts)
           : shards[key] || [['all', '']];
         return parts.map(([shard, filter, playwrightShard = ''], index) => ({ group, locale, shard, filter, playwrightShard,
           label: `${group} / ${locale}${shard === 'all' ? '' : ` / ${shard}`}`,

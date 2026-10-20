@@ -220,11 +220,13 @@ export class NativeDevice {
         { type: 'pointerUp', button: 0 },
       ]);
     },
-    press: async (key: string) => {
+    press: async (key: string, snapshot?: NativeNode[]) => {
       if (key !== 'Back') throw new Error(`未实现的 iOS 按键语义：${key}`);
-      if ((await this.nodes()).some(node => node.clazz === 'XCUIElementTypeKeyboard')) return this.hideKeyboard();
+      // The caller may pass the current, unmodified navigation snapshot. Reuse it
+      // for this one action; never retain it after a tap/swipe/keyboard dismissal.
+      const nodes = snapshot ?? await this.nodes();
+      if (nodes.some(node => node.clazz === 'XCUIElementTypeKeyboard')) return this.hideKeyboard();
       const identifiers = ['navigation-bar-back-button', 'navigation-bar-back-image', 'header-back-button', 'back-button', 'close-user-authentication-button', 'close-button'];
-      const nodes = await this.nodes();
       const close = identifiers.map(id => nodes.find(node => node.res === id)).find(Boolean)
         || nodes.find(node => node.clazz === 'XCUIElementTypeButton' && /^(Back|返回|返回上一頁)$/.test(node.text || ''));
       if (close) return this.input.tap({ x: close.bounds.x + close.bounds.width / 2, y: close.bounds.y + close.bounds.height / 2 });

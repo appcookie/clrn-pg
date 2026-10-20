@@ -104,10 +104,11 @@ test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰�
   }
   for (const [locale, count] of [['en', 25], ['zh-Hans', 21], ['zh-Hant', 20]]) {
     const entries = iosAccountMatrix('123', 'guest', locale).include;
-    assert.deepEqual(entries.map(entry => entry.shard), ['pages', 'startup']);
+    assert.deepEqual(entries.map(entry => entry.shard).sort(), ['pages', 'startup']);
     assert.ok(entries.every(entry => entry.account === '' && entry.playwrightShard === ''));
     const complete = collect(locale);
-    const [pages, startup] = entries.map(entry => collect(locale, entry.filter));
+    const pages = collect(locale, entries.find(entry => entry.shard === 'pages').filter);
+    const startup = collect(locale, entries.find(entry => entry.shard === 'startup').filter);
     assert.equal(complete.length, count);
     assert.equal(pages.length, 18);
     assert.ok(pages.every(spec => spec.file === 'tests/parity.spec.ts'));
@@ -118,6 +119,9 @@ test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰�
     assert.equal(new Set(combined).size, count);
     assert.deepEqual(combined.sort(), keys(complete).sort());
   }
+  const first = iosAccountMatrix('123', 'guest', 'all').include[0];
+  assert.equal(first.locale, 'en');
+  assert.equal(first.shard, 'startup');
   const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
   assert.match(workflow, /max-parallel: 5/);
   assert.match(workflow, /github\.run_id, matrix\.group, matrix\.locale, matrix\.shard/);
