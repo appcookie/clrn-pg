@@ -116,6 +116,31 @@ test('先聚焦再清空受控输入，逐字输入后确认替换成功；残�
     }
   }
 });
+test('会恢复默认值的房名通过原生三击选择替换，选择失败仍拒绝提交', async () => {
+  for (const selectionWorks of [true, false]) {
+    let selected = false, value = 'default name', clears = 0;
+    const driver = {
+      find: async () => 'room-input', path: suffix => suffix,
+      request: async (method, path, body) => {
+        if (path.endsWith('/clear')) { clears++; value = 'default name'; }
+        else if (path.endsWith('/execute/sync')) {
+          assert.deepEqual(body, { script: 'mobile: tapWithNumberOfTaps',
+            args: [{ elementId: 'room-input', numberOfTaps: 3, numberOfTouches: 1 }] });
+          selected = selectionWorks;
+        } else if (method === 'POST' && path.endsWith('/value')) {
+          if (selected) { value = ''; selected = false; }
+          value += body.text;
+        } else if (method === 'GET') return value;
+      },
+    };
+    const device = new NativeDevice(driver, 'test', async () => {}, async () => {}, 'test.app');
+    device.info = async () => ({ res: 'room-name-input', clazz: 'XCUIElementTypeTextField', children: [] });
+    const run = () => device.fill({ res: 'room-name-input' }, 'AB', { replaceBySelection: true });
+    if (selectionWorks) { await run(); assert.equal(value, 'AB'); }
+    else await assert.rejects(run(), /未完整替换/);
+    assert.equal(clears, 0);
+  }
+});
 
 const backNode = (res, x = 30, extra = {}) => ({ res, clazz: 'XCUIElementTypeButton',
   visible: true, enabled: true, bounds: { x, y: 90, width: 60, height: 30 }, children: [], ...extra });

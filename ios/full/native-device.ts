@@ -141,7 +141,7 @@ export class NativeDevice {
     if (!node.enabled) throw new Error(`原生控件被禁用：${node.res || node.text}`);
     await this.input.tap({ x: node.bounds.x + node.bounds.width / 2, y: node.bounds.y + node.bounds.height / 2 });
   }
-  async fill(selector: NativeSelector, text: string) {
+  async fill(selector: NativeSelector, text: string, options: { replaceBySelection?: boolean } = {}) {
     const node = await this.info(selector);
     let element = node.res ? await this.driver.find(node.res) : undefined;
     if (!element) throw new Error('输入必须有可追踪的原生 accessibility identifier。');
@@ -152,10 +152,14 @@ export class NativeDevice {
       element = nested['element-6066-11e4-a52e-4f735466cecf'];
     }
     this.lastInput = element;
-    // Focus the actual input before clearing its controlled React Native value.
-    // Clearing an unfocused room-name field left the default nickname in CI.
+    // Focus the actual input before replacing its controlled React Native value.
     await this.driver.request('POST', this.driver.path(`/element/${element}/click`), {});
-    await this.driver.request('POST', this.driver.path(`/element/${element}/clear`), {});
+    if (options.replaceBySelection) {
+      // Use WDA's own select-content gesture, then replace the selection with
+      // the first character. The clear path leaves the default name in this room field.
+      // https://github.com/appium/WebDriverAgent/blob/master/WebDriverAgentLib/Categories/XCUIElement%2BFBTyping.m
+      await this.execute('mobile: tapWithNumberOfTaps', { elementId: element, numberOfTaps: 3, numberOfTouches: 1 });
+    } else await this.driver.request('POST', this.driver.path(`/element/${element}/clear`), {});
     await delay(150);
     for (const character of text) {
       await this.driver.request('POST', this.driver.path(`/element/${element}/value`), { text: character });

@@ -39,7 +39,7 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
   await reveal(device, { res: 'select-game-category-text' });
   await tap(device, `game-type-button-${game === 'texas-holdem' ? 'texas_react_native' : game}`);
   await device.wait({ res: 'room-name-input' });
-  await device.fill({ res: 'room-name-input' }, 'TestRoom');
+  await device.fill({ res: 'room-name-input' }, 'TestRoom', { replaceBySelection: true });
   await dismissKeyboard(device);
   if (optionalFeatures) {
     await tap(device, 'advanced-options-button');

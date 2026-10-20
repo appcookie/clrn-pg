@@ -37,7 +37,10 @@ if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS
       await captureNativeTransition(device, 'ios-share-sheet-enter', info, { x: 0, y: 0, ...device.screenSize },
         () => clickNode(device, { res: 'share-button' }), [], [], 0, 'videoFrames', undefined, () => device.wait(copy));
       const options = await device.nodes();
-      expect(options.some(node => /^(AirDrop|Messages|Mail)$/.test(node.text || '')), '必须有原生系统分享目标').toBe(true);
+      expect(options.some(node => node.res === 'ActivityListView'), '必须是原生系统分享面板').toBe(true);
+      // The pinned Simulator exposes Reminders in its installed activity list. Require an enabled native target cell; "More" alone is insufficient.
+      expect(options.some(node => node.clazz === 'XCUIElementTypeCell' && node.res === 'shareCell'
+        && node.enabled && !!node.text?.trim() && node.text !== 'More'), '必须有原生系统分享目标').toBe(true);
       expect((await device.info(copy)).enabled, '系统复制链接选项须可用').toBe(true);
       await captureNativeTransition(device, 'ios-share-sheet-exit', info, { x: 0, y: 0, ...device.screenSize },
         () => clickNode(device, close), [], [], 0, 'videoFrames', undefined, () => device.wait(copy, { state: 'gone' }));
