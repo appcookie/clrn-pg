@@ -56,6 +56,34 @@ export function requireFade(frames: Buffer[]) {
   if (!pair) throw new Error('未采到固定品牌像素从半透明逐步变清晰的两个相位');
   return { samples, middle: pair.index };
 }
+
+/** Compare the reviewed brand drawing after a single capture-wide tone change.
+ * Simulator video and native screenshots can have different colour transfer,
+ * while displaced or missing lettering produces a large spatial residual.
+ */
+export function reviewedBrandFrameMatches(actualBytes: Buffer, reviewedBytes: Buffer): boolean {
+  const actual = PNG.sync.read(actualBytes), reviewed = PNG.sync.read(reviewedBytes);
+  if (actual.width !== reviewed.width || actual.height !== reviewed.height) return false;
+  let actualSum = 0, reviewedSum = 0, actualSquares = 0, reviewedSquares = 0, products = 0;
+  const channels = actual.width * actual.height * 3;
+  for (let pixel = 0; pixel < actual.data.length; pixel += 4) for (let channel = 0; channel < 3; channel++) {
+    const a = actual.data[pixel + channel], b = reviewed.data[pixel + channel];
+    actualSum += a; reviewedSum += b;
+    actualSquares += a * a; reviewedSquares += b * b; products += a * b;
+  }
+  const actualMean = actualSum / channels, reviewedMean = reviewedSum / channels;
+  const actualVariance = actualSquares - actualSum * actualMean;
+  const reviewedVariance = reviewedSquares - reviewedSum * reviewedMean;
+  const covariance = products - actualSum * reviewedMean;
+  if (actualVariance <= 0 || reviewedVariance <= 0) return false;
+  const gain = covariance / reviewedVariance;
+  const offset = actualMean - gain * reviewedMean;
+  const correlation = covariance / Math.sqrt(actualVariance * reviewedVariance);
+  const residual = Math.sqrt(Math.max(0, actualVariance - covariance * gain) / channels);
+  return gain >= 0.88 && gain <= 1.12 && Math.abs(offset) <= 12
+    && correlation >= 0.995 && residual <= 4;
+}
+
 export async function assertBrandFade(frames: Buffer[], finalFrame: Buffer, reference: PNG,
   region: ScreenshotBounds, exclusions: ScreenshotBounds[], info: TestInfo,
   evidence?: ReturnType<typeof brandFadeEvidence>) {
@@ -65,12 +93,16 @@ export async function assertBrandFade(frames: Buffer[], finalFrame: Buffer, refe
   expect(result.complete, '必须在发布包背景已出现后采到品牌自身从透明、两个半透明相位到不透明；不能用系统转场或遮罩消退代替').toBe(true);
   for (const [phase, index] of [['start', result.start!], ['middle', result.middle!], ['end', result.end!]] as const) {
     const name = `launch-branding-fade-${phase}.png`;
-    if (phase !== 'middle' || process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(cropped[index], name, info);
-    else {
+    if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(cropped[index], name, info);
+    else if (phase === 'middle') {
       const reviewed = readFileSync(baselinePath(name));
       const candidates = result.samples.flatMap((sample, i) => sample.alpha !== null && sample.residual !== null
         && sample.alpha > .1 && sample.alpha < .9 && sample.residual < 12 ? [cropped[i]] : []);
       expect(Math.min(...candidates.map(frame => frameColorDistance(frame, reviewed))), '品牌真实半透明相位须匹配已审查基准').toBeLessThanOrEqual(12);
+      await info.attach(name, { body: cropped[index], contentType: 'image/png' });
+    } else {
+      const reviewed = readFileSync(baselinePath(name));
+      expect(reviewedBrandFrameMatches(cropped[index], reviewed), `${name} 品牌绘制须匹配已审查相位`).toBe(true);
       await info.attach(name, { body: cropped[index], contentType: 'image/png' });
     }
   }

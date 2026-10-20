@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { PNG } from 'pngjs';
-import { assertReviewedVideoMiddle, frameColorDistance, middleCandidates } from './animation-transition.ts';
+import { readFileSync } from 'node:fs';
+import { assertReviewedVideoMiddle, frameColorDistance, middleCandidates, reviewedLauncherStart } from './animation-transition.ts';
 
 function picture(top) {
   const png = new PNG({ width: 120, height: 180 });
@@ -31,6 +32,33 @@ test('纯色闪屏即使改变像素也不能冒充已审查的局部滑入', ()
 
 test('不同分辨率动画不能通过缩放后忽略尺寸变化', () => {
   assert.throws(() => frameColorDistance(before, PNG.sync.write(new PNG({ width: 60, height: 90 }))), /尺寸变化/);
+});
+
+test('启动器壁纸变色可通过，已审查 Maps 前景错位不能通过', () => {
+  const reviewed = readFileSync('ios/snapshots/v1/launch/launch/native-launch-and-staging-notice/ios/iphone16-ios18.5/en/animation/start.png');
+  const tinted = PNG.sync.read(reviewed);
+  for (let y = 0; y < tinted.height; y++) for (let x = 0; x < tinted.width; x++) {
+    if (x >= 120 && x < 510 && y >= 280 && y < 690) continue;
+    if (x >= 370 && x < 530 && y >= 850 && y < 1000) continue;
+    if (x >= 370 && x < 530 && y >= 2290 && y < 2460) continue;
+    const offset = (y * tinted.width + x) * 4;
+    tinted.data[offset] = 150;
+    tinted.data[offset + 1] = 80;
+    tinted.data[offset + 2] = 40;
+  }
+  const validTint = PNG.sync.write(tinted);
+  assert.equal(reviewedLauncherStart(validTint, reviewed), true);
+  for (let y = 350; y < 600; y++) for (let x = 180; x < 450; x++) {
+    const offset = (y * tinted.width + x) * 4;
+    tinted.data.set([0, 0, 0, 255], offset);
+  }
+  assert.equal(reviewedLauncherStart(PNG.sync.write(tinted), reviewed), false);
+  const wrongIcon = PNG.sync.read(validTint);
+  for (let y = 870; y < 990; y++) for (let x = 390; x < 510; x++) {
+    const offset = (y * wrongIcon.width + x) * 4;
+    wrongIcon.data.set([0, 0, 0, 255], offset);
+  }
+  assert.equal(reviewedLauncherStart(PNG.sync.write(wrongIcon), reviewed), false);
 });
 
 test('smoke保留完整转场语义和帧附件，但不读取未知基准', async () => {
