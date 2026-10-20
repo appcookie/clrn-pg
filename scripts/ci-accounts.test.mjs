@@ -83,7 +83,7 @@ test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或�
   assert.deepEqual(parts.flat().sort(), complete.sort());
 });
 
-test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰好覆盖一次', { timeout: 180_000 }, () => {
+test('guest每语言18页独立于启动动画，实际25/20/20项跨两片恰好覆盖一次', { timeout: 180_000 }, () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(locale, filter = '') {
     const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts',
@@ -102,7 +102,7 @@ test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰�
     for (const suite of report.suites) visit(suite);
     return specs;
   }
-  for (const [locale, count] of [['en', 25], ['zh-Hans', 21], ['zh-Hant', 20]]) {
+  for (const [locale, count] of [['en', 25], ['zh-Hans', 20], ['zh-Hant', 20]]) {
     const entries = iosAccountMatrix('123', 'guest', locale).include;
     assert.deepEqual(entries.map(entry => entry.shard).sort(), ['pages', 'startup']);
     assert.ok(entries.every(entry => entry.account === '' && entry.playwrightShard === ''));

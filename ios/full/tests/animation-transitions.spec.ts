@@ -94,12 +94,18 @@ if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'search-confirmation-enter', testInfo, region,
         pressSearch, [], [], 0, 'videoFrames', undefined, undefined,
         ['search-confirmation-enter-middle-alt.png']);
+      await device.wait({ res: 'pop-up-message-text', text: 'Please sign in to use search' });
       const cancel = await device.info({ res: 'cancel-button' });
       expect(cancel.bounds.width).toBeGreaterThan(0);
       /** 点击真实取消按钮，不直接卸载弹窗。 */
       const pressCancel = () => device!.input.tap({ x: Number(String(Math.round(cancel.bounds.x + cancel.bounds.width / 2))), y: Number(String(Math.round(cancel.bounds.y + cancel.bounds.height / 2))) });
       await captureNativeTransition(device, 'search-confirmation-exit', testInfo, region,
         pressCancel, [], [], 0, 'videoFrames');
+      await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
+      await pressSearch();
+      await device.wait({ res: 'pop-up-message-text', text: 'Please sign in to use search' });
+      await tap(device, 'cancel-button');
+      await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
     } finally { await device?.close(); }
   });
 });

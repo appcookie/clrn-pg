@@ -43,6 +43,9 @@ for (const entry of review.files) {
   if (sha256 !== entry.sha256) throw new Error(`已审查 PNG 被修改：${entry.path}`);
   const locale = /\/ios\/iphone16-ios18\.5\/(en|zh-Hans|zh-Hant)\/(page|animation|asset)\//.exec(`/${entry.path}`)?.[1];
   if (!locale) throw new Error(`审查记录不符合 iOS v1 目录：${entry.path}`);
+  if (entry.path.includes('/animation/') && locale !== 'en') {
+    throw new Error(`动画基准只允许英文：${entry.path}`);
+  }
   reviewedLocales.add(locale);
 }
 function* pngFiles(directory) {

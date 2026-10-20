@@ -37,6 +37,16 @@ test('基准文件名和运行语言不允许越界或冲突', () => {
     'game-record/signed-in-game-record/signed-in-game-record/ios/iphone16-ios18.5/en/page/default.png');
 });
 
+test('动画基准只接受英文，中文普通页面仍按实际语言归档', () => {
+  for (const locale of ['zh-Hans', 'zh-Hant']) {
+    for (const filename of ['search-confirmation-enter-middle.png', `${locale}-search-confirmation-exit-end.png`,
+      'native-launch-artwork-visible.png', 'hall-matching-spinner-first.png']) {
+      assert.throws(() => baselineRelativePath(filename, locale), /动画截图只允许英文/);
+    }
+    assert.ok(baselineRelativePath(`${locale}-hall.png`, locale).endsWith(`/${locale}/page/default.png`));
+  }
+});
+
 test('三语言全部共享页面与声明的后续状态都有稳定模块路径', () => {
   let count = 0;
   for (const locale of ['en', 'zh-Hans', 'zh-Hant']) {

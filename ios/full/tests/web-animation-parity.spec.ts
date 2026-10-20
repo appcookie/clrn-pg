@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { launchApplication, waitForHall, simulatorAppPath } from '../device';
 import { withIosProxy } from '../proxy';
-import { selectLanguage, signIn, tap, navigateScenario } from '../navigation';
+import { signIn, tap, navigateScenario } from '../navigation';
 import { iosScenarios } from '../scenarios';
 import { captureNativeTransition } from '../animation-transition';
 import { captureFailure } from '../diagnostics';
@@ -18,44 +18,6 @@ const locale = process.env.IOS_LOCALE || 'en';
 const group = process.env.IOS_GROUP || 'all';
 const enabled = (business: string, language: string) => ['all', business].includes(group) && locale === language;
 const source = (path: string, title: string) => [{ type: 'web-animation-source', description: `${path}: ${title}` }];
-
-if (enabled('guest', 'zh-Hans')) test('zh-Hans mobile guest search prompt fades in and reopens on iOS', {
-  annotation: source('visual/animations/search-prompt.spec.ts', 'zh-Hans mobile guest search prompt fades in'),
-}, async ({}, info) => {
-  test.setTimeout(1_200_000);
-  await withIosProxy(async () => {
-    const device = await launchApplication();
-    try {
-      await waitForHall(device); await selectLanguage(device, 'zh-Hans'); await tap(device, 'hall-tab');
-      await tap(device, 'hall-search-button');
-      await device.wait({ res: 'pop-up-message-text', text: '请先登录以使用搜索功能' });
-      const region = (await device.info({ res: 'confirm-pop-up-image-background' })).bounds;
-      await tap(device, 'cancel-button'); await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
-      // 先读取真实点击目标，录制过渡期间不查询AX树，避免snapshot阻塞短动画。
-      const prepareTap = async (res: string) => {
-        const target = await device.info({ res });
-        expect(target.enabled).toBe(true);
-        expect(target.bounds.width).toBeGreaterThan(0); expect(target.bounds.height).toBeGreaterThan(0);
-        const point = { x: target.bounds.x + target.bounds.width / 2, y: target.bounds.y + target.bounds.height / 2 };
-        expect(point.x).toBeGreaterThanOrEqual(0); expect(point.x).toBeLessThan(device.screenSize.width);
-        expect(point.y).toBeGreaterThanOrEqual(0); expect(point.y).toBeLessThan(device.screenSize.height);
-        return () => device.input.tap(point);
-      };
-      const openSearch = await prepareTap('hall-search-button');
-      await captureNativeTransition(device, 'zh-Hans-search-confirmation-enter', info, region,
-        openSearch);
-      await device.wait({ res: 'pop-up-message-text', text: '请先登录以使用搜索功能' });
-      const cancelSearch = await prepareTap('cancel-button');
-      await captureNativeTransition(device, 'zh-Hans-search-confirmation-exit', info, region,
-        cancelSearch);
-      await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
-      await tap(device, 'hall-search-button');
-      await device.wait({ res: 'pop-up-message-text', text: '请先登录以使用搜索功能' });
-      await tap(device, 'cancel-button');
-    } catch (error) { await captureFailure(device, info); throw error; }
-    finally { await device.close(); }
-  });
-});
 
 if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS share sheet', {
   annotation: source('visual/animations/dialogs.spec.ts', 'share link confirmation dialog enter and exit'),

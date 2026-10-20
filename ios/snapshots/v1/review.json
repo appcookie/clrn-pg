@@ -15,7 +15,7 @@
   "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
   "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9",
   "simulator": "iPhone 16 / iOS 18.5",
-  "review": "83 个真实原始 PNG 已逐项校验路径唯一性和 SHA-256；人工查看三语言核心页面与启动/搜索/品牌动画关键帧。",
+  "review": "77 个真实原始 PNG 已逐项校验路径唯一性和 SHA-256；人工查看三语言核心页面与启动/搜索/品牌动画关键帧。动画统一保留英文，移除 6 张简体中文搜索动画关键帧；保留其余原始图片的来源与审查记录。",
   "knownIssues": [
     {
       "id": "staging-cta-obscured",
@@ -260,30 +260,6 @@
     {
       "path": "auth/login/login/ios/iphone16-ios18.5/zh-Hans/page/default.png",
       "sha256": "8491cc6f37cdf544777863f96251dc8312e96061861add72cd19a1fe26b7d8bf"
-    },
-    {
-      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/zh-Hans/animation/end.png",
-      "sha256": "ca3489819f330d6ed346d031ee210df0f6d3decfea85fe4efbfe84b3f1aa4a69"
-    },
-    {
-      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/zh-Hans/animation/middle.png",
-      "sha256": "837e328397a2eeaabd2c868cb8ad7f3387b9ae64d1d7f5c973db98c490b72f13"
-    },
-    {
-      "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/zh-Hans/animation/start.png",
-      "sha256": "eb4c153e5dc66320bb67880ab649ceb20b588bc5a2b690e7afcbd56ac12afd39"
-    },
-    {
-      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/zh-Hans/animation/end.png",
-      "sha256": "78a0ba5d034afdb7c3e288639ea2108cd3644d3274e4c52f6bfd1b46bac99b6e"
-    },
-    {
-      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/zh-Hans/animation/middle.png",
-      "sha256": "81fa1345df80752f4fd945e5af203b5f1b31b8c26b232656e3b93180e741b4f7"
-    },
-    {
-      "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/zh-Hans/animation/start.png",
-      "sha256": "ca3489819f330d6ed346d031ee210df0f6d3decfea85fe4efbfe84b3f1aa4a69"
     },
     {
       "path": "hall/search/search-sign-in-prompt/ios/iphone16-ios18.5/zh-Hans/page/default.png",
