@@ -11,6 +11,7 @@ import { captureToast } from './game-transient';
 import { captureChallengeAnimation } from './game-animation';
 import { verifyLoopAnimation } from './loop-animation';
 import { captureMovingKeyframes } from './loop-keyframes';
+import { stableNativeObservation } from './native-stability';
 
 /**
  * 使原生控件边界及绘制余量落到实际截图的整数像素。
@@ -38,14 +39,11 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   if (expectedAlertMarker) await gameReady(device, expectedAlertMarker);
   let nodes = await gameNodes(device);
   if ((!transientMarker || transientMarker === 'level-up-title') && foregroundPanels(nodes, device.screenSize).length) {
-    let previous = '';
-    await expect(async () => {
-      nodes = await gameNodes(device);
-      const current = JSON.stringify(foregroundPanels(nodes, device.screenSize).map(node => node.bounds));
-      const before = previous;
-      previous = current;
-      expect(current, '前景面板边界须完成转场后再裁剪背景遮罩').toBe(before);
-    }).toPass({ timeout: 30_000, intervals: [300] });
+    nodes = await stableNativeObservation(() => gameNodes(device), (before, current) => {
+      expect(foregroundPanels(current, device.screenSize).map(node => node.bounds),
+        '前景面板边界须完成转场后再裁剪背景遮罩')
+        .toEqual(foregroundPanels(before, device.screenSize).map(node => node.bounds));
+    }, { initial: nodes, timeout: 30_000, interval: 300 });
   }
   if (expectedAlertMarker) expect(nodes.some(node => node.res === expectedAlertMarker), '目标业务提示必须可见').toBe(true);
   expect(nodes.some(node => node.res === 'XCUIElementTypeAlert' || (!expectedAlertMarker && node.res === 'common-alert-message')),

@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
+import { stableNativeObservation } from './native-stability';
 
 export type NativeNode = { res?: string; text?: string; enabled?: boolean; checked?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
@@ -122,16 +123,11 @@ export async function gameConnected(device: AndroidDevice, stableMs = 0): Promis
 export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false): Promise<void> {
   console.log(`IOS > 游戏点击 ${res}`);
   await gameConnected(device);
-  let previous: ScreenshotBounds | undefined;
-  let node: NativeNode;
-  await expect(async () => {
-    node = await gameReady(device, res);
-    const before = previous;
-    previous = node.bounds;
-    expect(node.enabled).not.toBe(false);
-    expect(previous).toEqual(before);
-  }).toPass({ timeout: 45_000, intervals: [200] });
-  const { x, y, width, height } = node!.bounds;
+  const node = await stableNativeObservation(() => gameReady(device, res), (before, current) => {
+    expect(current.enabled).not.toBe(false);
+    expect(current.bounds).toEqual(before.bounds);
+  }, { timeout: 45_000, interval: 200 });
+  const { x, y, width, height } = node.bounds;
   const point = { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
   await device.input.tap(point);
 }
