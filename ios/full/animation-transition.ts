@@ -178,7 +178,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
    * 截出固定的动画绘制区域。
    * @param bytes - 原生完整屏幕 PNG。
    */
-  const crop = (bytes: Buffer) => cropMotionRegion(maskScreenshot(bytes, masks), region);
+  const crop = (bytes: Buffer) => cropMotionRegion(bytes, region, masks);
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
     body: JSON.stringify(startCompareMasks), contentType: 'application/json',
@@ -209,6 +209,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const before = crop(beforeScreen);
   const timeline = originals.map(crop);
   const after = crop(afterScreen);
+  console.log(`IOS > 录屏 ${name}：完成 ${timeline.length} 张遮罩裁图`);
   await testInfo.attach(`${name}-timeline`, {
     body: JSON.stringify(recorded.map((_, index) => recorded.timestampsMs?.[index] ?? null)), contentType: 'application/json',
   });
@@ -221,13 +222,14 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   expect(frameColorDistance(timeline[0], before), '录屏首帧须包含动作前的实际布局').toBeLessThan(10);
   expect(framePaletteDistance(timeline.at(-1)!, after), '录屏结束时动画必须完成').toBeLessThan(10);
   if (requiredRegions.length) {
-    const parts = originals.map(frame => cropMotionRegions(maskScreenshot(frame, masks), requiredRegions));
+    const parts = originals.map(frame => cropMotionRegions(frame, requiredRegions, { masks }));
     for (const index of requiredRegions.keys()) {
       expect(parts.some(sample => !samePixels(sample[index], parts[0][index])),
         `${name} 第 ${index + 1} 个区域必须独立运动`).toBe(true);
     }
   }
   const { total, progress, candidates } = transitionEvidence(before, after, timeline, 'videoFrames');
+  console.log(`IOS > 录屏 ${name}：完成轨迹分析，${candidates.length} 张中间帧`);
   expect(total, '入口点击必须产生足够大的可见变化').toBeGreaterThan(3);
   expect(frameColorDistance(timeline[0], before), '录屏首帧必须更接近起点，不能只有动作后的画面')
     .toBeLessThan(frameColorDistance(timeline[0], after));

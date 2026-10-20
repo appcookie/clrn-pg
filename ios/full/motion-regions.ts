@@ -1,15 +1,16 @@
 import { PNG } from 'pngjs';
-import type { ScreenshotBounds } from './screenshot';
+import { applyScreenshotMasks, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 
 /** Crop the same original pixels without encoding an unused full-screen complement for every video frame. */
-export function cropMotionRegion(bytes: Buffer, region: ScreenshotBounds): Buffer {
-  return cropMotionRegions(bytes, [region])[0];
+export function cropMotionRegion(bytes: Buffer, region: ScreenshotBounds, masks: ScreenshotMask[] = []): Buffer {
+  return cropMotionRegions(bytes, [region], { masks })[0];
 }
 
 /** Decode once for independent reels; do not encode an unused full-screen complement. */
 export function cropMotionRegions(bytes: Buffer, regions: ScreenshotBounds[],
-  { maxSharedBorder = 0 } = {}): Buffer[] {
+  { maxSharedBorder = 0, masks = [] }: { maxSharedBorder?: number; masks?: ScreenshotMask[] } = {}): Buffer[] {
   const picture = PNG.sync.read(bytes);
+  applyScreenshotMasks(picture, masks);
   return regions.map(({ x, y, width, height }, index) => {
     if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
       || x + width > picture.width || y + height > picture.height) throw new Error('动画比较分区超出实际截图');

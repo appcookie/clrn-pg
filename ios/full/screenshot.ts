@@ -72,6 +72,15 @@ export function maskScreenshot(bytes: Buffer, masks: ScreenshotMask[]): Buffer {
   masks = masks.filter(mask => !mask.unverifiedLayout);
   if (!masks.length) return bytes;
   const picture = PNG.sync.read(bytes);
+  applyScreenshotMasks(picture, masks);
+  return PNG.sync.write(picture);
+}
+
+/** Apply the same screen-coordinate masks to decoded pixels before cropping.
+ * The 12% limit always uses the original full screenshot, including off-crop masks.
+ */
+export function applyScreenshotMasks(picture: PNG, masks: ScreenshotMask[]): void {
+  masks = masks.filter(mask => !mask.unverifiedLayout);
   let area = 0;
   for (const mask of masks) {
     const left = Math.max(0, Math.floor(mask.x));
@@ -88,5 +97,4 @@ export function maskScreenshot(bytes: Buffer, masks: ScreenshotMask[]): Buffer {
     }
   }
   if (area > picture.width * picture.height * 0.12) throw new Error('动态遮罩超过截图面积的 12%，需要重新检查覆盖范围。');
-  return PNG.sync.write(picture);
 }

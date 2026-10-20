@@ -63,8 +63,13 @@ if (enabled('social', 'en')) test('hall matching modal records its native entran
           && node.bounds.x + node.bounds.width <= region.x + region.width && node.bounds.y + node.bounds.height <= region.y + region.height))
         .map(node => ({ ...node.bounds, reason: '独立旋转图标/计时数字由原有hall-matching循环动画案例比较' }));
       await tap(device, 'quick-start-room-cancel'); await device.wait({ res: 'game-matching-loading-view' }, { state: 'gone' });
+      // Read the native entry before recording; a slow full tree query during
+      // recording otherwise produces hundreds of idle frames before the click.
+      const entry = await device.info({ res: 'match-game-item-texas_holdem-tourists' });
+      expect(entry.enabled).toBe(true);
       await captureNativeTransition(device, 'hall-matching-modal-enter', info, region,
-        () => clickNode(device, { res: 'match-game-item-texas_holdem-tourists' }), masks, [], 0, 'videoFrames', undefined,
+        () => device.input.tap({ x: entry.bounds.x + entry.bounds.width / 2, y: entry.bounds.y + entry.bounds.height / 2 }),
+        masks, [], 0, 'videoFrames', undefined,
         () => device.wait({ res: 'game-matching-loading-view' }));
       await tap(device, 'quick-start-room-cancel'); await device.wait({ res: 'game-matching-loading-view' }, { state: 'gone' });
     } catch (error) { await captureFailure(device, info); throw error; }
