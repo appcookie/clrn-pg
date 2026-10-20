@@ -1,4 +1,5 @@
-import { execFileSync, spawn } from 'node:child_process';
+import { execFile, spawn } from 'node:child_process';
+import { promisify } from 'node:util';
 import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -9,6 +10,7 @@ import { validateRecordedTimeline, type ProbeFrame } from './video-timeline';
 import { recordXCTestVideo } from './xctest-video';
 
 export type RecordedFrames = Buffer[] & { timestampsMs?: number[] };
+const runMedia = promisify(execFile);
 
 /** 在真实 Simulator 录屏开始后触发动作，以原始分辨率解码；MP4 永远保留供回看。 */
 export async function recordNativeVideoFrames(device: NativeDevice, name: string, region: ScreenshotBounds,
@@ -75,9 +77,12 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Release a held fixture once native recording has stopped, before expensive
   // decoding. The application must not time out while PNGs are processed.
   await onRecorded?.();
-  const probe = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
+  // The fixture HTTP server shares this Node process. Keep it responsive during
+  // long native-video decoding instead of blocking it with execFileSync.
+  const { stdout } = await runMedia('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
     '-show_frames', '-show_entries', 'frame=pts_time', '-of', 'json', video],
-  { timeout: 60000, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 })) as { frames: ProbeFrame[] };
+  { timeout: 60000, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+  const probe = JSON.parse(stdout) as { frames: ProbeFrame[] };
   await testInfo.attach(`${name}-raw-frame-timestamps`, {
     body: JSON.stringify(probe.frames), contentType: 'application/json',
   });
@@ -90,7 +95,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
     || x + width > device.screenSize.width || y + height > device.screenSize.height) throw new Error('动画区域必须在原始截图范围内。');
   try {
-    execFileSync('ffmpeg', ['-y', '-v', 'error', '-i', video, '-vf',
+    await runMedia('ffmpeg', ['-y', '-v', 'error', '-i', video, '-vf',
       `crop=${width}:${height}:${x}:${y}:exact=1`, '-fps_mode', 'passthrough',
       // PNG compression changes file size, never pixels; avoid spending the
       // native test budget compressing temporary full-resolution frame files.

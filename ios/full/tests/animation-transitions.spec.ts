@@ -58,6 +58,7 @@ if (!(!['all', 'account'].includes(process.env.IOS_GROUP || 'all')
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
       await tap(device, 'settings-tab');
@@ -71,8 +72,9 @@ if (!(!['all', 'account'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'native-stack-enter', testInfo, region, enter,
         [], [], 0, 'videoFrames');
       await gameReady(device, 'account-security-items-list');
+      const exitNodes = await device.nodes();
       /** 系统返回调用当前导航栈的水平出栈动画。 */
-      const exit = () => device!.input.press('Back');
+      const exit = () => device!.input.press('Back', exitNodes);
       await captureNativeTransition(device, 'native-stack-exit', testInfo, region, exit);
       await gameReady(device, 'account-security');
     } catch (error) {

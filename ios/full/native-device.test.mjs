@@ -2,33 +2,44 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
-import { parseNativeTree, NativeDevice, keyboardDismissTarget, normalizeNativeScreenshot } from './native-device.ts';
+import { createServer } from 'node:http';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { parseNativeTree, NativeDevice, keyboardDismissTarget, normalizeNativeScreenshot, captureSimulatorScreenshot } from './native-device.ts';
 
-test('游戏 XCTest 截图保留原始像素，并明确限制单次截图为30秒', async () => {
-  const source = new PNG({ width: 5, height: 7 });
-  for (let i = 0; i < source.data.length; i++) source.data[i] = i % 256;
-  const bytes = PNG.sync.write(source);
-  let requests = 0;
-  const device = new NativeDevice({ screenshot: async timeout => {
-    requests++; assert.equal(timeout, 30_000); return bytes;
-  } }, 'test', async () => {}, async () => {}, 'test.app');
-  device.screenSize = { width: 5, height: 7 };
-  device.nativeScreenshotBackend = 'xctest';
-  assert.equal(await device.nativeScreenshot(), bytes);
-  assert.equal(requests, 1);
+test('截图子进程等待夹具响应时不会阻塞同进程HTTP服务，原始PNG字节不变', async () => {
+  const bytes = PNG.sync.write(new PNG({ width: 5, height: 7 }));
+  let served = 0;
+  const server = createServer((_request, response) => { served++; response.end('ready'); });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const png = await captureSimulatorScreenshot('fixture-simulator', { width: 5, height: 7 },
+      async (command, args, options) => {
+        assert.equal(command, 'xcrun');
+        assert.deepEqual(args, ['simctl', 'io', 'fixture-simulator', 'screenshot', '--type=png', '--mask=ignored', '-']);
+        assert.equal(options.timeout, 30_000);
+        assert.equal(options.maxBuffer, 32 * 1024 * 1024);
+        const script = `require('node:http').get(process.argv[1], r => {
+          r.resume(); r.on('end', () => process.stdout.write(Buffer.from(process.argv[2], 'base64')));
+        }).on('error', () => process.exit(1));`;
+        return promisify(execFile)(process.execPath, ['-e', script,
+          `http://127.0.0.1:${server.address().port}/`, bytes.toString('base64')],
+        { encoding: 'buffer', timeout: 10_000 });
+      });
+    assert.deepEqual(png, bytes);
+    assert.equal(served, 1);
+  } finally { await new Promise(resolve => server.close(resolve)); }
 });
 
-test('XCTest 截图错误和尺寸异常直接失败，不回退或重复采图掩盖错误', async () => {
+test('截图命令错误和尺寸异常直接失败，不回退或重复采图掩盖错误', async () => {
   let requests = 0;
   const failure = Error('native screenshot unavailable');
-  const device = new NativeDevice({ screenshot: async () => { requests++; throw failure; } },
-    'test', async () => {}, async () => {}, 'test.app');
-  device.screenSize = { width: 5, height: 7 };
-  device.nativeScreenshotBackend = 'xctest';
-  await assert.rejects(device.nativeScreenshot(), error => error === failure);
+  const size = { width: 5, height: 7 };
+  await assert.rejects(captureSimulatorScreenshot('test', size,
+    async () => { requests++; throw failure; }), error => error === failure);
   assert.equal(requests, 1);
-  device.driver.screenshot = async () => PNG.sync.write(new PNG({ width: 2, height: 7 }));
-  await assert.rejects(device.nativeScreenshot(), /尺寸不匹配/);
+  await assert.rejects(captureSimulatorScreenshot('test', size,
+    async () => ({ stdout: PNG.sync.write(new PNG({ width: 2, height: 7 })) })), /尺寸不匹配/);
 });
 import { returnToTabs } from './navigation.ts';
 test('原生截图只裁末尾一像素，保留每个内容像素，拒绝其他尺寸变化', () => {

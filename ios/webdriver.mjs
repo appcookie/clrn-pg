@@ -84,8 +84,8 @@ export class WebDriver {
     if (actual !== value) throw new Error(`原生输入未完整写入：${identifier}`);
   }
 
-  async screenshot(timeout = 180_000) {
-    return Buffer.from(await this.request('GET', this.path('/screenshot'), undefined, timeout), 'base64');
+  async screenshot() {
+    return Buffer.from(await this.request('GET', this.path('/screenshot')), 'base64');
   }
 
   async source() {

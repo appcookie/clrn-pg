@@ -1,5 +1,6 @@
 // XCUITest 原生设备适配：所有公开几何量使用截图像素，统一转换到 iOS point。
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
+import { promisify } from 'node:util';
 import { setTimeout as delay } from 'node:timers/promises';
 import { XMLParser } from 'fast-xml-parser';
 import { PNG } from 'pngjs';
@@ -12,6 +13,15 @@ export type NativeNode = { res?: string; text?: string; value?: string; clazz: s
   enabled: boolean; checked: boolean; visible: boolean; focused?: boolean; bounds: Bounds;
   attributes: Record<string, string>; children: NativeNode[] };
 export class ElementNotFound extends Error { code = 'no such element'; }
+const runNative = promisify(execFile);
+
+/** Keep the fixture HTTP service responsive while Simulator captures the screen. */
+export async function captureSimulatorScreenshot(udid: string, size: { width: number; height: number },
+  run = runNative): Promise<Buffer> {
+  const { stdout } = await run('xcrun', ['simctl', 'io', udid, 'screenshot', '--type=png', '--mask=ignored', '-'],
+    { encoding: 'buffer', maxBuffer: 32 * 1024 * 1024, timeout: 30_000 });
+  return normalizeNativeScreenshot(stdout, size);
+}
 /** simctl 保留奇数边长，WDA/录像可能去掉末列；只裁这一像素，不缩放内容。 */
 export function normalizeNativeScreenshot(bytes: Buffer, size: { width: number; height: number }): Buffer {
   const source = PNG.sync.read(bytes);
@@ -87,7 +97,6 @@ export function keyboardDismissTarget(nodes: NativeNode[]): NativeNode | undefin
 export class NativeDevice {
   screenSize = { width: 0, height: 0 };
   nativeVideoBackend: 'simctl' | 'xctest' = 'simctl';
-  nativeScreenshotBackend: 'simctl' | 'xctest' = 'simctl';
   private scale = { x: 1, y: 1 };
   private timeout = 30_000;
   private lastInput: string | undefined;
@@ -175,13 +184,7 @@ export class NativeDevice {
   }
   screenshot() { return this.driver.screenshot(); }
   async nativeScreenshot(): Promise<Buffer> {
-    // Keep one backend throughout the case: XCTest includes the physical screen
-    // cutout, whereas simctl --mask=ignored does not. Never switch on a mismatch.
-    if (this.nativeScreenshotBackend === 'xctest') {
-      return normalizeNativeScreenshot(await this.driver.screenshot(30_000), this.screenSize);
-    }
-    return normalizeNativeScreenshot(execFileSync('xcrun', ['simctl', 'io', this.udid, 'screenshot', '--type=png', '--mask=ignored', '-'],
-      { maxBuffer: 32 * 1024 * 1024, timeout: 30_000, stdio: ['ignore', 'pipe', 'ignore'] }), this.screenSize);
+    return captureSimulatorScreenshot(this.udid, this.screenSize);
   }
   async execute(script: string, args: Record<string, unknown> = {}) {
     return this.driver.request('POST', this.driver.path('/execute/sync'), { script, args: [args] });

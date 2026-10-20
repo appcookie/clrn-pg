@@ -1,4 +1,5 @@
-import { execFileSync } from 'node:child_process';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import { writeFileSync } from 'node:fs';
 import { setTimeout as delay } from 'node:timers/promises';
 import type { TestInfo } from '@playwright/test';
@@ -7,6 +8,7 @@ import type { NativeDevice } from './native-device';
 type Recording = { uuid: string; fps: number; startedAt: number; codec: number; payload?: string };
 type Capture = { bytes: Buffer; start: Recording; end: Omit<Recording, 'payload'>;
   triggerAt: number; stoppedAt: number };
+const runMedia = promisify(execFile);
 
 /** Always stop and preserve the same recording, including when the UI action fails. */
 export async function captureXCTestRecording(device: Pick<NativeDevice, 'execute'>,
@@ -48,7 +50,7 @@ export async function recordXCTestVideo(device: Pick<NativeDevice, 'execute'>, n
     const original = video.replace(/\.mp4$/, '.mov');
     writeFileSync(original, bytes);
     await info.attach(`${name}-xctest-original`, { path: original, contentType: 'video/quicktime' });
-    execFileSync('ffmpeg', ['-y', '-v', 'error', '-i', original,
+    await runMedia('ffmpeg', ['-y', '-v', 'error', '-i', original,
       '-map', '0:v:0', '-c:v', 'copy', '-an', '-movflags', '+faststart', video], { timeout: 60_000 });
     await info.attach(`${name}-recorder-process`, { contentType: 'application/json',
       body: JSON.stringify({ backend: 'xctest', uuid: start.uuid, requestedFps: 60,

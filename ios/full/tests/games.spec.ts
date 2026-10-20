@@ -64,13 +64,7 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
           // Use the same Apple 60 fps recorder already exercised by the native
           // panel cases; simctl's four-second startup buffer adds hundreds of
           // idle frames per game panel. All recorded frames remain validated.
-          if (panelAnimation || gameAnimation) {
-            device.nativeVideoBackend = 'xctest';
-            // simctl screenshot timed out before the first game transition on
-            // a real runner. Use the existing native XCTest screenshot API for
-            // every game frame, with the same 30-second per-command deadline.
-            device.nativeScreenshotBackend = 'xctest';
-          }
+          if (panelAnimation || gameAnimation) device.nativeVideoBackend = 'xctest';
           let room: RoomSession | null = null;
           let index = 0;
           try {

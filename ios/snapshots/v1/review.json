@@ -1215,6 +1215,396 @@
         ]
       },
       "review": "逐张审查真实 iOS 分享面板入场及退场六帧：英文分享页与二维码完整；面板起始隐藏、中间滑入、终点显示 Reminders/More 与 Copy 等系统操作；关闭反向滑出后恢复原分享页，无裁切或错误页。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-waiting-table/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "cbaa7243f6d1fdb25fe36b9cdb70c5c6ec0c955e0a77feb5906a7e6169e9276d",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-1/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "414927577257be69ffd44afe0732ce33e4779254829bd49d21a8f41023d23756",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-1/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "a6c08980aab596a3525cb18cecdb0b0a6ac48bb9d9fb69b311a24d7d4c8a94a8",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-2/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "3791047470afc9d235aef2f8a44150cc6727cd03dec9f5557c738a6ab26443ef",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-2/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "0dbf96169caf3c070ffb6666f7f061d12abbb5ae6011b6b804707fe612de1198",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-3/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "8b860912d4a5419c8be3207405da5729baebdf1b0355c8757efe3178fc942eb6",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-3/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "dfa1771a2965780a8024be65dd1ab2ef65f1a941163aac8ca00b2aaf27f60f6d",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-4/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "0a61a2e5b1bf77d74044ba78196bedde97f8b60d35557a4bb2d51bf325d05aa2",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-4/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "34b9ecc7fc0038eae8b886bfb1fc9a312a38b610e6de57f80e1b1a2c956b087d",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-5/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "f0375e0634d1f5e74410c1f6e49655c921e0ff77a5b74fc9a17a27e49216f85f",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-5/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "7c2ecc747831db6f957649a02e62639f5f138b047f248c3e1c1ac51e13e5c71f",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-6/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "6ad35c014e53235a380b9c76fc6fda9247389aaf7c55383bbc9b050af637ad4e",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-6/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "c14d49cf2ed3e27052182849611e49495418f075877be1ebc07f3b112d57dce6",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-7/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "faf2b9fab6fe552314b9a45423f92a80ab459c74a21759e5faa01808040c61dd",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-7/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "9baa37b727ed051f658dbb4f037d65ed3a43a941dcc250a072470fd7f3139936",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-8/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "dbcf22e8f8d270b304b331c6b7f6b74d2e3251f0fd54f3c0c038a18396883f35",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-8/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "81337c9cce5017b575697203ecf6144c6a6b67990390dd73fc37952d045afa76",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-9/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "327eacc0e7b5b11463568c8ba21732e4aec9ff0907d4fe1ea33ff15daf7385f3",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-seat-guides-9/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "98ac495cc28d61ded5a851ed88d0f9269a9f0e03905e4de82db2aacbd5a3bd45",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-menu-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a1db34e330333f15e30d9ade9d40ee57393644f5b5fe06101079e74a005d2d69",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-menu-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "19e56f82d97b5e91ed0015371283a32546f82d16ca3f4d412e111ac6ad832bbb",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-menu-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "f73732e9d2b9aa00bfa5472ff9a8fc84cb4e4b48518cbe7c015cc793289f2f6b",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-menu/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "83d1934ac4040c1910988fb2514e988485b6bb71b92ea0c0c4f703bb1250bc6c",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-card-rank-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "8451d2defa6be926804406a8d0e0cb4c2050e5df36729db261b8af5094b90aed",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-card-rank-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "836fcc16dd95d9f245882dab0205186c4f753fb80da311af00e0d8cbc016df49",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-card-rank-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "50b6c558d5914a86f0031c913761ea1b13f2af33e4bf298d1d1837976a3d9683",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-card-rank/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "1c5da764ff241ecf49e063fd7b4fecf410411ab72bc886a9298409874f2830ed",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-card-rank-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "50b6c558d5914a86f0031c913761ea1b13f2af33e4bf298d1d1837976a3d9683",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-card-rank-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "e687c8acbe19622ddeb6114dfe5673ca5439cc22a4c02f74f7c5f7826a96ab01",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-card-rank-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "5f67ce85e37f9ffac30d030e39ed1ed818358c025c79d82a57c8ce70f4bb60dc",
+      "source": {
+        "sourceRun": 39496605965,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39496605965",
+        "sourceWorkflowHead": "5fe06547f2173ab5c46c5f8dd99bb7bbd8821865",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-11-1"
+        ]
+      },
+      "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
