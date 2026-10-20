@@ -11,6 +11,7 @@ import { gameScreenshot } from './game-controls';
 import { cropNativeFrame, cropMotionRegions, motionParts, samePixels } from './motion-regions';
 import { decodeFrame, type FramePixels } from './native-frame';
 import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
+import { attachFrameEvidence } from './frame-evidence';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
 import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask } from './game-masks';
@@ -250,7 +251,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   });
   for (const [index, frame] of timeline.entries()) {
     if (samplingMethod === 'videoFrames' && index % 5 !== 0 && index !== timeline.length - 1) continue;
-    await testInfo.attach(`${name}-frame-${index}`, { body: frame, contentType: 'image/png' });
+    await attachFrameEvidence(testInfo, `${name}-frame-${index}`, frame);
   }
   await testInfo.attach(`${name}-start`, { body: before, contentType: 'image/png' });
   await testInfo.attach(`${name}-end`, { body: after, contentType: 'image/png' });
@@ -349,7 +350,7 @@ export async function captureTransientTransition(device: AndroidDevice, name: st
   await setTimeout(settleMs);
   const after = crop(await gameScreenshot(device));
   for (const [index, frame] of frames.entries()) {
-    await testInfo.attach(`${name}-frame-${index}`, { body: frame, contentType: 'image/png' });
+    await attachFrameEvidence(testInfo, `${name}-frame-${index}`, frame);
   }
   expect(frameColorDistance(frames[0], before), '短时提示须在采样开始后出现').toBeLessThan(10);
   expect(samePixels(before, after), '短时提示应自动消失并恢复原画面').toBe(true);
