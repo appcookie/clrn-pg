@@ -17,7 +17,32 @@
       "group": "social",
       "file": "tests/slot-animation.spec.ts",
       "title": "all three native slot reels and reward types animate from real spin responses",
-      "images": []
+      "images": [
+        "hall-slot-banner-1-first.png",
+        "hall-slot-banner-1-moved.png",
+        "slot-popup-enter-start.png",
+        "slot-popup-enter-middle.png",
+        "slot-popup-enter-end.png",
+        "slot-coin-reels-start.png",
+        "slot-coin-reels-middle.png",
+        "slot-coin-reels-end.png",
+        "slot-currency_diamond-reels-start.png",
+        "slot-currency_diamond-reels-middle.png",
+        "slot-currency_diamond-reels-end.png",
+        "slot-energy-reels-start.png",
+        "slot-energy-reels-middle.png",
+        "slot-energy-reels-end.png",
+        "slot-popup-exit-start.png",
+        "slot-popup-exit-middle.png",
+        "slot-popup-exit-end.png",
+        "slot-no-energy-enter-start.png",
+        "slot-no-energy-enter-middle.png",
+        "slot-no-energy-enter-end.png",
+        "slot-no-energy-visible.png",
+        "slot-no-energy-exit-start.png",
+        "slot-no-energy-exit-middle.png",
+        "slot-no-energy-exit-end.png"
+      ]
     },
     {
       "id": "animation-3",

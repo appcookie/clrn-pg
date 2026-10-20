@@ -695,6 +695,318 @@
         ]
       },
       "review": "逐张检查全部6张原生关键帧：进场起点抽屉未出现，中段自底部滑入且背景渐暗，终点完整显示三个游戏；退场从完整抽屉经向下移动恢复原页面。文字图标清晰，无错误页、加载遮罩或隐私输入。"
+    },
+    {
+      "path": "hall/hall/hall-slot-banner/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "382293f5f0753271f5dac325a857023020d3fd45eb884218f8b0faaeeb4923f3",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "hall/hall/hall-slot-banner/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "88f3273be7a54ac3f034fd9074c832fe44b8ee219d9f4eafb0891e11aa594405",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-panel-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "b09648d60089eba6e03809b368808cd27f69ffcbd59b1b3cd2b2c036c9217e6a",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-panel-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "43dd486672eb76491fd40ced84e08886c9260e76b0dba4e2cf28f8f6cbbe0a97",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-panel-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "0bdd74d745840a6a04d496b998e84a59e4226adcc3c91d82b71ed768d5390ea9",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-coin-reels/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "83c36e9dc7e95de927d62958b4214c68b8b53684568c4bcdc4d8d19b61d95cb5",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-coin-reels/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "692b9e164a06ec59a06a93ac681f07b6ee2b8b6668aec966e6063a82a990f1e5",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-coin-reels/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "8ec72790e7bb26b118041deb8cc3f32907cb878f838e12ee3cbb50c4d2f90e19",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-currency_diamond-reels/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "8ec72790e7bb26b118041deb8cc3f32907cb878f838e12ee3cbb50c4d2f90e19",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-currency_diamond-reels/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "29d97f04cc7550959424c341a27807a98f681dd3326b65840016755e74feac31",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-currency_diamond-reels/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a09ccc7cf12bea885185f06fe238a3a5ccdcb6b89f029e5c2d17079a80b70b28",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-energy-reels/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a09ccc7cf12bea885185f06fe238a3a5ccdcb6b89f029e5c2d17079a80b70b28",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-energy-reels/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "c508b667a0d4c5c80a44ca6b3cefac01bb9edcadbb535f14f5fdde7681f9251b",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-energy-reels/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "b175ec1e884f9d720e860096106d869a12c508422aa577be31a45479fb675081",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-panel-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "da3f5f5c869db5dab97efea227f4944e031ef5ab186de652534290e5c7535696",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-panel-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "2cbdd1470873da363495767d7791bd073eead20cb04fdcc2de0fa94328b537cf",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-panel-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a8ec65c8163aeffd0bfd9f3d9f6d4f2e1ec20820f59b665e188041e674880dde",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-no-energy-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6bdc0415eedb400e9dc9f2d6239ae4e1f45f02ddf0cbf712a9eb5c7234c60c02",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-no-energy-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "dacb92355cd26d9f7c699ec50f863f2b75ee3af21764e77cff89c84b7d4305bb",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-no-energy-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "93048a7225aa34ca4ed7d95765ec55f4c92d4249c79152aee5aae829a8c525a1",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-no-energy-visible/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "fbcd5d251d7095f878d46d1b0a822bc5cb1fd799e8ea2b3911def6afd7180382",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-no-energy-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "93048a7225aa34ca4ed7d95765ec55f4c92d4249c79152aee5aae829a8c525a1",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-no-energy-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "d2a14b4b1060a6b0f65f6c38313d2de464d62436e66572930c2ac8e72e9a1940",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
+    },
+    {
+      "path": "slot/slot/slot-no-energy-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "fb424a74194663140c79549313bcf9b1b1ae8b58d52c4d3b38b5c8c1fb0af065",
+      "source": {
+        "sourceRun": 39473020417,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39473020417",
+        "sourceWorkflowHead": "f7ac5ff27e3b15cbe07c42e631ef922b2293f16b",
+        "sourceArtifacts": [
+          "ios-social-en-animation-2-1"
+        ]
+      },
+      "review": "逐张审查24张原始PNG：大厅横幅两相位不同；老虎机弹层进场包含背景过渡、完整终态，退场中段面板向下移动；三轮转轴均有中间位移且最终分别停在金币、钻石、能量三连图案；次数不足提示完整显示标题、图标、倒计时和确认按钮，静态左边缘进退场关键帧与整框录像配合验证。未出现网络错误页或隐私输入。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
