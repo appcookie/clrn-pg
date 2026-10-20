@@ -49,7 +49,7 @@ try {
     'appium:language': 'en', 'appium:locale': 'en_US',
     'appium:autoAcceptAlerts': true, 'appium:wdaLaunchTimeout': 240_000,
     'appium:maxTypingFrequency': 8, 'appium:showXcodeLog': true, 'appium:isHeadless': true, 'appium:waitForIdleTimeout': 0,
-    'appium:newCommandTimeout': 180 });
+    'appium:newCommandTimeout': 600 });
   console.log('XCUITest 已就绪，等待 Staging 确认页');
   await driver.find('staging-confirmation-input', 120_000);
   await driver.fill('staging-confirmation-input', 'CONFIRM');

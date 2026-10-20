@@ -1,5 +1,7 @@
 // 只封装 XCUITest 所需的 W3C WebDriver 命令，所有元素通过原生可访问性标识定位。
 import { setTimeout as delay } from 'node:timers/promises';
+import { request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
 
 const elementKey = 'element-6066-11e4-a52e-4f735466cecf';
 
@@ -10,15 +12,29 @@ export class WebDriver {
   }
 
   async request(method, path, body, timeout = 180_000) {
-    const response = await fetch(`${this.server}${path}`, {
-      method, headers: { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
-      signal: AbortSignal.timeout(timeout),
+    // fetch/Undici 的独立 300 秒 headersTimeout 会先于十分钟建会话预算触发。
+    // 直接使用 Node HTTP，让一个明确的 deadline 覆盖响应头和响应体。
+    const url = new URL(`${this.server}${path}`);
+    const bytes = body === undefined ? undefined : JSON.stringify(body);
+    const { status, payload } = await new Promise((resolve, reject) => {
+      const request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, {
+        method, headers: { 'Content-Type': 'application/json', ...(bytes === undefined ? {} : { 'Content-Length': Buffer.byteLength(bytes) }) },
+        signal: AbortSignal.timeout(timeout),
+      }, response => {
+        const chunks = [];
+        response.on('data', chunk => chunks.push(chunk));
+        response.on('error', reject);
+        response.on('end', () => {
+          try { resolve({ status: response.statusCode, payload: JSON.parse(Buffer.concat(chunks).toString('utf8')) }); }
+          catch (error) { reject(error); }
+        });
+      });
+      request.on('error', reject);
+      request.end(bytes);
     });
-    const payload = await response.json();
-    if (!response.ok || payload.value?.error) {
-      const error = new Error(payload.value?.message || `WebDriver ${method} ${path}: HTTP ${response.status}`);
-      error.code = payload.value?.error || String(response.status);
+    if (status < 200 || status >= 300 || payload.value?.error) {
+      const error = new Error(payload.value?.message || `WebDriver ${method} ${path}: HTTP ${status}`);
+      error.code = payload.value?.error || String(status);
       throw error;
     }
     return payload.value;
