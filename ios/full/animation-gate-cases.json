@@ -138,7 +138,12 @@
       "group": "social",
       "file": "tests/club-skeleton-animation.spec.ts",
       "title": "every native club placeholder pulses while detail response is pending",
-      "images": []
+      "images": [
+        "club-list-skeleton-1-dark.png",
+        "club-list-skeleton-1-light.png",
+        "club-list-skeleton-2-dark.png",
+        "club-list-skeleton-2-light.png"
+      ]
     },
     {
       "id": "animation-11",

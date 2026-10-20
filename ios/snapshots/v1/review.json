@@ -1046,6 +1046,58 @@
         ]
       },
       "review": "逐张检查3张完整原生弹窗关键帧：起点是大厅，中段弹窗半透明且标题/匹配队列/取消文字渐入，终点弹窗完整且无裁边。倒计时和独立转圈使用明确遮罩，转圈另由独立门禁负责；其余标题、布局、背景和取消按钮均保留。"
+    },
+    {
+      "path": "club/club/club-list-skeleton-1/ios/iphone16-ios18.5/en/animation/dark.png",
+      "sha256": "791db962c3722a4e8f4d58b7cffe2b42c3aa3293fbf3e91d2951dbeda6d7c12d",
+      "source": {
+        "sourceRun": 39480460207,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39480460207",
+        "sourceWorkflowHead": "1c675d88df9c1eaf7521aee2340d6031267e3b3f",
+        "sourceArtifacts": [
+          "ios-social-en-animation-10-1"
+        ]
+      },
+      "review": "逐张检查两组骨架的4张原始PNG：每组完整保留圆形头像、两条文本占位及右侧方块，分别呈现明确深浅灰变化，未混入已加载内容或网络错误条。原生用例同时验证释放响应后两个指定俱乐部加载成功。"
+    },
+    {
+      "path": "club/club/club-list-skeleton-1/ios/iphone16-ios18.5/en/animation/light.png",
+      "sha256": "7ff16a2d51aeb8f9b6c41c83897c692e5cf09efaeb1b11905869321bd300c4ec",
+      "source": {
+        "sourceRun": 39480460207,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39480460207",
+        "sourceWorkflowHead": "1c675d88df9c1eaf7521aee2340d6031267e3b3f",
+        "sourceArtifacts": [
+          "ios-social-en-animation-10-1"
+        ]
+      },
+      "review": "逐张检查两组骨架的4张原始PNG：每组完整保留圆形头像、两条文本占位及右侧方块，分别呈现明确深浅灰变化，未混入已加载内容或网络错误条。原生用例同时验证释放响应后两个指定俱乐部加载成功。"
+    },
+    {
+      "path": "club/club/club-list-skeleton-2/ios/iphone16-ios18.5/en/animation/dark.png",
+      "sha256": "6a2d0fe0639fd16d4181bfe13d8ac7a521b7ee3ca1f96d2af9d91d5571af2022",
+      "source": {
+        "sourceRun": 39480460207,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39480460207",
+        "sourceWorkflowHead": "1c675d88df9c1eaf7521aee2340d6031267e3b3f",
+        "sourceArtifacts": [
+          "ios-social-en-animation-10-1"
+        ]
+      },
+      "review": "逐张检查两组骨架的4张原始PNG：每组完整保留圆形头像、两条文本占位及右侧方块，分别呈现明确深浅灰变化，未混入已加载内容或网络错误条。原生用例同时验证释放响应后两个指定俱乐部加载成功。"
+    },
+    {
+      "path": "club/club/club-list-skeleton-2/ios/iphone16-ios18.5/en/animation/light.png",
+      "sha256": "41701c44f8bd419a28be3987e7deed1b3dbec56a0901f26921e773ac8024eaa1",
+      "source": {
+        "sourceRun": 39480460207,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39480460207",
+        "sourceWorkflowHead": "1c675d88df9c1eaf7521aee2340d6031267e3b3f",
+        "sourceArtifacts": [
+          "ios-social-en-animation-10-1"
+        ]
+      },
+      "review": "逐张检查两组骨架的4张原始PNG：每组完整保留圆形头像、两条文本占位及右侧方块，分别呈现明确深浅灰变化，未混入已加载内容或网络错误条。原生用例同时验证释放响应后两个指定俱乐部加载成功。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
