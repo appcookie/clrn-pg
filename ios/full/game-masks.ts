@@ -26,6 +26,17 @@ export function seatGuideMotionBounds(bounds: ScreenshotBounds): ScreenshotBound
     height: Math.ceil(bounds.y + bounds.height + travel + 1) - y };
 }
 
+/** Background arrows have their own full-motion baselines. Exclude their phase
+ * from panel endpoints while retaining every foreground panel pixel.
+ */
+export function seatGuideBackgroundMasks(nodes: NativeNode[],
+  screen: { width: number; height: number }): ScreenshotMask[] {
+  const panels = foregroundPanels(nodes, screen);
+  return screenshotMaskNodes(nodes).filter(node => /^seat-guide-\d+$/.test(node.res || ''))
+    .flatMap(node => visibleMasks({ ...seatGuideMotionBounds(node.bounds),
+      reason: `${node.res} 独立箭头动画；前景内容仍比较` }, node, panels));
+}
+
 /**
  * 根据前景就绪标记找到实际内容容器；Fabric 可能把背景与弹层压平成兄弟节点。
  * @param nodes - 保留父子关系的可见节点。

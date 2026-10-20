@@ -13,6 +13,7 @@ import { decodeFrame, type FramePixels } from './native-frame';
 import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
+import { seatGuideBackgroundMasks } from './game-masks';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -203,12 +204,6 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
    */
   const crop = (bytes: Buffer) => cropNativeFrame(bytes, region, masks);
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
-  if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
-    body: JSON.stringify(startCompareMasks), contentType: 'application/json',
-  });
-  if (endCompareMasks.length) await testInfo.attach(`${name}-end-masks`, {
-    body: JSON.stringify(endCompareMasks), contentType: 'application/json',
-  });
   const beforeScreen = await gameScreenshot(device);
   const beforeNodes = await device.nodes();
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
@@ -225,6 +220,16 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   if (inspectFrames) await inspectFrames(originals, testInfo);
   const afterScreen = await gameScreenshot(device);
   const afterNodes = await device.nodes();
+  if (/^(texas-holdem|zhajinhua)-/.test(name)) {
+    startCompareMasks = [...startCompareMasks, ...seatGuideBackgroundMasks(beforeNodes, device.screenSize)];
+    endCompareMasks = [...endCompareMasks, ...seatGuideBackgroundMasks(afterNodes, device.screenSize)];
+  }
+  if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
+    body: JSON.stringify(startCompareMasks), contentType: 'application/json',
+  });
+  if (endCompareMasks.length) await testInfo.attach(`${name}-end-masks`, {
+    body: JSON.stringify(endCompareMasks), contentType: 'application/json',
+  });
   const selectedRegion = animationRegion(name, beforeNodes, afterNodes, device, region);
   region = selectedRegion.bounds;
   const startMasks = endpointMasksInRegion(startCompareMasks, region);
