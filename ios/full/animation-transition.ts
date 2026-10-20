@@ -96,6 +96,15 @@ export function middleCandidates(before: Buffer, after: Buffer, timeline: Buffer
 export function assertReviewedVideoMiddle(before: Buffer, after: Buffer,
   candidates: { frame: Buffer; progress: number; remaining: number }[], anchors: Buffer[]): void {
   expect(candidates.length, '必须采到起点和终点之间的真实动画帧').toBeGreaterThan(0);
+  const analysis = reviewedVideoMiddleEvidence(before, after, candidates, anchors);
+  expect(analysis.matches.some(match => match.rejected.length === 0),
+    `动画中途帧的实际画面须接近已审查轨迹；${JSON.stringify(analysis.matches.map(({ candidate, rejected }) =>
+      ({ candidate, rejected })))}`).toBe(true);
+}
+
+/** Keep the original comparison rules, but report why each real phase failed instead of Infinity. */
+export function reviewedVideoMiddleEvidence(before: Buffer, after: Buffer,
+  candidates: { frame: Buffer; progress: number; remaining: number }[], anchors: Buffer[]) {
   const total = frameColorDistance(before, after);
   const references = anchors.map(anchor => {
     const thumbnail = videoThumbnail(anchor);
@@ -103,21 +112,26 @@ export function assertReviewedVideoMiddle(before: Buffer, after: Buffer,
       end: frameColorDistance(after, anchor) / total,
       thumbnail, inverted: mirroredThumbnail(thumbnail), localMotion: localMotionDistance(before, anchor) };
   });
-  const distances = candidates.flatMap(({ frame, progress, remaining }) => {
+  const matches = candidates.flatMap(({ frame, progress, remaining }, candidate) => {
     const actual = videoThumbnail(frame);
-    return references.map(reference => {
-      if (progress < reference.start / 4 || remaining < reference.end / 4) return Infinity;
+    return references.map((reference, anchor) => {
+      const rejected: string[] = [];
+      if (progress < reference.start / 4) rejected.push('too-close-to-start');
+      if (remaining < reference.end / 4) rejected.push('too-close-to-end');
       const distance = alignedVideoDistance(actual, reference.thumbnail);
-      if (distance > 46) return Infinity;
+      if (distance > 46) rejected.push('spatial-difference');
       // A vertically shifted phase can be valid; a mirrored or misplaced drawing cannot.
       const inverted = alignedVideoDistance(actual, reference.inverted);
-      if (inverted + 6 < distance) return Infinity;
+      if (inverted + 6 < distance) rejected.push('mirrored-or-misplaced');
       // A global flash may have the same colours and mean distance as a sliding panel.
-      if (localMotionDistance(before, frame) < Math.max(2.5, reference.localMotion * 0.15)) return Infinity;
-      return distance;
+      const motion = localMotionDistance(before, frame), minimumMotion = Math.max(2.5, reference.localMotion * 0.15);
+      if (motion < minimumMotion) rejected.push('insufficient-local-motion');
+      return { candidate, anchor, progress, remaining,
+        minimumProgress: reference.start / 4, minimumRemaining: reference.end / 4,
+        distance, maximumDistance: 46, mirroredDistance: inverted, localMotion: motion, minimumMotion, rejected };
     });
   });
-  expect(Math.min(...distances), '动画中途帧的实际画面须接近已审查轨迹').toBeLessThanOrEqual(46);
+  return { matches };
 }
 
 /**
@@ -238,6 +252,17 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     // 原生截图可能落在已审查中途相位的两侧，但靠近起止帧的无关闪屏不能冒充转场。
     // 非录屏路径要求基准变化幅度；录屏路径在空间匹配时逐个检查已审查相位。
     const anchors = [reference, ...videoPhaseAnchors.filter(file => existsSync(baselinePath(file))).map(file => readFileSync(baselinePath(file)))];
+    await testInfo.attach(`${name}-reviewed-middle-comparison`, {
+      body: JSON.stringify({
+        // Pixel distance is not opacity or elapsed animation percentage.
+        metric: 'normalized-pixel-distance-not-opacity',
+        candidates: candidates.map(({ index, progress, remaining }) => ({
+          index, timestampMs: recorded.timestampsMs?.[index] ?? null, progress, remaining,
+        })),
+        ...reviewedVideoMiddleEvidence(before, after, candidates, anchors),
+      }),
+      contentType: 'application/json',
+    });
     if (samplingMethod === 'videoFrames') assertReviewedVideoMiddle(before, after, candidates, anchors);
     else {
       const reviewedDistances = candidates.flatMap(item => anchors

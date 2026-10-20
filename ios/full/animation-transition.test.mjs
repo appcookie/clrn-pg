@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { PNG } from 'pngjs';
 import { readFileSync } from 'node:fs';
-import { assertReviewedVideoMiddle, frameColorDistance, middleCandidates, reviewedLauncherStart } from './animation-transition.ts';
+import { assertReviewedVideoMiddle, frameColorDistance, middleCandidates, reviewedLauncherStart,
+  reviewedVideoMiddleEvidence } from './animation-transition.ts';
 
 function picture(top) {
   const png = new PNG({ width: 120, height: 180 });
@@ -28,6 +29,19 @@ test('纯色闪屏即使改变像素也不能冒充已审查的局部滑入', ()
   const flash = PNG.sync.write(png);
   assert.throws(() => assertReviewedVideoMiddle(before, after,
     middleCandidates(before, after, [before, flash, after], 'videoFrames'), [middle]), /动画中途帧/);
+});
+
+test('接近起止点的采样必须失败并明确原因，不能用 Infinity 或自动重试掩盖缺失相位', () => {
+  const valid = middleCandidates(before, after, [before, middle, after], 'videoFrames')[0];
+  for (const [field, reason] of [['progress', 'too-close-to-start'], ['remaining', 'too-close-to-end']]) {
+    const candidate = { ...valid, [field]: 0.01 };
+    const evidence = reviewedVideoMiddleEvidence(before, after, [candidate], [middle]);
+    assert.ok(evidence.matches[0].rejected.includes(reason));
+    assert.equal(evidence.matches[0].distance, 0);
+    assert.throws(() => assertReviewedVideoMiddle(before, after, [candidate], [middle]), new RegExp(reason));
+  }
+  const evidence = reviewedVideoMiddleEvidence(before, after, [valid], [middle]);
+  assert.deepEqual(evidence.matches[0].rejected, []);
 });
 
 test('不同分辨率动画不能通过缩放后忽略尺寸变化', () => {

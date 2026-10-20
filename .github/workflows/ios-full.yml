@@ -21,6 +21,10 @@ on:
         type: choice
         default: compare
         options: [smoke, reference, compare]
+      animation_case:
+        description: 仅 group=animations 的手动诊断可填 animation-编号；留空运行全部
+        type: string
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -37,6 +41,7 @@ jobs:
         env:
           CI_IOS_GROUP: ${{ inputs.group }}
           CI_IOS_LOCALE: ${{ inputs.locale || 'all' }}
+          CI_ANIMATION_CASE: ${{ inputs.animation_case }}
           CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
         run: |

@@ -25,10 +25,14 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
 });
 
 test('动画矩阵每片选中唯一指定的真实测试，无跳过或错误的业务组', { timeout: 180_000 }, () => {
-  const all = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
-    { cwd: process.cwd(), env: { ...process.env, IOS_GROUP: 'all', IOS_LOCALE: 'en' } }));
-  const specs = [...reportSpecs(all)];
+  const byGroup = new Map();
   for (const job of iosAccountMatrix('123', 'animations', 'en', ciAccounts).include) {
+    if (!byGroup.has(job.group)) {
+      const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
+        { cwd: process.cwd(), env: { ...process.env, IOS_GROUP: job.group, IOS_LOCALE: 'en' } }));
+      byGroup.set(job.group, [...reportSpecs(report)]);
+    }
+    const specs = byGroup.get(job.group);
     const entry = animationCases.find(item => item.id === job.animation);
     const matched = specs.filter(spec => new RegExp(job.filter).test(spec.title));
     assert.equal(matched.length, 1, entry.title);
