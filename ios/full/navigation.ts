@@ -1,5 +1,6 @@
 // 沿用共享业务 testID，通过真实 iOS 导航、滑动和输入进入每个状态。
 import { expect } from '@playwright/test';
+import { setTimeout as delay } from 'node:timers/promises';
 import type { NativeDevice, NativeNode, NativeSelector } from './native-device';
 import type { VisualScenario } from '../../visual/scenarioTypes';
 import type { ScreenshotBounds } from './screenshot';
@@ -63,6 +64,48 @@ export async function tap(device: NativeDevice, identifier: string) {
     y: bounds.y + bounds.height / 2 };
   if (!pointInside(point, viewport)) throw new Error(`点击位置仍被祖先裁切：${identifier}`);
   await device.input.tap(point);
+}
+
+/** Guest login must open from the actual account tab, not scroll a missed tab tap's hall. */
+export async function selectGuestSettingsTab(device: NativeDevice,
+  { timeout = 5000, tapTab = () => tap(device, 'settings-tab') }: { timeout?: number; tapTab?: () => Promise<void> } = {}) {
+  const visible = (node: NativeNode) => node.visible !== false && node.bounds.width > 0 && node.bounds.height > 0;
+  const screen = { x: 0, y: 0, ...device.screenSize };
+  const visibleInTree = (nodes: NativeNode[], node: NativeNode) => {
+    if (!visible(node)) return false;
+    const geometry = nativeViewport(nodes, node, screen);
+    return visible(geometry.node) && geometry.visibleBounds.width > 0 && geometry.visibleBounds.height > 0;
+  };
+  const blocked = (nodes: NativeNode[]) => nodes.some(node => (
+    /^(XCUIElementTypeAlert|XCUIElementTypeKeyboard|XCUIElementTypeSheet)$/.test(node.clazz)
+    || /^(alert-message-text|popup-content-container|confirm-pop-up-image-background|staging-dialog|html-render|country-code-list|base-create-room-screen|username-or-email-sign-in-button)$/.test(node.res || '')
+  ) && visibleInTree(nodes, node));
+  const actionable = (nodes: NativeNode[], res: string) => {
+    const target = nodes.find(node => node.res === res && visible(node) && node.enabled);
+    if (!target) return false;
+    const { node, viewport } = nativeViewport(nodes, target, screen);
+    return visible(node) && pointInside({ x: node.bounds.x + node.bounds.width / 2,
+      y: node.bounds.y + node.bounds.height / 2 }, viewport);
+  };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await tapTab();
+    const deadline = Date.now() + timeout;
+    let nodes: NativeNode[];
+    do {
+      nodes = await device.nodes();
+      if (blocked(nodes)) throw new Error('切换我的标签时出现错误弹窗、键盘或其他模态页面');
+      if (nodes.some(node => node.res === 'settings-list' && visibleInTree(nodes, node)) && actionable(nodes, 'sign-in-button')) return;
+      if (Date.now() >= deadline) break;
+      await delay(200);
+    } while (true);
+    // Retry one real tap only when the old hall is still visibly active and its
+    // tab button remains actionable. Other pages never receive blind scrolling.
+    const hall = nodes.find(node => node.res === 'hall-content-list' && visibleInTree(nodes, node));
+    if (attempt === 1 || !hall || !actionable(nodes, 'settings-tab')) {
+      throw new Error('点击我的标签后未显示可操作的游客登录页面');
+    }
+    console.info('首次点击我的标签后仍在无遮挡大厅，重新点击一次并验证目标页。');
+  }
 }
 async function closePicker(device: NativeDevice) {
   const { bounds } = await device.info({ res: 'select-game-category-text' });
@@ -166,7 +209,7 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
       await openNativeLegalDocument(device, identifier === 'user-agreement-button' ? 'user-agreement' : 'user-privacy',
         entry => tap(device, entry));
     } else if (identifier === 'hall-sign-in-button') {
-      await tap(device, 'settings-tab');
+      await selectGuestSettingsTab(device);
       await tap(device, 'sign-in-button');
       await device.wait({ res: 'username-or-email-sign-in-button' });
     } else await tap(device, identifier);
