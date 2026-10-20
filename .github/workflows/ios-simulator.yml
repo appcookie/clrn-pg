@@ -43,7 +43,7 @@ jobs:
   simulator:
     needs: check
     runs-on: macos-15
-    timeout-minutes: 35
+    timeout-minutes: 50
     env:
       APPIUM_HOME: ${{ github.workspace }}/.appium
       IOS_VISUAL_MODE: ${{ inputs.mode || 'smoke' }}

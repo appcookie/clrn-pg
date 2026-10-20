@@ -43,7 +43,7 @@ try {
     try { await driver.request('GET', '/status'); break; }
     catch (error) { if (attempt === 119) throw error; await delay(500); }
   }
-  console.log('启动 XCUITest 会话（首次安装与 WDA 编译最多等待 10 分钟）');
+  console.log('启动 XCUITest 会话（首次安装与 WDA 编译最多等待 20 分钟）');
   await driver.start({ platformName: 'iOS', 'appium:automationName': 'XCUITest', 'appium:udid': udid,
     'appium:app': app, 'appium:bundleId': applicationId, 'appium:noReset': false,
     'appium:language': 'en', 'appium:locale': 'en_US',
