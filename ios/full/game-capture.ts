@@ -6,7 +6,7 @@ import { compareScreenshot } from './device';
 import { gameNodes, gameReady, gameMarker, gameScreenshot } from './game-controls';
 import { expect } from '@playwright/test';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
-import { foregroundPanels, visibleMasks, networkStatusMask, countdownMask, screenshotMaskNodes, seatGuideMotionBounds } from './game-masks';
+import { foregroundPanels, visibleMasks, networkStatusMask, countdownMask, screenshotMaskNodes, seatGuideMotionBounds, leaderboardRoomIdentityMask } from './game-masks';
 import { captureToast } from './game-transient';
 import { captureChallengeAnimation } from './game-animation';
 import { verifyLoopAnimation } from './loop-animation';
@@ -75,9 +75,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
       continue;
     }
     if (node.res === 'leader-board-room-id') {
-      // UUID 使用比例字体且每轮不同；按居中的固定文本槽遮罩，不能随字符宽度改变边缘。
-      expect(node.text).toMatch(/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i);
-      add({ ...node.bounds, x: Math.round(node.bounds.x + node.bounds.width / 2 - device.screenSize.width * 220 / 720), width: Math.round(device.screenSize.width * 440 / 720), reason: node.res });
+      add(leaderboardRoomIdentityMask(node, device.screenSize));
       continue;
     }
     if (node.res === 'view-community-cards-countdown') {

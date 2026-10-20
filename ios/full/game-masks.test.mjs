@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { screenshotMaskNodes, seatGuideMotionBounds, visibleMasks, seatGuideBackgroundMasks } from './game-masks.ts';
+import { screenshotMaskNodes, seatGuideMotionBounds, visibleMasks, seatGuideBackgroundMasks, leaderboardRoomIdentityMask } from './game-masks.ts';
 
 test('modal-hidden seat guides remain maskable without promoting other hidden controls', () => {
   const arrow = { res: 'seat-guide-6', bounds: { x: 746, y: 303, width: 73, height: 63 } };
@@ -37,4 +37,18 @@ test('panel endpoint masks recover hidden background guides and subtract the cur
   assert.equal(masks.length, 1);
   assert.deepEqual(masks[0], { ...seatGuideMotionBounds(exposed.bounds),
     reason: 'seat-guide-6 独立箭头动画；前景内容仍比较' });
+});
+
+
+test('真实排行榜 UUID 仅排除固定的单行文本槽，不触及表头与数据', () => {
+  const screen = { width: 1178, height: 2556 };
+  const node = { res: 'leader-board-room-id', text: '166afe2c-b813-45f3-8bad-d1bce61ef6e3',
+    bounds: { x: 158, y: 2490, width: 613, height: 36 } };
+  const mask = leaderboardRoomIdentityMask(node, screen);
+  assert.deepEqual(mask, { x: 105, y: 2490, width: 720, height: 36, reason: 'leader-board-room-id' });
+  assert.deepEqual(leaderboardRoomIdentityMask({ ...node,
+    bounds: { ...node.bounds, x: 168, width: 593 } }, screen), mask);
+  assert.throws(() => leaderboardRoomIdentityMask({ ...node, text: 'Profit' }, screen), /单行 UUID/);
+  assert.throws(() => leaderboardRoomIdentityMask({ ...node,
+    bounds: { ...node.bounds, height: 2000 } }, screen), /单行 UUID/);
 });

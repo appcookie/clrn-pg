@@ -37,6 +37,19 @@ export function seatGuideBackgroundMasks(nodes: NativeNode[],
       reason: `${node.res} 独立箭头动画；前景内容仍比较` }, node, panels));
 }
 
+/** 排行榜底部展示本轮真实房间 UUID；固定文本槽避免字符宽度改变比较区域。 */
+export function leaderboardRoomIdentityMask(node: NativeNode,
+  screen: { width: number; height: number }): ScreenshotMask {
+  if (node.res !== 'leader-board-room-id'
+    || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(node.text || '')
+    || node.bounds.height <= 0 || node.bounds.height > screen.height * 60 / 2556) {
+    throw new Error('排行榜房间标识必须是当前原生树中的单行 UUID。');
+  }
+  return { ...node.bounds,
+    x: Math.round(node.bounds.x + node.bounds.width / 2 - screen.width * 220 / 720),
+    width: Math.round(screen.width * 440 / 720), reason: 'leader-board-room-id' };
+}
+
 /**
  * 根据前景就绪标记找到实际内容容器；Fabric 可能把背景与弹层压平成兄弟节点。
  * @param nodes - 保留父子关系的可见节点。

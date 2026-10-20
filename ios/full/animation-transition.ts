@@ -13,7 +13,7 @@ import { decodeFrame, type FramePixels } from './native-frame';
 import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
-import { seatGuideBackgroundMasks } from './game-masks';
+import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask } from './game-masks';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -221,8 +221,12 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const afterScreen = await gameScreenshot(device);
   const afterNodes = await device.nodes();
   if (/^(texas-holdem|zhajinhua)-/.test(name)) {
-    startCompareMasks = [...startCompareMasks, ...seatGuideBackgroundMasks(beforeNodes, device.screenSize)];
-    endCompareMasks = [...endCompareMasks, ...seatGuideBackgroundMasks(afterNodes, device.screenSize)];
+    startCompareMasks = [...startCompareMasks, ...seatGuideBackgroundMasks(beforeNodes, device.screenSize),
+      ...beforeNodes.filter(node => node.res === 'leader-board-room-id')
+        .map(node => leaderboardRoomIdentityMask(node, device.screenSize))];
+    endCompareMasks = [...endCompareMasks, ...seatGuideBackgroundMasks(afterNodes, device.screenSize),
+      ...afterNodes.filter(node => node.res === 'leader-board-room-id')
+        .map(node => leaderboardRoomIdentityMask(node, device.screenSize))];
   }
   if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
     body: JSON.stringify(startCompareMasks), contentType: 'application/json',
