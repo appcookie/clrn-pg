@@ -1,4 +1,4 @@
-import type { NativeNode } from './native-device';
+import type { NativeNode } from './game-controls';
 import type { ScreenshotBounds } from './screenshot';
 
 /** Fabric marks the slider descendants hidden although the current popup and

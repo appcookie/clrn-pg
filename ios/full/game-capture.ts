@@ -14,6 +14,7 @@ import { captureMovingKeyframes } from './loop-keyframes';
 import { stableNativeObservation } from './native-stability';
 import { playerCountdownNodes } from './game-countdown';
 import { modalBackgroundMasks } from './modal-background-masks';
+import { texasRaiseClockMasks } from './texas-raise-masks';
 
 /**
  * 使原生控件边界及绘制余量落到实际截图的整数像素。
@@ -50,7 +51,8 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   if (expectedAlertMarker) expect(nodes.some(node => node.res === expectedAlertMarker), '目标业务提示必须可见').toBe(true);
   expect(nodes.some(node => node.res === 'XCUIElementTypeAlert' || (!expectedAlertMarker && node.res === 'common-alert-message')),
     '截图前不能存在意外错误提示').toBe(false);
-  const backgroundMasks = modalBackgroundMasks(nodes, device.screenSize);
+  const backgroundMasks = [...modalBackgroundMasks(nodes, device.screenSize),
+    ...(/-signed-in-texas-game-raise$/.test(name) ? texasRaiseClockMasks(nodes, device.screenSize) : [])];
   const masks: ScreenshotMask[] = [...inputMasks, ...backgroundMasks];
   const panels = foregroundPanels(nodes, device.screenSize);
   await testInfo.attach(`${name}-native-tree`, { body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json' });

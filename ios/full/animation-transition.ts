@@ -23,6 +23,10 @@ import { alertEndpointClockMasks } from './alert-endpoint-masks';
 import { nativeLevelUpRegions, type LevelUpRegions } from './level-up-region';
 import { buyInTargetMotionBounds } from './pregame-panel-region';
 import { zhajinhuaOperationControls, zhajinhuaOperationClockMasks } from './zhajinhua-operation-region';
+import { texasActionClockMasks, texasOperationControls, texasPlayerActionMotionBounds,
+  texasShortcutMotionBounds } from './texas-action-region';
+import { texasRaiseClockMasks, texasRaiseValueMask } from './texas-raise-masks';
+import { texasEffectEndpointMasks } from './texas-showdown-region';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -258,6 +262,19 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     startCompareMasks = [...startCompareMasks, ...zhajinhuaOperationClockMasks(beforeNodes)];
     endCompareMasks = [...endCompareMasks, ...zhajinhuaOperationClockMasks(afterNodes)];
   }
+  if (/^texas-(?:operation-buttons|player-action-(?:call|raise|check|fold))$/.test(name)) {
+    startCompareMasks = [...startCompareMasks, ...texasActionClockMasks(beforeNodes)];
+    endCompareMasks = [...endCompareMasks, ...texasActionClockMasks(afterNodes)];
+  }
+  if (name === 'texas-holdem-raise-bet-enter' || name === 'texas-raise-slider') {
+    startCompareMasks = [...startCompareMasks, ...texasRaiseClockMasks(beforeNodes, device.screenSize)];
+    endCompareMasks = [...endCompareMasks, ...texasRaiseClockMasks(afterNodes, device.screenSize),
+      ...(name === 'texas-raise-slider' ? texasRaiseValueMask(afterNodes, device.screenSize) : [])];
+  }
+  if (name === 'texas-all-in-fire' || name === 'texas-showdown') {
+    startCompareMasks = [...startCompareMasks, ...texasEffectEndpointMasks(name, beforeNodes, device.screenSize)];
+    endCompareMasks = [...endCompareMasks, ...texasEffectEndpointMasks(name, afterNodes, device.screenSize)];
+  }
   if (/^(texas-holdem|zhajinhua)-/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...seatGuideBackgroundMasks(beforeNodes, device.screenSize),
       ...beforeNodes.filter(node => node.res === 'leader-board-room-id')
@@ -341,10 +358,28 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     candidates = candidates.filter(item => targetIndices.has(item.index));
     expect(candidates.length, '买入面板本身必须有真实缩放中间帧，菜单退场不能冒充').toBeGreaterThan(0);
   }
-  if (name === 'zhajinhua-operation-buttons') {
-    const controls = zhajinhuaOperationControls(afterNodes)
-      .filter(node => /^zhajinhua-operation-button-(battle|fold|call)$/.test(node.res || ''));
+  if (/^texas-player-action-(?:call|raise|check|fold)$/.test(name) || name === 'texas-operation-buttons') {
+    const target = name === 'texas-operation-buttons'
+      ? texasShortcutMotionBounds(beforeNodes, afterNodes, device.screenSize)
+      : texasPlayerActionMotionBounds(name, beforeNodes, afterNodes);
+    const targetFrames: Buffer[] = [];
+    for (const frame of originals) targetFrames.push(await cropNativeFrame(frame, target, masks));
+    const targetEvidence = await nativeTargetMotionEvidence(
+      await cropNativeFrame(beforeScreen, target, masks), await cropNativeFrame(afterScreen, target, masks), targetFrames);
+    await testInfo.attach(`${name}-target-motion`, { body: JSON.stringify({ bounds: target,
+      total: targetEvidence.total, progress: targetEvidence.progress, minimumLocalMotion: targetEvidence.minimumLocalMotion,
+      candidates: targetEvidence.localMotionCandidates }), contentType: 'application/json' });
+    expect(targetEvidence.total, '新目标独立区域必须产生明显变化').toBeGreaterThan(3);
+    const targetIndices = new Set(targetEvidence.candidates.map(item => item.index));
+    candidates = candidates.filter(item => targetIndices.has(item.index));
+    expect(candidates.length, '目标本身必须有真实中间帧，旧按钮或倒计时消失不能冒充').toBeGreaterThan(0);
+  }
+  if (name === 'zhajinhua-operation-buttons' || name === 'texas-operation-buttons') {
+    const controls = (name === 'texas-operation-buttons' ? texasOperationControls(afterNodes) : zhajinhuaOperationControls(afterNodes))
+      .filter(node => /^(?:zhajinhua|texas-holdem)-operation-button-(battle|raise|fold|call)$/.test(node.res || ''));
     const targetIndices = new Set<number>();
+    const newControlPhases = name === 'texas-operation-buttons'
+      ? new Set(candidates.map(item => item.index)) : undefined;
     for (const control of controls) {
       const targetFrames: Buffer[] = [];
       for (const frame of originals) targetFrames.push(await cropNativeFrame(frame, control.bounds, masks));
@@ -356,9 +391,10 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         minimumLocalMotion: targetEvidence.minimumLocalMotion,
         candidates: targetEvidence.localMotionCandidates }), contentType: 'application/json' });
       expect(targetEvidence.total, `${control.res} 自身必须产生明显可见变化`).toBeGreaterThan(3);
-      expect(targetEvidence.candidates.length, `${control.res} 必须有真实局部中间态，选择遮罩退场不能冒充`)
+      const controlCandidates = targetEvidence.candidates.filter(item => !newControlPhases || newControlPhases.has(item.index));
+      expect(controlCandidates.length, `${control.res} 必须有真实局部中间态，旧控件或选择遮罩退场不能冒充`)
         .toBeGreaterThan(0);
-      targetEvidence.candidates.forEach(item => targetIndices.add(item.index));
+      controlCandidates.forEach(item => targetIndices.add(item.index));
     }
     candidates = candidates.filter(item => targetIndices.has(item.index));
   }

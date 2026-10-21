@@ -1,4 +1,6 @@
 import { texasRaiseRegion } from './texas-raise-region';
+import { texasOperationRegion, texasPlayerActionRegion } from './texas-action-region';
+import { texasShowdownRegion } from './texas-showdown-region';
 import { zhajinhuaBetRegion } from './zhajinhua-bet-region';
 import { nativePregamePanelBounds } from './pregame-panel-region';
 import { nativeApplicationsPanelBounds } from './applications-region';
@@ -198,6 +200,15 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
   };
   if (name === 'zhajinhua-operation-buttons') return {
     bounds: zhajinhuaOperationRegion(before, after, device.screenSize), source: 'native-complete-operation-controls',
+  };
+  if (name === 'texas-operation-buttons') return {
+    bounds: texasOperationRegion(before, after, device.screenSize), source: 'native-complete-texas-operation-controls',
+  };
+  if (name === 'texas-showdown') return {
+    bounds: texasShowdownRegion(before, after, device.screenSize), source: 'native-complete-showdown-banner-and-cards',
+  };
+  if (/^texas-player-action-(call|raise|check|fold)$/.test(name)) return {
+    bounds: texasPlayerActionRegion(name, before, after, device.screenSize), source: 'native-acting-player-complete-action-label',
   };
   if (name === 'zhajinhua-quick-raise') return {
     bounds: zhajinhuaBetRegion(before, after, device.screenSize), source: 'native-acting-player-bet-panel-and-coin',

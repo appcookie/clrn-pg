@@ -147,13 +147,13 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
         popup,
         () => device.input.swipe({ x1: thumb.x + thumb.width / 2, y1: thumb.y + thumb.height / 2,
           x2: slider.x + slider.width / 2, y2: slider.y + slider.height * 0.4, duration: 450 }),
-        [screenBounds(device, { x: 285, y: 725, width: 160, height: 35,
-          reason: '加注滑块后面的牌局倒计时独立跳秒' })], [], 0, 'videoFrames',
-        undefined, undefined, [], ['texas-raise-slider-end-500.png', 'texas-raise-slider-end-492.png'],
-        [screenBounds(device, { x: 120, y: 250, width: 160, height: 105,
-          reason: '终点加注数字由拖动采样量化；完整标签保留在报告，数值另用原生文本断言' })]);
-      expect(texasRaiseControls(await device.nodes()).value.text,
-        '真实拖动必须改变加注数值').not.toBe(initialRaise);
+        [], [], 0, 'videoFrames',
+        undefined, undefined, [], ['texas-raise-slider-end-500.png', 'texas-raise-slider-end-492.png']);
+      const finalRaise = texasRaiseControls(await device.nodes()).value.text;
+      expect(finalRaise, '真实拖动必须产生有效加注数字').toMatch(/^\d+$/);
+      expect(Number(finalRaise), '向上拖动必须提高实际加注数值').toBeGreaterThan(Number(initialRaise));
+      expect(Number(finalRaise), '加注不能超过本轮真实夹具的1000筹码').toBeLessThanOrEqual(1000);
+      expect(Number(finalRaise) % 2, '本轮加注步长必须仍为2').toBe(0);
     }
     // 原生录屏确认取消按钮直接移除面板，没有可供回归的退场过渡帧。
     await gameTap(device, 'raise-bet-cancel-button');
@@ -209,7 +209,8 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
         await expect.poll(playerAction, { timeout: 30_000 }).toBe(false);
         playerCountdown(await gameNodes(device), actionPlayer, 'texas-holdem');
         await captureNativeTransition(device, `texas-player-action-${action}`, animationInfo,
-          // 动作标签右侧不与玩家头像倒计时重叠，可完整观察标签而无需遮罩。
+          // 此处仅传占位范围；animationRegion 根据实际玩家和动作节点
+          // 解析完整目标，不能再把动作裁成旧 Android 坐标下的窄条。
           screenBounds(device, { x: 132, y: 465, width: 63, height: 130 }),
           () => send(events([{ event: action, player_id: actionPlayer, amount: 40, stack: 920 }])),
           [], [], 0, 'videoFrames');
@@ -224,13 +225,13 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     }
     if (animationInfo) await captureNativeTransition(device, 'texas-all-in-fire', animationInfo,
       screenBounds(device, { x: 0, y: 650, width: 250, height: 225 }), () => send(allIn()),
-      [screenBounds(device, { x: 65, y: 695, width: 70, height: 90, reason: '全压特效旁的对手操作秒数独立跳秒' })], [], 1600);
+      [], [], 1600);
     else await send(allIn());
     await allInReady();
     await capture('all_in');
     if (animationInfo) await captureNativeTransition(device, 'texas-showdown', animationInfo,
       screenBounds(device, { x: 0, y: 580, width: 600, height: 600 }), () => send(showdown()),
-      [screenBounds(device, { x: 334, y: 720, width: 110, height: 47, reason: '摊牌旁的房间计时独立跳秒' })], [], 1600,
+      [], [], 1600,
       'videoFrames', undefined, async () => {
         // 房间重连提示偶尔在录屏结束后盖住牌面，等稳定牌桌再校验终点。
         await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
