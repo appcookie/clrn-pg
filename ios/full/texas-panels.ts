@@ -7,8 +7,8 @@ import { gameCardNames, replay } from './game-replay';
 import { dismissKeyboard } from './keyboard';
 import { gameTapText, restoreTexas, texasEvents, type TexasContext } from './texas-support';
 import { animateGamePanel } from './game-panel-animation';
-import { captureNativeTransition, captureTransientTransition, framePaletteDistance } from './animation-transition';
-import { captureMovingKeyframes } from './loop-keyframes';
+import { captureNativeTransition, captureTransientTransition } from './animation-transition';
+import { captureBarrageMotion } from './barrage-motion';
 import { nativeReviewTab } from './review-tab';
 import { waitReviewCloseButton, waitReviewContent } from './review-readiness';
 
@@ -67,15 +67,13 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   if (animationInfo) await captureTransientTransition(device, 'texas-system-prompt', animationInfo,
     screenBounds(device, { x: 90, y: 60, width: 540, height: 190 }),
     () => replay(proxy, 'texas', room, events([{ event: 'check_community_card', player_id: REPLAY_PLAYER_IDS[0] }])));
-  await replay(proxy, 'texas', room, { stream: 'room_message', payload: { action: 'text', content: {
+  const sendBarrage = () => replay(proxy, 'texas', room, { stream: 'room_message', payload: { action: 'text', content: {
     from_user_id: REPLAY_PLAYER_IDS[0], from_user_nickname: 'Player1', text: 'Good hand!',
   } } });
-  await gameReady(device, 'barrage_text', 'Player1: Good hand!');
-  if (animationInfo) {
-    const barrage = await gameReady(device, 'barrage_text', 'Player1: Good hand!');
-    await captureMovingKeyframes(device, 'texas-barrage', animationInfo,
-      [{ x: 0, y: barrage.bounds.y - 8, width: device.screenSize.width, height: barrage.bounds.height + 16 }],
-      18, framePaletteDistance, 1, ['texas-barrage-1-first-alternate.png']);
+  if (animationInfo) await captureBarrageMotion(device, animationInfo, sendBarrage, 'Player1: Good hand!');
+  else {
+    await sendBarrage();
+    await gameReady(device, 'barrage_text', 'Player1: Good hand!');
   }
   await gameTap(device, 'texas-holdem-chat-button');
   await gameTap(device, '-in-game-chat-message-tab');
