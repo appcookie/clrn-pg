@@ -1,0 +1,12 @@
+{
+  "sourceRun": 39614634243,
+  "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39614634243",
+  "sourceWorkflowHead": "34ba816d259032dd2b9b0ca9536819dc9f4724bf",
+  "artifactId": 12353761480,
+  "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+  "sourceAttachment": "failure-accessibility",
+  "sourceAttachmentSha256": "5949b63081eee67c009ff86a96546c342988c9e01448f9c71602dd9e46455370",
+  "file": "named-image-native-state.json",
+  "sha256": "889020b7b9be4efc074e7b72074f904960fe49cb0d444687cd7cacce0047f524",
+  "selection": "Unmodified raise-bet-popup subtree plus room countdown text and icon from failure accessibility. Diagnostic fixture only; not a baseline."
+}

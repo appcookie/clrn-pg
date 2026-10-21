@@ -111,6 +111,27 @@ test('隐藏图片兼容只接受原生thumb精确子树，错误包装、重复
   }
 });
 
+test('真实原生树暴露滑块资源名称时仍保留完整图片，只接受该图片的精确路径', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { createHash } = await import('node:crypto');
+  const { texasRaiseControls } = await import('./texas-raise-region.ts');
+  const provenance = JSON.parse(readFileSync(new URL('named-image-provenance.json', nativeFixture)));
+  const bytes = readFileSync(new URL(provenance.file, nativeFixture));
+  assert.equal(createHash('sha256').update(bytes).digest('hex'), provenance.sha256);
+  const nodes = JSON.parse(bytes), original = JSON.stringify(nodes);
+  const { thumb } = texasRaiseControls(nodes), image = thumb.children[0].children[0];
+  assert.equal(image.visible, false);
+  assert.deepEqual(texasRaiseValueMask(nodes, screen).map(({ reason, ...b }) => b),
+    [{ x: 701, y: 1015, width: 154, height: 64 }]);
+  assert.deepEqual(texasRaiseClockMasks(nodes, screen).map(({ reason, ...b }) => b),
+    [{ x: 584, y: 1434, width: 184, height: 45 }]);
+  assert.equal(JSON.stringify(nodes), original);
+  for (const res of ['img_value@3x.png', 'unrelated/img_value@3x.png', image.res.replace('img_value', 'img_other')]) {
+    image.res = res;
+    assert.throws(() => texasRaiseValueMask(nodes, screen));
+  }
+});
+
 test('原始录像金色滑块和完整数字实际向上移动，静态硬切不能充当中间帧', async () => {
   const { readFileSync } = await import('node:fs');
   const { createHash } = await import('node:crypto');

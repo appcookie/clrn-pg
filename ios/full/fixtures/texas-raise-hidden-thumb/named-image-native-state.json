@@ -1,0 +1,848 @@
+[
+  {
+    "res": "raise-bet-popup",
+    "clazz": "XCUIElementTypeOther",
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1178,
+      "height": 2556
+    },
+    "enabled": true,
+    "checked": false,
+    "visible": true,
+    "children": [
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 272,
+          "y": 663,
+          "width": 993,
+          "height": 930
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": []
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 296,
+          "y": 663,
+          "width": 16,
+          "height": 351
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": []
+      },
+      {
+        "res": "raise-bet-slider",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 497,
+          "y": 663,
+          "width": 544,
+          "height": 930
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": []
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 527,
+          "y": 681,
+          "width": 154,
+          "height": 900
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": [
+          {
+            "clazz": "XCUIElementTypeScrollView",
+            "bounds": {
+              "x": 527,
+              "y": 681,
+              "width": 154,
+              "height": 900
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": 527,
+                  "y": 681,
+                  "width": 154,
+                  "height": 858
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": [
+                  {
+                    "clazz": "XCUIElementTypeOther",
+                    "bounds": {
+                      "x": 527,
+                      "y": 696,
+                      "width": 154,
+                      "height": 843
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": [
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 539,
+                          "y": 696,
+                          "width": 22,
+                          "height": 18
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 696,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 542,
+                          "y": 780,
+                          "width": 13,
+                          "height": 9
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 780,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 539,
+                          "y": 864,
+                          "width": 22,
+                          "height": 18
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 864,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 542,
+                          "y": 948,
+                          "width": 13,
+                          "height": 9
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 948,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 539,
+                          "y": 1032,
+                          "width": 22,
+                          "height": 18
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 1032,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 542,
+                          "y": 1116,
+                          "width": 13,
+                          "height": 9
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 1116,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 539,
+                          "y": 1200,
+                          "width": 22,
+                          "height": 18
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 1200,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 542,
+                          "y": 1284,
+                          "width": 13,
+                          "height": 9
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 1284,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 539,
+                          "y": 1368,
+                          "width": 22,
+                          "height": 18
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 1368,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 542,
+                          "y": 1452,
+                          "width": 13,
+                          "height": 9
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 1452,
+                          "width": 7,
+                          "height": 84
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 539,
+                          "y": 1536,
+                          "width": 22,
+                          "height": 18
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 545,
+                          "y": 1536,
+                          "width": 7,
+                          "height": 3
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      },
+                      {
+                        "res": "1000",
+                        "clazz": "XCUIElementTypeStaticText",
+                        "bounds": {
+                          "x": 572,
+                          "y": 684,
+                          "width": 91,
+                          "height": 45
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "text": "1000",
+                        "children": [
+                          {
+                            "res": "1000",
+                            "clazz": "XCUIElementTypeStaticText",
+                            "bounds": {
+                              "x": 572,
+                              "y": 684,
+                              "width": 91,
+                              "height": 45
+                            },
+                            "enabled": true,
+                            "checked": false,
+                            "visible": false,
+                            "text": "1000",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "res": "809",
+                        "clazz": "XCUIElementTypeStaticText",
+                        "bounds": {
+                          "x": 572,
+                          "y": 852,
+                          "width": 73,
+                          "height": 45
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "text": "809",
+                        "children": [
+                          {
+                            "res": "809",
+                            "clazz": "XCUIElementTypeStaticText",
+                            "bounds": {
+                              "x": 572,
+                              "y": 852,
+                              "width": 73,
+                              "height": 45
+                            },
+                            "enabled": true,
+                            "checked": false,
+                            "visible": false,
+                            "text": "809",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "res": "617",
+                        "clazz": "XCUIElementTypeStaticText",
+                        "bounds": {
+                          "x": 572,
+                          "y": 1020,
+                          "width": 67,
+                          "height": 45
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "text": "617",
+                        "children": [
+                          {
+                            "res": "617",
+                            "clazz": "XCUIElementTypeStaticText",
+                            "bounds": {
+                              "x": 572,
+                              "y": 1020,
+                              "width": 67,
+                              "height": 45
+                            },
+                            "enabled": true,
+                            "checked": false,
+                            "visible": false,
+                            "text": "617",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "res": "424",
+                        "clazz": "XCUIElementTypeStaticText",
+                        "bounds": {
+                          "x": 572,
+                          "y": 1188,
+                          "width": 73,
+                          "height": 45
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "text": "424",
+                        "children": [
+                          {
+                            "res": "424",
+                            "clazz": "XCUIElementTypeStaticText",
+                            "bounds": {
+                              "x": 572,
+                              "y": 1188,
+                              "width": 73,
+                              "height": 45
+                            },
+                            "enabled": true,
+                            "checked": false,
+                            "visible": false,
+                            "text": "424",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "res": "232",
+                        "clazz": "XCUIElementTypeStaticText",
+                        "bounds": {
+                          "x": 572,
+                          "y": 1356,
+                          "width": 73,
+                          "height": 45
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "text": "232",
+                        "children": [
+                          {
+                            "res": "232",
+                            "clazz": "XCUIElementTypeStaticText",
+                            "bounds": {
+                              "x": 572,
+                              "y": 1356,
+                              "width": 73,
+                              "height": 45
+                            },
+                            "enabled": true,
+                            "checked": false,
+                            "visible": false,
+                            "text": "232",
+                            "children": []
+                          }
+                        ]
+                      },
+                      {
+                        "res": "40",
+                        "clazz": "XCUIElementTypeStaticText",
+                        "bounds": {
+                          "x": 572,
+                          "y": 1524,
+                          "width": 52,
+                          "height": 45
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "text": "40",
+                        "children": [
+                          {
+                            "res": "40",
+                            "clazz": "XCUIElementTypeStaticText",
+                            "bounds": {
+                              "x": 572,
+                              "y": 1524,
+                              "width": 52,
+                              "height": 45
+                            },
+                            "enabled": true,
+                            "checked": false,
+                            "visible": false,
+                            "text": "40",
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "res": "Vertical scroll bar, 1 page",
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": 593,
+                  "y": 681,
+                  "width": 79,
+                  "height": 900
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "text": "0%",
+                "children": [
+                  {
+                    "clazz": "XCUIElementTypeOther",
+                    "bounds": {
+                      "x": 659,
+                      "y": 690,
+                      "width": 13,
+                      "height": 1410
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "res": "Horizontal scroll bar, 1 page",
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": 527,
+                  "y": 1482,
+                  "width": 154,
+                  "height": 90
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "text": "0%",
+                "children": [
+                  {
+                    "clazz": "XCUIElementTypeOther",
+                    "bounds": {
+                      "x": 536,
+                      "y": 1563,
+                      "width": 1155,
+                      "height": 9
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "res": "Vertical scroll bar, 1 page",
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": 593,
+                  "y": 681,
+                  "width": 79,
+                  "height": 900
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "text": "0%",
+                "children": [
+                  {
+                    "clazz": "XCUIElementTypeOther",
+                    "bounds": {
+                      "x": 659,
+                      "y": 690,
+                      "width": 13,
+                      "height": 1410
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "res": "Horizontal scroll bar, 1 page",
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": 527,
+                  "y": 1482,
+                  "width": 154,
+                  "height": 90
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "text": "0%",
+                "children": [
+                  {
+                    "clazz": "XCUIElementTypeOther",
+                    "bounds": {
+                      "x": 536,
+                      "y": 1563,
+                      "width": 1155,
+                      "height": 9
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "res": "sliderThumb",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 752,
+          "y": 996,
+          "width": 34,
+          "height": 93
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": [
+          {
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 662,
+              "y": 996,
+              "width": 232,
+              "height": 102
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "res": "assets/src/texas_holdem_react_native/main/component/raise-bet/resource/image/img_value@3x.png",
+                "clazz": "XCUIElementTypeImage",
+                "bounds": {
+                  "x": 662,
+                  "y": 996,
+                  "width": 232,
+                  "height": 102
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": []
+              }
+            ]
+          },
+          {
+            "res": "raise-bet-display-text",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 740,
+              "y": 1017,
+              "width": 85,
+              "height": 60
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "text": "618",
+            "children": [
+              {
+                "res": "618",
+                "clazz": "XCUIElementTypeStaticText",
+                "bounds": {
+                  "x": 740,
+                  "y": 1017,
+                  "width": 85,
+                  "height": 60
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "text": "618",
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "res": "raise-bet-cancel-button",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 221,
+          "y": 1695,
+          "width": 190,
+          "height": 186
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": []
+      },
+      {
+        "res": "raise-bet-confirm-button",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 767,
+          "y": 1695,
+          "width": 190,
+          "height": 186
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": []
+      }
+    ]
+  },
+  {
+    "res": "countdown-text",
+    "clazz": "XCUIElementTypeStaticText",
+    "bounds": {
+      "x": 584,
+      "y": 1434,
+      "width": 184,
+      "height": 45
+    },
+    "enabled": true,
+    "checked": false,
+    "visible": false,
+    "text": "00:56:43",
+    "children": [
+      {
+        "res": "00:56:43",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 584,
+          "y": 1434,
+          "width": 184,
+          "height": 45
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "00:56:43",
+        "children": []
+      }
+    ]
+  },
+  {
+    "res": "assets/src/texas_holdem_react_native/main/component/room-profile/resource/image/icon_room_countdown_green@3x.png",
+    "clazz": "XCUIElementTypeImage",
+    "bounds": {
+      "x": 536,
+      "y": 1437,
+      "width": 40,
+      "height": 39
+    },
+    "enabled": true,
+    "checked": false,
+    "visible": false,
+    "children": []
+  }
+]

@@ -32,10 +32,14 @@ function thumbImage(nodes: NativeNode[], screen: { width: number; height: number
     const wrapper: NativeNode | undefined = thumb.children?.find(node => node.children?.includes(imageNode));
     const sameBounds = (a: ScreenshotBounds, b: ScreenshotBounds) => a.x === b.x && a.y === b.y
       && a.width === b.width && a.height === b.height;
+    // 39614634243 的同一图片由 AX 暴露了资源路径；匿名或精确匹配
+    // 该资源均保留全部结构、可见性和几何校验，其他具名图片仍拒绝。
+    const expectedImage = 'assets/src/texas_holdem_react_native/main/component/raise-bet/resource/image/img_value@3x.png';
     const s = screen.width / 1178;
     if (roots.length !== 1 || roots[0].enabled !== true || !sameBounds(roots[0].bounds, { x: 0, y: 0, ...screen })
       || thumb.visible !== false || value.visible !== false || thumb.enabled !== true || value.enabled !== true
-      || imageNode.enabled !== true || imageNode.res || imageNode.children?.length || !wrapper || wrapper.clazz !== 'XCUIElementTypeOther'
+      || imageNode.enabled !== true || (imageNode.res && imageNode.res !== expectedImage)
+      || imageNode.children?.length || !wrapper || wrapper.clazz !== 'XCUIElementTypeOther'
       || wrapper.visible !== false || wrapper.enabled !== true || wrapper.res
       || !sameBounds(wrapper.bounds, imageNode.bounds) || wrapper.children?.length !== 1
       || thumb.children?.length !== 2 || !thumb.children.includes(value)
