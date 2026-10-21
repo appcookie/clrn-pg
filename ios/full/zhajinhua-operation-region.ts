@@ -63,12 +63,12 @@ export function zhajinhuaChallengeCancel(nodes: NativeNode[]): NativeNode {
 /** Driver reads retain their own deadline; only an incomplete observed state
  * is polled. A ready state needs one tree, never three independent queries.
  */
-export async function readyZhajinhuaChallengeCancel(read: () => Promise<NativeNode[]>,
-  timeout = 30_000, interval = 250): Promise<NativeNode> {
+export async function readyZhajinhuaChallengeCancel<T extends NativeNode>(read: () => Promise<T[]>,
+  timeout = 30_000, interval = 250): Promise<{ cancel: NativeNode; nodes: T[]; completedAt: number }> {
   const deadline = Date.now() + timeout;
   for (;;) {
     const nodes = await read();
-    try { return zhajinhuaChallengeCancel(nodes); }
+    try { return { cancel: zhajinhuaChallengeCancel(nodes), nodes, completedAt: Date.now() }; }
     catch (error) {
       if (Date.now() >= deadline) throw error;
       await delay(interval);

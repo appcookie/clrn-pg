@@ -38,13 +38,16 @@ test('隐藏操作区、4个挑战目标与取消区域复用同一次完整原�
   const cancel = { ...node('zhajinhua-cancel-challenge-choosing', { x: 0, y: 0, width: 1178, height: 2556 }), enabled: true };
   const prepared = [...targets, cancel];
   let reads = 0;
-  assert.equal(await readyZhajinhuaChallengeCancel(async () => { reads++; return prepared; }), cancel);
+  const observation = await readyZhajinhuaChallengeCancel(async () => { reads++; return prepared; });
+  assert.equal(observation.cancel, cancel);
+  assert.equal(observation.nodes, prepared);
+  assert.ok(observation.completedAt <= Date.now());
   assert.equal(reads, 1);
   assert.throws(() => zhajinhuaChallengeCancel([...prepared, controls[0]]), /必须消失/);
   assert.throws(() => zhajinhuaChallengeCancel(prepared.slice(1)), /4个真实/);
   assert.throws(() => zhajinhuaChallengeCancel([...targets, { ...cancel, enabled: false }]), /可点击/);
   reads = 0;
-  assert.equal(await readyZhajinhuaChallengeCancel(async () => ++reads === 1 ? targets : prepared, 1000, 0), cancel);
+  assert.equal((await readyZhajinhuaChallengeCancel(async () => ++reads === 1 ? targets : prepared, 1000, 0)).cancel, cancel);
   assert.equal(reads, 2);
   await assert.rejects(readyZhajinhuaChallengeCancel(async () => { throw new Error('native driver disconnected'); }), /native driver disconnected/);
 });
@@ -72,19 +75,26 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
   const before = picture(), after = picture('end');
   const previous = process.env.IOS_VISUAL_MODE;
   process.env.IOS_VISUAL_MODE = 'smoke';
-  const run = (middle, axGrouped = false) => {
-    let observations = 0, screenshots = 0;
+  const run = async (middle, axGrouped = false, reuse = false) => {
+    let observations = 0, screenshots = 0, triggers = 0;
     const grouped = [{ ...node('zhajinhua-cancel-challenge-choosing', { x:0,y:0,...size }), enabled:false,
       children:nodes.map(item => ({ ...item, visible:false, enabled:true })) }];
-    const device = { screenSize: size, nodes: async () => observations++ ? axGrouped ? grouped : nodes : [],
+    const prepared = reuse ? { completedAt:Date.now(), nodes:[
+      {...node('zhajinhua-cancel-challenge-choosing',{x:0,y:0,...size}),enabled:true},
+      ...Array.from({length:4},(_,i)=>node('challenge_player_selector',{x:20+i*40,y:10,width:20,height:20})),
+    ] } : undefined;
+    const device = { screenSize: size, nodes: async () => observations++ || reuse ? axGrouped ? grouped : nodes : [],
       nativeScreenshot: async () => screenshots++ ? after : before };
-    return captureNativeTransition(device, 'zhajinhua-operation-buttons', { attach: async () => {} },
+    await captureNativeTransition(device, 'zhajinhua-operation-buttons', { attach: async () => {} },
       { x: 0, y: 0, ...size }, () => {}, [], [], 0, 'videoFrames', undefined, undefined,
-      [], [], [], [], [], async (_device, _name, _region, trigger) => { await trigger(); return [before, middle, after]; });
+      [], [], [], [], [], async (_device, _name, _region, trigger) => { triggers++; await trigger(); return [before, middle, after]; },
+      undefined,prepared);
+    return { observations,screenshots,triggers };
   };
   try {
     await run(picture('middle'));
     await run(picture('middle'), true);
+    assert.deepEqual(await run(picture('middle'), true, true), { observations:1,screenshots:2,triggers:1 });
     for (let index=0;index<9;index++)
       await assert.rejects(run(picture('middle', index), true), /真实局部中间态/);
     const dimmer = PNG.sync.read(before);

@@ -151,12 +151,13 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       // Battle hides it through _selectPlayer; Cancel calls _onPressMask.show().
       await beginSeenTurn();
       await gameTap(device, 'zhajinhua-operation-button-battle');
-      const cancel = await readyZhajinhuaChallengeCancel(() => gameNodes(device));
+      const prepared = await readyZhajinhuaChallengeCancel(() => device.nodes());
+      const { cancel } = prepared;
       await captureNativeTransition(device, 'zhajinhua-operation-buttons', animationInfo,
         { x: 0, y: 0, ...device.screenSize }, () => device.input.tap({
           x: Math.round(cancel.bounds.x + cancel.bounds.width / 2),
           y: Math.round(cancel.bounds.y + cancel.bounds.height / 2),
-        }), [], [], 400, 'videoFrames');
+        }), [], [], 400, 'videoFrames', undefined, undefined, [], [], [], [], [], undefined, undefined, prepared);
     } else await send(restoreTable(self, false, true));
     await beginSeenTurn();
     await gameReady(device, 'zhajinhua-operation-accurate-bet-button');

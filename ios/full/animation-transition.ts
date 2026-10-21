@@ -22,7 +22,7 @@ import { safeNativeTree } from './diagnostics';
 import { alertEndpointClockMasks } from './alert-endpoint-masks';
 import { nativeLevelUpRegions, type LevelUpRegions } from './level-up-region';
 import { buyInTargetMotionBounds } from './pregame-panel-region';
-import { zhajinhuaOperationControls, zhajinhuaOperationClockMasks } from './zhajinhua-operation-region';
+import { zhajinhuaOperationControls, zhajinhuaOperationClockMasks, zhajinhuaChallengeCancel } from './zhajinhua-operation-region';
 import { texasActionClockMasks, texasOperationControls, texasPlayerActionMotionBounds,
   texasShortcutMotionBounds } from './texas-action-region';
 import { texasRaiseClockMasks, texasRaiseValueMask } from './texas-raise-masks';
@@ -214,6 +214,7 @@ export function reviewedVideoMiddleEvidence(before: Buffer, after: Buffer,
  * @param startCompareMasks - 仅比较起点时排除的独立动态区域，使用原生屏幕坐标。
  * @param videoRecorder - 可替换的原生录屏采集器，供完整录屏路径回归测试使用。
  * @param afterRecording - 录屏停止后、端点比较前校验静态布局，避免慢速原生树查询阻塞短动画。
+ * @param preparedStart - 本次Cancel准备刚完成的原生观测；复用语义树而仍当场截取实际起点，避免重复慢查询耗尽操作回合。
  */
 export async function captureNativeTransition(device: AndroidDevice, name: string, testInfo: TestInfo,
   region: ScreenshotBounds, trigger: () => unknown, masks: ScreenshotMask[] = [],
@@ -224,15 +225,24 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   endPhaseAnchors: string[] = [], endCompareMasks: ScreenshotMask[] = [],
   startPhaseAnchors: string[] = [], startCompareMasks: ScreenshotMask[] = [],
   videoRecorder: typeof recordNativeVideoFrames = recordNativeVideoFrames,
-  afterRecording?: () => Promise<void>): Promise<void> {
+  afterRecording?: () => Promise<void>,
+  preparedStart?: { nodes: NativeNode[]; completedAt: number }): Promise<void> {
   /**
    * 截出固定的动画绘制区域。
    * @param bytes - 原生完整屏幕 PNG。
    */
   const crop = (bytes: Buffer) => cropNativeFrame(bytes, region, masks);
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
+  if (preparedStart) {
+    expect(name, '仅真实Cancel准备可复用该次原生观测').toBe('zhajinhua-operation-buttons');
+    zhajinhuaChallengeCancel(preparedStart.nodes);
+    await testInfo.attach(`${name}-prepared-start-observation`, {
+      body: JSON.stringify({ completedAt: preparedStart.completedAt, usedAt: Date.now(),
+        nodes: safeNativeTree(preparedStart.nodes) }), contentType: 'application/json',
+    });
+  }
   const beforeScreen = await gameScreenshot(device);
-  const beforeNodes = await device.nodes();
+  const beforeNodes = preparedStart?.nodes ?? await device.nodes();
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
   samplingMethod = 'videoFrames';
   // 使用原分辨率原生视频，截图通道只用于精确端点。
