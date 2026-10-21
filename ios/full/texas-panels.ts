@@ -1,7 +1,7 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { events, REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { flattenNodes, gameGone, gameNodes, gameReady, gameSemanticText, gameTap, gameTextWithin } from './game-controls';
+import { flattenNodes, gameConnected, gameGone, gameNodes, gameReady, gameSemanticText, gameTap, gameTextWithin } from './game-controls';
 import { captureGameThemes, closeGameMask, gameMenu } from './game-pregame';
 import { gameCardNames, replay } from './game-replay';
 import { dismissKeyboard } from './keyboard';
@@ -10,6 +10,7 @@ import { animateGamePanel } from './game-panel-animation';
 import { captureNativeTransition, captureTransientTransition, framePaletteDistance } from './animation-transition';
 import { captureMovingKeyframes } from './loop-keyframes';
 import { nativeReviewTab } from './review-tab';
+import { waitReviewCloseButton, waitReviewContent } from './review-readiness';
 
 /**
  * 复用 Web 的二十一个面板、聊天、带入审核和手牌展示状态。
@@ -40,37 +41,29 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await capture('leaderboard_players');
   await closeGameMask(device, 'public-leader-board-container');
   await gameTap(device, 'game-record-button');
-  await gameReady(device, 'review-board-close-button');
-  await expect.poll(async () => (await gameNodes(device))
-    .filter(node => node.res === 'PlayerBenefitView_Settlement').map(node => node.text).sort(),
-  { timeout: 30_000 }).toEqual(['-180', '180']);
+  await waitReviewCloseButton(device);
+  await waitReviewContent(device);
   const selectRecordTab = async (mode: 'settlement' | 'record') => {
     const { bounds } = nativeReviewTab(await gameNodes(device), mode);
     await device.input.tap({ x: Math.round(bounds.x + bounds.width / 2), y: Math.round(bounds.y + bounds.height / 2) });
   };
   await selectRecordTab('settlement');
-  await gameGone(device, 'TexasPlayerActionIcon_container');
   /**
    * 单局牌谱默认显示第 1 页。直接检查实际页码和总页数，保留完整输入框像素。
    * 不为静态牌谱截图额外聚焦输入框：这会引入键盘位移及与牌谱无关的光标闪烁。
    * @param state - 共用牌谱截图状态。
    */
-  const captureRecord = async (state: string) => {
-    const input = await gameReady(device, 'review-board-page-input', '1');
-    const nodes = await device.nodes();
-    expect(nodes.some(node => node.clazz === 'XCUIElementTypeKeyboard'), '牌谱截图时键盘必须收起').toBe(false);
-    expect(nodes.some(node => node.text === '/1' && node.bounds.x >= input.bounds.x + input.bounds.width
-      && node.bounds.y >= input.bounds.y
-      && node.bounds.y + node.bounds.height <= input.bounds.y + input.bounds.height),
-    '单局牌谱必须显示实际总页数 /1').toBe(true);
+  const captureRecord = async (state: string, mode: 'settlement' | 'record') => {
+    await waitReviewContent(device, mode);
     await capture(state);
   };
-  await captureRecord('record_settlement');
+  await captureRecord('record_settlement', 'settlement');
   await selectRecordTab('record');
-  await gameReady(device, 'TexasPlayerActionIcon_container');
-  await captureRecord('record_actions');
-  await gameTap(device, 'review-board-close-button');
-  await gameGone(device, 'review-board-close-button');
+  await captureRecord('record_actions', 'record');
+  await gameConnected(device);
+  const close = (await waitReviewCloseButton(device))!.bounds;
+  await device.input.tap({ x: Math.round(close.x + close.width / 2), y: Math.round(close.y + close.height / 2) });
+  await waitReviewCloseButton(device, false);
   if (animationInfo) await captureTransientTransition(device, 'texas-system-prompt', animationInfo,
     screenBounds(device, { x: 90, y: 60, width: 540, height: 190 }),
     () => replay(proxy, 'texas', room, events([{ event: 'check_community_card', player_id: REPLAY_PLAYER_IDS[0] }])));
