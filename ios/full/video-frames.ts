@@ -71,9 +71,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 0.69～0.92倍缩放；对当前原生驱动改用固定XCTest采样，四边与关闭图形门禁不变。
   // 39683755066 的双人举报入场 60fps XCTest 原片首帧后停顿 3.795s，
   // 只产生 7 帧；按同轮已通过的自动带入录制使用 30fps，运动门禁不变。
+  // 39682044700 的操作按钮合成器原片虽有 314 帧，却在弃牌按钮
+  // 300ms 入场期间完全跳帧；改用 XCTest 单次录制，逐按钮门禁仍须通过。
   const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
-    'texas-holdem-leaderboard-enter',
+    'texas-holdem-leaderboard-enter', 'zhajinhua-operation-buttons',
     'texas-holdem-personal-leaderboard-enter', 'texas-holdem-personal-leaderboard-exit',
     'texas-holdem-report-enter', 'texas-holdem-own-profile-enter'].includes(name);
   const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
