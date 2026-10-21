@@ -1,8 +1,10 @@
 import type { NativeLayoutNode } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 
-/** The ring and rotating spade share a stable square native container. Transformed
- * image bounds change during rotation and cannot define the capture rectangle.
+/** Use the stable container when XCTest exposes it. Fabric may flatten that
+ * layout-only View, so also recover its geometry from the two actual images:
+ * pinned LoadingStyle has a 60pt circle and a 30pt spade at the same center,
+ * and rotateY leaves the spade's native height unchanged.
  */
 export function gameLoadingRegions(nodes: NativeLayoutNode[], screen: { width: number; height: number }) {
   const seen = new Set<NativeLayoutNode>();
@@ -12,17 +14,32 @@ export function gameLoadingRegions(nodes: NativeLayoutNode[], screen: { width: n
   };
   nodes.forEach(visit);
   const current = [...seen];
-  const circle = current.find(n => /\/icon_loading_circle(?:@\dx)?\.png$/.test(n.res || ''));
-  const spade = current.find(n => /\/icon_loading_spade(?:@\dx)?\.png$/.test(n.res || ''));
-  if (!circle || !spade) throw new Error('必须同时看到真实加载圆环和黑桃图片');
+  const circles = current.filter(n => /\/icon_loading_circle(?:@\dx)?\.png$/.test(n.res || ''));
+  const spades = current.filter(n => /\/icon_loading_spade(?:@\dx)?\.png$/.test(n.res || ''));
+  if (circles.length !== 1 || spades.length !== 1) throw new Error('必须同时看到唯一的真实加载圆环和黑桃图片');
+  const [circle] = circles, [spade] = spades;
+  const s = spade.bounds, c = circle.bounds;
+  const diameter = s.height * 2;
+  const center = { x: Math.round(s.x + s.width / 2), y: Math.round(s.y + s.height / 2) };
+  if (s.height <= 0 || diameter ** 2 >= screen.width * screen.height / 4
+    || s.width < 0 || s.width > s.height + 2
+    || Math.abs(c.x + c.width / 2 - center.x) > 2
+    || Math.abs(c.y + c.height / 2 - center.y) > 2
+    || c.width < diameter - 3 || c.height < diameter - 3
+    || c.width > Math.ceil(diameter * Math.SQRT2) + 3
+    || c.height > Math.ceil(diameter * Math.SQRT2) + 3
+    || Math.abs(c.width - c.height) > 3) {
+    throw new Error('加载图片必须符合原生同中心圆环和半径黑桃的旋转几何');
+  }
   const contains = (parent: NativeLayoutNode, child: NativeLayoutNode): boolean => parent === child || parent.children.some(n => contains(n, child));
   const panel = current.filter(n => n.clazz === 'XCUIElementTypeOther'
-    && n.bounds.width > 0 && Math.abs(n.bounds.width - n.bounds.height) <= 1
-    && n.bounds.width * n.bounds.height < screen.width * screen.height / 4
+    && Math.abs(n.bounds.width - diameter) <= 3 && Math.abs(n.bounds.height - diameter) <= 3
+    && Math.abs(n.bounds.x + n.bounds.width / 2 - center.x) <= 2
+    && Math.abs(n.bounds.y + n.bounds.height / 2 - center.y) <= 2
     && contains(n, circle) && contains(n, spade))
     .sort((a, b) => a.bounds.width - b.bounds.width)[0];
-  if (!panel) throw new Error('缺少容纳两层加载图片的稳定原生容器');
-  const p = panel.bounds;
+  const p = panel?.bounds || { x: center.x - diameter / 2, y: center.y - diameter / 2,
+    width: diameter, height: diameter };
   // Pinned LoadingStyle uses a 60pt ring and 30pt spade. Keep its complete
   // maximum rotation envelope, with 4px raster padding for both layers.
   const ring: ScreenshotBounds = { x: p.x - 4, y: p.y - 4, width: p.width + 8, height: p.height + 8 };

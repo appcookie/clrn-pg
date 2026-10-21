@@ -38,13 +38,21 @@ export async function texasHall(context: TexasContext): Promise<void> {
       await gameTap(device, 'auto-rebuy-switch');
       await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
         { timeout: 5000 }).toBe(true);
-      const regions = gameLoadingRegions(await device.layoutNodes(), device.screenSize);
+      const loadingLayout = await device.layoutNodes();
+      await animationInfo.attach('texas-loading-native-layout', {
+        body: JSON.stringify(loadingLayout), contentType: 'application/json',
+      });
+      const regions = gameLoadingRegions(loadingLayout, device.screenSize);
       await animationInfo.attach('texas-loading-regions', { body: JSON.stringify(regions), contentType: 'application/json' });
       // Keep both images alive through the entire recording. A fixed delayed
       // release could finish before XCTest warmed up and record popup text.
       const samples = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, () => {}, 3000,
         async () => {
-          expect(gameLoadingRegions(await device.layoutNodes(), device.screenSize),
+          const endingLayout = await device.layoutNodes();
+          await animationInfo.attach('texas-loading-ending-native-layout', {
+            body: JSON.stringify(endingLayout), contentType: 'application/json',
+          });
+          expect(gameLoadingRegions(endingLayout, device.screenSize),
             '录屏停止时两层加载图标仍须在同一原生位置').toEqual(regions);
           await proxy.command('android/auto-rebuy-hold', { hold: false });
         });

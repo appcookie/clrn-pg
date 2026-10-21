@@ -16,7 +16,18 @@ test('加载范围由稳定父容器确定，不跟随旋转图片的外接矩�
       '稳定容器未出现在 XCTest 可见平铺列表中时仍从当前图片的真实祖先取几何');
     assert.deepEqual(actual.ring, { x: 495, y: 1146, width: 188, height: 188 });
     assert.deepEqual(actual.spade, { x: 540, y: 1191, width: 98, height: 98 });
-    assert.throws(() => gameLoadingRegions([circle, spade], screen), /稳定原生容器/);
+    assert.deepEqual(gameLoadingRegions([circle, spade], screen), actual,
+      'Fabric 省略纯布局父容器时从两张实际同中心图片恢复相同范围');
+    for (const bounds of [
+      { x: 439, y: 1090, width: 300, height: 300 },
+      { ...panel.bounds, x: panel.bounds.x + 10 },
+    ]) assert.deepEqual(gameLoadingRegions([{ ...panel, bounds }], screen), actual,
+      '更大或偏移的共同祖先不能扩大或移动加载截图范围');
+    for (const wrong of [
+      { ...spade, bounds: { ...spade.bounds, x: spade.bounds.x + 20 } },
+      { ...spade, bounds: { ...spade.bounds, height: 50 } },
+      { ...spade, bounds: { ...spade.bounds, width: 120 } },
+    ]) assert.throws(() => gameLoadingRegions([circle, wrong], screen), /旋转几何/);
   }
   assert.throws(() => gameLoadingRegions([], screen), /同时看到/);
 });
