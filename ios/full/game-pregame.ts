@@ -231,6 +231,9 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await gameGone(device, 'review-board-description-text');
   await animateGamePanel(device, game, 'chat', `${game}-chat-button`,
     screenBounds(device, { x: 110, y: 860, width: 140, height: 310 }), animationInfo, 'enter', 'videoFrames');
+  // 长时间原片分析后房间可能正在独立重连；39572958229 的聊天仍挂载，
+  // 但 Connecting 遮罩使全部聊天控件不可见。先等待连接恢复再验证静态面板。
+  await gameConnected(device, 2_000);
   await gameReady(device, 'in-game-chat-content-container');
   await capture('chat');
   const chatPoint = await gameMaskClosePoint(device, 'in-game-chat-content-container', 'in-game-chat-mask');
