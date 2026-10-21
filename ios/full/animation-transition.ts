@@ -17,6 +17,7 @@ import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThum
 import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask } from './game-masks';
 import { shortAnimationMinimumFrames } from './video-timeline';
 import { safeNativeTree } from './diagnostics';
+import { alertEndpointClockMasks } from './alert-endpoint-masks';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -223,6 +224,11 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   if (inspectFrames) await inspectFrames(originals, testInfo);
   const afterScreen = await gameScreenshot(device);
   const afterNodes = await device.nodes();
+  if (/^texas-alert-(?:retry|balance|auth)-enter$/.test(name)) {
+    startCompareMasks = [...startCompareMasks, ...alertEndpointClockMasks(beforeNodes)];
+  } else if (/^texas-alert-(?:retry|balance|auth)-exit$/.test(name)) {
+    endCompareMasks = [...endCompareMasks, ...alertEndpointClockMasks(afterNodes)];
+  }
   if (/^(texas-holdem|zhajinhua)-/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...seatGuideBackgroundMasks(beforeNodes, device.screenSize),
       ...beforeNodes.filter(node => node.res === 'leader-board-room-id')

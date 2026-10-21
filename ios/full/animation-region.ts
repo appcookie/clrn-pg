@@ -136,8 +136,35 @@ export function nativePersonalLeaderboardBounds(nodes: NativeNode[], screen: { w
   return { ...panel.bounds };
 }
 
+/** CommonAlert's named root is a full-screen touch layer. Its actual zooming
+ * background is the smallest native container enclosing message and buttons.
+ */
+export function nativeAlertPanelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const message = nodes.find(node => node.visible !== false && node.res === 'common-alert-message');
+  const buttons = nodes.filter(node => node.visible !== false
+    && /^common-alert-button-(?!text-)/.test(node.res || ''));
+  if (!message || !buttons.length) throw new Error('原生错误弹窗必须包含可见消息和按钮');
+  const controls = [message, ...buttons];
+  const panel = nodes.filter(node => node.visible !== false && node.clazz === 'XCUIElementTypeOther'
+    && node.bounds.x > 0 && node.bounds.y > 0 && node.bounds.width > 0 && node.bounds.height > 0
+    && node.bounds.x + node.bounds.width < screen.width && node.bounds.y + node.bounds.height < screen.height
+    && controls.every(control => {
+      const a = node.bounds, b = control.bounds;
+      return b.width > 0 && b.height > 0 && b.x >= a.x && b.y >= a.y
+        && b.x + b.width <= a.x + a.width && b.y + b.height <= a.y + a.height;
+    })).sort((a, b) => a.bounds.width * a.bounds.height - b.bounds.width * b.bounds.height)[0];
+  if (!panel) throw new Error('找不到完整原生错误弹窗背景');
+  const b = panel.bounds, x = Math.max(0, b.x - 4), y = Math.max(0, b.y - 4);
+  return { x, y, width: Math.min(screen.width, b.x + b.width + 4) - x,
+    height: Math.min(screen.height, b.y + b.height + 4) - y };
+}
+
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  if (/^texas-alert-(?:retry|balance|auth)-(?:enter|exit)$/.test(name)) return {
+    bounds: nativeAlertPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-common-alert-background',
+  };
   // The preflop caller has already required the current self player's two
   // semantic back cards and derived this complete pair geometry.
   if (name === 'texas-preflop-cards') return { bounds: fallback, source: 'native-self-player-card-pair' };

@@ -14,10 +14,9 @@ import { enableGameSetting, restoreTexas, texasEvents, type TexasContext } from 
 export async function texasPanelVariants(context: TexasContext): Promise<void> {
   const { device, proxy, room, self, capture, animationInfo } = context;
   const alertRegion = screenBounds(device, { x: 80, y: 525, width: 560, height: 265 });
-  const alertMasks = [
-    screenBounds(device, { x: 270, y: 720, width: 180, height: 28, reason: '错误弹窗下方的牌局倒计时独立跳秒' }),
-    screenBounds(device, { x: 80, y: 690, width: 55, height: 100, reason: '弹窗左侧的玩家倒计时独立跳秒' }),
-  ];
+  // Keep every popup pixel. Background clocks are excluded only from the
+  // unobstructed endpoint using their actual native bounds.
+  const alertMasks: import('./screenshot').ScreenshotMask[] = [];
   const tableBackMasks = [
     screenBounds(device, { x: 260, y: 225, width: 50, height: 55, reason: '弹窗背后的对手背牌会随牌桌回放异步显隐' }),
     screenBounds(device, { x: 16, y: 550, width: 54, height: 70, reason: '弹窗背后的对手背牌会随牌桌回放异步显隐' }),
