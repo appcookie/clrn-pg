@@ -38,13 +38,13 @@ export async function texasHall(context: TexasContext): Promise<void> {
       await gameTap(device, 'auto-rebuy-switch');
       await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
         { timeout: 5000 }).toBe(true);
-      const regions = gameLoadingRegions(await device.nodes(), device.screenSize);
+      const regions = gameLoadingRegions(await device.layoutNodes(), device.screenSize);
       await animationInfo.attach('texas-loading-regions', { body: JSON.stringify(regions), contentType: 'application/json' });
       // Keep both images alive through the entire recording. A fixed delayed
       // release could finish before XCTest warmed up and record popup text.
       const samples = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, () => {}, 3000,
         async () => {
-          expect(gameLoadingRegions(await device.nodes(), device.screenSize),
+          expect(gameLoadingRegions(await device.layoutNodes(), device.screenSize),
             '录屏停止时两层加载图标仍须在同一原生位置').toEqual(regions);
           await proxy.command('android/auto-rebuy-hold', { hold: false });
         });

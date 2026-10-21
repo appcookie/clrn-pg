@@ -11,6 +11,9 @@ test('加载范围由稳定父容器确定，不跟随旋转图片的外接矩�
     const spade = image('icon_loading_spade', { x: 574, y: 1195, width: 30, height: 90 });
     const panel = { clazz: 'XCUIElementTypeOther', bounds: { x: 499, y: 1150, width: 180, height: 180 }, children: [circle, spade] };
     const actual = gameLoadingRegions([panel, circle, spade], screen);
+    const root = { clazz: 'XCUIElementTypeOther', bounds: { x: 0, y: 0, ...screen }, children: [panel] };
+    assert.deepEqual(gameLoadingRegions([root, circle, spade], screen), actual,
+      '稳定容器未出现在 XCTest 可见平铺列表中时仍从当前图片的真实祖先取几何');
     assert.deepEqual(actual.ring, { x: 495, y: 1146, width: 188, height: 188 });
     assert.deepEqual(actual.spade, { x: 540, y: 1191, width: 98, height: 98 });
     assert.throws(() => gameLoadingRegions([circle, spade], screen), /稳定原生容器/);

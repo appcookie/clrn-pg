@@ -60,6 +60,19 @@ const xml = `<?xml version="1.0"?><AppiumAUT><XCUIElementTypeApplication name="A
 <XCUIElementTypeSecureTextField name="password-input" value="••••" enabled="true" visible="true" x="50" y="503" width="293" height="49"/>
 <XCUIElementTypeOther name="hidden" enabled="true" visible="false" x="0" y="0" width="393" height="852"/>
 </XCUIElementTypeApplication></AppiumAUT>`;
+test('限时加载布局查询省略可见性开销，返回类型不冒充可见控件证据', async () => {
+  const device = new NativeDevice({}, 'test', async () => {}, async () => {}, 'app');
+  device.execute = async (name, options) => {
+    assert.equal(name, 'mobile: source');
+    assert.deepEqual(options, { format: 'xml', excludedAttributes: 'visible,accessible' });
+    return xml;
+  };
+  const roots = await device.layoutNodes();
+  assert.equal(roots[0].children.at(-1).res, 'hidden');
+  assert.equal('visible' in roots[0].children.at(-1), false);
+  assert.equal('text' in roots[0].children[1], false);
+  assert.deepEqual(roots[0].children[0].bounds, { x: 50, y: 575, width: 293, height: 39 });
+});
 test('解析保留控件ID/禁用/密码类型/隐藏状态，几何统一转换为截图像素', () => {
   const [root] = parseNativeTree(xml, { x: 3, y: 3 });
   assert.equal(root.children[0].res, 'confirm-button');

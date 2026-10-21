@@ -12,6 +12,7 @@ export type NativeSelector = { res?: string | RegExp; text?: string | RegExp; cl
 export type NativeNode = { res?: string; text?: string; value?: string; clazz: string; secure: boolean;
   enabled: boolean; checked: boolean; visible: boolean; focused?: boolean; bounds: Bounds;
   attributes: Record<string, string>; children: NativeNode[] };
+export type NativeLayoutNode = Pick<NativeNode, 'res' | 'clazz' | 'bounds'> & { children: NativeLayoutNode[] };
 export class ElementNotFound extends Error { code = 'no such element'; }
 const runNative = promisify(execFile);
 
@@ -110,6 +111,18 @@ export class NativeDevice {
     if (![this.scale.x, this.scale.y].every(value => Number.isFinite(value) && value > 0)) throw new Error('iOS point/pixel 比例无效。');
   }
   setDefaultTimeout(timeout: number) { this.timeout = timeout; }
+  /** Geometry only, never readiness/visibility evidence. Loading requests time
+   * out after 10s; omit expensive XCTest visibility computation for the two
+   * conditionally mounted loading images and prove their pixels in the video.
+   * https://appium.github.io/appium-xcuitest-driver/latest/execute-methods/#mobile-source
+   */
+  async layoutNodes(): Promise<NativeLayoutNode[]> {
+    const source = await this.execute('mobile: source', { format: 'xml', excludedAttributes: 'visible,accessible' });
+    const layout = (node: NativeNode): NativeLayoutNode => ({
+      res: node.res, clazz: node.clazz, bounds: node.bounds, children: node.children.map(layout),
+    });
+    return parseNativeTree(source, this.scale).map(layout);
+  }
   async nodes(): Promise<NativeNode[]> {
     const roots = parseNativeTree(await this.driver.source(), this.scale);
     const flatten = (node: NativeNode): NativeNode[] => [node, ...node.children.flatMap(flatten)];

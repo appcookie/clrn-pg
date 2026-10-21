@@ -1,15 +1,22 @@
-import type { NativeNode } from './native-device';
+import type { NativeLayoutNode } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 
 /** The ring and rotating spade share a stable square native container. Transformed
  * image bounds change during rotation and cannot define the capture rectangle.
  */
-export function gameLoadingRegions(nodes: NativeNode[], screen: { width: number; height: number }) {
-  const circle = nodes.find(n => /\/icon_loading_circle(?:@\dx)?\.png$/.test(n.res || ''));
-  const spade = nodes.find(n => /\/icon_loading_spade(?:@\dx)?\.png$/.test(n.res || ''));
+export function gameLoadingRegions(nodes: NativeLayoutNode[], screen: { width: number; height: number }) {
+  const seen = new Set<NativeLayoutNode>();
+  const visit = (node: NativeLayoutNode) => {
+    if (seen.has(node)) return;
+    seen.add(node); node.children.forEach(visit);
+  };
+  nodes.forEach(visit);
+  const current = [...seen];
+  const circle = current.find(n => /\/icon_loading_circle(?:@\dx)?\.png$/.test(n.res || ''));
+  const spade = current.find(n => /\/icon_loading_spade(?:@\dx)?\.png$/.test(n.res || ''));
   if (!circle || !spade) throw new Error('必须同时看到真实加载圆环和黑桃图片');
-  const contains = (parent: NativeNode, child: NativeNode): boolean => parent === child || parent.children.some(n => contains(n, child));
-  const panel = nodes.filter(n => n.clazz === 'XCUIElementTypeOther'
+  const contains = (parent: NativeLayoutNode, child: NativeLayoutNode): boolean => parent === child || parent.children.some(n => contains(n, child));
+  const panel = current.filter(n => n.clazz === 'XCUIElementTypeOther'
     && n.bounds.width > 0 && Math.abs(n.bounds.width - n.bounds.height) <= 1
     && n.bounds.width * n.bounds.height < screen.width * screen.height / 4
     && contains(n, circle) && contains(n, spade))
