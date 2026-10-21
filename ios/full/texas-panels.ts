@@ -75,7 +75,11 @@ export async function texasPanels(context: TexasContext): Promise<void> {
     await sendBarrage();
     await gameReady(device, 'barrage_text', 'Player1: Good hand!');
   }
+  // 39581505067在入口准备期间重建了两条房间连接，点击后聊天未挂载。
+  // 先确认持续连接就绪，再单次打开并验证面板；不重试点击或改用旧控件。
+  await gameConnected(device, 2_000);
   await gameTap(device, 'texas-holdem-chat-button');
+  await gameReady(device, 'in-game-chat-content-container');
   await gameTap(device, '-in-game-chat-message-tab');
   await expect.poll(async () => (await gameNodes(device)).some(node => node.res?.startsWith('in-game-chat-phrase-')),
     { timeout: 30_000 }).toBe(true);
