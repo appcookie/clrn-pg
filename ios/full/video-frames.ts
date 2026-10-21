@@ -42,8 +42,12 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // motion requirements by collecting this entrance through the compositor.
   // 本轮 39555894478 的牌型退场原始 XCTest MOV 在帧 306→307
   // 出现 7.376667→7.375000 的 PTS 倒退；保留拒绝规则，改用合成器采集。
+  // Personal leaderboard exit in 39557022339 encoded just eight frames, with
+  // a 3.52s first gap and no intermediate panel pose. Keep the frame/target
+  // motion gates and record only this exact transition through the compositor.
   const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
     || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
+    || name === 'texas-holdem-personal-leaderboard-exit'
     || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);
   const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
