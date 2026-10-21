@@ -164,12 +164,16 @@ export class NativeDevice {
   }
   async hideKeyboard() {
     if (!(await this.nodes()).some(node => node.clazz === 'XCUIElementTypeKeyboard')) return;
-    try { await this.execute('mobile: hideKeyboard'); }
-    catch (error) {
-      const target = keyboardDismissTarget(await this.nodes());
-      if (!target) throw error;
-      await this.input.tap({ x: target.bounds.x + target.bounds.width / 2, y: target.bounds.y + target.bounds.height / 2 });
-    }
+    let dismissalFailure: unknown;
+    try {
+      await this.execute('mobile: hideKeyboard');
+      // 驱动可能返回成功却没有收起键盘；先核对真实控件树，再决定是否使用安全点击。
+      await this.wait({ clazz: 'XCUIElementTypeKeyboard' }, { state: 'gone', timeout: 1000 });
+      return;
+    } catch (error) { dismissalFailure = error; }
+    const target = keyboardDismissTarget(await this.nodes());
+    if (!target) throw dismissalFailure;
+    await this.input.tap({ x: target.bounds.x + target.bounds.width / 2, y: target.bounds.y + target.bounds.height / 2 });
     await this.wait({ clazz: 'XCUIElementTypeKeyboard' }, { state: 'gone' });
   }
   async alertText(): Promise<string | null> {
