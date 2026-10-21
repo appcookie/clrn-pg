@@ -33,12 +33,13 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Record this shared transition through the compositor; the target-motion
   // assertion still rejects a capture without a real intermediate panel.
   // Auto-rebuy entrance in 39533568946 reported 60 fps but encoded only six
-  // frames, with a 4.12 s gap after the first. Preserve the minimum frame and
-  // motion requirements by collecting this entrance through the compositor.
+  // frames, with a 4.12 s gap after the first. The compositor in 39656974916
+  // likewise jumped 6.75 s over the entire entrance. Record this short native
+  // transition through XCTest at 30 fps while keeping every motion gate.
   // 本轮 39555894478 的牌型退场原始 XCTest MOV 在帧 306→307
   // 出现 7.376667→7.375000 的 PTS 倒退；该动作改用合成器采集。
   const useCompositor = name === 'zhajinhua-leaderboard-enter'
-    || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
+    || name === 'zhajinhua-card-rank-exit'
     // 39560079179's own-profile first appeared at full size; later data filling
     // cannot prove zoom. Collect the three exact profile entrances afresh.
     || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)
@@ -64,9 +65,9 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 应用59ba已把个人榜单切到原生驱动；39625229676的合成器原片只有
   // 一个中间侧栏且没有可核验的同步关闭按钮位移。两向均固定XCTest
   // 30fps单次采集，仍需完整目标的真实中间运动，不使用数据加载冒充动画。
-  const leaderboardRecording = ['texas-holdem-leaderboard-enter',
+  const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter', 'texas-holdem-leaderboard-enter',
     'texas-holdem-personal-leaderboard-enter', 'texas-holdem-personal-leaderboard-exit'].includes(name);
-  const backend = backendOverride ?? (leaderboardRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
+  const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
     ].includes(name) ? 'xctest'
@@ -77,7 +78,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs,
       // 39616432083 的60fps原片有倒退PTS；只降低此入口的实际采集帧率，
       // 不改应用动画、原始媒体时间戳或真实中途姿态门禁。
-      leaderboardRecording ? 30 : 60));
+      thirtyFpsRecording ? 30 : 60));
   } else {
     const processStartedAt = performance.now();
     const processStartedUtc = new Date().toISOString();
