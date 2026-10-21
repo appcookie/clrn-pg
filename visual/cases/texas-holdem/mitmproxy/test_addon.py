@@ -56,6 +56,25 @@ class TexasAddonTests(unittest.TestCase):
         for method in ('GET', 'PUT', 'OPTIONS'):
             self.assertIsNone(self.request(path, method, {'black_user_id': PLAYER_IDS[0]}).response)
 
+    def test_only_created_room_self_statistics_get_is_stable(self):
+        path = f'/v1/texas_statistics/player/{SELF}/rounds/100'
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.arm_created_room(ROOM, SELF)
+        for rounds in (100, 1000):
+            current = f'/v1/texas_statistics/player/{SELF}/rounds/{rounds}'
+            self.assertEqual(self.request(current).response.json()['result']['total_hands'], rounds)
+            for method in ('PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS'):
+                self.assertIsNone(self.request(current, method).response)
+            self.assertIsNone(self.request(current, host='production.example.com').response)
+        for current in (f'/v10/profile/{SELF}', f'/v10/wallet/{SELF}/currency/coin',
+                        f'/v1/texas_statistics/player/{OTHER}/rounds/100',
+                        f'/v1/texas_statistics/player/{SELF}/rounds/10', path + '/extra'):
+            self.assertIsNone(self.request(current).response)
+        self.addon.texas.created_room_id = OTHER
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.release()
+        self.assertIsNone(self.request(path).response)
+
     def test_production_hosts_and_disabled_scenarios_always_pass_through(self):
         paths = ('/public/v13/metadata/servers', '/node/v1/status',
                  f'/v10/profile/{PLAYER_IDS[0]}')

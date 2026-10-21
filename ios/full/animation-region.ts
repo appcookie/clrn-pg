@@ -1,7 +1,9 @@
 import { texasRaiseRegion } from './texas-raise-region';
 import { zhajinhuaBetRegion } from './zhajinhua-bet-region';
 import { nativePregamePanelBounds } from './pregame-panel-region';
+import { zhajinhuaOperationRegion } from './zhajinhua-operation-region';
 import type { NativeDevice, NativeNode } from './native-device';
+import { nativeProfilePanelBounds } from './profile-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { slotNoEnergyRegions } from './slot-regions';
 import matchingMaskReference from './matching-mask-reference.json' with { type: 'json' };
@@ -184,10 +186,17 @@ export function nativeBuyInPanelBounds(nodes: NativeNode[], screen: { width: num
 
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  if (/^texas-holdem-(?:own-profile|opponent-profile-\d+)-(?:enter|exit)$/.test(name)) return {
+    bounds: nativeProfilePanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-complete-profile-card',
+  };
   const pregame = /^(?:texas-holdem|zhajinhua)-(theme|renew)-(?:enter|exit)$/.exec(name);
   if (pregame) return {
     bounds: nativePregamePanelBounds(pregame[1] as 'theme' | 'renew', name.endsWith('-exit') ? before : after,
       device.screenSize), source: 'native-complete-pregame-panel',
+  };
+  if (name === 'zhajinhua-operation-buttons') return {
+    bounds: zhajinhuaOperationRegion(before, after, device.screenSize), source: 'native-complete-operation-controls',
   };
   if (name === 'zhajinhua-quick-raise') return {
     bounds: zhajinhuaBetRegion(before, after, device.screenSize), source: 'native-acting-player-bet-panel-and-coin',

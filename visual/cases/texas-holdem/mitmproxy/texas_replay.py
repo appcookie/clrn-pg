@@ -178,6 +178,20 @@ class TexasReplay:
             if requested and all(identifier in identifiers for identifier in requested):
                 return {identifier: self.profile(identifier) for identifier in requested}
             return None
+        statistics = re.fullmatch(rf"/v1/texas_statistics/player/({UUID})/rounds/(100|1000)", path)
+        if statistics:
+            player_id, rounds = statistics.groups()
+            own_created_room = (self.created_room_id == self.room_id
+                                and player_id == self.self_id)
+            if player_id not in identifiers and not own_created_room:
+                return None
+            # Only this read-only statistics endpoint includes the current
+            # created room's self. Identity, profile, wallet and mutations keep
+            # their existing real-server behavior in the addon method guard.
+            return {"total_hands": int(rounds), "vpip": 0.25, "pfr": 0.18,
+                    "af": 2.5, "c_bet": 0.6, "fold_to_c_bet": 0.4, "fold_to_steal": 0.5,
+                    "fold_to_three_bet": 0.5, "steal": 0.3, "three_bet": 0.08,
+                    "win_rate": 0.2, "win_rate_vp": 0.3, "win_rate_wtsd": 0.5, "wtsd": 0.3}
         player_id = next((identifier for identifier in identifiers if identifier in path), None)
         if not player_id:
             return None
@@ -185,9 +199,4 @@ class TexasReplay:
             return self.profile(player_id)
         if re.fullmatch(rf"/v10/wallet/{UUID}/currency/coin", path):
             return {"balance": 12345}
-        if re.fullmatch(rf"/v1/texas_statistics/player/{UUID}/rounds/(100|1000)", path):
-            return {"total_hands": int(path.rsplit("/", 1)[-1]), "vpip": 0.25, "pfr": 0.18,
-                    "af": 2.5, "c_bet": 0.6, "fold_to_c_bet": 0.4, "fold_to_steal": 0.5,
-                    "fold_to_three_bet": 0.5, "steal": 0.3, "three_bet": 0.08,
-                    "win_rate": 0.2, "win_rate_vp": 0.3, "win_rate_wtsd": 0.5, "wtsd": 0.3}
         return None

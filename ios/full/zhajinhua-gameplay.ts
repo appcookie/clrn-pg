@@ -13,6 +13,7 @@ import { captureAssetSequence } from './asset-sequence';
 import type { ScreenshotMask } from './screenshot';
 import { zhajinhuaCardRegions, currentZhajinhuaCards, zhajinhuaSeeButton } from './zhajinhua-card-region';
 import { capturePlayerCountdown } from './game-countdown-capture';
+import { readyZhajinhuaChallengeCancel } from './zhajinhua-operation-region';
 
 /**
  * 直接使用 Web 八个牌局状态的网络事件，真实点击原生操作按钮。
@@ -145,11 +146,18 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       .find(node => node.res === `zhajinhua-player-container-${self}`), 'player_stack_text'),
     { timeout: 30_000 }).toBe(`${self} 960`);
     await capture('quick_raise');
-    if (animationInfo) await captureNativeTransition(device, 'zhajinhua-operation-buttons', animationInfo,
-      // 下方三张手牌独立重绘；只比较操作按钮及文字。
-      screenBounds(device, { x: 100, y: 865, width: 520, height: 180 }), () => send(restoreTable(self, false, true)),
-      [], [], 400, 'videoFrames');
-    else await send(restoreTable(self, false, true));
+    if (animationInfo) {
+      // Restoring an already-visible OperationButton never remounts zoomInDown.
+      // Battle hides it through _selectPlayer; Cancel calls _onPressMask.show().
+      await beginSeenTurn();
+      await gameTap(device, 'zhajinhua-operation-button-battle');
+      const cancel = await readyZhajinhuaChallengeCancel(() => gameNodes(device));
+      await captureNativeTransition(device, 'zhajinhua-operation-buttons', animationInfo,
+        { x: 0, y: 0, ...device.screenSize }, () => device.input.tap({
+          x: Math.round(cancel.bounds.x + cancel.bounds.width / 2),
+          y: Math.round(cancel.bounds.y + cancel.bounds.height / 2),
+        }), [], [], 400, 'videoFrames');
+    } else await send(restoreTable(self, false, true));
     await beginSeenTurn();
     await gameReady(device, 'zhajinhua-operation-accurate-bet-button');
     const accurateBetClock = [screenBounds(device, { x: 350, y: 725, width: 90, height: 40,

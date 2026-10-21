@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
 import { readFileSync } from 'node:fs';
 import { nativePregamePanelBounds, buyInTargetMotionBounds } from './pregame-panel-region.ts';
-import { buyInTargetEvidence, captureNativeTransition, middleCandidates } from './animation-transition.ts';
+import { nativeTargetMotionEvidence, captureNativeTransition, middleCandidates } from './animation-transition.ts';
 const node = (res, bounds) => ({ res, bounds, visible: true, clazz: 'XCUIElementTypeOther' });
 const screen = { width: 1178, height: 2556 };
 
@@ -41,7 +41,7 @@ test('真实原生录像的菜单/遮罩帧不能冒充买入中间帧（run 395
   const read = name => readFileSync(new URL(`./fixtures/buy-in-menu-only/${name}.png`, import.meta.url));
   const before = read('start'), after = read('end'), menuOnly = read('menu-dimmer-only');
   assert.equal(middleCandidates(before, after, [before, menuOnly, after], 'videoFrames').length, 1);
-  const actual = await buyInTargetEvidence(before, after, [before, menuOnly, after]);
+  const actual = await nativeTargetMotionEvidence(before, after, [before, menuOnly, after]);
   assert.equal(actual.localMotionCandidates.length, 1);
   assert.ok(actual.localMotionCandidates[0].localMotion < actual.minimumLocalMotion);
   assert.equal(actual.candidates.length, 0);

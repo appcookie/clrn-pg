@@ -1,5 +1,6 @@
 import { chatEndpointNodes } from './chat-readiness';
 import { animationRegion, endpointMasksInRegion } from './animation-region';
+import { ownProfileIdentityMask } from './profile-region';
 import { assertVisual } from './device';
 import { baselinePath } from './baseline-path.mjs';
 import { screenBounds } from './screen-geometry';
@@ -21,6 +22,7 @@ import { safeNativeTree } from './diagnostics';
 import { alertEndpointClockMasks } from './alert-endpoint-masks';
 import { nativeLevelUpRegions, type LevelUpRegions } from './level-up-region';
 import { buyInTargetMotionBounds } from './pregame-panel-region';
+import { zhajinhuaOperationControls, zhajinhuaOperationClockMasks } from './zhajinhua-operation-region';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -127,10 +129,10 @@ export async function nativeTransitionEvidence(before: Buffer, after: Buffer, ti
   return { total, progress, candidates };
 }
 
-/** Require motion of the buy-in card itself. The drawer and its dimmer may
- * disappear first; neither supplies a valid phase of the new card's zoom.
+/** Require motion of the target itself. An outgoing menu or dimmer cannot
+ * supply a valid phase of a new card or control's zoom.
  */
-export async function buyInTargetEvidence(before: Buffer, after: Buffer, timeline: Buffer[]) {
+export async function nativeTargetMotionEvidence(before: Buffer, after: Buffer, timeline: Buffer[]) {
   const evidence = await nativeTransitionEvidence(before, after, timeline);
   const minimumLocalMotion = Math.max(2.5, localMotionDistance(before, after) * 0.15);
   const localMotionCandidates = evidence.candidates.map(item => ({ index: item.index,
@@ -242,10 +244,19 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const afterNodes = /^(?:texas-holdem|zhajinhua)-chat-enter$/.test(name)
     ? await chatEndpointNodes(device) : await device.nodes();
   const afterScreen = await gameScreenshot(device);
+  if (name === 'texas-holdem-own-profile-enter') {
+    endCompareMasks = [...endCompareMasks, ...ownProfileIdentityMask(afterNodes, device.screenSize)];
+  } else if (name === 'texas-holdem-own-profile-exit') {
+    startCompareMasks = [...startCompareMasks, ...ownProfileIdentityMask(beforeNodes, device.screenSize)];
+  }
   if (/^texas-alert-(?:retry|balance|auth)-enter$/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...alertEndpointClockMasks(beforeNodes)];
   } else if (/^texas-alert-(?:retry|balance|auth)-exit$/.test(name)) {
     endCompareMasks = [...endCompareMasks, ...alertEndpointClockMasks(afterNodes)];
+  }
+  if (name === 'zhajinhua-operation-buttons') {
+    startCompareMasks = [...startCompareMasks, ...zhajinhuaOperationClockMasks(beforeNodes)];
+    endCompareMasks = [...endCompareMasks, ...zhajinhuaOperationClockMasks(afterNodes)];
   }
   if (/^(texas-holdem|zhajinhua)-/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...seatGuideBackgroundMasks(beforeNodes, device.screenSize),
@@ -310,7 +321,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     for (const frame of originals) targetFrames.push(await cropNativeFrame(frame, target, masks));
     const targetBefore = await cropNativeFrame(beforeScreen, target, masks);
     const targetAfter = await cropNativeFrame(afterScreen, target, masks);
-    const targetEvidence = await buyInTargetEvidence(targetBefore, targetAfter, targetFrames);
+    const targetEvidence = await nativeTargetMotionEvidence(targetBefore, targetAfter, targetFrames);
     await testInfo.attach(`${name}-target-motion`, { body: JSON.stringify({ bounds: target,
       total: targetEvidence.total, progress: targetEvidence.progress,
       minimumLocalMotion: targetEvidence.minimumLocalMotion,
@@ -319,6 +330,27 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     const targetIndices = new Set(targetEvidence.candidates.map(item => item.index));
     candidates = candidates.filter(item => targetIndices.has(item.index));
     expect(candidates.length, '买入面板本身必须有真实缩放中间帧，菜单退场不能冒充').toBeGreaterThan(0);
+  }
+  if (name === 'zhajinhua-operation-buttons') {
+    const controls = zhajinhuaOperationControls(afterNodes)
+      .filter(node => /^zhajinhua-operation-button-(battle|fold|call)$/.test(node.res || ''));
+    const targetIndices = new Set<number>();
+    for (const control of controls) {
+      const targetFrames: Buffer[] = [];
+      for (const frame of originals) targetFrames.push(await cropNativeFrame(frame, control.bounds, masks));
+      const targetEvidence = await nativeTargetMotionEvidence(
+        await cropNativeFrame(beforeScreen, control.bounds, masks),
+        await cropNativeFrame(afterScreen, control.bounds, masks), targetFrames);
+      await testInfo.attach(`${name}-${control.res}-target-motion`, { body: JSON.stringify({ bounds: control.bounds,
+        total: targetEvidence.total, progress: targetEvidence.progress,
+        minimumLocalMotion: targetEvidence.minimumLocalMotion,
+        candidates: targetEvidence.localMotionCandidates }), contentType: 'application/json' });
+      expect(targetEvidence.total, `${control.res} 自身必须产生明显可见变化`).toBeGreaterThan(3);
+      expect(targetEvidence.candidates.length, `${control.res} 必须有真实局部中间态，选择遮罩退场不能冒充`)
+        .toBeGreaterThan(0);
+      targetEvidence.candidates.forEach(item => targetIndices.add(item.index));
+    }
+    candidates = candidates.filter(item => targetIndices.has(item.index));
   }
   console.log(`IOS > 录屏 ${name}：完成轨迹分析，${candidates.length} 张中间帧`);
   expect(total, '入口点击必须产生足够大的可见变化').toBeGreaterThan(3);

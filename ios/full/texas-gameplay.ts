@@ -1,13 +1,12 @@
 import { texasRaiseControls, texasRaiseRegion } from './texas-raise-region';
 import { screenPoint } from './screen-geometry';
 import { screenBounds } from './screen-geometry';
-import { readFileSync } from 'node:fs';
-import { baselinePath } from './baseline-path.mjs';
 import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { Mitmproxy } from '../../e2e/helpers/mitmproxy-client';
+import { initialCoinBalance } from '../../scripts/prepare-test-account.mjs';
 import { events, REPLAY_PLAYER_IDS, restoreTable, type Street } from '../../visual/cases/texas-holdem/replayData';
-import { flattenNodes, gameConnected, gameReady, gameGone, gameTap, gameNodes, gameScreenshot,
+import { flattenNodes, gameConnected, gameReady, gameGone, gameTap, gameNodes,
   gameSemanticText } from './game-controls';
 import { replay, gameCardNames } from './game-replay';
 import { closeAnimatedGameMask, closeGameMask } from './game-pregame';
@@ -17,8 +16,6 @@ import { captureNativeTransition, captureTransientTransition } from './animation
 import { animateGamePanel } from './game-panel-animation';
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureAssetSequence } from './asset-sequence';
-import { motionParts, samePixels } from './motion-regions';
-import { maskScreenshot } from './screenshot';
 import { nativeOwnCardRegion, nativeCommunityCardRegion } from './texas-card-region';
 import { playerCountdown } from './game-countdown';
 import { capturePlayerCountdown } from './game-countdown-capture';
@@ -282,10 +279,6 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     }
   }
   let opponentProfileCount = 0;
-  const profileNetworkMask = [screenBounds(device, { x: 635, y: 145, width: 85, height: 65,
-    reason: '玩家资料后面的实时网络延迟独立变化' })];
-  const ownProfileMasks = [...profileNetworkMask,
-    screenBounds(device, { x: 226, y: 338, width: 115, height: 30, reason: '本人资料 ID 随测试账号池轮转' })];
   /**
    * 打开玩家资料，等待统计数据实际完成加载。
    * @param player - 共享夹具玩家或本人 ID。
@@ -295,27 +288,30 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     expect(node).toBeDefined();
     const name = player === self ? 'own-profile' : `opponent-profile-${++opponentProfileCount}`;
     const region = screenBounds(device, { x: 180, y: 90, width: 520, height: 500 });
-    const masks = player === self ? ownProfileMasks : profileNetworkMask;
     await animateGamePanel(device, 'texas-holdem', name,
-      node!.res!, region, animationInfo, 'enter', 'videoFrames', masks,
+      node!.res!, region, animationInfo, 'enter', 'videoFrames', [],
       async () => {
-        await gameReady(device, 'PlayerStatisticComponent_Item_Value_0');
-        if (!animationInfo || process.env.IOS_VISUAL_MODE !== 'compare') return;
-        const expected = readFileSync(baselinePath(`texas-holdem-${name}-enter-end.png`));
-        // 统计值节点可能先于下方加载圈出现；等整个已审查面板真正绘制完成。
+        // During XCTest recording, a full accessibility snapshot missed these
+        // already painted values in run 39527421409. Query the actual unique
+        // label directly, retaining displayed/rect/label validation, and wait
+        // for this fixture's real 100-hand value before capturing the endpoint.
         await expect.poll(async () => {
-          const actual = motionParts(maskScreenshot(await gameScreenshot(device), masks), [region]).regions[0];
-          return samePixels(actual, expected);
-        }, { timeout: 45_000, intervals: [300] }).toBe(true);
+          const values = await Promise.all(['PlayerStatisticComponent_Item_Value_0', 'player-profile-balance']
+            .map(res => device.transientMarker(res)));
+          return values.map(value => value?.text);
+        }, { timeout: 45_000, intervals: [250] }).toEqual(['100', player === self ? initialCoinBalance : '12345']);
+        // captureNativeTransition records a stable tail, then independently
+        // compares the complete native endpoint (including every statistic).
+        // Do not poll a baseline-sized legacy crop during the animation.
       });
     await gameReady(device, 'player-profile-popup-close');
-    await gameReady(device, 'PlayerStatisticComponent_Item_Value_0');
+    await gameReady(device, 'PlayerStatisticComponent_Item_Value_0', '100');
   };
   await profile(self);
   await capture('own_profile');
   await animateGamePanel(device, 'texas-holdem', 'own-profile', 'player-profile-popup-close',
     screenBounds(device, { x: 180, y: 90, width: 520, height: 500 }), animationInfo,
-    'exit', 'videoFrames', ownProfileMasks,
+    'exit', 'videoFrames', [],
     async () => { await gameGone(device, 'player-profile-popup-close'); });
   await gameGone(device, 'player-profile-popup-close');
   await profile(REPLAY_PLAYER_IDS[0]);
@@ -339,7 +335,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
   await capture('block');
   await animateGamePanel(device, 'texas-holdem', 'opponent-profile-2', 'player-profile-popup-close',
     screenBounds(device, { x: 180, y: 90, width: 520, height: 500 }), animationInfo,
-    'exit', 'videoFrames', profileNetworkMask,
+    'exit', 'videoFrames', [],
     async () => { await gameGone(device, 'player-profile-popup-close'); });
   expect((await proxy.command<{ replayedMessages: number }>('status')).replayedMessages).toBeGreaterThan(0);
 }
