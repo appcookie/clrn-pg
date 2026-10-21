@@ -3671,6 +3671,566 @@
         "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
       },
       "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-leaderboard-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "7cb298d7c859c7a474c8dc36cdfb8faa404d453d205008e44eee53b9dcf6c405",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-leaderboard-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "2d17d94abca2384ccb41f98e33778d25e15d7b4a7b1e7c6a7e48e41888669bfc",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-leaderboard-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "165d47c25ddc4efa50e613df304fcf666aae3ea1de645a3afd6723d85843ecf1",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-leaderboard/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "39235d3b92f327f55c5928752af269f61ce905626c00e7747bb33b5c1b5a337d",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-leaderboard-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "165d47c25ddc4efa50e613df304fcf666aae3ea1de645a3afd6723d85843ecf1",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-leaderboard-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "df0ff29f0def245a513b2200da599885d612f0c9a3bfea70b822dc2d4ea77143",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-leaderboard-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "e4b162cc486fc98e8481fee008959859468d657c9bf1de598ae5692389786595",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-records-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "2bab9f4680496fde2df339f883b841bb8b0d705337173dfa835504d1c9b595e9",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-records-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "b476bb9a161ee1921846123dba9cbbd53754bfa30b9792d725f44f19c34b11ee",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-records-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "f1a20444557ece5d782e35d4af5a0c5f1738ca21f66b214acaf1c930e3ad765d",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-game-record/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "458262bf97f0f4aa3135062c75fbe7c5b69abff086a4e1464adca3e48702e279",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-records-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "f1a20444557ece5d782e35d4af5a0c5f1738ca21f66b214acaf1c930e3ad765d",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-records-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "64d456a405769fd1af3e10e40508c6e6a4a0fc03b44f1fa8f2d08ddce12c30ee",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-records-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "5e2fb0e4d5d7d3461e1c0bf172d604a756b3a415fa87866c00d1b70f79e29cc8",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-chat-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "3ae5d2ef8e99a7c56daae51125fc7659a35f0f0452f7bf498e935f3e1a1c80b8",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-chat-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "585ec825f41b156b5b866ebebd008d1282989d44cd2345152db53107d041005a",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-chat-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a17cc9d4c914553f8a90a6f9df5bdb0decf23570de743f34408687ab57972c98",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-chat/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "65c5d6c2689119b8b7986d4d598fe1f60d889bedaff5ec361604b04a080bcea1",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-chat-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a17cc9d4c914553f8a90a6f9df5bdb0decf23570de743f34408687ab57972c98",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-chat-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "4e65664078c0caca24fd88a6da6d055baac0973e2a5fc90c267d0a87035cc9e2",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-chat-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "3cbb7574be3a5f87a4d60309ebf88deb149612bf3b1617ce6a587636bf588030",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-applications-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "0e553f8d544a37a63e043bf253284e9321a080450e87c776ed9aef7a1eaadb30",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-applications-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "fd431ed308abe6ed249e1ee06c4855c8e4a2108d25211fdc479c603c0c6f4265",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-applications-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "bfffce32144da73c1ec6aa7f9c6024f3dfbfd6f21b6f99bc6f5aa2c00637396e",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-buy-in-applications/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "2deeec3afa4ffd122627838459e066f12317aeee8e3971c04a1978dcaf1fef74",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-applications-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "bfffce32144da73c1ec6aa7f9c6024f3dfbfd6f21b6f99bc6f5aa2c00637396e",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-applications-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8d24dfd57d937b18b23e04b4adcd217582ecedacaba6dc4022677f931a90f03c",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-applications-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "d61eca281eb481cdd4342142713ba1970bee4572e4c386bef10c9babfc49cbf7",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-theme-four-color/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "b6a62eb1481aec760fdc5bea73ee721c59b380d7a744ffcb04c7e1de8535149f",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-theme-four-color-two/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "025ed382a6b3ede88d9de46be2e74cc98d364ed78e650896262459c9a1c1e836",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-theme-realistic/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "830107a4fcd01f03734166123b2450adc3618847b89d33f15f7a6e0da2a5d40d",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-table-blue/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "40d2d539799b585f0c1ccb8d798d6d1457e58c6ab97df89148c76c28dcd32f80",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-table-purple/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "da692566b890f0b74112e895fbdcffd5fa700be754769be86e20ae14a3f3102f",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-table-black/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "19fb77a5802b4cd622ada2b3c867e8f83e5ffe1acc1d84b9100a64b1673ff4b0",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-settings-enabled/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "7c280be9f0de373aa3a8fe28b979da0c53b809df71b3a6824d8bccb9d0f4c54f",
+      "source": {
+        "sourceRun": 39566237784,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566237784",
+        "sourceWorkflowHead": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-22-1"
+        ],
+        "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+        "releaseTag": "ios-staging-16-2-114d3ae16e85",
+        "packageSha256": "dc31e213d3902dd57686fde8b1ca96ea8bec817adb102252650938c94937e15f"
+      },
+      "review": "Root reviewed all 35 original PNGs in six contact sheets and eight native-video sequences with start, selected middle, adjacent frames and end. Real leaderboard horizontal slide, review sidebar horizontal slide, chat vertical motion and buy-in-applications scale change are visible; all four applications borders and review controls remain complete. Static theme/settings pages are complete. Eight MP4 and six original MOV files were verified by full ffprobe frame decoding with SHA records. Sources remain workflow 0fd6326 and App 114d; no failed capture or synthetic frame approved. Later comparison on the latest App is still required."
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
