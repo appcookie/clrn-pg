@@ -1,7 +1,7 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { gameGone, gameNodes, gameReady, gameScreenshot, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
+import { gameConnected, gameGone, gameNodes, gameReady, gameScreenshot, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
 import { closeGameMask } from './game-pregame';
 import { dismissKeyboard } from './keyboard';
 import { focusedCaretMask } from './screenshot';
@@ -39,14 +39,24 @@ export async function texasHall(context: TexasContext): Promise<void> {
     await proxy.command('android/auto-rebuy-hold', { hold: true });
     let switchTap: Promise<void> | undefined;
     try {
+      // Full and targeted WDA tree queries both stalled while simctl recorded
+      // (39670806561, 39680532040). Establish one real stable target before
+      // recording; the popup stays mounted until the switch is tapped once.
+      await gameConnected(device, 1_000);
+      const firstSwitch = await gameReady(device, 'auto-rebuy-switch');
+      const currentSwitch = await gameReady(device, 'auto-rebuy-switch');
+      expect(currentSwitch.bounds).toEqual(firstSwitch.bounds);
+      expect(currentSwitch.enabled).toBe(true);
+      expect(currentSwitch.checked).toBe(false);
+      const switchPoint = { x: Math.round(currentSwitch.bounds.x + currentSwitch.bounds.width / 2),
+        y: Math.round(currentSwitch.bounds.y + currentSwitch.bounds.height / 2) };
       const beforeLoading = await gameScreenshot(device);
       let regions!: ReturnType<typeof gameLoadingRegions>, loadingLayout!: NativeLayoutNode[], loaded!: Buffer;
       // 先预热录屏，再触发一次真实开关动作，并在代理45秒保留窗口内采集。
       const recorded = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, async () => {
-        // Full-tree target lookup exceeded the request observation budget in
-        // 39670806561. Use the same fresh two-sample native target lookup as
-        // other recorded actions, then observe the one in-flight real request.
-        switchTap = gameTapCurrent(device, 'auto-rebuy-switch');
+        // Use that verified current target for one native tap without a WDA
+        // snapshot during recording; still require the actual proxy request.
+        switchTap = device.input.tap(switchPoint);
         void switchTap.catch(() => {});
         // The native tap can also return before the game sends its request.
         // Wait for that one real request; the proxy hold expires at 45s.
