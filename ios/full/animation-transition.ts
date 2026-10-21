@@ -218,7 +218,7 @@ export function reviewedVideoMiddleEvidence(before: Buffer, after: Buffer,
  * @param settleMs - 触发后仍在滚动的长动画，保持录制并等待完成。
  * @param samplingMethod - 启动页、延迟弹窗或短于截屏间隔的转场使用对应采样命令。
  * @param inspectFrames - 对同一组原生帧中的独立子动画追加视觉断言。
- * @param afterReady - 等待异步面板语义就绪；牌谱入场在录屏返回后查询，其他动作继续录制稳定尾段。
+ * @param afterReady - 等待异步面板语义就绪；牌谱和德州资料入场在录屏返回后查询，其他动作继续录制稳定尾段。
  * @param videoPhaseAnchors - 独立绘制层可在不同顺序呈现的额外已审查录屏相位。
  * @param endPhaseAnchors - 手势落点离散化造成的已审查终点画面。
  * @param endCompareMasks - 仅比较终点时排除的独立动态区域，使用原生屏幕坐标；原始终点仍保留。
@@ -259,15 +259,16 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const beforeNodes = preparedStart?.nodes ?? await device.nodes();
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
   samplingMethod = 'videoFrames';
-  const reviewEntrance = /^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name);
+  const deferredReady = /^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)
+    || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name);
   // 使用原分辨率原生视频，截图通道只用于精确端点。
   const recorded = await videoRecorder(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
     await trigger();
-    // A delay measured from the tap cannot establish when the JS-driven review
-    // sidebar mounted. Keep its entire recording window free of readiness tree
-    // queries, then require the same semantics before observing the endpoint.
+    // A delay measured from the tap cannot establish when the JS-driven panel
+    // mounted. Keep these recording windows free of readiness tree queries,
+    // then require the same semantics before observing the endpoint.
     if (settleMs) await setTimeout(settleMs);
-    if (!reviewEntrance && afterReady) await afterReady();
+    if (!deferredReady && afterReady) await afterReady();
   }, testInfo, 3500, shortAnimationMinimumFrames);
   const endpointStartedAt = performance.now();
   const endpointTiming: { phase: string; utc: string; elapsedMs: number }[] = [];
@@ -277,7 +278,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const originals = recorded;
   let afterNodes: NativeNode[], afterScreen: Buffer;
   try {
-    if (reviewEntrance && afterReady) {
+    if (deferredReady && afterReady) {
       markEndpoint('ready-start');
       try {
         await afterReady();

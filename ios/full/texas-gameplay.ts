@@ -20,6 +20,7 @@ import { nativeOwnCardRegion, nativeCommunityCardRegion } from './texas-card-reg
 import { playerCountdown } from './game-countdown';
 import { capturePlayerCountdown } from './game-countdown-capture';
 import { stableNativeObservation } from './native-stability';
+import { waitForProfileReadiness } from './profile-readiness';
 
 /**
  * 复用网页的德州消息夹具，覆盖各街、操作、摊牌、结算和玩家资料。
@@ -302,18 +303,12 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     await animateGamePanel(device, 'texas-holdem', name,
       node!.res!, region, animationInfo, 'enter', 'videoFrames', [],
       async () => {
-        // During XCTest recording, a full accessibility snapshot missed these
-        // already painted values in run 39527421409. Query the actual unique
-        // accessible row directly: TouchableOpacity aggregates its child text
-        // into "Total Hands, 100". A child Text marker alone remained absent
-        // in 39539834936 despite painted values. Retain displayed/rect/label
-        // validation and require the actual fixed response plus real wallet.
+        // Run 39543731649 rendered the fixture's real 100, but direct lookup
+        // still returned no statistics row during recording. Its subsequent
+        // complete tree contains the exact visible row. Observe that full
+        // native tree only after the uninterrupted entrance recording.
         try {
-          await expect.poll(async () => {
-            const values = await Promise.all(['PlayerStatisticComponent_Item_0', 'player-profile-balance']
-              .map(res => device.transientMarker(res)));
-            return values.map(value => value?.text);
-          }, { timeout: 45_000, intervals: [250] }).toEqual(['Total Hands, 100', player === self ? initialCoinBalance : '12345']);
+          await waitForProfileReadiness(device, player === self ? initialCoinBalance : '12345');
           if (player === self) expect((await statisticsStatus()).responses,
             '本人统计必须实际经过本轮只读GET夹具').toBeGreaterThan(0);
         } finally {
@@ -321,9 +316,8 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
             body: JSON.stringify(await statisticsStatus()), contentType: 'application/json',
           });
         }
-        // captureNativeTransition records a stable tail, then independently
-        // compares the complete native endpoint (including every statistic).
-        // Do not poll a baseline-sized legacy crop during the animation.
+        // captureNativeTransition still independently compares the complete
+        // native endpoint (including every statistic) with the original video.
       });
     await gameReady(device, 'player-profile-popup-close');
     await gameReady(device, 'PlayerStatisticComponent_Item_Value_0', '100');
