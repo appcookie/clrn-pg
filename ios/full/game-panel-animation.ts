@@ -1,4 +1,3 @@
-import { screenBounds } from './screen-geometry';
 import type { TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameConnected, gameReady, gameTap } from './game-controls';
@@ -45,6 +44,5 @@ export async function captureTimedLevelUp(device: AndroidDevice, game: 'texas-ho
   button: string, testInfo: TestInfo): Promise<void> {
   const { bounds } = await gameReady(device, button);
   await captureTimedPrompt(device, `${game}-level-up`, testInfo,
-    screenBounds(device, { x: 0, y: 20, width: 620, height: 230 }),
     () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) }));
 }

@@ -14,10 +14,11 @@ import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './sc
 import { attachFrameEvidence } from './frame-evidence';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
-import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask } from './game-masks';
+import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask, networkStatusMask } from './game-masks';
 import { shortAnimationMinimumFrames } from './video-timeline';
 import { safeNativeTree } from './diagnostics';
 import { alertEndpointClockMasks } from './alert-endpoint-masks';
+import { nativeLevelUpRegions, type LevelUpRegions } from './level-up-region';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -401,36 +402,23 @@ export async function captureTransientTransition(device: AndroidDevice, name: st
  * @param device - 安装原生采样驱动的模拟器。
  * @param name - 提示的视觉基线名称。
  * @param testInfo - Playwright 报告与快照。
- * @param region - 包含提示文字和倒计时、排除网络延迟的屏幕范围。
  * @param trigger - 点击真实按钮以触发提示。
  */
-export async function captureTimedPrompt(device: AndroidDevice, name: string, testInfo: TestInfo,
-  region: ScreenshotBounds, trigger: () => unknown): Promise<void> {
-  /**
-   * 裁切固定上方面板。
-   * @param bytes - 原生完整屏幕 PNG。
-   */
-  const crop = (bytes: Buffer) => cropNativeFrame(bytes, region);
-  const before = await crop(await gameScreenshot(device));
-  const frames = await recordNativeVideoFrames(device, name, region, trigger, testInfo);
-  expect(frames.length).toBeGreaterThanOrEqual(20);
-  expect(framePaletteDistance(before, frames[0]), `${name} 须在采样开始后出现`).toBeLessThan(7);
+export function timedPromptEvidence(before: Buffer, frames: Buffer[], layout: Pick<LevelUpRegions, 'title' | 'timer'>) {
   const visible = frames.filter(frame => frameColorDistance(before, frame) > 15);
-  expect(visible.length, `${name} 须实际显示`).toBeGreaterThanOrEqual(2);
   /**
    * 只截完整提示标题。
    * @param frame - 顶部提示区域的截图。
    */
-  const title = (frame: Buffer) => cropMotionRegion(frame, screenBounds(device, { x: 80, y: 45, width: 520, height: 110 }));
+  const title = (frame: Buffer) => cropMotionRegion(frame, layout.title);
   /**
    * 只截底部秒数，避免把提示滑入误认为倒计时。
    * @param frame - 顶部提示区域的截图。
    */
-  const timer = (frame: Buffer) => cropMotionRegion(frame, screenBounds(device, { x: 0, y: 165, width: 70, height: 45 }));
+  const timer = (frame: Buffer) => cropMotionRegion(frame, layout.timer);
   const beforeTitle = title(before);
   const settled = visible.map(frame => ({ frame, heading: title(frame), seconds: timer(frame) }))
     .filter(item => frameColorDistance(beforeTitle, item.heading) > 30);
-  expect(settled.length, `${name} 标题须完整出现`).toBeGreaterThanOrEqual(2);
   let pair: { first: Buffer; changed: Buffer } | undefined;
   for (let index = 0; index < settled.length && !pair; index++) {
     const first = settled[index];
@@ -439,16 +427,38 @@ export async function captureTimedPrompt(device: AndroidDevice, name: string, te
       && frameColorDistance(first.seconds, item.seconds) > 4);
     if (changed) pair = { first: first.frame, changed: changed.frame };
   }
+  return { visible, settled: settled.length, pair };
+}
+
+export async function captureTimedPrompt(device: AndroidDevice, name: string, testInfo: TestInfo,
+  trigger: () => unknown): Promise<void> {
+  const nodes = await device.nodes();
+  const layout = nativeLevelUpRegions(nodes, device.screenSize);
+  const region = layout.panel;
+  const endpointMasks = endpointMasksInRegion(nodes.filter(node => node.res === 'ping-screen-container')
+    .map(node => networkStatusMask(node.bounds)), region);
+  await testInfo.attach(`${name}-capture-regions`, { body: JSON.stringify(layout), contentType: 'application/json' });
+  await testInfo.attach(`${name}-endpoint-masks`, { body: JSON.stringify(endpointMasks), contentType: 'application/json' });
+  const crop = (bytes: Buffer) => cropNativeFrame(bytes, region);
+  const before = await crop(await gameScreenshot(device));
+  const frames = await recordNativeVideoFrames(device, name, region, trigger, testInfo);
+  expect(frames.length).toBeGreaterThanOrEqual(20);
+  expect(framePaletteDistance(before, frames[0]), `${name} 须在采样开始后出现`).toBeLessThan(7);
+  const { visible, settled, pair } = timedPromptEvidence(before, frames, layout);
+  expect(visible.length, `${name} 须实际显示`).toBeGreaterThanOrEqual(2);
+  expect(settled, `${name} 标题须完整出现`).toBeGreaterThanOrEqual(2);
   expect(pair, `${name} 标题稳定后倒计时数字必须变化`).toBeDefined();
   await setTimeout(6000);
   const after = await crop(await gameScreenshot(device));
-  expect(samePixels(after, before), `${name} 倒计时结束后须恢复画面`).toBe(true);
+  expect(samePixels(maskScreenshot(after, endpointMasks), maskScreenshot(before, endpointMasks)),
+    `${name} 倒计时结束后须恢复画面`).toBe(true);
   for (const [phase, frame] of [['start', before], ['visible', pair!.first],
     ['countdown', pair!.changed], ['end', after]] as const) {
     const file = `${name}-${phase}.png`;
     await testInfo.attach(file, { body: frame, contentType: 'image/png' });
     if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(frame, file, testInfo);
-    else if (phase === 'start' || phase === 'end') expect(samePixels(frame, readFileSync(baselinePath(file)))).toBe(true);
+    else if (phase === 'start' || phase === 'end') expect(samePixels(maskScreenshot(frame, endpointMasks),
+      maskScreenshot(readFileSync(baselinePath(file)), endpointMasks))).toBe(true);
     else {
       const reference = readFileSync(baselinePath(file));
       expect(Math.min(...visible.map(candidate => frameColorDistance(candidate, reference))),
