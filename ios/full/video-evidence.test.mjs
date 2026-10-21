@@ -61,3 +61,23 @@ for (const mode of ['missing-video', 'missing-image', 'duplicate-video', 'bad-ti
       f.save(); assert.throws(() => exportVideoEvidence(f.artifact, f.output));
     } finally { rmSync(f.root, { recursive: true, force: true }); }
   });
+
+
+test('同名多次录屏只关联各自后续关键帧，不能混用第一片的证据', () => {
+  const f = fixture();
+  try {
+    const second = f.attachments.map(a => ({ ...a }));
+    second[0].path = '/runner/second.mp4';
+    const otherPng = Buffer.from(f.png); otherPng[otherPng.length - 1] = 9;
+    second[1].body = otherPng.toString('base64');
+    second[2].body = Buffer.from(JSON.stringify([{ attachment: 'keyframe', timestampMs: 375 }])).toString('base64');
+    writeFileSync(join(f.artifact, 'full-results/second.mp4'), f.bytes);
+    f.attachments.push(...second); f.save();
+    const m = exportVideoEvidence(f.artifact, f.output);
+    assert.equal(m.videos.length, 2);
+    assert.equal(m.videos[0].keyframes[0].timestampMs, 125);
+    assert.equal(m.videos[1].keyframes[0].timestampMs, 375);
+    assert.deepEqual(readFileSync(join(f.output, '001-1.png')), f.png);
+    assert.deepEqual(readFileSync(join(f.output, '002-1.png')), otherPng);
+  } finally { rmSync(f.root, { recursive: true, force: true }); }
+});

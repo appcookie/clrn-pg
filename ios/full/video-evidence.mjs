@@ -31,7 +31,12 @@ export function exportVideoEvidence(artifactDirectory, outputDirectory, source =
   const pending = [];
   for (const spec of reportSpecs(report)) for (const test of spec.tests || []) for (const result of test.results || []) {
     const attachments = result.attachments || [];
-    for (const video of attachments.filter(a => a.contentType === 'video/mp4')) {
+    const clips = attachments.map((attachment, index) => ({ attachment, index }))
+      .filter(({ attachment }) => attachment.contentType === 'video/mp4');
+    for (const [clipIndex, { attachment: video, index }] of clips.entries()) {
+      // 循环动画可有同名的独立录屏窗口；只关联本片之后、下一片之前的附件。
+      // 不能用全报告 find(name) 把第一片的帧挂到后续同名视频上。
+      const clipAttachments = attachments.slice(index + 1, clips[clipIndex + 1]?.index ?? attachments.length);
       const name = video.name.replace(/-native-video$/, '');
       const id = String(manifest.videos.length + 1).padStart(3, '0');
       const bytes = attachmentBytes(video);
@@ -40,14 +45,14 @@ export function exportVideoEvidence(artifactDirectory, outputDirectory, source =
         keyframeKind: 'preview', test: spec.title };
       if (!['passed', 'failed', 'timedOut', 'interrupted', 'skipped'].includes(entry.status)) throw new Error('未知测试结果');
       pending.push({ path: entry.path, bytes });
-      const verified = attachments.find(a => a.name === `${name}-video-keyframes`);
-      const metadata = verified || attachments.find(a => a.name === `${name}-video-preview-keyframes`);
+      const verified = clipAttachments.find(a => a.name === `${name}-video-keyframes`);
+      const metadata = verified || clipAttachments.find(a => a.name === `${name}-video-preview-keyframes`);
       if (verified) entry.keyframeKind = 'asserted';
       let previous = -1;
       for (const frame of metadata ? JSON.parse(attachmentBytes(metadata).toString('utf8')) : []) {
         if (!Number.isFinite(frame.timestampMs) || frame.timestampMs <= previous) throw new Error('关键帧时间戳必须递增');
         previous = frame.timestampMs;
-        const image = attachments.find(a => a.name === frame.attachment && a.contentType === 'image/png');
+        const image = clipAttachments.find(a => a.name === frame.attachment && a.contentType === 'image/png');
         if (!image) throw new Error('关键帧原图缺失');
         const png = attachmentBytes(image);
         if (!png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) throw new Error('关键帧不是PNG');
