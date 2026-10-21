@@ -10,6 +10,7 @@ import { cropNativeFrame, samePixels } from './motion-regions';
 import type { ScreenshotBounds } from './screenshot';
 import { baselinePath } from './baseline-path.mjs';
 import { shortAnimationMinimumFrames } from './video-timeline';
+import { assetKeyframes } from './asset-keyframes';
 
 type NativeFrame = { capturedAt: number; png: string };
 
@@ -38,16 +39,9 @@ export async function captureAssetSequence(device: AndroidDevice, name: string, 
   for (const screen of screens) timeline.push(await crop(screen));
   expect(timeline.length).toBeGreaterThanOrEqual(10);
   expect(frameColorDistance(before, timeline[0]), `${name} 必须在采样开始后播放`).toBeLessThan(10);
-  const visible = timeline.map((frame, index) => ({ frame, index, distance: frameColorDistance(before, frame) }))
-    .filter(item => item.distance > 2);
-  expect(visible.length, `${name} 必须在屏幕上实际出现`).toBeGreaterThanOrEqual(2);
-  const peak = visible.reduce((best, item) => item.distance > best.distance ? item : best);
-  const changed = visible.reduce((best, item) => frameColorDistance(peak.frame, item.frame)
-    > frameColorDistance(peak.frame, best.frame) ? item : best);
-  // 小尺寸表情的口型只占裁切区一角，平均色差仍须明确大于静止噪声。
-  expect(frameColorDistance(peak.frame, changed.frame), `${name} 播放帧必须实际变化`).toBeGreaterThan(1);
+  const { visible, peak, changed, distances } = assetKeyframes(timeline);
   await info.attach(`${name}-timeline`, { body: JSON.stringify({ peak: peak.index, changed: changed.index,
-    distances: timeline.map(frame => frameColorDistance(before, frame)) }), contentType: 'application/json' });
+    background: 0, minimumForegroundFraction: 0.5, distances }), contentType: 'application/json' });
   for (const [phase, frame] of [['start', before], ['peak', peak.frame], ['changed', changed.frame]] as const) {
     const file = `${name}-${phase}.png`;
     await info.attach(file, { body: frame, contentType: 'image/png' });
