@@ -32,6 +32,13 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
    * @param data - Web 共用的网络事件。
    */
   const send = (data: unknown) => replay(proxy, 'zhajinhua', roomId, data);
+  // Native frame analysis can outlast the previous 120-second turn. The app
+  // legitimately folds and hides its controls at zero (CI 39525488584).
+  // Begin each subsequent operation with a real switch_player message; merely
+  // changing the timer or player_bets does not show the controls again.
+  const beginSeenTurn = () => send(events([
+    { event: 'switch_player', player_id: self, valid_bets: validBets(true) },
+  ]));
   const showdown = events([{ event: 'showdown', players: [
     { player_id: self, hole_card: ['as', 'ad', 'ac'], hand_strength: 'three_of_a_kind', is_winner: true },
     { player_id: PLAYER_IDS[0], hole_card: ['kh', 'ks', 'qd'], hand_strength: 'pair', is_winner: false },
@@ -119,6 +126,7 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       reason: '看牌后玩家头像下的独立操作秒数仍在跳动' })]);
     const raise = events([{ event: 'raise', player_id: self, amount: 40, stack: 960 },
       { event: 'pot_update', pot_amount: 160 }]);
+    await beginSeenTurn();
     if (animationInfo) {
       const button = await gameReady(device, 'zhajinhua-shortcut-raise-first');
       /** 通过真实按钮和回放消息触发加注筹码动画。 */
@@ -142,6 +150,7 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       screenBounds(device, { x: 100, y: 865, width: 520, height: 180 }), () => send(restoreTable(self, false, true)),
       [], [], 400, 'videoFrames');
     else await send(restoreTable(self, false, true));
+    await beginSeenTurn();
     await gameReady(device, 'zhajinhua-operation-accurate-bet-button');
     const accurateBetClock = [screenBounds(device, { x: 350, y: 725, width: 90, height: 40,
       reason: '独立运行的玩家操作倒计时，不属于精确加注弹窗' })];
@@ -154,6 +163,7 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       'accurate-bet-popup-container', screenBounds(device, { x: 150, y: 400, width: 430, height: 480 }), animationInfo,
       accurateBetClock, 'videoFrames');
     else await closeGameMask(device, 'accurate-bet-popup-container');
+    await beginSeenTurn();
     await gameTap(device, 'zhajinhua-operation-button-battle');
     await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector').length,
       { timeout: 30_000 }).toBe(4);
@@ -166,6 +176,7 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     }
     await capture('challenge_select');
     await gameTap(device, 'zhajinhua-cancel-challenge-choosing');
+    await beginSeenTurn();
     await gameTap(device, 'zhajinhua-shortcut-raise-first');
     await send(restoreTable(self, true, true));
     await gameReady(device, `zhajinhua-player-container-${PLAYER_IDS[0]}-operating`);

@@ -1,4 +1,5 @@
 import { texasRaiseRegion } from './texas-raise-region';
+import { zhajinhuaBetRegion } from './zhajinhua-bet-region';
 import type { NativeDevice, NativeNode } from './native-device';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { slotNoEnergyRegions } from './slot-regions';
@@ -182,6 +183,9 @@ export function nativeBuyInPanelBounds(nodes: NativeNode[], screen: { width: num
 
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  if (name === 'zhajinhua-quick-raise') return {
+    bounds: zhajinhuaBetRegion(before, after, device.screenSize), source: 'native-acting-player-bet-panel-and-coin',
+  };
   if (/^(?:texas-holdem|zhajinhua)-buy_in-(?:enter|exit)$/.test(name)) return {
     bounds: nativeBuyInPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-buy-in-content-container',
