@@ -117,6 +117,22 @@ export async function gameConnected(device: AndroidDevice, stableMs = 0): Promis
   await connectedObservation(device, stableMs);
 }
 
+/** 录制期间只读取实际连接提示；仍须持续就绪，超时错误直接失败。 */
+export async function gameConnectedCurrent(device: AndroidDevice, stableMs = 0): Promise<void> {
+  await device.prepareTransientCapture();
+  await connectedObservation(device, stableMs, () => device.inputObservation());
+}
+
+/** 录制期间等待真实面板标记消失；完整独立终点仍由转场采集器检查。 */
+export async function gameGoneCurrent(device: AndroidDevice, res: string): Promise<void> {
+  await device.prepareTransientCapture();
+  await expect.poll(async () => {
+    const nodes = await device.inputObservation(res);
+    gameConnectionState(nodes);
+    return nodes.some(node => node.res === res);
+  }, { timeout: 45_000, intervals: [250] }).toBe(false);
+}
+
 /** Return the same complete tree that established connection readiness. */
 async function connectedObservation(device: AndroidDevice, stableMs = 0,
   observe = () => gameNodes(device)): Promise<{

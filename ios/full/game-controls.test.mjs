@@ -2,7 +2,46 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeDevice } from './native-device.ts';
-import { gameTap, gameTapCurrent, gameConnected, gameConnectionState } from './game-controls.ts';
+import { gameTap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameGoneCurrent, gameConnectionState } from './game-controls.ts';
+
+test('录像内关闭和连接查询只读实际标记，短暂重连重置连续就绪时间', async () => {
+  let panelQueries = 0, connectionQueries = 0, lastConnectingAt = 0;
+  const node = label => ({ name: label, label, displayed: true, enabled: true,
+    rect: { x: 10, y: 10, width: 40, height: 20 } });
+  const device = new NativeDevice({ path: p => p, source: async () => {
+    throw new Error('录像就绪不能读取整树');
+  }, request: async (_method, path, body) => {
+    if (path === '/appium/settings') return;
+    assert.equal(path, '/elements');
+    assert.equal(body.using, '-ios predicate string');
+    if (body.value.includes('review-board-description-text')) {
+      panelQueries++;
+      return panelQueries === 1 ? [node('review-board-description-text')] : [];
+    }
+    assert.ok(!body.value.includes('name =='), '连接查询不匹配任何无关控件');
+    connectionQueries++;
+    if (connectionQueries === 3) {
+      lastConnectingAt = Date.now();
+      return [node('Connecting...')];
+    }
+    return [];
+  } }, 'unused', async () => {}, async () => {}, 'app');
+  await gameGoneCurrent(device, 'review-board-description-text');
+  assert.equal(panelQueries, 2);
+  await gameConnectedCurrent(device, 1_000);
+  assert.ok(connectionQueries >= 8);
+  assert.ok(Date.now() - lastConnectingAt >= 1_000);
+});
+
+test('录像就绪查询的真实连接超时不能当成面板消失或恢复', async () => {
+  const device = new NativeDevice({ path: p => p, request: async (_method, path) => {
+    if (path === '/appium/settings') return;
+    return [{ name: 'alert', label: 'Connection Timeout', displayed: true, enabled: true,
+      rect: { x: 10, y: 10, width: 40, height: 20 } }];
+  } }, 'unused', async () => {}, async () => {}, 'app');
+  await assert.rejects(gameGoneCurrent(device, 'review-board-description-text'), /Connection Timeout/);
+  await assert.rejects(gameConnectedCurrent(device, 1_000), /Connection Timeout/);
+});
 
 test('即时入口在同次元素查询中检查目标与重连，连接恢复后只点击一次', async () => {
   for (const first of ['healthy', 'connecting', 'timeout', 'disabled', 'malformed', 'transport']) {

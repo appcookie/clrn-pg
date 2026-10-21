@@ -1,8 +1,9 @@
+// 采集两种牌桌开局面板；录像内使用即时就绪查询，完整终点和动画门禁保持独立。
 import { screenBounds } from './screen-geometry';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
-import { gameTap as tap, gameConnected, gameReady, gameGone, gameNodes } from './game-controls';
+import { gameTap as tap, gameConnected, gameConnectedCurrent, gameReady, gameGone, gameGoneCurrent, gameNodes } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
@@ -219,7 +220,7 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   const reviewPoint = gameMaskPoint(reviewMask, nativeReviewPanelBounds(await device.nodes(), device.screenSize), device.screenSize);
   /** 确认后台房间连接稳定，再点击侧栏外遮罩触发一次真实侧滑退出。 */
   const closeRecord = async () => {
-    await gameConnected(device, 2_000);
+    await gameConnectedCurrent(device, 2_000);
     await device.input.tap(reviewPoint);
   };
   if (animationInfo) await captureNativeTransition(device, `${game}-game-record-exit`, animationInfo,
@@ -227,8 +228,10 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
     game === 'zhajinhua' ? 'videoFrames' : 'motionFrames', undefined, async () => {
       // 39574774993 的原片末帧仍在重连，解码后截图已恢复；必须在同一次
       // 录屏内等到真实终态，不能丢弃末帧或把 Connecting 遮罩排除比较。
-      await gameGone(device, 'review-board-description-text');
-      await gameConnected(device, 2_000);
+      // 39587639168的整树查询把退场录成74秒/1806帧，解码超过3分钟。
+      // 同次原生元素查询只观察目标与连接提示，保留关闭和持续就绪条件。
+      await gameGoneCurrent(device, 'review-board-description-text');
+      await gameConnectedCurrent(device, 2_000);
     });
   else await closeRecord();
   await gameGone(device, 'review-board-description-text');

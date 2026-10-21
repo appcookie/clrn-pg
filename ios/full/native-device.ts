@@ -160,11 +160,11 @@ export class NativeDevice {
     this.richTransientElements = true;
   }
   /** 同一次原生查询取得点击目标和连接提示，避免整树计算期间的旧连接状态被用于点击。 */
-  async inputObservation(res: string): Promise<Pick<NativeNode, 'res' | 'text' | 'enabled' | 'visible' | 'bounds'>[]> {
+  async inputObservation(res?: string): Promise<Pick<NativeNode, 'res' | 'text' | 'enabled' | 'visible' | 'bounds'>[]> {
     if (!this.richTransientElements) throw new Error('点击观测必须先配置完整元素属性');
     const elements = await this.driver.request('POST', this.driver.path('/elements'), {
       using: '-ios predicate string',
-      value: `visible == true AND (name == ${JSON.stringify(res)} OR label == "Connecting..." OR label CONTAINS[c] "Connection Timeout")`,
+      value: `visible == true AND (${res === undefined ? '' : `name == ${JSON.stringify(res)} OR `}label == "Connecting..." OR label CONTAINS[c] "Connection Timeout")`,
     });
     return elements.map((element: { name?: string; label?: string; rect?: Bounds;
       displayed?: boolean; enabled?: boolean }) => {
