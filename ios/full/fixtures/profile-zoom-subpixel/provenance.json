@@ -1,0 +1,44 @@
+{
+  "purpose": "真实原生资料卡缩放：验证线性采样和整体亚像素对齐，不改变录像、像素容差或四边门禁。",
+  "sourceRun": 39591849070,
+  "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39591849070",
+  "sourceWorkflowHead": "80583737bbbd0990115b483d79fb9304696cbb36",
+  "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+  "sourceVideo": "texas-holdem-own-profile-enter-native-video-12ee0683c139f6f25d8601f65bcf6a836313605d.mp4",
+  "middleFrameIndex": 65,
+  "middlePtsMs": 33116.667,
+  "region": {
+    "x": 67,
+    "y": 689,
+    "width": 1044,
+    "height": 1178
+  },
+  "layout": {
+    "panel": {
+      "x": 4,
+      "y": 4,
+      "width": 1036,
+      "height": 1170
+    },
+    "close": {
+      "x": 973,
+      "y": 49,
+      "width": 37,
+      "height": 36
+    }
+  },
+  "files": {
+    "before": {
+      "sha256": "7fe2f8b9139f7919c619fdd0a3ee57a7ef1cf572e6d5cbf90111145f2a24bb41",
+      "source": "texas-holdem-own-profile-enter-start.png"
+    },
+    "after": {
+      "sha256": "53656fa9d0ad5bcc1c2d394b0c66f37c94c5421463af4e7d192790611941186e",
+      "source": "texas-holdem-own-profile-enter-end.png"
+    },
+    "middle": {
+      "sha256": "788287b483af4dd6feb8a9c7ef08bc2f5607e82bd7e39e857e66355eae491f1c",
+      "source": "boundary/03.png"
+    }
+  }
+}

@@ -1,3 +1,4 @@
+// 验证资料卡四边与静态关闭图形在同一中心的真实缩放，保留原片及像素容差。
 import sharp from 'sharp';
 import type { NativeNode } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
@@ -64,6 +65,17 @@ const color = (frame: FramePixels, x: number, y: number): number[] => {
 };
 const distance = (a: number[], b: number[]) =>
   a.reduce((sum, v, i) => sum + Math.abs(v - b[i]), 0) / 3;
+
+/** 只在图形整体对齐时读取亚像素颜色，不改写原片或逐点搜索匹配颜色。 */
+const bilinearColor = (frame: FramePixels, x: number, y: number): number[] => {
+  const left = Math.floor(x), top = Math.floor(y);
+  const horizontal = x - left, vertical = y - top;
+  const a = color(frame, left, top), b = color(frame, left + 1, top);
+  const c = color(frame, left, top + 1), d = color(frame, left + 1, top + 1);
+  return a.map((value, channel) => value * (1 - horizontal) * (1 - vertical)
+    + b[channel] * horizontal * (1 - vertical)
+    + c[channel] * (1 - horizontal) * vertical + d[channel] * horizontal * vertical);
+};
 
 /** A real zoom changes all four card edges around the same center and scales
  * the card's static close icon with them. Loading text, table clipping, a dimmer, and
@@ -189,7 +201,7 @@ export async function profileZoomEvidence(
       if (!template) {
         const { data, info } = await sharp(after)
           .extract({ left: p.x, top: p.y, width: p.width, height: p.height })
-          .resize(width, height)
+          .resize(width, height, { kernel: sharp.kernel.linear })
           .ensureAlpha()
           .raw()
           .toBuffer({ resolveWithObject: true });
@@ -200,17 +212,18 @@ export async function profileZoomEvidence(
       // unscaled high-contrast icon would confuse resampling with a change.
       const left = Math.round(cx - width / 2),
         top = Math.round(cy - height / 2);
-      // AX 边界、缩放尺寸和合成器采样分别取整，静态小图形可能相差一个
-      // 原生像素。整幅图形统一对齐，不能逐点找颜色或改变像素容差；四边
-      // 仍须在同一中心、同一缩放比例满足上面的独立检查。
+      // CALayer 使用线性缩放采样；Lanczos 模板会锐化关闭图形的高对比边缘。
+      // AX 边界与缩放栅格存在亚像素相位差，仍只在原有 ±1 原生像素内
+      // 整体平移图形，以 1/4 像素取样；不逐点找颜色或提高 12 的像素容差。
+      // 四边仍须在同一中心、同一缩放比例满足上面的独立检查。
       let closeDistance = Infinity;
       let closeOffset = { x: 0, y: 0 };
-      for (let dx = -1; dx <= 1; dx++) {
-        for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx += 0.25) {
+        for (let dy = -1; dy <= 1; dy += 0.25) {
           const value = features.reduce((sum, point) => {
             const x = Math.round(((point.x - p.x + 0.5) * width) / p.width - 0.5);
             const y = Math.round(((point.y - p.y + 0.5) * height) / p.height - 0.5);
-            return sum + distance(color(frame, left + x + dx, top + y + dy), color(template!, x, y));
+            return sum + distance(bilinearColor(frame, left + x + dx, top + y + dy), color(template!, x, y));
           }, 0) / features.length;
           if (value < closeDistance) {
             closeDistance = value;

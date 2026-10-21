@@ -1,3 +1,4 @@
+// 用真实 CI 原片及明确负例验证资料卡缩放，拒绝硬切、数据加载和关闭图形缺失。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -15,6 +16,30 @@ const bytes = Object.fromEntries(
   })
 );
 const layout = profileZoomLayout(source.nodes, source.screen, source.region);
+test('真实亚像素缩放使用线性模板，原有四边和像素容差不变且拒绝图形缺失', async () => {
+  const directory = new URL('./fixtures/profile-zoom-subpixel/', import.meta.url);
+  const provenance = JSON.parse(readFileSync(new URL('provenance.json', directory)));
+  const images = Object.fromEntries(Object.entries(provenance.files).map(([name, item]) => {
+    const buffer = readFileSync(new URL(`${name}.png`, directory));
+    assert.equal(createHash('sha256').update(buffer).digest('hex'), item.sha256);
+    return [name, buffer];
+  }));
+  const result = await profileZoomEvidence(images.before, images.after,
+    [images.before, images.middle, images.after], [0, 1, 2], provenance.layout);
+  assert.deepEqual(result.candidates, [1]);
+  const middle = result.measurements[1];
+  assert.ok(middle.scale > 0.68 && middle.scale < 0.71);
+  assert.ok(middle.edges.every(ratio => ratio >= 0.8));
+  assert.ok(middle.closeDistance <= 12);
+  assert.ok(Math.abs(middle.closeOffset.x) <= 1 && Math.abs(middle.closeOffset.y) <= 1);
+  const erased = await sharp(images.middle).composite([{
+    input: await sharp({ create: { width: 50, height: 50, channels: 4,
+      background: '#1a1d2b' } }).png().toBuffer(), left: 820, top: 204,
+  }]).png().toBuffer();
+  assert.deepEqual((await profileZoomEvidence(images.before, images.after,
+    [erased], [0], provenance.layout)).candidates, []);
+  assert.equal(createHash('sha256').update(images.middle).digest('hex'), provenance.files.middle.sha256);
+});
 test('真实原生缩放保留四边及关闭图形，单像素取整对齐不接受端点硬切', async () => {
   const directory = new URL('./fixtures/profile-zoom-native/', import.meta.url);
   const provenance = JSON.parse(readFileSync(new URL('provenance.json', directory)));
