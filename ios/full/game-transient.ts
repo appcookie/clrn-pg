@@ -20,22 +20,31 @@ type Frame = { before: NativeNode; after: NativeNode; panel: NativeNode; capture
 export async function captureToast(device: AndroidDevice, name: string, testInfo: TestInfo,
   backgroundMasks: ScreenshotMask[], expectedText?: string): Promise<void> {
   const frames: Frame[] = [];
+  const observations: { phase: string; at: number }[] = [];
   const deadline = Date.now() + 4000;
   while (Date.now() < deadline) {
+    observations.push({ phase: 'before-query', at: Date.now() });
     const before = await device.transientMarker('toastText1');
+    observations.push({ phase: before?.text ? 'before-visible' : 'before-absent', at: Date.now() });
     if (!before?.text) {
       if (frames.length) break;
       await setTimeout(40);
       continue;
     }
-    const png = await device.nativeScreenshot();
+    // 使用已建立的XCTest会话返回无损PNG，避免每帧另起simctl进程。
+    const png = await device.screenshot();
+    observations.push({ phase: 'screenshot', at: Date.now() });
     const after = await device.transientMarker('toastText1');
+    observations.push({ phase: after?.text ? 'after-visible' : 'after-absent', at: Date.now() });
     if (!after?.text) break;
     const panel = (await device.transientMarker('toast-container')) || before;
     frames.push({ before, after, panel, capturedAt: Date.now(), png: png.toString('base64') });
   }
   await testInfo.attach(`${name}-frames`, {
     body: JSON.stringify(frames.map(({ png: _png, ...metadata }) => metadata)), contentType: 'application/json',
+  });
+  await testInfo.attach(`${name}-capture-timing`, {
+    body: JSON.stringify(observations), contentType: 'application/json',
   });
   expect(frames.length, '提示可见时必须采集至少两帧真实屏幕').toBeGreaterThanOrEqual(2);
   let reference: Buffer | undefined;

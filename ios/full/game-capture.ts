@@ -121,6 +121,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     if (name.startsWith('en-')) await captureMovingKeyframes(device, `${name}-countdown`, testInfo, regions);
   }
   if (triggerToast) {
+    if (!preparedPrediction) await device.prepareTransientCapture();
     const expectedText = await triggerToast();
     if (preparedPrediction) {
       expect(expectedText, '猜牌中奖夹具必须明确要求真实 +10').toBe('+10');
