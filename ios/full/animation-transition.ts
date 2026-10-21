@@ -2,6 +2,7 @@ import { leaderboardSlideLayout, leaderboardSlideEvidence } from './personal-lea
 import { chatEndpointNodes } from './chat-readiness';
 import { animationRegion, endpointMasksInRegion } from './animation-region';
 import { ownProfileIdentityMask } from './profile-region';
+import { reviewEndpointNetworkMasks } from './review-endpoint-masks';
 import { profileZoomLayout, profileZoomEvidence } from './profile-zoom';
 import { assertVisual } from './device';
 import { baselinePath } from './baseline-path.mjs';
@@ -339,6 +340,10 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   if (name === 'texas-all-in-fire' || name === 'texas-showdown') {
     startCompareMasks = [...startCompareMasks, ...texasEffectEndpointMasks(name, beforeNodes, device.screenSize)];
     endCompareMasks = [...endCompareMasks, ...texasEffectEndpointMasks(name, afterNodes, device.screenSize)];
+  }
+  if (/^(texas-holdem|zhajinhua)-game-record-(enter|exit)$/.test(name)) {
+    startCompareMasks = [...startCompareMasks, ...reviewEndpointNetworkMasks(beforeNodes, device.screenSize)];
+    endCompareMasks = [...endCompareMasks, ...reviewEndpointNetworkMasks(afterNodes, device.screenSize)];
   }
   if (/^(texas-holdem|zhajinhua)-/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...seatGuideBackgroundMasks(beforeNodes, device.screenSize),
