@@ -3223,6 +3223,454 @@
         "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
       },
       "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-leaderboard-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6352ed3b048606714ffb0e6c79bd9e01338bf851ba807f668f2a38bba760d173",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-leaderboard-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "855df6340ad6d670b8b507dbbd6e900cdd20bb0c26e3b6546d6b4a4d456b0655",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-leaderboard-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "39b4d640dfec6c9241873b9d7ed4f91dd392df4e983c7b5ee3cb91e1ff4a646b",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-leaderboard/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "50b0180a106baf5a472b7312ec21fdb4058d7ac2eb91a5dc12ffed2232c36f88",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-leaderboard-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "39b4d640dfec6c9241873b9d7ed4f91dd392df4e983c7b5ee3cb91e1ff4a646b",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-leaderboard-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "0987efa57e245f17c328ae7a05817569572f75988665a50b0aa1d79d38054ffb",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-leaderboard-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "48f4bff8f5191bfedd3e58e9d27e05251b6c01c57cde48f5ea431fc586b00a48",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-records-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "f04148a2999d4a0c53530b11bedc761ffb038f7780ece475f90010b2b0e32a47",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-records-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "952f04210a0f9609e0a7ba5d5fe61cc891f9fa4db3556f6d732c747db38aa6a0",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-records-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "f1a20444557ece5d782e35d4af5a0c5f1738ca21f66b214acaf1c930e3ad765d",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-game-record/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "38fa1ce89918a55917d749d6d25ae82e1a13f66f3a0c7546f8b1be51415f1000",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-records-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "f1a20444557ece5d782e35d4af5a0c5f1738ca21f66b214acaf1c930e3ad765d",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-records-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "a72e33e810dd3dac1cb548f19dd3cfd1892fc9f573ef0290a6923537ee5ed572",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-records-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "f65d06b7a9c8d636c067912e18623798b913c4d6c9493a2143a263a7e78b6568",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-chat-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "04060273657e353ce4babbf17efa4ea5294895c270e1bf3d3f67e2716ff5c070",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-chat-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "f1550b65a6c2921ff4f1ceb86e4577c6cd0913181ae8cd68e39e63f99756bcdc",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-chat-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a17cc9d4c914553f8a90a6f9df5bdb0decf23570de743f34408687ab57972c98",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-chat/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "f2b7284e15a6019ba197da421d3bc3ff73e5f9f49b1947fecb67482876baa483",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-chat-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a17cc9d4c914553f8a90a6f9df5bdb0decf23570de743f34408687ab57972c98",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-chat-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "71f09d959c6ab9c572cd73783fc07d017b3a2e36f7d97b9122ae9275e7a7a352",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-chat-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "5d01adb040d5c66484b30137de7ff8fd88f4a9e26448c7f4c82ca612b265530d",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-applications-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "52eb56b4c06e4d2d0e36bfdaa4bd648c3d0a1d69f7fbb6c6091890404bf3504e",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-applications-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8b15e35279eaf7125b047baf34457d64dbfef6c1a76e42625b685bc7556869cc",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-applications-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "b07ffc1e7a0beed4d62554ba6c01f2abec5f2566663e3283447cda78b47d7994",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-buy-in-applications/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "c2a26958aacb8d157426538b9e191e3dc2ce368eb4a0f8c5807696cd314009d9",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-applications-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "b07ffc1e7a0beed4d62554ba6c01f2abec5f2566663e3283447cda78b47d7994",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-applications-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "39b885f01d45de3d8f8c1e2a610914a2bc9c3aa9d37151621c9643c5b10142bb",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
+    },
+    {
+      "path": "texas-holdem/table/texas-applications-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "738999dec36252aeed9233a6943445aeadce30a5c9258bed3aabe67144eef0bd",
+      "source": {
+        "sourceRun": 39553909322,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+        "sourceWorkflowHead": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-19-1"
+        ],
+        "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+        "releaseTag": "ios-staging-14-1-b99077e07427",
+        "packageSha256": "71337887f12b09c1ec1eca45fd7892810c69a113e9eadbe91051140cc0e616f8"
+      },
+      "review": "Personally inspected all 28 PNGs on review-01 through 05, and all eight raw-video start/selected-middle/neighbor/end sequences on all-motion/review-motion-01 through 04. No error alert, missing target or incorrect target clipping. Leaderboard genuinely slides horizontally, retaining the complete title, four column headings and No Data endpoint. Game-record entrance frame 312 contains the sidebar itself moving left; Loading is its genuine asynchronous intermediate state, while the endpoint says Empty games with complete Settlement/Record tabs, slider, pagination arrows and share control. Full-screen raw frames 308/310/312/314/316/320/532 additionally confirm the horizontal edge movement; target local motion 17.68065 exceeds 3.17316. This is not merely background dimming. The record exit also moves the sidebar. Chat slides vertically with the complete input, Send, category controls, emoji viewport and bottom border; the partial rightmost emoji is normal horizontal scroll viewport content. Buy-in applications genuinely zooms in and out with complete outer frame, inset card and empty-request text. Existing static background masks do not cover the targets. All eight MP4 and seven MOV files have valid ftyp headers, retained SHA256, complete ffprobe frame decoding and 1178x2556 resolution. Approval covers these 28 manually reviewed candidates only; root retains responsibility for importing and final CI comparison."
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
