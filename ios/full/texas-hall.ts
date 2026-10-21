@@ -37,14 +37,19 @@ export async function texasHall(context: TexasContext): Promise<void> {
   if (animationInfo) {
     await proxy.command('texas/ui', {});
     await proxy.command('android/auto-rebuy-hold', { hold: true });
+    let switchTap: Promise<void> | undefined;
     try {
       const beforeLoading = await gameScreenshot(device);
       let regions!: ReturnType<typeof gameLoadingRegions>, loadingLayout!: NativeLayoutNode[], loaded!: Buffer;
-      // 请求只有十秒超时预算：先预热录屏，再触发一次真实开关动作。
+      // 先预热录屏，再触发一次真实开关动作，并在代理45秒保留窗口内采集。
       const recorded = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, async () => {
-        await gameTap(device, 'auto-rebuy-switch');
-        // The native tap can return before the game sends its request. Keep
-        // waiting for that one real request; the proxy hold expires at 45s.
+        // WDA waits for the request to finish before resolving the tap. Observe
+        // the one real request while that native tap is still in flight; the
+        // proxy hold must not expire before the loading frames are recorded.
+        switchTap = gameTap(device, 'auto-rebuy-switch');
+        void switchTap.catch(() => {});
+        // The native tap can also return before the game sends its request.
+        // Wait for that one real request; the proxy hold expires at 45s.
         await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
           { timeout: 20_000 }).toBe(true);
         loadingLayout = await device.layoutNodes();
@@ -78,7 +83,10 @@ export async function texasHall(context: TexasContext): Promise<void> {
         18, undefined, 1, [], samples, regions.ringMasks);
       await captureMovingKeyframes(device, 'texas-loading-spade', animationInfo, [regions.spade],
         18, undefined, 1, [], samples);
-    } finally { await proxy.command('android/auto-rebuy-hold', { hold: false }); }
+    } finally {
+      await proxy.command('android/auto-rebuy-hold', { hold: false });
+      await switchTap;
+    }
     await expect.poll(async () => (await gameReady(device, 'auto-rebuy-switch')).checked,
       { timeout: 30_000 }).toBe(true);
   }
