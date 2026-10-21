@@ -47,11 +47,27 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   if (expectedAlertMarker) await gameReady(device, expectedAlertMarker);
   let nodes = await gameNodes(device);
   if ((!transientMarker || transientMarker === 'level-up-title') && foregroundPanels(nodes, device.screenSize).length) {
-    nodes = await stableNativeObservation(() => gameNodes(device), (before, current) => {
-      expect(foregroundPanels(current, device.screenSize).map(node => node.bounds),
-        '前景面板边界须完成转场后再裁剪背景遮罩')
-        .toEqual(foregroundPanels(before, device.screenSize).map(node => node.bounds));
-    }, { initial: nodes, timeout: 30_000, interval: 300 });
+    // 记录同一轮实际观测的标识和边界，区分动画位移与无障碍可见性变化；
+    // 仅保留固定控件标识，不输出文本、输入值或完整原始属性。
+    const observedPanels = (snapshot: typeof nodes) => foregroundPanels(snapshot, device.screenSize)
+      .map(node => ({ marker: /^(?:texas-holdem-player-action-|texas-holdem-shortcut-raise-button-|zhajinhua-shortcut-raise-)/
+        .test(node.res || '') ? node.res : '[container]', bounds: node.bounds, visible: node.visible }));
+    const observations = [{ utc: new Date().toISOString(), panels: observedPanels(nodes) }];
+    try {
+      nodes = await stableNativeObservation(async () => {
+        const current = await gameNodes(device);
+        observations.push({ utc: new Date().toISOString(), panels: observedPanels(current) });
+        return current;
+      }, (before, current) => {
+        expect(foregroundPanels(current, device.screenSize).map(node => node.bounds),
+          '前景面板边界须完成转场后再裁剪背景遮罩')
+          .toEqual(foregroundPanels(before, device.screenSize).map(node => node.bounds));
+      }, { initial: nodes, timeout: 30_000, interval: 300 });
+    } finally {
+      await testInfo.attach(`${name}-foreground-observations`, {
+        body: JSON.stringify(observations), contentType: 'application/json',
+      });
+    }
   }
   if (expectedAlertMarker) expect(nodes.some(node => node.res === expectedAlertMarker), '目标业务提示必须可见').toBe(true);
   expect(nodes.some(node => node.res === 'XCUIElementTypeAlert' || (!expectedAlertMarker && node.res === 'common-alert-message')),
