@@ -76,7 +76,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
   if (backend === 'xctest') {
-    ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs));
+    ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs,
+      // 39616432083 的60fps原片有倒退PTS；只降低此入口的实际采集帧率，
+      // 不改应用动画、原始媒体时间戳或真实中途姿态门禁。
+      name === 'texas-holdem-leaderboard-enter' ? 30 : 60));
   } else {
     const processStartedAt = performance.now();
     const processStartedUtc = new Date().toISOString();

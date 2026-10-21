@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { baselinePath } from './baseline-path.mjs';
 import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
+import { challengeRegion } from './challenge-region';
 import { gameNodes } from './game-controls';
 import { maskScreenshot, type ScreenshotMask } from './screenshot';
 import { motionParts, samePixels } from './motion-regions';
@@ -19,8 +20,9 @@ export async function captureChallengeAnimation(device: AndroidDevice, name: str
   masks: ScreenshotMask[]): Promise<void> {
   const selectors = (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector');
   expect(selectors).toHaveLength(4);
-  // iOS 的高亮范围直接取 XCUITest 实际边界，不沿用 Android 被头像裁切后的补偿。
-  const regions = selectors.map(({ bounds }) => bounds);
+  // 原片39614473826中，右缘x=231仍随绿框闪烁，而AX的右侧排他边界是231。
+  // 只补原生绘制边缘；四个分区及其补集仍覆盖、比较全部像素，不新增遮罩。
+  const regions = selectors.map(({ bounds }) => challengeRegion(bounds, device.screenSize));
   await testInfo.attach(`${name}-animation-regions`, { body: JSON.stringify(regions), contentType: 'application/json' });
   await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   const reference = process.env.IOS_VISUAL_MODE !== 'compare';

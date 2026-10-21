@@ -1,0 +1,30 @@
+{
+  "run": "https://github.com/appcookie/clrn-pg/actions/runs/39614473826",
+  "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+  "videoAttachment": "zhajinhua-challenge-targets-native-video",
+  "purpose": "真实失败录像的边界回归样本，不是已审查基准",
+  "files": [
+    {
+      "file": "light.png",
+      "frame": 60,
+      "crop": {
+        "x": 220,
+        "y": 1100,
+        "width": 17,
+        "height": 64
+      },
+      "sha256": "5c1a39f9d3c81b86385c3941ba3465cbe8e402f126238cc3fbac58bf999e2ed6"
+    },
+    {
+      "file": "dark.png",
+      "frame": 73,
+      "crop": {
+        "x": 220,
+        "y": 1100,
+        "width": 17,
+        "height": 64
+      },
+      "sha256": "c2e4c4129f51a945f46d372c4ab5c54d1d8960cb8e497f7e0194f41ed7517cae"
+    }
+  ]
+}

@@ -49,3 +49,18 @@ test('XCTest 拒绝借用已有录像、错轮次、空数据和错误采集帧�
   // A rejected start metadata response is still stopped and preserved for diagnosis.
   assert.equal(saves, 1);
 });
+
+
+test('30fps采集配置在动作前确认，保留原始视频且不接受错误的实际帧率', async () => {
+  const meta = { ...metadata, fps: 30 };
+  const native = device({ 'mobile: startXCTestScreenRecording': meta,
+    'mobile: stopXCTestScreenRecording': { ...meta, payload: movie.toString('base64') } });
+  let actions = 0, saves = 0;
+  await captureXCTestRecording(native, () => {
+    actions++; assert.deepEqual(native.events.at(-1)[1], { fps: 30 });
+  }, 0, async capture => { saves++; assert.deepEqual(capture.bytes, movie); }, 30);
+  assert.equal(actions, 1); assert.equal(saves, 1);
+  await assert.rejects(captureXCTestRecording(device(), () => { actions++; }, 0,
+    async () => {}, 30), /30 fps/);
+  assert.equal(actions, 1);
+});
