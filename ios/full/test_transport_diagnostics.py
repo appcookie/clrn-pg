@@ -1,3 +1,4 @@
+"""验证传输诊断保留请求状态和耗时，严格排除凭据、用户标识与业务正文。"""
 import json
 from types import SimpleNamespace
 import unittest
@@ -8,6 +9,28 @@ from transport_diagnostics import TransportDiagnostics
 
 
 class TransportTests(unittest.TestCase):
+    def test_profile_diagnostics_redact_identity_and_only_keep_response_shape(self):
+        diagnostics = TransportDiagnostics()
+        identifier = '12345678-1234-4234-8234-123456789abc'
+        request = flow(f'/v10/profile/{identifier}?token=private-query')
+        request.request.headers['Authorization'] = 'private-token'
+        request.response = http.Response.make(200, json.dumps({'ok': True, 'result': {
+            'nickname': 'private-nickname', 'avatar_path': 'private-avatar',
+            'created_at': 'private-date', 'token': 'private-body', 'user_id': identifier,
+        }}).encode())
+        diagnostics.request(request)
+        diagnostics.response(request)
+        snapshot = diagnostics.snapshot()
+        self.assertEqual(snapshot['httpEvents'][0]['path'], '/v10/profile/<user>')
+        self.assertEqual(snapshot['httpEvents'][0]['profileShape'], {
+            'ok': True, 'resultObject': True, 'nicknamePresent': True, 'avatarPresent': True})
+        serialized = json.dumps(snapshot)
+        self.assertNotIn(identifier, serialized)
+        self.assertNotIn('private-', serialized)
+        request.response = http.Response.make(503, b'{"error":"private-error"}')
+        diagnostics.response(request)
+        self.assertFalse(diagnostics.snapshot()['httpEvents'][0]['profileShape']['ok'])
+
     def socket_flow(self, host='64.kr-seoul.api.staging.laiwan.shafayouxi.com'):
         result = flow('/v2/centrifugo/connection/websocket?token=private-token')
         result.id = 'private-flow-identity'

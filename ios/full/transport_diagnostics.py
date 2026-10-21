@@ -30,6 +30,8 @@ class TransportDiagnostics:
     @staticmethod
     def path(value):
         path = urlsplit(value).path
+        if re.fullmatch(r'/v10/profile/[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}', path):
+            return '/v10/profile/<user>'
         return path if (re.fullmatch(r'/(?:node/)?v\d+/status', path)
             or re.fullmatch(r'/public/v\d+/metadata(?:/servers)?', path)
             or path == '/v2/centrifugo/connection/websocket') else None
@@ -144,6 +146,20 @@ class TransportDiagnostics:
                         else 'fixture' if flow.metadata.get('ios_mocked') is True else 'upstream')
                 if path == '/node/v1/status':
                     event.update(self.health(flow.response))
+                elif path == '/v10/profile/<user>' and flow.response:
+                    # 仅记录字段是否存在，不保留用户身份、头像地址、昵称或错误正文。
+                    try:
+                        body = flow.response.json() if len(flow.response.content or b'') <= 256 * 1024 else None
+                    except (ValueError, UnicodeDecodeError):
+                        body = None
+                    result = body.get('result') if isinstance(body, dict) else None
+                    event['profileShape'] = {
+                        'ok': isinstance(body, dict) and body.get('ok') is True,
+                        'resultObject': isinstance(result, dict),
+                        'nicknamePresent': isinstance(result, dict) and isinstance(result.get('nickname'), str)
+                            and bool(result['nickname']),
+                        'avatarPresent': isinstance(result, dict) and isinstance(result.get('avatar_path'), str),
+                    }
 
     def tls_failure(self, kind, data):
         client = getattr(data.context, 'client', None)
