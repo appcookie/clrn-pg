@@ -48,7 +48,7 @@ export function exportVideoEvidence(artifactDirectory, outputDirectory, source =
       const verified = clipAttachments.find(a => a.name === `${name}-video-keyframes`);
       const metadata = verified || clipAttachments.find(a => a.name === `${name}-video-preview-keyframes`);
       if (verified) entry.keyframeKind = 'asserted';
-      let previous = -1;
+      let previous = -1, previousFrameIndex = -1;
       for (const frame of metadata ? JSON.parse(attachmentBytes(metadata).toString('utf8')) : []) {
         if (!Number.isFinite(frame.timestampMs) || frame.timestampMs < 0 || frame.timestampMs <= previous) throw new Error('关键帧时间戳必须递增');
         previous = frame.timestampMs;
@@ -56,7 +56,11 @@ export function exportVideoEvidence(artifactDirectory, outputDirectory, source =
         if (!image) throw new Error('关键帧原图缺失');
         const png = attachmentBytes(image);
         if (!png.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) throw new Error('关键帧不是PNG');
-        const file = { path: `${id}-${entry.keyframes.length + 1}.png`, timestampMs: frame.timestampMs, sha256: digest(png) };
+        if (frame.frameIndex !== undefined && (!Number.isSafeInteger(frame.frameIndex) || frame.frameIndex <= previousFrameIndex))
+          throw new Error('关键帧原始帧序无效');
+        if (frame.frameIndex !== undefined) previousFrameIndex = frame.frameIndex;
+        const file = { path: `${id}-${entry.keyframes.length + 1}.png`, timestampMs: frame.timestampMs,
+          ...(frame.frameIndex === undefined ? {} : { frameIndex: frame.frameIndex }), sha256: digest(png) };
         entry.keyframes.push(file); pending.push({ path: file.path, bytes: png });
       }
       manifest.videos.push(entry);

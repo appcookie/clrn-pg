@@ -32,7 +32,7 @@ export async function captureToast(device: NativeDevice, name: string, testInfo:
   for (const [order, index] of indices.entries()) {
     const attachment = `${name}-verified-keyframe-${order + 1}`;
     await testInfo.attach(attachment, { body: frames[index], contentType: 'image/png' });
-    keyframes.push({ attachment, timestampMs: frames.timestampsMs![index] });
+    keyframes.push({ attachment, timestampMs: frames.timestampsMs![index], frameIndex: frames.sourceFrameIndices?.[index] ?? index });
   }
   await testInfo.attach(`${name}-video-keyframes`, { body: JSON.stringify(keyframes), contentType: 'application/json' });
   await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });

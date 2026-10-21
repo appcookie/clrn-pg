@@ -11,7 +11,7 @@ import { validateRecordedTimeline, type ProbeFrame } from './video-timeline';
 import { recordXCTestVideo } from './xctest-video';
 import { readRecordedFrameFiles } from './video-frame-files';
 
-export type RecordedFrames = Buffer[] & { timestampsMs?: number[] };
+export type RecordedFrames = Buffer[] & { timestampsMs?: number[]; sourceFrameIndices?: number[] };
 const runMedia = promisify(execFile);
 
 /** 在真实 Simulator 录屏开始后触发动作，以原始分辨率解码；MP4 永远保留供回看。 */
@@ -36,16 +36,9 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // frames, with a 4.12 s gap after the first. Preserve the minimum frame and
   // motion requirements by collecting this entrance through the compositor.
   // 本轮 39555894478 的牌型退场原始 XCTest MOV 在帧 306→307
-  // 出现 7.376667→7.375000 的 PTS 倒退；保留拒绝规则，改用合成器采集。
-  // Personal leaderboard exit in 39557022339 encoded just eight frames, with
-  // a 3.52s first gap and no intermediate panel pose. Keep the frame/target
-  // motion gates and record only this exact transition through the compositor.
+  // 出现 7.376667→7.375000 的 PTS 倒退；该动作改用合成器采集。
   const useCompositor = name === 'zhajinhua-leaderboard-enter'
     || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
-    || name === 'texas-holdem-personal-leaderboard-exit'
-    // Its entrance in 39563456373 likewise had only nine original frames;
-    // the first sidebar was already full size, followed by data loading.
-    || name === 'texas-holdem-personal-leaderboard-enter'
     // 39560079179's own-profile first appeared at full size; later data filling
     // cannot prove zoom. Collect the three exact profile entrances afresh.
     || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)
@@ -68,10 +61,15 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 39608277325 的举报入场合成器原片只有9帧且存在5.068秒空档；
   // 39608143748 的德州排行榜入场在第112→113帧跨过1.733秒，
   // 从牌桌直接到完整侧栏。两者改用固定XCTest，保留帧数及目标运动门禁。
-  const backend = backendOverride ?? (['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
+  // 应用59ba已把个人榜单切到原生驱动；39625229676的合成器原片只有
+  // 一个中间侧栏且没有可核验的同步关闭按钮位移。两向均固定XCTest
+  // 30fps单次采集，仍需完整目标的真实中间运动，不使用数据加载冒充动画。
+  const leaderboardRecording = ['texas-holdem-leaderboard-enter',
+    'texas-holdem-personal-leaderboard-enter', 'texas-holdem-personal-leaderboard-exit'].includes(name);
+  const backend = backendOverride ?? (leaderboardRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
-    'texas-holdem-leaderboard-enter'].includes(name) ? 'xctest'
+    ].includes(name) ? 'xctest'
     : useCompositor ? 'simctl' : device.nativeVideoBackend);
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
@@ -79,7 +77,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs,
       // 39616432083 的60fps原片有倒退PTS；只降低此入口的实际采集帧率，
       // 不改应用动画、原始媒体时间戳或真实中途姿态门禁。
-      name === 'texas-holdem-leaderboard-enter' ? 30 : 60));
+      leaderboardRecording ? 30 : 60));
   } else {
     const processStartedAt = performance.now();
     const processStartedUtc = new Date().toISOString();
@@ -155,7 +153,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     });
     const timeline = validateRecordedTimeline(probe.frames, stoppedAt - triggerAt, minimumDistinctFrames);
     mark('probe-complete');
-    console.log(`IOS > 录屏 ${name}：${probe.frames.length} 帧，媒体时长 ${Math.round(timeline.durationMs)} ms`);
+    console.log(`IOS > 录屏 ${name}：${probe.frames.length} 原始帧、${timeline.frameIndices.length} 有效候选，媒体时长 ${Math.round(timeline.durationMs)} ms；排除帧序 ${JSON.stringify(timeline.omittedFrameIndices)}`);
     await testInfo.attach(`${name}-encoded-timeline`, { body: JSON.stringify(timeline), contentType: 'application/json' });
     mkdirSync(frames);
     const { x, y, width, height } = region;
@@ -168,7 +166,8 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
       // native test budget compressing temporary full-resolution frame files.
       '-compression_level', '1', path.join(frames, 'frame-%04d.png')], { timeout: 180_000 });
     mark('decode-complete');
-    const pictures = await readRecordedFrameFiles(frames, timeline.timestampsMs.length);
+    const decoded = await readRecordedFrameFiles(frames, probe.frames.length);
+    const pictures = timeline.frameIndices.map(index => decoded[index]);
     mark('frames-read');
     const keyframes = [];
     const distinct = timeline.timestampsMs.map((time, index) => ({ time, index }))
@@ -177,13 +176,13 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     for (const [order, index] of previewIndices.entries()) {
       const attachment = `${name}-preview-keyframe-${order + 1}`;
       await testInfo.attach(attachment, { body: pictures[index], contentType: 'image/png' });
-      keyframes.push({ attachment, timestampMs: timeline.timestampsMs[index] });
+      keyframes.push({ attachment, timestampMs: timeline.timestampsMs[index], frameIndex: timeline.frameIndices[index] });
     }
     await testInfo.attach(`${name}-video-preview-keyframes`, {
       body: JSON.stringify(keyframes), contentType: 'application/json',
     });
     console.log(`IOS > 录屏 ${name}：完成 ${pictures.length} 张原始帧解码和读取`);
-    return Object.assign(pictures, { timestampsMs: timeline.timestampsMs });
+    return Object.assign(pictures, { timestampsMs: timeline.timestampsMs, sourceFrameIndices: timeline.frameIndices });
   } finally {
     mark('cleanup-start');
     try { await rm(frames, { recursive: true, force: true }); }

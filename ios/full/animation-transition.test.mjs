@@ -166,7 +166,7 @@ test('短录像必须保留真实中途过程，14帧首尾硬切仍失败', asy
     await run([before, ...Array(12).fill(middle), after]);
     await assert.rejects(run([...Array(7).fill(before), ...Array(7).fill(after)]), /真实动画帧/);
     await assert.rejects(run(Array(14).fill(after)), /首帧/);
-    await assert.rejects(run([before, middle, after]), /真实连续帧/);
+    await assert.rejects(run([before, middle, after]), /真实候选帧/);
   } finally {
     if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = previousMode;

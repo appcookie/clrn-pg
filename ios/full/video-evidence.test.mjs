@@ -18,7 +18,7 @@ function fixture() {
     { name: 'toast-native-video', contentType: 'video/mp4', path: '/runner/clip.mp4' },
     { name: 'keyframe', contentType: 'image/png', body: png.toString('base64') },
     { name: 'toast-video-keyframes', contentType: 'application/json', body: Buffer.from(JSON.stringify([
-      { attachment: 'keyframe', timestampMs: 125 },
+      { attachment: 'keyframe', timestampMs: 125, frameIndex: 8 },
     ])).toString('base64') },
   ];
   const report = { suites: [{ specs: [{ title: 'toast', tests: [{ results: [{ status: 'failed', attachments }] }] }] }] };
@@ -32,6 +32,7 @@ test('失败运行导出原始MP4与实际PTS关键帧，保留失败状态和�
     const m = exportVideoEvidence(f.artifact, f.output, { run: '123' });
     assert.equal(m.videos[0].status, 'failed'); assert.equal(m.videos[0].keyframeKind, 'asserted');
     assert.equal(m.videos[0].keyframes[0].timestampMs, 125);
+    assert.equal(m.videos[0].keyframes[0].frameIndex, 8);
     assert.deepEqual(readFileSync(join(f.output, '001.mp4')), f.bytes);
     assert.deepEqual(readFileSync(join(f.output, '001-1.png')), f.png);
     assert.match(m.videos[0].sha256, /^[a-f0-9]{64}$/);
