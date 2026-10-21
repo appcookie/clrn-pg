@@ -13,6 +13,22 @@ import { gameNodes, gameNodesWithin, gameSemanticText } from './game-controls';
  */
 export async function replay(proxy: Mitmproxy, game: 'texas' | 'zhajinhua', roomId: string, data: unknown): Promise<void> {
   expect((await gameSession(proxy)).room?.roomId, '回放只能发送到本轮新建的私人房').toBe(roomId);
+  // Read-only preparation may observe a reconnect, but a mutation is never
+  // repeated. A channel counts only after the server acknowledged its subscribe.
+  const deadline = Date.now() + 30_000;
+  for (;;) {
+    const state = await proxy.command<{ ready: boolean; confirmedSubscriptions: number;
+      liveConnections: number; pendingSubscriptions: number }>(`${game}/replay-ready`, { roomId });
+    expect(typeof state.ready, '代理必须返回真实订阅就绪状态').toBe('boolean');
+    for (const count of [state.confirmedSubscriptions, state.liveConnections, state.pendingSubscriptions]) {
+      expect(Number.isSafeInteger(count) && count >= 0, '代理订阅计数必须有效').toBe(true);
+    }
+    expect(state.ready, '就绪状态必须对应活跃且已获服务端确认的房间订阅')
+      .toBe(state.confirmedSubscriptions > 0 && state.liveConnections > 0);
+    if (state.ready) break;
+    expect(Date.now(), '发送前等待本轮房间真实订阅超时，未发送任何事件').toBeLessThan(deadline);
+    await new Promise(resolve => setTimeout(resolve, 250));
+  }
   // Publication precedes the HTTP acknowledgement. A lost/failed response
   // cannot prove nothing was injected, so never repeat this mutation.
   await proxy.command(`${game}/replay`, { roomId, data });

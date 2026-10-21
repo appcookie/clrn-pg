@@ -24,6 +24,28 @@ class TexasAddonTests(unittest.TestCase):
         self.addon.request(request)
         return request
 
+    def test_readiness_is_authenticated_read_only_and_errors_are_redacted(self):
+        replay = self.addon.texas
+        before = (replay.room_id, replay.replayed_messages)
+        request = flow('http://test-mitmproxy.invalid/texas/replay-ready', 'POST',
+                       json.dumps({'roomId': ROOM}).encode(), 'test-token')
+        self.addon.control(request)
+        self.assertEqual(request.response.status_code, 200)
+        self.assertFalse(request.response.json()['ready'])
+        self.assertEqual((replay.room_id, replay.replayed_messages), before)
+        unauthorized = flow('http://test-mitmproxy.invalid/texas/replay-ready', 'POST',
+                            json.dumps({'roomId': ROOM}).encode())
+        self.addon.control(unauthorized)
+        self.assertEqual(unauthorized.response.status_code, 403)
+        rejected = flow('http://test-mitmproxy.invalid/texas/replay', 'POST',
+                        json.dumps({'roomId': ROOM, 'data': {'private': 'secret'}}).encode(), 'test-token')
+        self.addon.control(rejected)
+        self.assertEqual(rejected.response.status_code, 400)
+        self.assertEqual(rejected.response.json()['errorCode'], 'room_not_subscribed')
+        self.assertEqual(rejected.response.json()['confirmedSubscriptions'], 0)
+        for value in (ROOM, 'test-token', 'secret'):
+            self.assertNotIn(value, rejected.response.text)
+
     def test_read_fixtures_do_not_hide_mutations_or_other_users(self):
         player = PLAYER_IDS[0]
         for path in (f'/v10/profile/{player}', f'/v10/wallet/{player}/currency/coin',

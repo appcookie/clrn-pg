@@ -13,6 +13,8 @@ from zhajinhua_replay import UUID, PLAYER_IDS, ZhajinhuaReplay
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'e2e' / 'mitmproxy'))
 from response_overrides import VisualNetwork, is_staging, prepare_profiles, patch_profiles  # noqa: E402
 
+from replay_control import replay_readiness, replay_error  # noqa: E402
+
 CONTROL_HOST = 'test-mitmproxy.invalid'
 
 
@@ -41,6 +43,7 @@ class ZhajinhuaVisualProxy:
             respond(flow, {'error': 'Forbidden'}, 403)
             return
         path = urlsplit(flow.request.path).path
+        body = None
         try:
             if flow.request.method == 'POST':
                 body = json.loads(flow.request.content)
@@ -48,6 +51,11 @@ class ZhajinhuaVisualProxy:
                     self.scenario = body['scenario']
                     self.replay.release()
                     self.created_room_id = None
+                elif self.scenario == 'visual-stable' and path == '/zhajinhua/replay-ready':
+                    if not self.created_room_id or body.get('roomId') != self.created_room_id:
+                        raise ValueError('Replay requires this test room')
+                    respond(flow, replay_readiness(self.replay, 'zhajinhua', body.get('roomId')))
+                    return
                 elif self.scenario == 'visual-stable' and path == '/zhajinhua/replay':
                     if not self.created_room_id or body.get('roomId') != self.created_room_id:
                         raise ValueError('Replay requires this test room')
@@ -61,8 +69,8 @@ class ZhajinhuaVisualProxy:
                     raise ValueError('Unknown command')
             elif flow.request.method != 'GET' or path != '/status':
                 raise ValueError('Unknown command')
-        except (ValueError, KeyError, TypeError, AttributeError):
-            respond(flow, {'error': 'Invalid replay command'}, 400)
+        except (ValueError, KeyError, TypeError, AttributeError) as error:
+            respond(flow, replay_error(error, self.replay, 'zhajinhua', body), 400)
             return
         respond(flow, {
             'scenario': self.scenario, 'interceptedRequests': 0,
