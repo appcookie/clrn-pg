@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { PNG } from 'pngjs';
 import { playerCountdownNodes, playerCountdown } from './game-countdown.ts';
+import { countdownShapeDistance } from './game-countdown-capture.ts';
 const texasCountdownNodes = nodes => playerCountdownNodes(nodes, 'texas-holdem');
 const texasPlayerCountdown = (nodes, id) => playerCountdown(nodes, id, 'texas-holdem');
 const bounds = { x: 401, y: 2103, width: 163, height: 162 };
@@ -31,4 +33,19 @@ test('拼三张倒计时保留头像外的三像素绘制边缘，仍限定当�
   assert.throws(() => playerCountdown([zPlayer], 'self', 'texas-holdem'), /唯一/);
   assert.throws(() => playerCountdown([{ ...zPlayer, children: [{ ...zTimer,
     bounds: { ...zTimer.bounds, x: 390 } }] }], 'self', 'zhajinhua'), /完整位于/);
+});
+
+test('倒计时只兼容已观察的黄绿配色，丢失扇形或变成蓝色仍失败', () => {
+  const frame = color => {
+    const png = new PNG({ width: 16, height: 16 });
+    for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+      const inSweep = x >= 4 && x < 12 && y >= 4 && y < 12;
+      png.data.set(inSweep ? color : [70, 70, 70, 255], (y * 16 + x) * 4);
+    }
+    return PNG.sync.write(png);
+  };
+  const yellow = frame([255, 220, 20, 255]);
+  assert.equal(countdownShapeDistance(yellow, frame([0, 220, 120, 255])), 0);
+  assert.ok(countdownShapeDistance(yellow, frame([70, 70, 70, 255])) > 10);
+  assert.ok(countdownShapeDistance(yellow, frame([30, 60, 245, 255])) > 10);
 });
