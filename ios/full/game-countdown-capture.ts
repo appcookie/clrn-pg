@@ -4,11 +4,13 @@ import { gameNodes } from './game-controls';
 import { playerCountdown } from './game-countdown';
 import { recordScreenSamples } from './video-frames';
 import { captureMovingKeyframes } from './loop-keyframes';
+import { cropNativeFrame } from './motion-regions';
 import { PNG } from 'pngjs';
 
 /** The native countdown is yellow or green across real runs of the same room.
- * Compare its text and sweep geometry while accepting those two observed hues;
- * red avatar pixels, gray background, and every other color remain unchanged.
+ * The recording also starts at different real seconds. Compare the sweep and
+ * surrounding layout while the center digits are verified by native semantics;
+ * red avatar pixels, gray background, and other hues remain unchanged.
  */
 export function countdownShapeDistance(left: Buffer, right: Buffer): number {
   const a = PNG.sync.read(left), b = PNG.sync.read(right);
@@ -21,12 +23,17 @@ export function countdownShapeDistance(left: Buffer, right: Buffer): number {
     return saturation > 45 && (green || yellow) ? [255, 255, 255] : [r, g, blue];
   };
   let difference = 0;
+  let comparedPixels = 0;
+  const digitTop = Math.floor(a.height * 0.27), digitBottom = Math.ceil(a.height * 0.75);
   for (let offset = 0; offset < a.data.length; offset += 4) {
+    const y = Math.floor(offset / 4 / a.width);
+    if (y >= digitTop && y < digitBottom) continue;
     const first = normalized(a.data, offset), second = normalized(b.data, offset);
     difference += Math.abs(first[0] - second[0]) + Math.abs(first[1] - second[1])
       + Math.abs(first[2] - second[2]);
+    comparedPixels++;
   }
-  return difference / (a.width * a.height * 3);
+  return difference / (comparedPixels * 3);
 }
 
 /** Start a fresh real 120s clock before recording, after any previous image
@@ -49,5 +56,8 @@ export async function capturePlayerCountdown(device: NativeDevice, game: 'texas-
       body: JSON.stringify({ before: before!.seconds, after: after.seconds }), contentType: 'application/json',
     });
   });
-  await captureMovingKeyframes(device, name, info, [before!.node.bounds], 10, countdownShapeDistance, 1, [], frames);
+  const firstSweep = await cropNativeFrame(Buffer.from(frames[0].png, 'base64'), before!.node.bounds);
+  const lastSweep = await cropNativeFrame(Buffer.from(frames.at(-1)!.png, 'base64'), before!.node.bounds);
+  expect(countdownShapeDistance(firstSweep, lastSweep), '倒计时扇形自身必须真实运动').toBeGreaterThan(2);
+  await captureMovingKeyframes(device, name, info, [before!.node.bounds], 20, countdownShapeDistance, 1, [], frames);
 }

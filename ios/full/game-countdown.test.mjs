@@ -35,17 +35,19 @@ test('拼三张倒计时保留头像外的三像素绘制边缘，仍限定当�
     bounds: { ...zTimer.bounds, x: 390 } }] }], 'self', 'zhajinhua'), /完整位于/);
 });
 
-test('倒计时只兼容已观察的黄绿配色，丢失扇形或变成蓝色仍失败', () => {
-  const frame = color => {
+test('倒计时忽略变化的数字，只兼容黄绿扇形，缺失或变蓝仍失败', () => {
+  const frame = (color, digit = 70) => {
     const png = new PNG({ width: 16, height: 16 });
     for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
-      const inSweep = x >= 4 && x < 12 && y >= 4 && y < 12;
-      png.data.set(inSweep ? color : [70, 70, 70, 255], (y * 16 + x) * 4);
+      const inSweep = x >= 4 && x < 12 && y < 4;
+      const inDigit = x >= 5 && x < 11 && y >= 6 && y < 10;
+      png.data.set(inSweep ? color : inDigit ? [digit, digit, digit, 255] : [70, 70, 70, 255],
+        (y * 16 + x) * 4);
     }
     return PNG.sync.write(png);
   };
   const yellow = frame([255, 220, 20, 255]);
-  assert.equal(countdownShapeDistance(yellow, frame([0, 220, 120, 255])), 0);
+  assert.equal(countdownShapeDistance(yellow, frame([0, 220, 120, 255], 255)), 0);
   assert.ok(countdownShapeDistance(yellow, frame([70, 70, 70, 255])) > 10);
   assert.ok(countdownShapeDistance(yellow, frame([30, 60, 245, 255])) > 10);
 });
