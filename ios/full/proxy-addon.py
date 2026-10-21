@@ -350,7 +350,11 @@ class IosVisualProxy:
         request = urllib.request.Request(os.environ['IOS_FIXTURE_URL'], data=payload,
             headers={'Content-Type': 'application/json',
                      'Authorization': os.environ['IOS_FIXTURE_TOKEN']})
-        result = await asyncio.to_thread(self.fixture_response, request)
+        self.transport.fixture_started(flow)
+        try:
+            result = await asyncio.to_thread(self.fixture_response, request)
+        finally:
+            self.transport.fixture_finished(flow)
         if result is None:
             return
         if result.get('aborted'):

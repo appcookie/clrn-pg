@@ -1,6 +1,8 @@
 """只读传输计数；不保存头、查询参数、正文、关闭原因或会话身份。"""
-from collections import Counter
+from collections import Counter, OrderedDict
+from datetime import datetime, timezone
 import json
+import math
 import re
 from time import monotonic
 from urllib.parse import urlsplit
@@ -16,6 +18,7 @@ class TransportDiagnostics:
         self.socket_messages = Counter()
         self.socket_errors = Counter()
         self.socket_closes = Counter()
+        self.http_events = OrderedDict()
 
     @staticmethod
     def host(value):
@@ -83,17 +86,64 @@ class TransportDiagnostics:
         code = code if type(code) is int and 0 <= code <= 65535 else None
         initiator = ('client' if flow.websocket.closed_by_client is True else
                      'server' if flow.websocket.closed_by_client is False else 'unknown')
+        if state:
+            state['close'] = dict(code=code, initiator=initiator, transportError=bool(flow.error))
         self.socket_closes[(*endpoint, code, initiator, bool(flow.error))] += 1
 
     def request(self, flow):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
         if host != '<other>' and path:
             self.requests[(host, path)] += 1
+            method = flow.request.method
+            self.http_events[flow.id] = dict(host=host, path=path,
+                method=method if method in ('GET', 'POST', 'OPTIONS', 'HEAD') else '<other>',
+                started=self.clock(), ended=None, status=None, mocked=False)
+            while len(self.http_events) > 128:
+                self.http_events.popitem(last=False)
+
+    def fixture_started(self, flow):
+        event = self.http_events.get(flow.id)
+        if event is not None:
+            event['fixtureStarted'] = self.clock()
+
+    def fixture_finished(self, flow):
+        event = self.http_events.get(flow.id)
+        if event is not None:
+            event['fixtureEnded'] = self.clock()
+
+    @staticmethod
+    def health(response):
+        # Only the public health contract is inspected; never retain arbitrary
+        # bodies, error descriptions, request headers, URLs or metadata servers.
+        if not response or len(response.content or b'') > 4096:
+            return {}
+        try:
+            body = response.json()
+        except (ValueError, UnicodeDecodeError):
+            return {}
+        if not isinstance(body, dict):
+            return {}
+        result = {}
+        load = body.get('server_load')
+        if isinstance(load, str):
+            result['serverLoad'] = load if load in ('normal', 'unavailable', 'busy', 'overload') else '<other>'
+        delay = body.get('backend_delay')
+        if type(delay) in (int, float) and math.isfinite(delay) and 0 <= delay <= 1_000_000_000:
+            result['backendDelay'] = delay
+        return result
 
     def response(self, flow):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
         if host != '<other>' and path:
             self.responses[(host, path, flow.response.status_code if flow.response else 0)] += 1
+            event = self.http_events.get(flow.id)
+            if event is not None:
+                event.update(ended=self.clock(), status=flow.response.status_code if flow.response else 0,
+                    mocked=flow.metadata.get('ios_mocked') is True, transportError=bool(flow.error),
+                    source='visual-node-exclusion' if flow.metadata.get('visual_node_excluded') is True
+                        else 'fixture' if flow.metadata.get('ios_mocked') is True else 'upstream')
+                if path == '/node/v1/status':
+                    event.update(self.health(flow.response))
 
     def tls_failure(self, kind, data):
         client = getattr(data.context, 'client', None)
@@ -106,12 +156,21 @@ class TransportDiagnostics:
         now = self.clock()
         ago = lambda value: round(max(0, now - value) * 1000) if value is not None else None
         return {
+            'sampledAtUtc': datetime.now(timezone.utc).isoformat(),
             'requests': [{'host': host, 'path': path, 'count': count}
                 for (host, path), count in sorted(self.requests.items())],
             'responses': [{'host': host, 'path': path, 'status': status, 'count': count}
                 for (host, path, status), count in sorted(self.responses.items())],
             'tlsFailures': [{'kind': kind, 'host': host, 'count': count}
                 for (kind, host), count in sorted(self.failures.items())],
+            'httpEvents': [{key: value for key, value in event.items()
+                if key not in ('started', 'ended', 'fixtureStarted', 'fixtureEnded')} | {
+                    'requestAgoMs': ago(event['started']), 'responseAgoMs': ago(event['ended']),
+                    'elapsedMs': round((event['ended'] - event['started']) * 1000)
+                        if event['ended'] is not None else None,
+                    'fixtureElapsedMs': round((event['fixtureEnded'] - event['fixtureStarted']) * 1000)
+                        if event.get('fixtureEnded') is not None else None}
+                for event in self.http_events.values()],
             'websocket': {
                 'opened': len(self.sockets),
                 'connections': [{'host': state['endpoint'][0], 'path': state['endpoint'][1],
@@ -121,7 +180,8 @@ class TransportDiagnostics:
                     # WebSocket Ping/Pong control frames. Do not claim those.
                     'lastDataMessageAgoMs': ago(state['lastActivity']),
                     'lastClientMessageAgoMs': ago(state['clientToServer']),
-                    'lastServerMessageAgoMs': ago(state['serverToClient'])}
+                    'lastServerMessageAgoMs': ago(state['serverToClient']),
+                    'close': state.get('close')}
                     for state in self.sockets.values()],
                 'messages': [{'host': host, 'path': path, 'direction': direction,
                     'type': kind, 'count': count}

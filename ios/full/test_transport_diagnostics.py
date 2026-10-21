@@ -97,6 +97,8 @@ class TransportTests(unittest.TestCase):
         self.assertEqual(ws['connections'][0]['lastClientMessageAgoMs'], 4000)
         self.assertEqual(ws['connections'][0]['lastServerMessageAgoMs'], 3000)
         self.assertEqual(ws['connections'][0]['closedAgoMs'], 2000)
+        self.assertEqual(ws['connections'][0]['close'],
+            {'code': 1006, 'initiator': 'server', 'transportError': False})
         self.assertEqual(incoming.content, content)
         self.assertFalse(incoming.dropped)
         self.assertFalse(outgoing.dropped)
@@ -131,6 +133,68 @@ class TransportTests(unittest.TestCase):
         self.assertIsNone(result['closed'][0]['code'])
         self.assertEqual(result['closed'][0]['initiator'], 'unknown')
         self.assertNotIn('private', json.dumps(result))
+
+    def test_health_and_metadata_timeline_distinguishes_fixture_delay_pending_and_errors(self):
+        now = [10.0]
+        diagnostics = TransportDiagnostics(clock=lambda: now[0])
+        status = flow('/node/v1/status?token=private-token')
+        status.request.headers['Authorization'] = 'private-authorization'
+        diagnostics.request(status)
+        now[0] = 10.1
+        diagnostics.fixture_started(status)
+        now[0] = 12.6
+        diagnostics.fixture_finished(status)
+        now[0] = 13.2
+        status.response = http.Response.make(200, json.dumps({'server_load': 'normal',
+            'backend_delay': 327, 'private': 'private-body'}).encode())
+        diagnostics.response(status)
+        metadata = flow('/public/v12/metadata/servers?token=private-token', 'POST', {'private': 'body'})
+        diagnostics.request(metadata)
+        now[0] = 24.0
+        metadata.response = http.Response.make(200, b'{"result":{"servers":["private-node"]}}')
+        diagnostics.response(metadata)
+        failed = flow('/node/v1/status')
+        diagnostics.request(failed)
+        now[0] = 25.0
+        failed.error = SimpleNamespace(msg='private-transport-error')
+        diagnostics.response(failed)
+        pending = flow('/node/v1/status')
+        diagnostics.request(pending)
+        events = diagnostics.snapshot()['httpEvents']
+        self.assertEqual(events[0]['elapsedMs'], 3200)
+        self.assertEqual(events[0]['fixtureElapsedMs'], 2500)
+        self.assertEqual(events[0]['serverLoad'], 'normal')
+        self.assertEqual(events[0]['backendDelay'], 327)
+        self.assertFalse(events[0]['mocked'])
+        self.assertEqual(events[1]['elapsedMs'], 10800)
+        self.assertEqual(events[1]['method'], 'POST')
+        self.assertNotIn('serverLoad', events[1])
+        self.assertEqual(events[2]['status'], 0)
+        self.assertTrue(events[2]['transportError'])
+        self.assertIsNone(events[3]['responseAgoMs'])
+        self.assertIsNone(events[3]['elapsedMs'])
+        for sensitive in ('private', 'token=', 'Authorization', status.id):
+            self.assertNotIn(sensitive, json.dumps(diagnostics.snapshot()))
+
+    def test_health_fields_are_strict_allowlisted_and_events_bounded(self):
+        diagnostics = TransportDiagnostics()
+        for value in [True, 'private-delay', float('nan'), float('inf'), -1, 1e20]:
+            request = flow('/node/v1/status')
+            diagnostics.request(request)
+            request.metadata['ios_mocked'] = True
+            request.response = http.Response.make(200,
+                json.dumps({'server_load': 'private-load', 'backend_delay': value}).encode())
+            diagnostics.response(request)
+            event = diagnostics.snapshot()['httpEvents'][-1]
+            self.assertEqual(event['serverLoad'], '<other>')
+            self.assertNotIn('backendDelay', event)
+            self.assertTrue(event['mocked'])
+        for body in [b'not-json-private', b'[]', b'{"server_load":"normal"}' + b' ' * 4096]:
+            self.assertEqual(diagnostics.health(http.Response.make(200, body)), {})
+        for _ in range(130):
+            diagnostics.request(flow('/node/v1/status'))
+        self.assertEqual(len(diagnostics.snapshot()['httpEvents']), 128)
+        self.assertNotIn('private', json.dumps(diagnostics.snapshot()))
 
     def test_reconnect_and_failed_upgrade_remain_distinguishable_without_flow_ids(self):
         diagnostics = TransportDiagnostics()
