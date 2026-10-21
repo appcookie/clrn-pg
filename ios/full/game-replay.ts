@@ -46,10 +46,15 @@ export async function replay(proxy: Mitmproxy, game: 'texas' | 'zhajinhua', room
 export async function gameCardNames(device: AndroidDevice, container: string, marker: string, expected: string[],
   options: { scope?: string; namedOnly?: boolean } = {}): Promise<void> {
   await expect.poll(async () => {
+    const started = performance.now();
     const nodes = await gameNodes(device);
-    return (options.scope ? gameNodesWithin(nodes, options.scope) : nodes).filter(node => node.res === container)
+    const names = (options.scope ? gameNodesWithin(nodes, options.scope) : nodes).filter(node => node.res === container)
       .map(node => gameSemanticText(node, marker) || '')
       .filter(text => !options.namedOnly || text !== '').sort();
+    console.log(`IOS > 牌面观测 ${container}：${JSON.stringify({ names, elapsedMs: Math.round(performance.now() - started) })}`);
+    return names;
   },
-  { timeout: 30_000, intervals: [250] }).toEqual([...expected].sort());
+  // 39577732340 的河牌恢复在30秒内只暴露四个可见容器，失败后的原生树
+  // 和截图均有完整五张牌；沿用普通控件的45秒只读就绪预算，不重发牌局。
+  { timeout: 45_000, intervals: [250] }).toEqual([...expected].sort());
 }
