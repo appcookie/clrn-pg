@@ -13,9 +13,9 @@ import { gameNodes, gameNodesWithin, gameSemanticText } from './game-controls';
  */
 export async function replay(proxy: Mitmproxy, game: 'texas' | 'zhajinhua', roomId: string, data: unknown): Promise<void> {
   expect((await gameSession(proxy)).room?.roomId, '回放只能发送到本轮新建的私人房').toBe(roomId);
-  await expect(async () => {
-    await proxy.command(`${game}/replay`, { roomId, data });
-  }).toPass({ timeout: 30_000, intervals: [500] });
+  // Publication precedes the HTTP acknowledgement. A lost/failed response
+  // cannot prove nothing was injected, so never repeat this mutation.
+  await proxy.command(`${game}/replay`, { roomId, data });
 }
 
 /**
