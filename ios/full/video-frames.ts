@@ -28,7 +28,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // The original XCTest MOV in 39528661625 also contains a backwards PTS
   // during the ZJH leaderboard entrance (2.793333 -> 2.791667). Recording
   // through the compositor avoids repairing/reordering that invalid media.
-  const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter';
+  // Buy-in XCTest media 39527425854 captured the menu closing, then jumped
+  // directly to the completed 300 ms zoom. Its menu frames are not evidence
+  // of the popup's motion; collect that target through the compositor too.
+  const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
+    || /^(?:texas-holdem|zhajinhua)-buy_in-enter$/.test(name);
   const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;

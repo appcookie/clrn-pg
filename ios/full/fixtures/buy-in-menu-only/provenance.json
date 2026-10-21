@@ -1,0 +1,30 @@
+{
+  "purpose": "Negative regression fixture only; not an approved visual baseline",
+  "run": "https://github.com/appcookie/clrn-pg/actions/runs/39527425854",
+  "sourceCommit": "b09f0dba2bae9981ce3b03131a902cad67616def",
+  "artifact": 12316282481,
+  "video": "texas-holdem-buy-in-enter-native-video-25b4e5a8cd945dec329b970fb7096c81ffea4875.mp4",
+  "videoFrame": 166,
+  "crop": {
+    "x": 496,
+    "y": 809,
+    "width": 564,
+    "height": 938
+  },
+  "processing": "Original RGB pixels cropped without rescaling. Start/end from native PNG attachments; middle from the original MP4 decoded to RGB before exact crop. The menu/dimmer changes but no buy-in card is visible.",
+  "images": [
+    {
+      "name": "start.png",
+      "sha256": "9bdfe579bb99086910d249ee509e709376002a8da7838c615f336ed6cd560f97"
+    },
+    {
+      "name": "end.png",
+      "sha256": "3074a19842c11c62d7f072683377d195d932c731613de0cb264d515a1bad5557"
+    },
+    {
+      "name": "menu-dimmer-only.png",
+      "sha256": "b183e4a975dd9828dc3bdf8886ea7ece3f3764f970270cd5df1cb9ffadf84724"
+    }
+  ],
+  "videoSha256": "eab6554a62ca6d54e0bd35049ba68d13a4146ad555b8ae4e0811685ad7fdbd10"
+}

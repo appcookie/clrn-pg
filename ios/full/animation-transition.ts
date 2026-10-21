@@ -20,6 +20,7 @@ import { shortAnimationMinimumFrames } from './video-timeline';
 import { safeNativeTree } from './diagnostics';
 import { alertEndpointClockMasks } from './alert-endpoint-masks';
 import { nativeLevelUpRegions, type LevelUpRegions } from './level-up-region';
+import { buyInTargetMotionBounds } from './pregame-panel-region';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -124,6 +125,20 @@ export async function nativeTransitionEvidence(before: Buffer, after: Buffer, ti
     }
   }
   return { total, progress, candidates };
+}
+
+/** Require motion of the buy-in card itself. The drawer and its dimmer may
+ * disappear first; neither supplies a valid phase of the new card's zoom.
+ */
+export async function buyInTargetEvidence(before: Buffer, after: Buffer, timeline: Buffer[]) {
+  const evidence = await nativeTransitionEvidence(before, after, timeline);
+  const minimumLocalMotion = Math.max(2.5, localMotionDistance(before, after) * 0.15);
+  const localMotionCandidates = evidence.candidates.map(item => ({ index: item.index,
+    localMotion: localMotionDistance(before, item.frame) }));
+  const accepted = new Set(localMotionCandidates.filter(item => item.localMotion >= minimumLocalMotion)
+    .map(item => item.index));
+  return { ...evidence, minimumLocalMotion, localMotionCandidates,
+    candidates: evidence.candidates.filter(item => accepted.has(item.index)) };
 }
 
 /** Require a recorded frame to follow an approved spatial phase, away from both endpoints.
@@ -286,7 +301,25 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         `${name} 第 ${index + 1} 个区域必须独立运动`).toBe(true);
     }
   }
-  const { total, progress, candidates } = await nativeTransitionEvidence(before, after, timeline);
+  const evidence = await nativeTransitionEvidence(before, after, timeline);
+  const { total, progress } = evidence;
+  let candidates = evidence.candidates;
+  if (/^(?:texas-holdem|zhajinhua)-buy_in-enter$/.test(name)) {
+    const target = buyInTargetMotionBounds(region, beforeNodes);
+    const targetFrames: Buffer[] = [];
+    for (const frame of originals) targetFrames.push(await cropNativeFrame(frame, target, masks));
+    const targetBefore = await cropNativeFrame(beforeScreen, target, masks);
+    const targetAfter = await cropNativeFrame(afterScreen, target, masks);
+    const targetEvidence = await buyInTargetEvidence(targetBefore, targetAfter, targetFrames);
+    await testInfo.attach(`${name}-target-motion`, { body: JSON.stringify({ bounds: target,
+      total: targetEvidence.total, progress: targetEvidence.progress,
+      minimumLocalMotion: targetEvidence.minimumLocalMotion,
+      candidates: targetEvidence.localMotionCandidates }), contentType: 'application/json' });
+    expect(targetEvidence.total, '买入面板自身必须在菜单之外产生明显可见变化').toBeGreaterThan(3);
+    const targetIndices = new Set(targetEvidence.candidates.map(item => item.index));
+    candidates = candidates.filter(item => targetIndices.has(item.index));
+    expect(candidates.length, '买入面板本身必须有真实缩放中间帧，菜单退场不能冒充').toBeGreaterThan(0);
+  }
   console.log(`IOS > 录屏 ${name}：完成轨迹分析，${candidates.length} 张中间帧`);
   expect(total, '入口点击必须产生足够大的可见变化').toBeGreaterThan(3);
   expect(frameColorDistance(timeline[0], before), '录屏首帧必须更接近起点，不能只有动作后的画面')
