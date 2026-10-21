@@ -330,6 +330,18 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
       afterNodes = /^(?:texas-holdem|zhajinhua)-chat-enter$/.test(name)
         ? await chatEndpointNodes(device) : await device.nodes();
       markEndpoint('nodes-complete');
+      if (name === 'texas-holdem-own-profile-enter') {
+        // The completed card was visible in run 39652826481, but one
+        // accessibility snapshot omitted a header/list marker. Observe the
+        // same real endpoint again; never substitute pixels or skip a field.
+        await expect(async () => {
+          try { ownProfileIdentityMask(afterNodes, device.screenSize); }
+          catch {
+            afterNodes = await device.nodes();
+            ownProfileIdentityMask(afterNodes, device.screenSize);
+          }
+        }).toPass({ timeout: 90_000, intervals: [250] });
+      }
       afterScreen = await gameScreenshot(device);
       markEndpoint('screenshot-complete');
     }

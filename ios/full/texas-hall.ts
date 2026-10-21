@@ -43,8 +43,10 @@ export async function texasHall(context: TexasContext): Promise<void> {
       // 请求只有十秒超时预算：先预热录屏，再触发一次真实开关动作。
       const recorded = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, async () => {
         await gameTap(device, 'auto-rebuy-switch');
+        // The native tap can return before the game sends its request. Keep
+        // waiting for that one real request; the proxy hold expires at 45s.
         await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
-          { timeout: 5000 }).toBe(true);
+          { timeout: 20_000 }).toBe(true);
         loadingLayout = await device.layoutNodes();
         await animationInfo.attach('texas-loading-native-layout', {
           body: JSON.stringify(loadingLayout), contentType: 'application/json',
