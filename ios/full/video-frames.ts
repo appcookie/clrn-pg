@@ -65,8 +65,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 应用59ba已把个人榜单切到原生驱动；39625229676的合成器原片只有
   // 一个中间侧栏且没有可核验的同步关闭按钮位移。两向均固定XCTest
   // 30fps单次采集，仍需完整目标的真实中间运动，不使用数据加载冒充动画。
+  // 39659693989 的举报入场合成器原片在触发后相隔358ms，跨过300ms
+  // 弹窗滑入；改用固定XCTest单次采集，继续校验已审查的中途轨迹。
   const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter', 'texas-holdem-leaderboard-enter',
-    'texas-holdem-personal-leaderboard-enter', 'texas-holdem-personal-leaderboard-exit'].includes(name);
+    'texas-holdem-personal-leaderboard-enter', 'texas-holdem-personal-leaderboard-exit',
+    'texas-holdem-report-enter'].includes(name);
   const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
