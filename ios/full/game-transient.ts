@@ -29,16 +29,24 @@ export async function captureToast(device: NativeDevice, name: string, testInfo:
     expectedText = statisticsHelp[Object.keys(statisticsHelp).find(locale => name.startsWith(`${locale}-`)) ?? ''];
   }
   expect(expectedText!, '短提示必须有明确的可见文案预期').toBeTruthy();
-  const { bounds: panel, frameIndices } = await locate(frames);
+  const { bounds: panel, frameIndices, panels } = await locate(frames);
   const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, panel));
   const indices = await toastKeyframes(frames, panel, masks, frameIndices);
   const observations = await recognize(indices.map(index => frames[index]));
+  const padding = Math.ceil(device.screenSize.width / 100);
+  const textPanels = indices.map(index => {
+    const bounds = panels[frameIndices.indexOf(index)];
+    // 保护区含动画路径与阴影；文字必须位于本张实际白色横幅内部，
+    // 不能把路径中的状态栏或横幅下方网络延迟的同名数字当成提示。
+    return { x: bounds.x + padding, y: bounds.y + padding,
+      width: bounds.width - padding * 2, height: bounds.height - padding * 2 };
+  });
   await testInfo.attach(`${name}-toast-observation`, {
-    body: JSON.stringify({ source: 'recorded-keyframe-ocr', expectedText: expectedText!, panel, observations }),
+    body: JSON.stringify({ source: 'recorded-keyframe-ocr', expectedText: expectedText!, panel, textPanels, observations }),
     contentType: 'application/json',
   });
   expect(observations).toHaveLength(3);
-  observations.forEach(lines => assertRecordedToastText(lines, expectedText!, panel, device.screenSize));
+  observations.forEach((lines, index) => assertRecordedToastText(lines, expectedText!, textPanels[index], device.screenSize));
   const keyframes = [];
   for (const [order, index] of indices.entries()) {
     const attachment = `${name}-verified-keyframe-${order + 1}`;

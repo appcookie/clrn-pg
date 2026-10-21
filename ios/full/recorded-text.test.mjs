@@ -8,7 +8,7 @@ const line = (text, changes = {}) => ({ text, confidence: 1,
   bounds: { x: 0.2, y: 0.07, width: 0.6, height: 0.03 }, ...changes });
 test('只接受提示面板内实际识别的文案；背景数字、错字和连接遮挡均失败', () => {
   assert.doesNotThrow(() => assertRecordedToastText([line('Minimum 40')], '40', panel, screen));
-  for (const lines of [[], [line('Minimum 30')], [line('Minimum 40', { confidence: 0.1 })],
+  for (const lines of [[], [line('Minimum 30')], [line('Minimum 400')], [line('Minimum 40', { confidence: 0.1 })],
     [line('Minimum 40', { bounds: { x: 0.1, y: 0.5, width: 0.6, height: 0.1 } })]])
     assert.throws(() => assertRecordedToastText(lines, '40', panel, screen), /实际显示预期文字/);
   assert.throws(() => assertRecordedToastText([line('Minimum 40'), line('Connecting...')], '40', panel, screen), /连接等待/);

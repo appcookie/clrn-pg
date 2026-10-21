@@ -37,5 +37,6 @@ export function assertRecordedToastText(lines: RecordedText[], expected: string,
     return line.confidence >= 0.3 && x >= panel.x && x < panel.x + panel.width && y >= panel.y && y < panel.y + panel.height;
   }).map(line => line.text).join(' ').normalize('NFKC').replace(/\s+/g, '');
   const wanted = expected.normalize('NFKC').replace(/\s+/g, '');
-  if (!wanted || !text.includes(wanted)) throw new Error(`提示关键帧必须实际显示预期文字：${expected}；识别为：${text}`);
+  const matches = /^\d+$/.test(wanted) ? new RegExp(`(?:^|\\D)${wanted}(?:\\D|$)`).test(text) : text.includes(wanted);
+  if (!wanted || !matches) throw new Error(`提示关键帧必须实际显示预期文字：${expected}；识别为：${text}`);
 }

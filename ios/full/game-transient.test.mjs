@@ -24,7 +24,7 @@ function setup(mode = 'stable') {
   const recognize = async images => { calls.push('recognize-keyframes'); assert.equal(images.length, 3);
     return images.map(() => mode === 'absent' ? [] : [{ text: 'explanation', confidence: 1,
       bounds: { x: 0, y: 0, width: 1, height: 1 } }]); };
-  const locate = async () => ({ bounds, frameIndices: [1, 2, 3] });
+  const locate = async () => ({ bounds, frameIndices: [1, 2, 3], panels: [bounds, bounds, bounds] });
   return { original, frames, attachments, calls, device, record, trigger, recognize, locate,
     info: { attach: async (name, value) => attachments.push({ name, ...value }) } };
 }

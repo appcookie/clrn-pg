@@ -33,6 +33,6 @@ export async function recordedToastPanel(frames: Buffer[]) {
   }
   if (!panels.length) throw new Error('录像中没有实际可见的提示横幅');
   const x = Math.min(...panels.map(p => p.x)), y = Math.min(...panels.map(p => p.y));
-  return { frameIndices, bounds: { x, y, width: Math.max(...panels.map(p => p.x + p.width)) - x,
+  return { frameIndices, panels, bounds: { x, y, width: Math.max(...panels.map(p => p.x + p.width)) - x,
     height: Math.max(...panels.map(p => p.y + p.height)) - y } };
 }
