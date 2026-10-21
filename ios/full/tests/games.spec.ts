@@ -61,10 +61,11 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
           const device = await launchApplication({ gameDriver: true,
             enableSystemAnimations: panelAnimation || gameAnimation,
             microphonePermission: scenario.pageLabel === 'signed_in_texas_panels' });
-          // Use the same Apple 60 fps recorder already exercised by the native
-          // panel cases; simctl's four-second startup buffer adds hundreds of
-          // idle frames per game panel. All recorded frames remain validated.
-          if (panelAnimation || gameAnimation) device.nativeVideoBackend = 'xctest';
+          // XCTest game recordings repeatedly omit intermediate poses or have
+          // backwards timestamps (39563456373, 39563462500, 39555894478).
+          // Collect each game action once through the Simulator compositor;
+          // preserve original timestamps, endpoints and target-motion gates.
+          if (panelAnimation || gameAnimation) device.nativeVideoBackend = 'simctl';
           let room: RoomSession | null = null;
           let index = 0;
           try {
