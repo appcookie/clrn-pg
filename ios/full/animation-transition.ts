@@ -16,7 +16,7 @@ import type { NativeDevice as AndroidDevice, NativeNode } from './native-device'
 import { gameScreenshot } from './game-controls';
 import { cropNativeFrame, cropNativeRegions, cropMotionRegion, samePixels } from './motion-regions';
 import { decodeFrame, type FramePixels } from './native-frame';
-import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
+import { maskScreenshot, maskCroppedScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { attachFrameEvidence } from './frame-evidence';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
@@ -405,8 +405,8 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   region = selectedRegion.bounds;
   if (/^zhajinhua-accurate-bet-(enter|exit)$/.test(name))
     assertAccurateBetRegion(name.endsWith('-exit') ? beforeNodes : afterNodes, device.screenSize, region);
-  const startMasks = endpointMasksInRegion(startCompareMasks, region);
-  const endMasks = endpointMasksInRegion(endCompareMasks, region);
+  const startEndpoint = (bytes: Buffer) => maskCroppedScreenshot(bytes, beforeScreen, startCompareMasks, region);
+  const endEndpoint = (bytes: Buffer) => maskCroppedScreenshot(bytes, afterScreen, endCompareMasks, region);
   await testInfo.attach(`${name}-capture-region`, { body: JSON.stringify(selectedRegion), contentType: 'application/json' });
   const before = await crop(beforeScreen);
   const timeline: Buffer[] = [];
@@ -612,12 +612,11 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
           ? reviewedLauncherStart(before, reference)
           : actionStart ? compareTexasActionStart(before, reference, actionStart).samePixels
           : showdown ? compareShowdownStart(before, reference, showdown).samePixels
-          : samePixels(maskScreenshot(before, startMasks),
-            maskScreenshot(reference, startMasks));
+          : samePixels(startEndpoint(before), startEndpoint(reference));
       }), '动画起点视觉回归').toBe(true);
-    const endpoint = compareAnimationEndpoint(maskScreenshot(after, endMasks),
+    const endpoint = compareAnimationEndpoint(endEndpoint(after),
       [`${name}-end.png`, ...endPhaseAnchors.filter(file => existsSync(baselinePath(file)))]
-        .map(file => ({ name: file, bytes: maskScreenshot(readFileSync(baselinePath(file)), endMasks) })));
+        .map(file => ({ name: file, bytes: endEndpoint(readFileSync(baselinePath(file))) })));
     await testInfo.attach(`${name}-endpoint-comparison`, {
       body: JSON.stringify({ channelTolerance: 12, maximumChangedRatio: 0.001,
         comparisons: endpoint.comparisons }), contentType: 'application/json',
