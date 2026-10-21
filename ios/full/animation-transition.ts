@@ -341,7 +341,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   if (name === 'zhajinhua-accurate-bet-enter') accurateBetPanel(afterNodes, device.screenSize);
   if (name === 'zhajinhua-accurate-bet-exit') expect(afterNodes.some(node =>
     node.res === 'accurate-bet-popup-container' && node.visible !== false), '精确加注退场后弹窗必须消失').toBe(false);
-  if (/^zhajinhua-accurate-bet-(enter|exit)$/.test(name)) {
+  if (/^(?:zhajinhua|texas-holdem)-accurate-bet-(enter|exit)$/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...accurateBetEndpointMasks(beforeNodes)];
     endCompareMasks = [...endCompareMasks, ...accurateBetEndpointMasks(afterNodes)];
   }

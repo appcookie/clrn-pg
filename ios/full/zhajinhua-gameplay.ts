@@ -15,6 +15,7 @@ import { zhajinhuaCardRegions, currentZhajinhuaCards, zhajinhuaSeeButton } from 
 import { capturePlayerCountdown } from './game-countdown-capture';
 import { readyZhajinhuaChallengeCancel } from './zhajinhua-operation-region';
 import { prepareAccurateBetEntrance, readyAccurateBetPanel } from './zhajinhua-accurate-bet';
+import { requireZhajinhuaShowdownPlayers } from './zhajinhua-showdown-endpoint';
 
 /**
  * 直接使用 Web 八个牌局状态的网络事件，真实点击原生操作按钮。
@@ -221,8 +222,8 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       frames => captureConcurrentMotion(frames, 'zhajinhua-victory', animationInfo,
         screenBounds(device, { x: 235, y: 960, width: 140, height: 110 })));
     else await send(showdown);
-    await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'player_cards_container').length,
-      { timeout: 30_000 }).toBe(2);
+    await expect(async () => requireZhajinhuaShowdownPlayers(await device.nodes(), self, PLAYER_IDS[0], device.screenSize))
+      .toPass({ timeout: 30_000, intervals: [250] });
     await capture('showdown');
     await send(settlement);
     // 与德州一样，摊牌后的牌型会覆盖余额；从当前可见玩家读取明确的余额语义标记。
