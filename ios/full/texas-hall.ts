@@ -1,7 +1,7 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { gameGone, gameNodes, gameReady, gameTap, gameTextWithin } from './game-controls';
+import { gameGone, gameNodes, gameReady, gameScreenshot, gameTap, gameTextWithin } from './game-controls';
 import { closeGameMask } from './game-pregame';
 import { dismissKeyboard } from './keyboard';
 import { focusedCaretMask } from './screenshot';
@@ -13,6 +13,8 @@ import accountPresentation from '../../visual/fixtures/account-presentation.json
 import { recordScreenSamples } from './video-frames';
 import { gameLoadingRegions } from './game-loading-region';
 import { triggerPredictionResult } from './prediction-result';
+import { loadingWindow } from './loading-window';
+import type { NativeLayoutNode } from './native-device';
 
 /**
  * 复用 Web 的大厅牌桌、自动带入、举报、个人收益、猜牌及升级状态。
@@ -36,18 +38,19 @@ export async function texasHall(context: TexasContext): Promise<void> {
     await proxy.command('texas/ui', {});
     await proxy.command('android/auto-rebuy-hold', { hold: true });
     try {
-      await gameTap(device, 'auto-rebuy-switch');
-      await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
-        { timeout: 5000 }).toBe(true);
-      const loadingLayout = await device.layoutNodes();
-      await animationInfo.attach('texas-loading-native-layout', {
-        body: JSON.stringify(loadingLayout), contentType: 'application/json',
-      });
-      const regions = gameLoadingRegions(loadingLayout, device.screenSize);
-      await animationInfo.attach('texas-loading-regions', { body: JSON.stringify(regions), contentType: 'application/json' });
-      // Keep both images alive through the entire recording. A fixed delayed
-      // release could finish before XCTest warmed up and record popup text.
-      const samples = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, () => {}, 3000,
+      const beforeLoading = await gameScreenshot(device);
+      let regions!: ReturnType<typeof gameLoadingRegions>, loadingLayout!: NativeLayoutNode[], loaded!: Buffer;
+      // 请求只有十秒超时预算：先预热录屏，再触发一次真实开关动作。
+      const recorded = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, async () => {
+        await gameTap(device, 'auto-rebuy-switch');
+        await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
+          { timeout: 5000 }).toBe(true);
+        loadingLayout = await device.layoutNodes();
+        await animationInfo.attach('texas-loading-native-layout', {
+          body: JSON.stringify(loadingLayout), contentType: 'application/json',
+        });
+        regions = gameLoadingRegions(loadingLayout, device.screenSize);
+      }, 3000,
         async () => {
           const endingLayout = await device.layoutNodes();
           await animationInfo.attach('texas-loading-ending-native-layout', {
@@ -55,8 +58,19 @@ export async function texasHall(context: TexasContext): Promise<void> {
           });
           expect(gameLoadingRegions(endingLayout, device.screenSize),
             '录屏停止时两层加载图标仍须在同一原生位置').toEqual(regions);
+          loaded = await gameScreenshot(device);
           await proxy.command('android/auto-rebuy-hold', { hold: false });
         });
+      const flatten = (node: NativeLayoutNode): NativeLayoutNode[] => [node, ...node.children.flatMap(flatten)];
+      const labels = loadingLayout.flatMap(flatten).filter(node => node.res === 'Loading'
+        && node.clazz === 'XCUIElementTypeStaticText');
+      const bounds = [...new Map(labels.map(node => [JSON.stringify(node.bounds), node.bounds])).values()];
+      expect(bounds, '英文原生加载文字必须具有唯一位置').toHaveLength(1);
+      const window = await loadingWindow(recorded, beforeLoading, loaded, bounds[0]);
+      const samples = window.frames;
+      await animationInfo.attach('texas-loading-window', { body: JSON.stringify({ first: window.first,
+        label: bounds[0], timestampsMs: samples.map(frame => frame.capturedAt) }), contentType: 'application/json' });
+      await animationInfo.attach('texas-loading-regions', { body: JSON.stringify(regions), contentType: 'application/json' });
       await animationInfo.attach('texas-loading-full', { body: Buffer.from(samples[0].png, 'base64'), contentType: 'image/png' });
       await captureMovingKeyframes(device, 'texas-loading-ring', animationInfo, [regions.ring],
         18, undefined, 1, [], samples, regions.ringMasks);
