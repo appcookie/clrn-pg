@@ -1904,6 +1904,877 @@
         ]
       },
       "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-angry/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "ad870f822bba051f9990b1051c0c95d3e295d28b4c819de3f24e6c188364f1ec",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-angry/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "f25742b38a7a514264c07e59728536ecc31866165c53f61f437a6c64dc001341",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-angry/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "6da8a4b8fbe2ff95ba17f3c6d96358d4f98dac64929f597b7477c202e5e64d07",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-cry/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "aa12ceb7d658b69558fb881eb83ecd93ef14d1bc16b2067f8dbc15d7dcbd9843",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-cry/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "fefcc371ecf5f5d841faab2c5490e37068720cf00b2976b0222db044de413292",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-cry/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "86cc9dce4de2bede578d77e90bc46910f73b2ca6526232307e38216c0c26d5e7",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-drink/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "09f92955b2c5d0e341f073822f4d6b4b1aa98e23e42131f28d8fa71301427047",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-drink/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "ec13cd08db0c6362723f9c2786d99a48e9a4a4f4689fadab6fc67f25bd25ded7",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-drink/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "ed5ce903ecc5b8d593645f4d5d34a0516d42d4cf3dc94e77893e1e99e9e91a4b",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-puchi/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "aa12ceb7d658b69558fb881eb83ecd93ef14d1bc16b2067f8dbc15d7dcbd9843",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-puchi/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "e166f18e11337df369c72916560fa21e35359cebc73488780da44dc57878efde",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-puchi/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "ac4d633ad45c7743711faff6aff8b4a15e634aa44b61319c1f515ae72c6a845c",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-titter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "96978b91d9bf5ffb9422137bc16d41034a722bfb638de66c3a5b303203b2fac1",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-titter/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "99cdb83ed52b74794dbff384b2e9de410f239b2abececbb0fd0a225f3586bfca",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-titter/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "f3dc0a91e0abaa1d3c7b6d4546efec429d5a9ec903811bd042d92c0c8358a796",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-smirk/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "f51d79b581bfaf84ed53568dbb8a6cb3dbbe6570dfa0988bdb8266fc055071c0",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-smirk/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "dd8eb1b1ab715aa8e38f2d64807ce405325883c29a682801fd585d8d95bbf383",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-smirk/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "df51f294c8b7b53b6567028a729c20e786fb89add20c71e7ecbc74b2c4d49ceb",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-handclap/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "96978b91d9bf5ffb9422137bc16d41034a722bfb638de66c3a5b303203b2fac1",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-handclap/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "3dbb1817fe2b9aa11afb1784f3cbe811715086aff0a9cfab1a3a8bad9f52404e",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-sticker-handclap/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "359dd0ce36c78d7387988be7e762c17ca0a612730e30c18669f651728c889365",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tomato/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "8df4731b25f61e1d8b32fa5c23c0be91b50ca219485eb78e29fcc4dc43ee370a",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tomato/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "014dfdb0815f046e6d2c93656745a7b1c91155e9346a5db3700d153c9a33c235",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tomato/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "fa851d28bb59864841324e62868c66eec5fc04442eb279774e60bc57a79a1703",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tomato-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "d3018857a6625808754ca1ead6d7725ea08a14d034ff320d0d4af43c0e46a285",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tomato-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "cee928f4a80c03f9286b2d2eda0f318693889fdf180a9e1f6ded5202c08a2326",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tomato-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "0d01dbcf83611af5b2d0c33333749af85837d95b92bb4ddb48864c469da99931",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tea/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "40d671b0c554143fd7d2047e37b703f6badfe2a85491bd10528d70df9a474682",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tea/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "0e55379c0430027e5edf526da046eda8cf4d0776be4ab407fa84fad24b2f30cc",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tea/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "f6e1d7ec239d862ebed1da86ce9b93f5c13081c66c29fdf144b8757344d724a1",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tea-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6a4ad90270575c1730052fe8c0cf3a01b3d986ed397fffb48e4233808e30b0c3",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tea-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "357905a3c6f2ac7e65c40dfe3db246cfd4dab5db8bbb6308a0192ee4c740237d",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-tea-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "c6e9f2d0c029e4e0be771babfd8680fe3d192af6216fe28d35a04ded2010fee7",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-water/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "40d671b0c554143fd7d2047e37b703f6badfe2a85491bd10528d70df9a474682",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-water/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "b0428f805ea78b7fddcc030fd170669c533b42a5147221c06efecf30276d76ec",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-water/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "e92b6f6ca83a9d5f2cf63984959850245b91eee64ad8d88413b6e449491add8a",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-water-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "931cc5b714cf03d64481e432ce4c67673fcc8ef9d29e588b4d9afc27ba910895",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-water-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "818fe7c3edf6404c9153d48bcf3cd5826c3ab0a9a1864cd10e85efc9f4d0014b",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-water-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "b692119582f4875709cd552d61aaceeb178c3decfc8b50f7a4d46d397d878a78",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-flower/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "40d671b0c554143fd7d2047e37b703f6badfe2a85491bd10528d70df9a474682",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-flower/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "76b255ebd1b91248340abb13fb1c78ec7f966e51cfb7bec96f5ae9a2373ac296",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-flower/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "224bd81164d668fdf14747af4f9ac4623d9bb175547d24d4cb2767a43acc749f",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-flower-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "4a60c2d9480d7e7c85de1cad3c0bb3aea45cfe393ab323fe701352bf31d62ae9",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-flower-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "de9f49199cf1e7b3e418237ff579f9879aba1ff205b8657923e0d2c76b3db0ab",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-flower-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "18cd9081798773e3bfa97d5a9cca6d419e74a654e0fdc5878010dfb4b8c7ae44",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-heart/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "40d671b0c554143fd7d2047e37b703f6badfe2a85491bd10528d70df9a474682",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-heart/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "158e3df8798431a827d3c4d5dabd13945a4c304c77de54b9f089b25573fbdae8",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-heart/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "60a6c7ec9a6e9fa105652a933d6e22052159704af205172b3ffed076b787ad77",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-heart-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "cb08e20410fa3c8fc0036a1b44c19488db7e42d000ce296450ca2d94ef4f2840",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-heart-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "24cff80e999079de477a798ed1691a8ac7cc2f73b4ebbb76650ea69bdbb20a21",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-heart-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "ae71ab97b53d1a0c2747a806b60de0c98b8e6751d107ff8bd062acb1b3e7330a",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-good/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "40d671b0c554143fd7d2047e37b703f6badfe2a85491bd10528d70df9a474682",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-good/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "19a286969e85305ba2bfae7235822aa20aca617b6970ca22b1f383d0266ee317",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-good/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "fa8d635f64916b299559b86106688fe584f5e28a3d2832b06377a46ff6f30505",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-good-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "228e543d1b0e87c6f718dc8f5e17c81d22708e1f77ff5109f4156a9895136ccd",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-good-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "51023a7076e5add44da67493d77d525f9271756afc9005576dc8aa54cee1f2a8",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-good-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "04a6bc5e2afa7d568a098053b3ca0c96f38b2993eaa5a5d817eeb7525b7ced5d",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-beer/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "40d671b0c554143fd7d2047e37b703f6badfe2a85491bd10528d70df9a474682",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-beer/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "a375dc32733c2d293bd7945e4a125d0e0461e5b84d2ba15b3cf5f73651253578",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-beer/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "5eff9a5b7b030ea3d18d4bf0c027fbdecd633f7943d6dafd8f21bf04a14a6c7e",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-beer-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5a1df0243370bf664d8d89e9aa455ddfcf1e267592fe8610e121018bb12852fe",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-beer-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "e2a0306d3be4a10d0886dcd3ba1759bf4eff102c399eaa23645405e6571b8231",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-prop-beer-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "b7f6180784d7c91c72f4339ca5d48c1b817b3bf57e6253f32b2111942a782eba",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-level-up/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "f6dfc5a79d5c6e1bba4ad3cb08fa892596dea59fd8999684d168cc18876a31c3",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-level-up-visible/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "caa8a2ae74ad71de034e7967c9d8dbf41b260ee30ce02188cd26efa2d3c7d3bd",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-level-up-countdown/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "e31c858a5ed243c0f7221fd91dbd3769c4adb6a939fc1cd59241f122cbd02cfa",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-level-up/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "8a5d4ad5d563bf5a028fd48f94d47a54f83a50140ee72c431dc1f0ad59e2b541",
+      "source": {
+        "sourceRun": 39528666254,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39528666254",
+        "sourceWorkflowHead": "08488a2016ef64857d1f8836b40661537f6a1778",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-23-1"
+        ]
+      },
+      "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
