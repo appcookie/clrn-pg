@@ -21,8 +21,10 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
             addon = module.IosVisualProxy()
             # network-routes.test.mjs independently executes the real Node router
             # and proves it returns null for these routes after the bridge fix.
-            with patch.object(module.IosVisualProxy, 'fixture_response', return_value=None):
-                for path in ('/node/v1/status', '/public/v12/metadata/servers', '/public/v13/metadata/servers'):
+            with patch.object(module.IosVisualProxy, 'fixture_response',
+                    side_effect=AssertionError('真实连接不能依赖繁忙的Node夹具服务')) as fixture:
+                for path in ('/node/v1/status', '/public/v12/metadata/servers',
+                        '/public/v13/metadata/servers', '/v2/centrifugo/connection/websocket'):
                     request = flow(path)
                     request.request.host = '64.kr-seoul.api.staging.laiwan.shafayouxi.com'
                     await addon.request(request)
@@ -31,7 +33,10 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
                     addon.response(request)
                     self.assertEqual(request.response.status_code, 503)
                     self.assertEqual(request.response.content, b'{"server_load":"unavailable"}')
+                fixture.assert_not_called()
             self.assertTrue(all(not item['mocked'] for item in addon.transport.snapshot()['httpEvents']))
+            self.assertTrue(all(item['fixtureElapsedMs'] is None
+                for item in addon.transport.snapshot()['httpEvents']))
             excluded = flow('/node/v1/status')
             await addon.request(excluded)
             self.assertEqual(excluded.response.status_code, 503)
