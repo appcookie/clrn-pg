@@ -61,8 +61,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 39597196316 的语音入场合成器原片在 5.873333→5.968333 秒间
   // 从未出现跳到近终点，30 帧中没有面板中间姿态。组件仍保持原生
   // 300ms 动画；改用固定 XCTest 单次采集，保留全部真实运动门禁。
+  // 39602805933 的举报退场原片第一、二帧相隔 6.413 秒，完整跨过
+  // 弹窗退出。只对此动作选择 XCTest，不补帧或重放关闭动作。
   const backend = ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
-    'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter'].includes(name) ? 'xctest'
+    'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter',
+    'texas-holdem-pair-play-report-exit'].includes(name) ? 'xctest'
     : useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
