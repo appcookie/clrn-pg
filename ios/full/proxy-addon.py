@@ -78,7 +78,12 @@ class IosVisualProxy:
                     and not flow.request.host.endswith('.api.staging.laiwan.shafayouxi.com'))):
             return
         if self.game:
+            previous_statistics_owner = self.game_session.statistics_owner
             self.game_session.response(flow)
+            if (self.game_session.game_type == 'texas_holdem'
+                    and self.game_session.statistics_owner
+                    and self.game_session.statistics_owner != previous_statistics_owner):
+                self.game.texas.arm_statistics(*self.game_session.statistics_owner)
             self.game.response(flow)
         try:
             body = flow.response.json()

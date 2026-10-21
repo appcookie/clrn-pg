@@ -289,18 +289,38 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     expect(node).toBeDefined();
     const name = player === self ? 'own-profile' : `opponent-profile-${++opponentProfileCount}`;
     const region = screenBounds(device, { x: 180, y: 90, width: 520, height: 500 });
+    const statisticsStatus = async () => (await proxy.command<{
+      selfStatistics: { authorized: boolean; responses: number };
+    }>('status')).selfStatistics;
+    if (player === self) {
+      const status = await statisticsStatus();
+      await animationInfo?.attach('texas-self-statistics-before-profile', {
+        body: JSON.stringify(status), contentType: 'application/json',
+      });
+      expect(status.authorized, '本人只读统计夹具必须绑定本轮真实新建房间及当前self').toBe(true);
+    }
     await animateGamePanel(device, 'texas-holdem', name,
       node!.res!, region, animationInfo, 'enter', 'videoFrames', [],
       async () => {
         // During XCTest recording, a full accessibility snapshot missed these
         // already painted values in run 39527421409. Query the actual unique
-        // label directly, retaining displayed/rect/label validation, and wait
-        // for this fixture's real 100-hand value before capturing the endpoint.
-        await expect.poll(async () => {
-          const values = await Promise.all(['PlayerStatisticComponent_Item_Value_0', 'player-profile-balance']
-            .map(res => device.transientMarker(res)));
-          return values.map(value => value?.text);
-        }, { timeout: 45_000, intervals: [250] }).toEqual(['100', player === self ? initialCoinBalance : '12345']);
+        // accessible row directly: TouchableOpacity aggregates its child text
+        // into "Total Hands, 100". A child Text marker alone remained absent
+        // in 39539834936 despite painted values. Retain displayed/rect/label
+        // validation and require the actual fixed response plus real wallet.
+        try {
+          await expect.poll(async () => {
+            const values = await Promise.all(['PlayerStatisticComponent_Item_0', 'player-profile-balance']
+              .map(res => device.transientMarker(res)));
+            return values.map(value => value?.text);
+          }, { timeout: 45_000, intervals: [250] }).toEqual(['Total Hands, 100', player === self ? initialCoinBalance : '12345']);
+          if (player === self) expect((await statisticsStatus()).responses,
+            '本人统计必须实际经过本轮只读GET夹具').toBeGreaterThan(0);
+        } finally {
+          if (player === self) await animationInfo?.attach('texas-self-statistics-after-profile', {
+            body: JSON.stringify(await statisticsStatus()), contentType: 'application/json',
+          });
+        }
         // captureNativeTransition records a stable tail, then independently
         // compares the complete native endpoint (including every statistic).
         // Do not poll a baseline-sized legacy crop during the animation.

@@ -17,11 +17,26 @@ class TexasReplay:
         self.replayed_messages = 0
         self.self_id = None
         self.created_room_id = None
+        self.statistics_owner = None
+        self.self_statistics_responses = 0
         self.ui_states = None
 
     def arm_created_room(self, room_id, self_id):
         self.room_id = self.created_room_id = room_id
         self.self_id = self_id
+
+    def arm_statistics(self, room_id, self_id):
+        """Authorize only self's read-only statistics after verified creation.
+
+        Private gameplay does not enable RoomView, so it never arms the broad
+        created-room RPC guard. Keep that behavior independent of this fixture.
+        """
+        if not all(isinstance(value, str) and re.fullmatch(UUID, value, re.I)
+                   for value in (room_id, self_id)):
+            raise ValueError('Invalid statistics owner')
+        if (self.room_id and self.room_id != room_id) or (self.self_id and self.self_id != self_id):
+            raise ValueError('Statistics owner differs from active replay')
+        self.statistics_owner = (room_id, self_id)
 
     def publish(self, room_id, data):
         if not isinstance(room_id, str) or not re.fullmatch(UUID, room_id, re.I) or not isinstance(data, dict):
@@ -48,7 +63,14 @@ class TexasReplay:
         self.room_id = None
         self.self_id = None
         self.created_room_id = None
+        self.statistics_owner = None
+        self.self_statistics_responses = 0
         self.ui_states = None
+
+    def self_statistics_authorized(self):
+        return bool(self.room_id and self.self_id
+                    and (self.created_room_id == self.room_id
+                         or self.statistics_owner == (self.room_id, self.self_id)))
 
     def is_replay_publication(self, frame):
         result = frame.get('result')
@@ -181,10 +203,11 @@ class TexasReplay:
         statistics = re.fullmatch(rf"/v1/texas_statistics/player/({UUID})/rounds/(100|1000)", path)
         if statistics:
             player_id, rounds = statistics.groups()
-            own_created_room = (self.created_room_id == self.room_id
-                                and player_id == self.self_id)
+            own_created_room = player_id == self.self_id and self.self_statistics_authorized()
             if player_id not in identifiers and not own_created_room:
                 return None
+            if own_created_room:
+                self.self_statistics_responses += 1
             # Only this read-only statistics endpoint includes the current
             # created room's self. Identity, profile, wallet and mutations keep
             # their existing real-server behavior in the addon method guard.

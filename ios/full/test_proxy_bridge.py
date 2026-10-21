@@ -14,6 +14,38 @@ with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
 
 
 class BridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_private_texas_creation_arms_only_self_statistics_after_real_login(self):
+        user = '10000000-0000-0000-0000-000000000001'
+        room = '20000000-0000-0000-0000-000000000001'
+        with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                'IOS_FUNCTIONAL': 'false', 'IOS_GAME': 'texas-holdem'}):
+            addon = module.IosVisualProxy()
+        self.assertIsNone(addon.game.view.mode)
+        login = flow('/public/v10/user/login/username/password', 'POST', {})
+        login.response = http.Response.make(200, json.dumps({'ok': True, 'result': {
+            'user_id': user, 'username': 'test-only',
+            'api_token': {'token_type': 'Bearer', 'access_token': 'test-token'}}}).encode())
+        addon.response(login)
+        created = flow('/v3/pay_action/do', 'POST', {'user_id': user,
+            'action_url': {'method': 'POST', 'path': '/v2/building/$building_id$/room'},
+            'action_json': {'game_type': 'texas_holdem'}})
+        created.response = http.Response.make(200, json.dumps({'ok': True, 'result': {'room_id': room}}).encode())
+        addon.response(created)
+        self.assertEqual(addon.game.texas.statistics_owner, (room, user))
+        self.assertIsNone(addon.game.texas.created_room_id)
+        self.assertIsNone(addon.game.texas.room_id)
+        # Ownership alone cannot mock reads before the matching real replay.
+        path = f'/v1/texas_statistics/player/{user}/rounds/100'
+        self.assertIsNone(addon.game.texas.http_fixture(path))
+        addon.game.texas.room_id, addon.game.texas.self_id = room, user
+        request = flow(path)
+        addon.game.request(request)
+        self.assertEqual(request.response.json()['result']['total_hands'], 100)
+        addon.game.texas.release()
+        # Subsequent HTTP responses cannot silently re-arm a released fixture.
+        addon.response(login)
+        self.assertIsNone(addon.game.texas.statistics_owner)
+
     async def test_functional_passes_real_business_and_blocks_registration(self):
         with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token', 'IOS_FUNCTIONAL': 'true'}):
             addon = module.IosVisualProxy()

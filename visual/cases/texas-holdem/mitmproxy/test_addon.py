@@ -75,6 +75,35 @@ class TexasAddonTests(unittest.TestCase):
         self.addon.texas.release()
         self.assertIsNone(self.request(path).response)
 
+    def test_private_statistics_authorization_never_arms_rpc_or_other_reads(self):
+        path = f'/v1/texas_statistics/player/{SELF}/rounds/100'
+        self.assertIsNone(self.addon.view.mode)
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.arm_statistics(ROOM, SELF)
+        self.assertIsNone(self.addon.texas.created_room_id)
+        self.assertEqual(self.request(path).response.json()['result']['total_hands'], 100)
+        status = flow('http://test-mitmproxy.invalid/status', 'GET', b'', 'test-token')
+        self.addon.request(status)
+        self.assertEqual(status.response.json()['selfStatistics'], {'authorized': True, 'responses': 1})
+        for identity in (ROOM, SELF, 'test-token'):
+            self.assertNotIn(identity, status.response.text)
+        for method in ('POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'):
+            self.assertIsNone(self.request(path, method).response)
+        for current in (f'/v10/profile/{SELF}', f'/v10/wallet/{SELF}/currency/coin',
+                        f'/v1/texas_statistics/player/{OTHER}/rounds/100', path + '/extra'):
+            self.assertIsNone(self.request(current).response)
+        self.addon.texas.self_id = OTHER
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.self_id = SELF
+        self.addon.texas.room_id = OTHER
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.room_id = ROOM
+        self.addon.texas.release()
+        self.addon.texas.room_id, self.addon.texas.self_id = ROOM, SELF
+        self.assertIsNone(self.request(path).response)
+        self.assertEqual(self.addon.texas.self_statistics_responses, 0)
+
+
     def test_production_hosts_and_disabled_scenarios_always_pass_through(self):
         paths = ('/public/v13/metadata/servers', '/node/v1/status',
                  f'/v10/profile/{PLAYER_IDS[0]}')

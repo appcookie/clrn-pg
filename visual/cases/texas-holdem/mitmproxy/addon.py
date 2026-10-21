@@ -82,6 +82,8 @@ class TexasVisualProxy:
             'scenario': self.scenario, 'interceptedRequests': 0,
             'proxiedRequests': self.proxied_requests, 'stabilizedRequests': self.stabilized_requests,
             'replayedMessages': self.texas.replayed_messages,
+            'selfStatistics': {'authorized': self.texas.self_statistics_authorized(),
+                               'responses': self.texas.self_statistics_responses},
         })
 
     def websocket_message(self, flow):
