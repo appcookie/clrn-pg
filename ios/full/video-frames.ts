@@ -20,9 +20,15 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   const directory = testInfo.outputPath(`video-${name}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
   const video = path.join(directory, 'capture.mp4');
-  console.log(`IOS > 录屏 ${name}：${device.nativeVideoBackend}`);
+  // XCTest recordings 39522175718/39527416889 left only edge phases of this
+  // 200 ms fade (153 ms between its two relevant encoded frames). Use the
+  // Simulator compositor recorder for this specific transition, with the same
+  // original timestamps, endpoints and mandatory middle-frame assertions.
+  // This is one recording/action, never a fallback after a failed assertion.
+  const backend = name === 'texas-holdem-raise-bet-enter' ? 'simctl' : device.nativeVideoBackend;
+  console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
-  if (device.nativeVideoBackend === 'xctest') {
+  if (backend === 'xctest') {
     ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs));
   } else {
     const processStartedAt = performance.now();
