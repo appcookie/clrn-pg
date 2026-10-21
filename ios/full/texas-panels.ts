@@ -92,7 +92,10 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await capture('chat_history');
   await animateGamePanel(device, 'texas-holdem', 'chat-actions', 'in-game-chat-report-button-0',
     screenBounds(device, { x: 60, y: 800, width: 600, height: 390 }), animationInfo, 'enter', 'videoFrames');
-  await gameReady(device, 'in_game_report_message_component');
+  // The action sheet covers its originating chat message, so XCTest marks
+  // in_game_report_message_component hidden while the sheet is open.
+  await gameReady(device, 'report_item_report', 'Report');
+  await gameReady(device, 'report_item_block', 'Block');
   await capture('chat_actions');
   await animateGamePanel(device, 'texas-holdem', 'chat-report', 'report_item_report',
     screenBounds(device, { x: 20, y: 360, width: 680, height: 560 }), animationInfo, 'enter', 'motionFrames',

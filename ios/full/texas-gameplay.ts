@@ -6,7 +6,7 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import type { Mitmproxy } from '../../e2e/helpers/mitmproxy-client';
 import { initialCoinBalance } from '../../scripts/prepare-test-account.mjs';
 import { events, REPLAY_PLAYER_IDS, restoreTable, type Street } from '../../visual/cases/texas-holdem/replayData';
-import { flattenNodes, gameConnected, gameReady, gameGone, gameTap, gameNodes,
+import { flattenNodes, gameConnected, gameReady, gameReadyCurrent, gameGone, gameTap, gameNodes,
   gameSemanticText } from './game-controls';
 import { replay, gameCardNames } from './game-replay';
 import { closeAnimatedGameMask, closeGameMask } from './game-pregame';
@@ -319,7 +319,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
         // captureNativeTransition still independently compares the complete
         // native endpoint (including every statistic) with the original video.
       });
-    await gameReady(device, 'player-profile-popup-close');
+    await gameReadyCurrent(device, 'player-profile-popup-close');
     await gameReady(device, 'PlayerStatisticComponent_Item_Value_0', '100');
   };
   await profile(self);

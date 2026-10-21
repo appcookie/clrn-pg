@@ -99,6 +99,22 @@ export async function gameReady(device: AndroidDevice, res: string, text?: strin
   return found!;
 }
 
+/** 等待录像后的真实控件；优先查询目标，predicate 漏报时读取完整原生树。 */
+export async function gameReadyCurrent(device: AndroidDevice, res: string, text?: string): Promise<NativeNode> {
+  await device.prepareTransientCapture();
+  let found: NativeNode | undefined;
+  await expect(async () => {
+    const observation = await device.inputObservation(res);
+    const { connecting } = gameConnectionState(observation);
+    const nodes = observation.some(node => node.res === res) || connecting
+      ? observation : await gameNodes(device);
+    found = !connecting ? nodes.find(node => node.res === res &&
+      (text === undefined || node.text === text)) as NativeNode | undefined : undefined;
+    expect(found, `${res} 应可见且连接正常`).toBeDefined();
+  }).toPass({ timeout: 90_000, intervals: [250] });
+  return found!;
+}
+
 /**
  * 等待游戏弹层完全移出屏幕。
  * @param device - 专用模拟器连接。
