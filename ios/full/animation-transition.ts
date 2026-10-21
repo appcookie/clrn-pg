@@ -29,6 +29,7 @@ import { texasRaiseClockMasks, texasRaiseValueMask } from './texas-raise-masks';
 import { texasEffectEndpointMasks } from './texas-showdown-region';
 import { accurateBetEntrance, accurateBetPanel, accurateBetEndpointMasks, assertAccurateBetRegion } from './zhajinhua-accurate-bet';
 import { texasActionStart, compareTexasActionStart } from './texas-action-start';
+import { zhajinhuaShowdownLayout, compareShowdownStart, showdownHorizontalEvidence } from './zhajinhua-showdown';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -375,13 +376,22 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const after = await crop(afterScreen);
   const actionStart = /^texas-player-action-(?:call|raise|check|fold)$/.test(name)
     ? texasActionStart(name, beforeNodes, afterNodes, device.screenSize, region) : undefined;
+  const showdown = name === 'zhajinhua-showdown-cards'
+    ? zhajinhuaShowdownLayout(beforeNodes, afterNodes, device.screenSize) : undefined;
   const firstStartDistance = actionStart
     ? compareTexasActionStart(timeline[0], before, actionStart).distance
+    : showdown ? compareShowdownStart(timeline[0], before, showdown).distance
     : frameColorDistance(timeline[0], before);
   if (actionStart) await testInfo.attach(`${name}-start-alignment`, {
     body: JSON.stringify({ ...actionStart, ...compareTexasActionStart(timeline[0], before, actionStart),
       rawDistance: frameColorDistance(timeline[0], before), threshold: 10,
       scope: 'Only first-frame alignment and exact start baseline; raw motion and full end remain unchanged' }),
+    contentType: 'application/json',
+  });
+  if (showdown) await testInfo.attach(`${name}-start-alignment`, {
+    body: JSON.stringify({ ...showdown, ...compareShowdownStart(timeline[0], before, showdown),
+      rawDistance: frameColorDistance(timeline[0], before), threshold: 10,
+      scope: 'Only start alignment and exact start baseline; original cards and complete end are unmasked' }),
     contentType: 'application/json',
   });
   console.log(`IOS > 录屏 ${name}：完成 ${timeline.length} 张遮罩裁图`);
@@ -407,6 +417,16 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const evidence = await nativeTransitionEvidence(before, after, timeline);
   const { total, progress } = evidence;
   let candidates = evidence.candidates;
+  if (showdown) {
+    const horizontal = await showdownHorizontalEvidence(before, after, timeline, candidates.map(item=>item.index), showdown);
+    await testInfo.attach(`${name}-horizontal-card-motion`, {
+      body: JSON.stringify(horizontal), contentType: 'application/json',
+    });
+    for (const card of horizontal.cards) expect(card.candidates.length,
+      `第${card.card}张牌必须有自身牌面真实水平展开，字体加载或其他牌运动不能代替`).toBeGreaterThan(0);
+    candidates = candidates.filter(item=>horizontal.middleIndices.includes(item.index));
+    expect(candidates.length, '第二与第三张牌必须在同一真实展开中途可见').toBeGreaterThan(0);
+  }
   if (/^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)) {
     const targetEvidence = await nativeTargetMotionEvidence(before, after, timeline);
     await testInfo.attach(`${name}-target-motion`, { body: JSON.stringify({ bounds: region,
@@ -509,6 +529,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   expect(total, '入口点击必须产生足够大的可见变化').toBeGreaterThan(3);
   expect(firstStartDistance, '录屏首帧必须更接近起点，不能只有动作后的画面')
     .toBeLessThan(actionStart ? compareTexasActionStart(timeline[0], after, actionStart).distance
+      : showdown ? compareShowdownStart(timeline[0], after, showdown).distance
       : frameColorDistance(timeline[0], after));
   // BottomSheet 的弹簧轨迹可能越过终点；用“同时区别于首尾”选关键帧。
   await testInfo.attach(`${name}-progress`, {
@@ -534,6 +555,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         return name === 'native-launch-and-staging-notice'
           ? reviewedLauncherStart(before, reference)
           : actionStart ? compareTexasActionStart(before, reference, actionStart).samePixels
+          : showdown ? compareShowdownStart(before, reference, showdown).samePixels
           : samePixels(maskScreenshot(before, startMasks),
             maskScreenshot(reference, startMasks));
       }), '动画起点视觉回归').toBe(true);

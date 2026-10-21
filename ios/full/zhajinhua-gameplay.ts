@@ -216,8 +216,7 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     await capture('opponent_turn');
     if (animationInfo) await captureNativeTransition(device, 'zhajinhua-showdown-cards', animationInfo,
       screenBounds(device, { x: 8, y: 697, width: 170, height: 102 }), () => send(showdown),
-      [screenBounds(device, { x: 82, y: 697, width: 52, height: 75,
-        reason: '摊牌前独立运行的对手操作倒计时，遮住右上角数字和圆环' })],
+      [],
       [screenBounds(device, { x: 235, y: 960, width: 140, height: 110 })], 800, 'motionFrames',
       frames => captureConcurrentMotion(frames, 'zhajinhua-victory', animationInfo,
         screenBounds(device, { x: 235, y: 960, width: 140, height: 110 })));

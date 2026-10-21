@@ -45,7 +45,12 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Personal leaderboard exit in 39557022339 encoded just eight frames, with
   // a 3.52s first gap and no intermediate panel pose. Keep the frame/target
   // motion gates and record only this exact transition through the compositor.
+  // ZJH showdown in 39555899245 has no horizontal card spread in the original
+  // XCTest MOV: frame 44 has only Pair; frame 45 already has all final card
+  // positions with temporarily oversized sprite glyphs. Preserve the separate
+  // card identity/displacement gates and collect one compositor recording.
   const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
+    || name === 'zhajinhua-showdown-cards'
     || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
     || name === 'texas-holdem-personal-leaderboard-exit'
     || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);

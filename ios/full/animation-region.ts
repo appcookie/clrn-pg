@@ -5,6 +5,7 @@ import { zhajinhuaBetRegion } from './zhajinhua-bet-region';
 import { nativePregamePanelBounds } from './pregame-panel-region';
 import { nativeApplicationsPanelBounds } from './applications-region';
 import { zhajinhuaOperationRegion } from './zhajinhua-operation-region';
+import { zhajinhuaShowdownLayout } from './zhajinhua-showdown';
 import type { NativeDevice, NativeNode } from './native-device';
 import { nativeProfilePanelBounds } from './profile-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
@@ -206,6 +207,10 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
   };
   if (name === 'texas-showdown') return {
     bounds: texasShowdownRegion(before, after, device.screenSize), source: 'native-complete-showdown-banner-and-cards',
+  };
+  if (name === 'zhajinhua-showdown-cards') return {
+    bounds: zhajinhuaShowdownLayout(before, after, device.screenSize).region,
+    source: 'native-complete-three-showdown-cards-and-strength-label',
   };
   if (/^texas-player-action-(call|raise|check|fold)$/.test(name)) return {
     bounds: texasPlayerActionRegion(name, before, after, device.screenSize), source: 'native-acting-player-complete-action-label',
