@@ -5,8 +5,6 @@ import { flattenNodes, gameGone, gameNodes, gameReady, gameSemanticText, gameTap
 import { captureGameThemes, closeGameMask, gameMenu } from './game-pregame';
 import { gameCardNames, replay } from './game-replay';
 import { dismissKeyboard } from './keyboard';
-import { focusedCaretMask } from './screenshot';
-import { translateCaret } from './caret-mask';
 import { gameTapText, restoreTexas, texasEvents, type TexasContext } from './texas-support';
 import { animateGamePanel } from './game-panel-animation';
 import { captureNativeTransition, captureTransientTransition, framePaletteDistance } from './animation-transition';
@@ -53,17 +51,19 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await selectRecordTab('settlement');
   await gameGone(device, 'TexasPlayerActionIcon_container');
   /**
-   * 通过真实输入固定页码焦点，只排除检测到的细光标，保留页码与边框。
+   * 单局牌谱默认显示第 1 页。直接检查实际页码和总页数，保留完整输入框像素。
+   * 不为静态牌谱截图额外聚焦输入框：这会引入键盘位移及与牌谱无关的光标闪烁。
    * @param state - 共用牌谱截图状态。
    */
   const captureRecord = async (state: string) => {
-    await gameTap(device, 'review-board-page-input');
-    await device.fill({ res: 'review-board-page-input' }, '1');
-    const caret = await focusedCaretMask(device);
-    expect(caret, '页码输入框应检测到真实细光标').toBeDefined();
-    await dismissKeyboard(device);
     const input = await gameReady(device, 'review-board-page-input', '1');
-    await capture(state, [translateCaret(caret!, input.bounds)]);
+    const nodes = await device.nodes();
+    expect(nodes.some(node => node.clazz === 'XCUIElementTypeKeyboard'), '牌谱截图时键盘必须收起').toBe(false);
+    expect(nodes.some(node => node.text === '/1' && node.bounds.x >= input.bounds.x + input.bounds.width
+      && node.bounds.y >= input.bounds.y
+      && node.bounds.y + node.bounds.height <= input.bounds.y + input.bounds.height),
+    '单局牌谱必须显示实际总页数 /1').toBe(true);
+    await capture(state);
   };
   await captureRecord('record_settlement');
   await selectRecordTab('record');
