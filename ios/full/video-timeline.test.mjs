@@ -77,3 +77,16 @@ test('真实300ms转场的14帧变帧率时间线按短动画契约保留，不�
   assert.throws(() => validateRecordedTimeline(input.slice(0, 9), 3500, shortAnimationMinimumFrames), /真实连续帧/);
   assert.throws(() => validateRecordedTimeline(input.map(() => input[0]), 3500, shortAnimationMinimumFrames), /真实连续帧/);
 });
+
+test('牌型退场原始 XCTest MOV 的单刻度 PTS 倒退不会因 DTS 单调而通过', () => {
+  // CI 39555894478 原始 MOV 与无损 MP4 的帧 300..312 相同；不能用 DTS 替换 PTS。
+  const input = [7.365000, 7.366667, 7.370000, 7.370000, 7.371667,
+    7.373333, 7.376667, 7.375000, 7.381667, 7.393333,
+    7.405000, 7.418333, 7.430000].map(time => ({ pts_time: time.toFixed(6) }));
+  input[6].pkt_dts_time = '7.225000';
+  input[7].pkt_dts_time = '7.236667';
+  const original = structuredClone(input);
+  assert.throws(() => validateRecordedTimeline(input, 3500, shortAnimationMinimumFrames),
+    /"invalidIndex":7/);
+  assert.deepEqual(input, original);
+});

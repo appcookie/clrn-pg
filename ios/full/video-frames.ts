@@ -40,8 +40,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Auto-rebuy entrance in 39533568946 reported 60 fps but encoded only six
   // frames, with a 4.12 s gap after the first. Preserve the minimum frame and
   // motion requirements by collecting this entrance through the compositor.
+  // 本轮 39555894478 的牌型退场原始 XCTest MOV 在帧 306→307
+  // 出现 7.376667→7.375000 的 PTS 倒退；保留拒绝规则，改用合成器采集。
   const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
-    || name === 'texas-holdem-auto-rebuy-enter'
+    || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
     || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);
   const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
