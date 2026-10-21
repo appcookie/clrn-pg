@@ -1,7 +1,8 @@
+// 采集德州面板及聊天状态，入口使用即时连接与布局观测，保留真实动画和业务断言。
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { events, REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { flattenNodes, gameConnected, gameGone, gameNodes, gameReady, gameSemanticText, gameTap, gameTextWithin } from './game-controls';
+import { flattenNodes, gameConnected, gameGone, gameNodes, gameReady, gameSemanticText, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
 import { captureGameThemes, closeGameMask, gameMenu } from './game-pregame';
 import { gameCardNames, replay } from './game-replay';
 import { dismissKeyboard } from './keyboard';
@@ -40,7 +41,7 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await gameReady(device, 'public-leader-board-item-round-0', '10');
   await capture('leaderboard_players');
   await closeGameMask(device, 'public-leader-board-container');
-  await gameTap(device, 'game-record-button');
+  await gameTapCurrent(device, 'game-record-button');
   await waitReviewCloseButton(device);
   await waitReviewContent(device);
   const selectRecordTab = async (mode: 'settlement' | 'record') => {
@@ -78,7 +79,7 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   // 39581505067在入口准备期间重建了两条房间连接，点击后聊天未挂载。
   // 先确认持续连接就绪，再单次打开并验证面板；不重试点击或改用旧控件。
   await gameConnected(device, 2_000);
-  await gameTap(device, 'texas-holdem-chat-button');
+  await gameTapCurrent(device, 'texas-holdem-chat-button');
   await gameReady(device, 'in-game-chat-content-container');
   await gameTap(device, '-in-game-chat-message-tab');
   await expect.poll(async () => (await gameNodes(device)).some(node => node.res?.startsWith('in-game-chat-phrase-')),

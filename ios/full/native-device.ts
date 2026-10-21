@@ -155,9 +155,29 @@ export class NativeDevice {
     if (this.richTransientElements) return;
     // https://appium.github.io/appium-xcuitest-driver/latest/settings/#elementresponseattributes
     await this.driver.request('POST', this.driver.path('/appium/settings'), { settings: {
-      shouldUseCompactResponses: false, elementResponseAttributes: 'label,rect,displayed', screenshotQuality: 0,
+      shouldUseCompactResponses: false, elementResponseAttributes: 'name,label,rect,displayed,enabled', screenshotQuality: 0,
     } });
     this.richTransientElements = true;
+  }
+  /** 同一次原生查询取得点击目标和连接提示，避免整树计算期间的旧连接状态被用于点击。 */
+  async inputObservation(res: string): Promise<Pick<NativeNode, 'res' | 'text' | 'enabled' | 'visible' | 'bounds'>[]> {
+    if (!this.richTransientElements) throw new Error('点击观测必须先配置完整元素属性');
+    const elements = await this.driver.request('POST', this.driver.path('/elements'), {
+      using: '-ios predicate string',
+      value: `visible == true AND (name == ${JSON.stringify(res)} OR label == "Connecting..." OR label CONTAINS[c] "Connection Timeout")`,
+    });
+    return elements.map((element: { name?: string; label?: string; rect?: Bounds;
+      displayed?: boolean; enabled?: boolean }) => {
+      const { name, label, rect, displayed, enabled } = element;
+      if (typeof name !== 'string' || typeof displayed !== 'boolean' || typeof enabled !== 'boolean'
+        || !rect || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
+        throw new Error('点击观测缺少真实名称、可见性、可用状态或位置');
+      }
+      const left = Math.floor(rect.x * this.scale.x), top = Math.floor(rect.y * this.scale.y);
+      return { res: name, text: typeof label === 'string' ? label : undefined, enabled, visible: displayed,
+        bounds: { x: left, y: top, width: Math.ceil((rect.x + rect.width) * this.scale.x) - left,
+          height: Math.ceil((rect.y + rect.height) * this.scale.y) - top } };
+    }).filter((node: Pick<NativeNode, 'visible' | 'bounds'>) => node.visible && node.bounds.width > 0 && node.bounds.height > 0);
   }
   /** 只关闭驱动点击后的动画冷却等待；应用动画不变，成功或失败后都恢复原设置。 */
   async withImmediateAnimationInput<T>(task: () => Promise<T>): Promise<T> {

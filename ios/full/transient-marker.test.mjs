@@ -1,3 +1,4 @@
+// 验证短提示及即时输入查询保留真实属性、像素坐标与驱动错误。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeDevice } from './native-device.ts';
@@ -43,7 +44,7 @@ test('短提示预先配置后一次原生查询同时返回可见性、文字�
   await d.prepareTransientCapture();
   await d.prepareTransientCapture();
   assert.deepEqual(calls[0], { method: 'POST', path: '/appium/settings', body: { settings: {
-    shouldUseCompactResponses: false, elementResponseAttributes: 'label,rect,displayed', screenshotQuality: 0,
+    shouldUseCompactResponses: false, elementResponseAttributes: 'name,label,rect,displayed,enabled', screenshotQuality: 0,
   } } });
   assert.deepEqual(await d.transientMarker('toastText1'), { res: 'toastText1', text: 'Statistic explanation',
     bounds: { x: 30, y: 60, width: 300, height: 90 } });

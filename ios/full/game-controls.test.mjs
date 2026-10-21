@@ -1,7 +1,50 @@
+// 验证真实驱动契约下的稳定点击、即时连接观测及失败传播，禁止重试业务动作。
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeDevice } from './native-device.ts';
-import { gameTap, gameConnected, gameConnectionState } from './game-controls.ts';
+import { gameTap, gameTapCurrent, gameConnected, gameConnectionState } from './game-controls.ts';
+
+test('即时入口在同次元素查询中检查目标与重连，连接恢复后只点击一次', async () => {
+  for (const first of ['healthy', 'connecting', 'timeout', 'disabled', 'malformed', 'transport']) {
+    const target = { name: 'game-record-button', label: '', displayed: true, enabled: true,
+      rect: { x: 10.2, y: 20.2, width: 30.2, height: 40.2 } };
+    let queries = 0, taps = 0;
+    const points = [];
+    const device = new NativeDevice({ path: p => p, source: async () => {
+      throw new Error('即时观测不能读取耗时整树');
+    }, request: async (_method, path, body) => {
+      if (path === '/appium/settings') return;
+      if (path === '/elements') {
+        queries++;
+        assert.equal(body.using, '-ios predicate string');
+        assert.match(body.value, /name == "game-record-button"/);
+        assert.match(body.value, /Connecting/);
+        assert.match(body.value, /Connection Timeout/);
+        if (first === 'transport') throw new Error('driver transport failed');
+        if (first === 'malformed') return [{ ...target, enabled: undefined }];
+        if (first === 'timeout') return [target, { ...target, name: 'alert', label: 'Connection Timeout' }];
+        if (queries === 2 && first === 'connecting') return [target,
+          { ...target, name: 'connection', label: 'Connecting...' }];
+        if (queries === 1 && first === 'disabled') return [{ ...target, enabled: false }];
+        return [target];
+      }
+      assert.equal(path, '/execute/sync');
+      assert.equal(body.script, 'mobile: tap');
+      taps++; points.push(body.args[0]);
+    } }, 'unused', async () => {}, async () => {}, 'app');
+    device.screenSize = { width: 100, height: 200 };
+    if (['timeout', 'malformed', 'transport'].includes(first)) {
+      await assert.rejects(gameTapCurrent(device, 'game-record-button'),
+        /Connection Timeout|缺少真实|driver transport failed/);
+      assert.equal(taps, 0);
+    } else {
+      await gameTapCurrent(device, 'game-record-button');
+      assert.equal(taps, 1);
+      assert.deepEqual(points, [{ x: 26, y: 41 }]);
+      assert.ok(queries >= (first === 'connecting' ? 7 : first === 'disabled' ? 3 : 2));
+    }
+  }
+});
 
 const button = { res: 'target', enabled: true, x: 10, y: 20, width: 30, height: 40 };
 const message = text => ({ res: 'common-alert-title', text, x: 1, y: 1, width: 80, height: 10 });

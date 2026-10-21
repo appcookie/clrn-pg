@@ -1,3 +1,4 @@
+// 依据原生可见性、连接状态和两次稳定布局执行牌桌操作，每次业务动作只触发一次。
 import { expect } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
@@ -117,15 +118,16 @@ export async function gameConnected(device: AndroidDevice, stableMs = 0): Promis
 }
 
 /** Return the same complete tree that established connection readiness. */
-async function connectedObservation(device: AndroidDevice, stableMs = 0): Promise<{
+async function connectedObservation(device: AndroidDevice, stableMs = 0,
+  observe = () => gameNodes(device)): Promise<{
   nodes: NativeNode[]; recovered: boolean;
 }> {
-  const initial = await gameNodes(device);
+  const initial = await observe();
   if (!gameConnectionState(initial).connecting && !stableMs) return { nodes: initial, recovered: false };
   let availableSince = 0;
   let nodes = initial;
   await expect.poll(async () => {
-    nodes = await gameNodes(device);
+    nodes = await observe();
     const { connecting } = gameConnectionState(nodes);
     if (connecting) availableSince = 0;
     else if (!availableSince) availableSince = Date.now();
@@ -141,7 +143,8 @@ async function connectedObservation(device: AndroidDevice, stableMs = 0): Promis
  * @param nativeInput - 短时提示使用现有驱动点击，避免启动 shell 输入进程耗尽显示时间。
  */
 export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false,
-  onTap?: (point: Readonly<{ x: number; y: number }>) => void): Promise<void> {
+  onTap?: (point: Readonly<{ x: number; y: number }>) => void,
+  observe = () => gameNodes(device)): Promise<void> {
   console.log(`IOS > 游戏点击 ${res}`);
   let previous: NativeNode | undefined;
   let stabilityStarted = false;
@@ -150,7 +153,7 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
   for (;;) {
     // Do not put the independent 120s connection recovery inside a 45s target poll.
     // Every recovered connection starts a new pair of actual target observations.
-    const observation = await connectedObservation(device);
+    const observation = await connectedObservation(device, 0, observe);
     if (observation.recovered) {
       previous = undefined;
       stabilityStarted = false;
@@ -184,4 +187,10 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
   const point = { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
   onTap?.({ ...point });
   await device.input.tap(point);
+}
+
+/** 聊天和牌谱入口使用同一次轻量原生观测；保留两样本、重连恢复和错误即失败的规则。 */
+export async function gameTapCurrent(device: AndroidDevice, res: string): Promise<void> {
+  await device.prepareTransientCapture();
+  await gameTap(device, res, false, undefined, () => device.inputObservation(res));
 }
