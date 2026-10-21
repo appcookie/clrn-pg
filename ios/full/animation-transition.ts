@@ -265,7 +265,10 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
   samplingMethod = 'videoFrames';
   const deferredReady = /^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)
-    || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name);
+    || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)
+    // 39579293828在滑入期间查询昵称时9.6秒只录到17帧。与牌谱/资料卡
+    // 一样先保留不受查询打断的录屏，再严格确认业务数据和独立终点。
+    || name === 'texas-holdem-personal-leaderboard-enter';
   // 使用原分辨率原生视频，截图通道只用于精确端点。
   const recorded = await videoRecorder(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
     await trigger();
