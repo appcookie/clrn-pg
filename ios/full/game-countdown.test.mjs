@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { texasCountdownNodes, texasPlayerCountdown } from './texas-countdown.ts';
+import { playerCountdownNodes, playerCountdown } from './game-countdown.ts';
+const texasCountdownNodes = nodes => playerCountdownNodes(nodes, 'texas-holdem');
+const texasPlayerCountdown = (nodes, id) => playerCountdown(nodes, id, 'texas-holdem');
 const bounds = { x: 401, y: 2103, width: 163, height: 162 };
 const timer = { res: 'texas-holdem-active-countdown', visible: false, bounds,
   children: [{ text: '90', bounds, children: [{ text: '90', bounds }] }] };
@@ -20,4 +22,13 @@ test('拒绝孤立计时器、错误玩家、零秒、冲突秒数以及裁出�
   assert.throws(() => texasCountdownNodes([{ ...player, children: [
     { ...timer, bounds: { ...bounds, width: 300 } },
   ] }]), /完整位于/);
+});
+test('拼三张倒计时保留头像外的三像素绘制边缘，仍限定当前行动玩家', () => {
+  const zTimer = { ...timer, res: 'zhajinhua-active-countdown',
+    bounds: { x: 398, y: 2100, width: 169, height: 168 } };
+  const zPlayer = { ...player, res: 'zhajinhua-player-container-self-operating', children: [zTimer] };
+  assert.equal(playerCountdown([zPlayer], 'self', 'zhajinhua').node, zTimer);
+  assert.throws(() => playerCountdown([zPlayer], 'self', 'texas-holdem'), /唯一/);
+  assert.throws(() => playerCountdown([{ ...zPlayer, children: [{ ...zTimer,
+    bounds: { ...zTimer.bounds, x: 390 } }] }], 'self', 'zhajinhua'), /完整位于/);
 });

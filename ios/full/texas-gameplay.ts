@@ -19,8 +19,8 @@ import { captureAssetSequence } from './asset-sequence';
 import { motionParts, samePixels } from './motion-regions';
 import { maskScreenshot } from './screenshot';
 import { nativeOwnCardRegion, nativeCommunityCardRegion } from './texas-card-region';
-import { texasPlayerCountdown } from './texas-countdown';
-import { recordScreenSamples } from './video-frames';
+import { playerCountdown } from './game-countdown';
+import { capturePlayerCountdown } from './game-countdown-capture';
 
 /**
  * 复用网页的德州消息夹具，覆盖各街、操作、摊牌、结算和玩家资料。
@@ -129,18 +129,8 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       if (street === 'preflop' && animationInfo) {
         // Flip analysis can outlast the restored clock. Start a fresh real
         // countdown before its independent recording, not during that recording.
-        await send(events([{ event: 'operating_time_changed', player_id: self, remain_operating_seconds: 120 }]));
-        const before = texasPlayerCountdown(await gameNodes(device), self);
-        const frames = await recordScreenSamples(device, 'texas-operation-countdown', animationInfo, undefined, 3000, async () => {
-          const after = texasPlayerCountdown(await gameNodes(device), self);
-          expect(after.node.bounds, '倒计时须保持在同一个玩家位置').toEqual(before.node.bounds);
-          expect(after.seconds, '录像期间真实倒计时必须递减').toBeLessThan(before.seconds);
-          await animationInfo.attach('texas-operation-countdown-seconds', {
-            body: JSON.stringify({ before: before.seconds, after: after.seconds }), contentType: 'application/json',
-          });
-        });
-        await captureMovingKeyframes(device, 'texas-operation-countdown', animationInfo, [before.node.bounds],
-          undefined, undefined, 1, [], frames);
+        await capturePlayerCountdown(device, 'texas-holdem', self, animationInfo, () =>
+          send(events([{ event: 'operating_time_changed', player_id: self, remain_operating_seconds: 120 }])));
       }
       await capture(street);
     }
@@ -220,7 +210,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
           return player && flattenNodes(player).some(node => node.res === `texas-holdem-player-action-${action}`);
         };
         await expect.poll(playerAction, { timeout: 30_000 }).toBe(false);
-        texasPlayerCountdown(await gameNodes(device), actionPlayer);
+        playerCountdown(await gameNodes(device), actionPlayer, 'texas-holdem');
         await captureNativeTransition(device, `texas-player-action-${action}`, animationInfo,
           // 动作标签右侧不与玩家头像倒计时重叠，可完整观察标签而无需遮罩。
           screenBounds(device, { x: 132, y: 465, width: 63, height: 130 }),

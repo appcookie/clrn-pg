@@ -32,3 +32,17 @@ export function zhajinhuaCardRegions(nodes: NativeNode[], players: string[],
 export function currentZhajinhuaCards(nodes: NativeNode[]): NativeNode[] {
   return [...new Set(nodes.flatMap(flattenNodes))].filter(node => node.res === 'player_card');
 }
+
+/** The visible See overlay is omitted from XCTest's flat visible list. Scope
+ * its exact marker to the three current own cards before using its tap bounds.
+ */
+export function zhajinhuaSeeButton(nodes: NativeNode[], ownCards: ScreenshotBounds): NativeNode | undefined {
+  const buttons = [...new Set(nodes.flatMap(flattenNodes))].filter(node => {
+    const b = node.bounds, p = ownCards;
+    return node.res === 'zhajinhua-see-hand-card-button' && node.enabled !== false
+      && /^(See|看牌)$/.test(node.text || '') && b.x >= p.x && b.y >= p.y
+      && b.x + b.width <= p.x + p.width && b.y + b.height <= p.y + p.height;
+  });
+  if (buttons.length > 1) throw new Error('当前本人手牌不能存在多个看牌按钮');
+  return buttons[0];
+}

@@ -11,7 +11,8 @@ import { animateGamePanel, captureTimedLevelUp } from './game-panel-animation';
 import { captureConcurrentMotion, captureLoopKeyframes, captureMovingKeyframes } from './loop-keyframes';
 import { captureAssetSequence } from './asset-sequence';
 import type { ScreenshotMask } from './screenshot';
-import { zhajinhuaCardRegions, currentZhajinhuaCards } from './zhajinhua-card-region';
+import { zhajinhuaCardRegions, currentZhajinhuaCards, zhajinhuaSeeButton } from './zhajinhua-card-region';
+import { capturePlayerCountdown } from './game-countdown-capture';
 
 /**
  * 直接使用 Web 八个牌局状态的网络事件，真实点击原生操作按钮。
@@ -79,11 +80,14 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     await send(events([restoreTable(self).queue[0]]));
     await gameGone(device, 'player_tips_text');
     await gameReady(device, 'zhajinhua-operation-button-call');
-    await gameReady(device, 'zhajinhua-see-hand-card-button');
+    const currentSeeButton = async () => {
+      const nodes = await gameNodes(device);
+      return zhajinhuaSeeButton(nodes, zhajinhuaCardRegions(nodes, [self, ...PLAYER_IDS], device.screenSize)[0]);
+    };
+    await expect.poll(async () => Boolean(await currentSeeButton()), { timeout: 30_000 }).toBe(true);
     if (animationInfo) {
-      const timer = (await gameNodes(device)).find(node => node.res === 'zhajinhua-active-countdown');
-      expect(timer, '拼三张本人操作倒计时必须可见').toBeDefined();
-      await captureMovingKeyframes(device, 'zhajinhua-operation-countdown', animationInfo, [timer!.bounds]);
+      await capturePlayerCountdown(device, 'zhajinhua', self, animationInfo, () =>
+        send(events([{ event: 'operating_time_changed', player_id: self, remain_operating_seconds: 120 }])));
     }
     await capture('blind_cards');
     const seeCards = events([
@@ -92,22 +96,25 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       { event: 'player_bets', valid_bets: validBets(true) },
     ]);
     if (animationInfo) {
-      const see = await gameReady(device, 'zhajinhua-see-hand-card-button');
+      const see = await currentSeeButton();
+      expect(see, '当前三张本人手牌上必须存在看牌按钮').toBeDefined();
       /** 点击真实看牌按钮并通过原生牌局消息翻开本人三张牌。 */
       const revealCards = async () => {
-        await device.input.tap({ x: Number(String(Math.round(see.bounds.x + see.bounds.width / 2))), y: Number(String(Math.round(see.bounds.y + see.bounds.height / 2))) });
+        await device.input.tap({ x: Math.round(see!.bounds.x + see!.bounds.width / 2), y: Math.round(see!.bounds.y + see!.bounds.height / 2) });
         await send(seeCards);
       };
       await captureNativeTransition(device, 'zhajinhua-flip-cards', animationInfo,
         zhajinhuaCardRegions(await gameNodes(device), [self, ...PLAYER_IDS], device.screenSize)[0],
         revealCards, [], [], 800, 'videoFrames');
     } else {
-      await gameTap(device, 'zhajinhua-see-hand-card-button');
+      const see = await currentSeeButton();
+      expect(see).toBeDefined();
+      await device.input.tap({ x: Math.round(see!.bounds.x + see!.bounds.width / 2), y: Math.round(see!.bounds.y + see!.bounds.height / 2) });
       await send(seeCards);
     }
     // 其余四位玩家的十二张暗牌没有牌名；与 Web 相同，只校验已翻开的三张牌。
     await gameCardNames(device, 'player_card', 'player_card_name_text', ['as', 'ad', 'ac'], { namedOnly: true });
-    await gameGone(device, 'zhajinhua-see-hand-card-button');
+    await expect.poll(async () => Boolean(await currentSeeButton()), { timeout: 30_000 }).toBe(false);
     await capture('seen_cards', [screenBounds(device, { x: 260, y: 1075, width: 35, height: 40,
       reason: '看牌后玩家头像下的独立操作秒数仍在跳动' })]);
     const raise = events([{ event: 'raise', player_id: self, amount: 40, stack: 960 },

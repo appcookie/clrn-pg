@@ -3,15 +3,17 @@ import { flattenNodes, type NativeNode } from './game-controls';
 /** The timer uses pointerEvents=none: XCTest exposes it only under the visible
  * current player. Never search detached historical or offscreen player trees.
  */
-export function texasCountdownNodes(nodes: NativeNode[]): NativeNode[] {
+export function playerCountdownNodes(nodes: NativeNode[], game: 'texas-holdem' | 'zhajinhua'): NativeNode[] {
   const result = new Map<string, NativeNode>();
   for (const player of nodes.filter(node => node.visible !== false
-    && /^texas-holdem-player-container-.+$/.test(node.res || ''))) {
+    && node.res?.startsWith(`${game}-player-container-`))) {
     const p = player.bounds;
-    for (const timer of flattenNodes(player).filter(node => node.res === 'texas-holdem-active-countdown')) {
+    for (const timer of flattenNodes(player).filter(node => node.res === `${game}-active-countdown`)) {
       const b = timer.bounds;
-      if (b.width <= 0 || b.height <= 0 || b.x < p.x || b.y < p.y
-        || b.x + b.width > p.x + p.width || b.y + b.height > p.y + p.height) {
+      // ZJH draws its timer three pixels outside the avatar frame.
+      const border = game === 'zhajinhua' ? 4 : 0;
+      if (b.width <= 0 || b.height <= 0 || b.x < p.x - border || b.y < p.y - border
+        || b.x + b.width > p.x + p.width + border || b.y + b.height > p.y + p.height + border) {
         throw new Error('倒计时必须完整位于当前玩家范围内');
       }
       const key = JSON.stringify(b);
@@ -21,11 +23,12 @@ export function texasCountdownNodes(nodes: NativeNode[]): NativeNode[] {
   return [...result.values()];
 }
 
-export function texasPlayerCountdown(nodes: NativeNode[], playerId: string): { node: NativeNode; seconds: number } {
+export function playerCountdown(nodes: NativeNode[], playerId: string,
+  game: 'texas-holdem' | 'zhajinhua'): { node: NativeNode; seconds: number } {
   const players = nodes.filter(node => node.visible !== false
-    && node.res === `texas-holdem-player-container-${playerId}-operating`);
+    && node.res === `${game}-player-container-${playerId}-operating`);
   if (players.length !== 1) throw new Error('必须有唯一的当前行动玩家');
-  const timers = texasCountdownNodes(players);
+  const timers = playerCountdownNodes(players, game);
   if (timers.length !== 1) throw new Error('当前行动玩家必须有完整倒计时');
   const values = [...new Set(flattenNodes(timers[0]).filter(node =>
     /^\d+$/.test(node.text || '')).map(node => Number(node.text)))];
