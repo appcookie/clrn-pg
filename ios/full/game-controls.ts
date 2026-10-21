@@ -128,8 +128,9 @@ export async function gameGoneCurrent(device: AndroidDevice, res: string): Promi
   await device.prepareTransientCapture();
   await expect.poll(async () => {
     const nodes = await device.inputObservation(res);
-    gameConnectionState(nodes);
-    return nodes.some(node => node.res === res);
+    const { connecting } = gameConnectionState(nodes);
+    // 连接遮罩会使仍挂载的侧栏不可见；重连中的缺失不是关闭证据。
+    return connecting || nodes.some(node => node.res === res);
   }, { timeout: 45_000, intervals: [250] }).toBe(false);
 }
 
@@ -153,14 +154,16 @@ async function connectedObservation(device: AndroidDevice, stableMs = 0,
 }
 
 /**
- * 根据两次一致的真实布局点击控件，使用 adb 输入避免驱动等待循环动画空闲。
+ * 根据两次一致的真实布局执行一次原生点击。
  * @param device - 专用模拟器连接。
  * @param res - 与 Web 共用的 testID。
  * @param nativeInput - 短时提示使用现有驱动点击，避免启动 shell 输入进程耗尽显示时间。
+ * @param pointForTarget - 在最新稳定目标内选择落点；遮罩使用避开面板的边缘。
  */
 export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false,
   onTap?: (point: Readonly<{ x: number; y: number }>) => void,
-  observe = () => gameNodes(device)): Promise<void> {
+  observe = () => gameNodes(device),
+  pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number }): Promise<void> {
   console.log(`IOS > 游戏点击 ${res}`);
   let previous: NativeNode | undefined;
   let stabilityStarted = false;
@@ -200,13 +203,17 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
     await delay(current ? 200 : 250);
   }
   const { x, y, width, height } = node.bounds;
-  const point = { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
+  const point = pointForTarget?.(node.bounds)
+    ?? { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
+  if (![point.x, point.y].every(Number.isFinite) || point.x < x || point.y < y
+    || point.x >= x + width || point.y >= y + height) throw new Error('点击位置必须位于当前真实目标内');
   onTap?.({ ...point });
   await device.input.tap(point);
 }
 
-/** 聊天和牌谱入口使用同一次轻量原生观测；保留两样本、重连恢复和错误即失败的规则。 */
-export async function gameTapCurrent(device: AndroidDevice, res: string): Promise<void> {
+/** 聊天、牌谱入口和关闭遮罩使用同一次轻量原生观测；保留两样本、重连恢复和错误即失败规则。 */
+export async function gameTapCurrent(device: AndroidDevice, res: string,
+  pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number }): Promise<void> {
   await device.prepareTransientCapture();
-  await gameTap(device, res, false, undefined, () => device.inputObservation(res));
+  await gameTap(device, res, false, undefined, () => device.inputObservation(res), pointForTarget);
 }

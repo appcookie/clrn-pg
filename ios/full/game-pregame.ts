@@ -3,7 +3,7 @@ import { screenBounds } from './screen-geometry';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
-import { gameTap as tap, gameConnected, gameConnectedCurrent, gameReady, gameGone, gameGoneCurrent, gameNodes } from './game-controls';
+import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameReady, gameGone, gameGoneCurrent, gameNodes } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
@@ -216,12 +216,14 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await gameReady(device, 'review-board-description-text');
   await capture('game_record');
   // 战绩从右侧展开；说明文字只占面板中间，不能用其边界判断遮罩位置。
-  const reviewMask = (await gameReady(device, 'screen-mask-touch-to-close')).bounds;
-  const reviewPoint = gameMaskPoint(reviewMask, nativeReviewPanelBounds(await device.nodes(), device.screenSize), device.screenSize);
+  await gameReady(device, 'screen-mask-touch-to-close');
+  const reviewPanel = nativeReviewPanelBounds(await device.nodes(), device.screenSize);
   /** 确认后台房间连接稳定，再点击侧栏外遮罩触发一次真实侧滑退出。 */
   const closeRecord = async () => {
     await gameConnectedCurrent(device, 2_000);
-    await device.input.tap(reviewPoint);
+    // 录屏预热与连接等待后重新观测遮罩，不能沿用数十秒前的点击条件。
+    await gameTapCurrent(device, 'screen-mask-touch-to-close', mask =>
+      gameMaskPoint(mask, reviewPanel, device.screenSize));
   };
   if (animationInfo) await captureNativeTransition(device, `${game}-game-record-exit`, animationInfo,
     screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), closeRecord, [], [], 0,

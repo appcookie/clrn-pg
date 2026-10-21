@@ -43,6 +43,43 @@ test('录像就绪查询的真实连接超时不能当成面板消失或恢复',
   await assert.rejects(gameConnectedCurrent(device, 1_000), /Connection Timeout/);
 });
 
+test('重连遮罩下的暂时缺失不能视为侧栏关闭，恢复后仍须观察真实消失', async () => {
+  let queries = 0;
+  const panel = { name: 'review-board-description-text', label: 'Empty games', displayed: true,
+    enabled: true, rect: { x: 10, y: 10, width: 40, height: 20 } };
+  const snapshots = [[{ ...panel, name: 'connection', label: 'Connecting...' }], [panel], []];
+  const device = new NativeDevice({ path: p => p, request: async (_method, path) => {
+    if (path === '/appium/settings') return;
+    return snapshots[queries++];
+  } }, 'unused', async () => {}, async () => {}, 'app');
+  await gameGoneCurrent(device, 'review-board-description-text');
+  assert.equal(queries, 3, '不能在连接遮罩隐藏侧栏时提前返回');
+});
+
+test('遮罩边缘点击使用两次最新稳定边界，越界落点禁止触发动作', async () => {
+  for (const invalid of [false, true]) {
+    let queries = 0;
+    const taps = [];
+    const device = new NativeDevice({ path: p => p, request: async (_method, path, body) => {
+      if (path === '/appium/settings') return;
+      if (path === '/elements') {
+        queries++;
+        return [{ name: 'screen-mask-touch-to-close', label: '', displayed: true, enabled: true,
+          rect: { x: queries === 1 ? 10 : 20, y: 10, width: 60, height: 180 } }];
+      }
+      assert.equal(body.script, 'mobile: tap');
+      taps.push(body.args[0]);
+    } }, 'unused', async () => {}, async () => {}, 'app');
+    const click = gameTapCurrent(device, 'screen-mask-touch-to-close', bounds => ({
+      x: bounds.x + (invalid ? bounds.width : 3), y: bounds.y + 50,
+    }));
+    if (invalid) await assert.rejects(click, /当前真实目标内/);
+    else await click;
+    assert.equal(queries, 3);
+    assert.deepEqual(taps, invalid ? [] : [{ x: 23, y: 60 }]);
+  }
+});
+
 test('即时入口在同次元素查询中检查目标与重连，连接恢复后只点击一次', async () => {
   for (const first of ['healthy', 'connecting', 'timeout', 'disabled', 'malformed', 'transport']) {
     const target = { name: 'game-record-button', label: '', displayed: true, enabled: true,
