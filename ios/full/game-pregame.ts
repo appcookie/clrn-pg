@@ -149,7 +149,7 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
     for (const [state, ready, close] of [
       ['theme', 'game-settings-card-theme-simple', 'game-settings-close-button'],
       ['settings', 'game-settings-popup-container', 'game-settings-close-button'],
-      ['buy_in', 'texas-holdem-buy-in-popup-visible-marker', 'buy-in-close-button'],
+      ['buy_in', 'buy-in-title', 'buy-in-close-button'],
       ['renew', 'renew-popup-close-button', 'renew-popup-close-button'],
     ]) {
       // 重连遮罩会短暂盖住菜单按钮；等真实牌桌恢复后再点击下一项。

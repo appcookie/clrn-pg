@@ -1,3 +1,4 @@
+import { texasRaiseRegion } from './texas-raise-region';
 import type { NativeDevice, NativeNode } from './native-device';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { slotNoEnergyRegions } from './slot-regions';
@@ -159,8 +160,35 @@ export function nativeAlertPanelBounds(nodes: NativeNode[], screen: { width: num
     height: Math.min(screen.height, b.y + b.height + 4) - y };
 }
 
+/** The legacy visible-marker is transparent. The actual shared buy-in panel
+ * has a visible title, confirmation and close button inside one native card.
+ */
+export function nativeBuyInPanelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const controls = ['buy-in-title', 'buy-in-close-button', 'buy-in-confirm-button']
+    .map(res => nodes.find(node => node.res === res && node.visible !== false));
+  if (controls.some(node => !node)) throw new Error('买入弹窗缺少可见标题或按钮');
+  const panel = nodes.filter(node => node.clazz === 'XCUIElementTypeOther' && node.visible !== false
+    && node.bounds.width > 0 && node.bounds.height > 0
+    && node.bounds.width * node.bounds.height < screen.width * screen.height
+    && controls.every(control => {
+      const a = node.bounds, b = control!.bounds;
+      return a.x <= b.x && a.y <= b.y && a.x + a.width >= b.x + b.width && a.y + a.height >= b.y + b.height;
+    })).sort((a, b) => a.bounds.width * a.bounds.height - b.bounds.width * b.bounds.height)[0];
+  if (!panel) throw new Error('找不到完整原生买入弹窗');
+  const b = panel.bounds, x = Math.max(0, b.x - 4), y = Math.max(0, b.y - 4);
+  return { x, y, width: Math.min(screen.width, b.x + b.width + 4) - x,
+    height: Math.min(screen.height, b.y + b.height + 4) - y };
+}
+
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
+  if (/^(?:texas-holdem|zhajinhua)-buy_in-(?:enter|exit)$/.test(name)) return {
+    bounds: nativeBuyInPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-buy-in-content-container',
+  };
+  if (/^(?:texas-holdem-raise-bet-enter|texas-raise-slider)$/.test(name)) return {
+    bounds: texasRaiseRegion(after, device.screenSize), source: 'native-raise-slider-and-buttons',
+  };
   if (/^texas-alert-(?:retry|balance|auth)-(?:enter|exit)$/.test(name)) return {
     bounds: nativeAlertPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-common-alert-background',

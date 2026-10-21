@@ -149,6 +149,33 @@ export class NativeDevice {
   async marker(res: string): Promise<NativeNode | null> {
     return (await this.nodes()).find(node => node.res === res) || null;
   }
+  /** Read one short-lived native label without computing visibility for every
+   * node on a populated poker table. A missing/stale element is absence; driver
+   * failures still fail the test. All geometry remains native screenshot pixels.
+   */
+  async transientMarker(res: string): Promise<Pick<NativeNode, 'res' | 'text' | 'bounds'> | null> {
+    const elements = await this.driver.request('POST', this.driver.path('/elements'),
+      { using: 'accessibility id', value: res });
+    if (elements.length === 0) return null;
+    if (elements.length !== 1) throw new Error(`短时提示标记不唯一：${res}`);
+    const id = elements[0]['element-6066-11e4-a52e-4f735466cecf'];
+    if (!id) throw new Error(`短时提示缺少原生控件 ID：${res}`);
+    try {
+      const [displayed, rect, text] = await Promise.all([
+        this.driver.request('GET', this.driver.path(`/element/${id}/displayed`)),
+        this.driver.request('GET', this.driver.path(`/element/${id}/rect`)),
+        this.driver.request('GET', this.driver.path(`/element/${id}/attribute/label`)),
+      ]);
+      if (displayed !== true || rect.width <= 0 || rect.height <= 0) return null;
+      return { res, text: typeof text === 'string' ? text : undefined, bounds: {
+        x: Math.round(rect.x * this.scale.x), y: Math.round(rect.y * this.scale.y),
+        width: Math.round(rect.width * this.scale.x), height: Math.round(rect.height * this.scale.y),
+      } };
+    } catch (error) {
+      if (['stale element reference', 'no such element'].includes((error as { code?: string }).code || '')) return null;
+      throw error;
+    }
+  }
   async wait(selector: NativeSelector, options: { timeout?: number; state?: 'gone' | 'visible' } = {}) {
     const deadline = Date.now() + (options.timeout ?? this.timeout);
     do {

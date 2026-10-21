@@ -1,3 +1,4 @@
+import { texasRaiseControls, texasRaiseRegion } from './texas-raise-region';
 import { screenPoint } from './screen-geometry';
 import { screenBounds } from './screen-geometry';
 import { readFileSync } from 'node:fs';
@@ -139,10 +140,11 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     await gameReady(device, 'raise-bet-popup');
     await capture('raise');
     if (animationInfo) {
-      const slider = (await gameReady(device, 'raise-bet-slider')).bounds;
-      const thumb = (await gameReady(device, 'sliderThumb')).bounds;
-      const popup = (await gameReady(device, 'raise-bet-popup')).bounds;
-      const initialRaise = (await gameReady(device, 'raise-bet-display-text')).text;
+      const nodes = await device.nodes();
+      const controls = texasRaiseControls(nodes);
+      const slider = controls.slider.bounds, thumb = controls.thumb.bounds;
+      const popup = texasRaiseRegion(nodes, device.screenSize);
+      const initialRaise = controls.value.text;
       await captureNativeTransition(device, 'texas-raise-slider', animationInfo,
         popup,
         () => device.input.swipe({ x1: thumb.x + thumb.width / 2, y1: thumb.y + thumb.height / 2,
@@ -152,7 +154,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
         undefined, undefined, [], ['texas-raise-slider-end-500.png', 'texas-raise-slider-end-492.png'],
         [screenBounds(device, { x: 120, y: 250, width: 160, height: 105,
           reason: '终点加注数字由拖动采样量化；完整标签保留在报告，数值另用原生文本断言' })]);
-      expect((await gameReady(device, 'raise-bet-display-text')).text,
+      expect(texasRaiseControls(await device.nodes()).value.text,
         '真实拖动必须改变加注数值').not.toBe(initialRaise);
     }
     // 原生录屏确认取消按钮直接移除面板，没有可供回归的退场过渡帧。

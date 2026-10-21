@@ -22,16 +22,16 @@ export async function captureToast(device: AndroidDevice, name: string, testInfo
   const frames: Frame[] = [];
   const deadline = Date.now() + 4000;
   while (Date.now() < deadline) {
-    const before = await device.marker('toastText1');
+    const before = await device.transientMarker('toastText1');
     if (!before?.text) {
       if (frames.length) break;
       await setTimeout(40);
       continue;
     }
     const png = await device.nativeScreenshot();
-    const after = await device.marker('toastText1');
+    const after = await device.transientMarker('toastText1');
     if (!after?.text) break;
-    const panel = (await device.marker('toast-container')) || before;
+    const panel = (await device.transientMarker('toast-container')) || before;
     frames.push({ before, after, panel, capturedAt: Date.now(), png: png.toString('base64') });
   }
   await testInfo.attach(`${name}-frames`, {
