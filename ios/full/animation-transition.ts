@@ -238,7 +238,13 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   // 使用原分辨率原生视频，截图通道只用于精确端点。
   const recorded = await videoRecorder(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
     await trigger();
-    if (settleMs) await setTimeout(settleMs);
+    // The review sidebar renders a 300 ms slide. Querying its complete visible
+    // accessibility tree immediately after tapping can compete with that draw.
+    // Keep recording without queries first; readiness and real middle-frame
+    // evidence remain mandatory. This does not change the app's animation.
+    const observeDelayMs = /^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)
+      ? Math.max(350, settleMs) : settleMs;
+    if (observeDelayMs) await setTimeout(observeDelayMs);
     if (afterReady) await afterReady();
   }, testInfo, 3500, shortAnimationMinimumFrames);
   await afterRecording?.();

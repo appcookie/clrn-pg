@@ -37,13 +37,29 @@ test('两种牌谱入场都拒绝只有遮罩的假中间帧，真实侧栏滑�
     for (const game of ['texas-holdem', 'zhajinhua']) {
       const run = async frames => {
         let nodeCalls = 0, screenshotCalls = 0;
+        let tapCount = 0, tapAt = 0, readyAt = 0, recording = false;
         const attachments = new Map();
-        const device = { screenSize: size, nodes: async () => nodeCalls++ ? panelNodes : [],
+        const device = { screenSize: size, nodes: async () => {
+          assert.equal(recording, false, '侧栏绘制窗口不能并行查询整棵可见树');
+          return nodeCalls++ ? panelNodes : [];
+        },
           nativeScreenshot: async () => screenshotCalls++ ? after : before };
         await captureNativeTransition(device, `${game}-game-record-enter`,
           { attach: async (name, value) => attachments.set(name, value) }, region,
-          () => {}, [], [], 0, 'videoFrames', undefined, undefined, [], [], [], [], [],
-          async (_device, _name, _region, trigger) => { await trigger(); return frames; });
+          () => { tapCount++; tapAt = performance.now(); }, [], [], 0, 'videoFrames', undefined,
+          async () => {
+            readyAt = performance.now();
+            assert.equal(recording, true, '业务就绪仍在同一次真实录屏内验证');
+            assert.ok(readyAt - tapAt >= 340, '300ms动画窗口内不得提前开始afterReady查询');
+          }, [], [], [], [], [],
+          async (_device, _name, _region, trigger) => {
+            recording = true;
+            await trigger();
+            assert.ok(readyAt > tapAt, '录屏结束前必须执行语义就绪断言');
+            recording = false;
+            return frames;
+          });
+        assert.equal(tapCount, 1, '不通过重复点击重采缺失相位');
         return attachments;
       };
       await assert.rejects(run([before, dimmer, after]), /牌桌遮罩变暗不能冒充/);
