@@ -1,10 +1,20 @@
 import { expect } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
-import { stableNativeObservation } from './native-stability';
+import { setTimeout as delay } from 'node:timers/promises';
 
 export type NativeNode = { res?: string; text?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
+
+/** Match the explicit timeout predicate already used by accurate-bet guards.
+ * Other business alerts can have intentional confirmation-button scenarios.
+ */
+export function gameConnectionState(nodes: NativeNode[]): { connecting: boolean } {
+  if (nodes.some(node => node.visible !== false && /Connection Timeout/i.test(node.text || ''))) {
+    throw new Error('出现 Connection Timeout；不能继续点击或等待重试掩盖连接错误');
+  }
+  return { connecting: nodes.some(node => /Connecting\.\.\./.test(node.text || '')) };
+}
 
 /** XCUITest 截图保留原始像素，错误不能变成空帧。 */
 export async function gameScreenshot(device: AndroidDevice): Promise<Buffer> {
@@ -103,15 +113,25 @@ export async function gameGone(device: AndroidDevice, res: string): Promise<void
  * @param stableMs - 指定入口需要额外连续无重连遮罩的时间。
  */
 export async function gameConnected(device: AndroidDevice, stableMs = 0): Promise<void> {
+  await connectedObservation(device, stableMs);
+}
+
+/** Return the same complete tree that established connection readiness. */
+async function connectedObservation(device: AndroidDevice, stableMs = 0): Promise<{
+  nodes: NativeNode[]; recovered: boolean;
+}> {
   const initial = await gameNodes(device);
-  if (!stableMs && !initial.some(node => /Connecting\.\.\./.test(node.text || ''))) return;
+  if (!gameConnectionState(initial).connecting && !stableMs) return { nodes: initial, recovered: false };
   let availableSince = 0;
+  let nodes = initial;
   await expect.poll(async () => {
-    const connecting = (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || ''));
+    nodes = await gameNodes(device);
+    const { connecting } = gameConnectionState(nodes);
     if (connecting) availableSince = 0;
     else if (!availableSince) availableSince = Date.now();
     return !connecting && Date.now() - availableSince >= Math.max(1_000, stableMs);
   }, { timeout: 120_000, intervals: [250] }).toBe(true);
+  return { nodes, recovered: true };
 }
 
 /**
@@ -122,11 +142,43 @@ export async function gameConnected(device: AndroidDevice, stableMs = 0): Promis
  */
 export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false): Promise<void> {
   console.log(`IOS > 游戏点击 ${res}`);
-  await gameConnected(device);
-  const node = await stableNativeObservation(() => gameReady(device, res), (before, current) => {
-    expect(current.enabled).not.toBe(false);
-    expect(current.bounds).toEqual(before.bounds);
-  }, { timeout: 45_000, interval: 200 });
+  let previous: NativeNode | undefined;
+  let stabilityStarted = false;
+  let deadline = Date.now() + 45_000;
+  let node: NativeNode;
+  for (;;) {
+    // Do not put the independent 120s connection recovery inside a 45s target poll.
+    // Every recovered connection starts a new pair of actual target observations.
+    const observation = await connectedObservation(device);
+    if (observation.recovered) {
+      previous = undefined;
+      stabilityStarted = false;
+      deadline = Date.now() + 45_000;
+    }
+    const candidates = observation.nodes.filter(candidate => candidate.res === res && candidate.visible !== false);
+    if (candidates.length > 1) throw new Error(`${res} 必须是唯一可见目标`);
+    const current = candidates[0];
+    if (current && !stabilityStarted) {
+      stabilityStarted = true;
+      deadline = Date.now() + 45_000;
+    }
+    if (current && previous) {
+      try {
+        expect(previous.enabled, '第一次观测目标必须可点击').toBe(true);
+        expect(current.enabled, '第二次观测目标必须可点击').toBe(true);
+        expect(current.bounds).toEqual(previous.bounds);
+        node = current;
+        break;
+      } catch (error) {
+        if (Date.now() >= deadline) throw error;
+      }
+    } else if (!current) {
+      if (Date.now() >= deadline) throw new Error(`${res} 应可见`);
+    }
+    // A vanished target cannot contribute a sample to the later stable pair.
+    previous = current;
+    await delay(current ? 200 : 250);
+  }
   const { x, y, width, height } = node.bounds;
   const point = { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
   await device.input.tap(point);
