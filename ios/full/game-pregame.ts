@@ -295,7 +295,23 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture)
   for (const name of ['sound-effect', 'vibrate', 'player-voice', 'show-card', 'operation-time', 'see-remain-card', 'shake-avatar']) {
     const selector = { res: `game-settings-switch-${name}` };
     if (!(await gameNodes(device)).some(node => node.res === selector.res)) continue;
-    if (!(await gameReady(device, selector.res)).checked) await tap(device, selector.res);
+    // 39663522184 的震动开关仍显示 off：用真实开关的左侧滑块中心点击，
+    // 且仅在连接恢复后再次观测仍为 off 时，才重试这项幂等的启用操作。
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt) await gameConnected(device, 2_000);
+      if ((await gameReady(device, selector.res)).checked) break;
+      await tap(device, selector.res, false, undefined, undefined, bounds => ({
+        x: Math.round(bounds.x + bounds.height / 2),
+        y: Math.round(bounds.y + bounds.height / 2),
+      }));
+      try {
+        await expect.poll(async () => (await gameReady(device, selector.res)).checked,
+          { timeout: 12_000 }).toBe(true);
+        break;
+      } catch (error) {
+        if (attempt === 1) throw error;
+      }
+    }
     await expect.poll(async () => (await gameReady(device, selector.res)).checked,
       { timeout: 30_000 }).toBe(true);
     count++;
