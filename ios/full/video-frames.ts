@@ -22,11 +22,6 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   const directory = testInfo.outputPath(`video-${name}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
   const video = path.join(directory, 'capture.mp4');
-  // XCTest recordings 39522175718/39527416889 left only edge phases of this
-  // 200 ms fade (153 ms between its two relevant encoded frames). Use the
-  // Simulator compositor recorder for this specific transition, with the same
-  // original timestamps, endpoints and mandatory middle-frame assertions.
-  // This is one recording/action, never a fallback after a failed assertion.
   // The original XCTest MOV in 39528661625 also contains a backwards PTS
   // during the ZJH leaderboard entrance (2.793333 -> 2.791667). Recording
   // through the compositor avoids repairing/reordering that invalid media.
@@ -45,7 +40,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Personal leaderboard exit in 39557022339 encoded just eight frames, with
   // a 3.52s first gap and no intermediate panel pose. Keep the frame/target
   // motion gates and record only this exact transition through the compositor.
-  const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
+  const useCompositor = name === 'zhajinhua-leaderboard-enter'
     || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
     || name === 'texas-holdem-personal-leaderboard-exit'
     // Its entrance in 39563456373 likewise had only nine original frames;
@@ -61,7 +56,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 摊牌已在应用7aa0902改用原生驱动；39577739591的合成器录像只采到
   // 重叠起步，随后113ms空档越过第二张牌露出的中段。此动作改用XCTest
   // 单次采集，仍须独立证明第二、三张牌身份及水平位移。
-  const backend = ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards'].includes(name) ? 'xctest'
+  // 加注也已使用原生淡入；39581508021的合成器原片在128→129帧相隔
+  // 161.7ms，跳过200ms淡入中段。改用同一固定XCTest采集路径，不改时长。
+  const backend = ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
+    'texas-holdem-raise-bet-enter'].includes(name) ? 'xctest'
     : useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
