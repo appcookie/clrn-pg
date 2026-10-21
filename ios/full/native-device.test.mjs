@@ -127,6 +127,32 @@ test('真实登录页顺序中的空导航标题和状态栏不能抢占表单�
   assert.equal(keyboardDismissTarget([status, clock, empty, whitespace, title, keyboard]), title);
   assert.equal(keyboardDismissTarget([status, clock, empty, whitespace, keyboard]), undefined);
 });
+test('隐藏命令返回成功但键盘仍可见时，安全点击后必须再次验证键盘消失', async () => {
+  let keyboardVisible = true;
+  const commands = [];
+  const driver = {
+    path: value => value,
+    source: async () => `<AppiumAUT><XCUIElementTypeApplication enabled="true" visible="true" x="0" y="0" width="393" height="852">
+      <XCUIElementTypeStaticText label="Welcome" enabled="true" visible="true" x="50" y="100" width="100" height="30"/>
+      ${keyboardVisible ? '<XCUIElementTypeKeyboard enabled="true" visible="true" x="0" y="500" width="393" height="352"/>' : ''}
+    </XCUIElementTypeApplication></AppiumAUT>`,
+    request: async (_method, _path, command) => {
+      commands.push(command);
+      if (command.script === 'mobile: tap') keyboardVisible = false;
+    },
+  };
+  const device = new NativeDevice(driver, 'test', async () => {}, async () => {}, 'test.app');
+  device.screenSize = { width: 393, height: 852 };
+  await device.hideKeyboard();
+  assert.deepEqual(commands.map(command => command.script), ['mobile: hideKeyboard', 'mobile: tap']);
+  assert.deepEqual(commands[1].args, [{ x: 100, y: 115 }]);
+  assert.equal((await device.nodes()).some(node => node.clazz === 'XCUIElementTypeKeyboard'), false);
+  // 安全点击也无效时，仍然必须失败，不能把命令返回值当作隐藏成功。
+  keyboardVisible = true;
+  driver.request = async () => {};
+  device.setDefaultTimeout(1);
+  await assert.rejects(device.hideKeyboard(), /等待控件消失超时/);
+});
 test('可见性查询不会将隐藏节点作为ready，驱动错误不会变成空树', async () => {
   const device = new NativeDevice({ source: async () => xml }, 'test', async () => {}, async () => {}, 'test.app');
   device.screenSize = { width: 393, height: 852 };
