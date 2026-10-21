@@ -1,6 +1,7 @@
 import { execFile, spawn } from 'node:child_process';
 import { promisify } from 'node:util';
-import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, statSync, writeFileSync } from 'node:fs';
+import { rm } from 'node:fs/promises';
 import path from 'node:path';
 import { setTimeout as delay } from 'node:timers/promises';
 import type { TestInfo } from '@playwright/test';
@@ -8,6 +9,7 @@ import type { NativeDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { validateRecordedTimeline, type ProbeFrame } from './video-timeline';
 import { recordXCTestVideo } from './xctest-video';
+import { readRecordedFrameFiles } from './video-frame-files';
 
 export type RecordedFrames = Buffer[] & { timestampsMs?: number[] };
 const runMedia = promisify(execFile);
@@ -95,38 +97,59 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
       }
     }
   }
-  await testInfo.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
-  // Release a held fixture once native recording has stopped, before expensive
-  // decoding. The application must not time out while PNGs are processed.
-  await onRecorded?.();
-  // The fixture HTTP server shares this Node process. Keep it responsive during
-  // long native-video decoding instead of blocking it with execFileSync.
-  const { stdout } = await runMedia('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
-    '-show_frames', '-show_entries', 'frame=pts_time', '-of', 'json', video],
-  { timeout: 60000, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
-  const probe = JSON.parse(stdout) as { frames: ProbeFrame[] };
-  await testInfo.attach(`${name}-raw-frame-timestamps`, {
-    body: JSON.stringify(probe.frames), contentType: 'application/json',
-  });
-  const timeline = validateRecordedTimeline(probe.frames, stoppedAt - triggerAt, minimumDistinctFrames);
-  console.log(`IOS > 录屏 ${name}：${probe.frames.length} 帧，媒体时长 ${Math.round(timeline.durationMs)} ms`);
-  await testInfo.attach(`${name}-encoded-timeline`, { body: JSON.stringify(timeline), contentType: 'application/json' });
+  const processingStartedAt = performance.now();
+  const processing: { phase: string; utc: string; elapsedMs: number }[] = [];
+  const mark = (phase: string) => {
+    const entry = { phase, utc: new Date().toISOString(), elapsedMs: performance.now() - processingStartedAt };
+    processing.push(entry);
+    console.log(`IOS > 录屏处理 ${name}：${JSON.stringify(entry)}`);
+  };
+  mark('recording-complete');
   const frames = path.join(directory, 'frames');
-  mkdirSync(frames);
-  const { x, y, width, height } = region;
-  if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
-    || x + width > device.screenSize.width || y + height > device.screenSize.height) throw new Error('动画区域必须在原始截图范围内。');
   try {
+    await testInfo.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
+    // Release a held fixture once native recording has stopped, before expensive
+    // decoding. The application must not time out while PNGs are processed.
+    await onRecorded?.();
+    mark('probe-start');
+    // The fixture HTTP server shares this Node process. Keep it responsive during
+    // long native-video decoding instead of blocking it with execFileSync.
+    const { stdout } = await runMedia('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
+      '-show_frames', '-show_entries', 'frame=pts_time', '-of', 'json', video],
+    { timeout: 60000, encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
+    const probe = JSON.parse(stdout) as { frames: ProbeFrame[] };
+    await testInfo.attach(`${name}-raw-frame-timestamps`, {
+      body: JSON.stringify(probe.frames), contentType: 'application/json',
+    });
+    const timeline = validateRecordedTimeline(probe.frames, stoppedAt - triggerAt, minimumDistinctFrames);
+    mark('probe-complete');
+    console.log(`IOS > 录屏 ${name}：${probe.frames.length} 帧，媒体时长 ${Math.round(timeline.durationMs)} ms`);
+    await testInfo.attach(`${name}-encoded-timeline`, { body: JSON.stringify(timeline), contentType: 'application/json' });
+    mkdirSync(frames);
+    const { x, y, width, height } = region;
+    if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
+      || x + width > device.screenSize.width || y + height > device.screenSize.height) throw new Error('动画区域必须在原始截图范围内。');
+    mark('decode-start');
     await runMedia('ffmpeg', ['-y', '-v', 'error', '-i', video, '-vf',
       `crop=${width}:${height}:${x}:${y}:exact=1`, '-fps_mode', 'passthrough',
       // PNG compression changes file size, never pixels; avoid spending the
       // native test budget compressing temporary full-resolution frame files.
       '-compression_level', '1', path.join(frames, 'frame-%04d.png')], { timeout: 180_000 });
-    const files = readdirSync(frames).filter(file => file.endsWith('.png')).sort();
-    if (files.length !== timeline.timestampsMs.length) throw new Error('解码帧数与真实录屏时戳不一致。');
-    console.log(`IOS > 录屏 ${name}：完成 ${files.length} 张原始帧解码`);
-    return Object.assign(files.map(file => readFileSync(path.join(frames, file))), { timestampsMs: timeline.timestampsMs });
-  } finally { rmSync(frames, { recursive: true, force: true }); }
+    mark('decode-complete');
+    const pictures = await readRecordedFrameFiles(frames, timeline.timestampsMs.length);
+    mark('frames-read');
+    console.log(`IOS > 录屏 ${name}：完成 ${pictures.length} 张原始帧解码和读取`);
+    return Object.assign(pictures, { timestampsMs: timeline.timestampsMs });
+  } finally {
+    mark('cleanup-start');
+    try { await rm(frames, { recursive: true, force: true }); }
+    finally {
+      mark('cleanup-finished');
+      await testInfo.attach(`${name}-processing-timing`, {
+        body: JSON.stringify(processing), contentType: 'application/json',
+      });
+    }
+  }
 }
 
 /** 连续帧使用同一真实视频的编码时戳，不补帧或推算 30fps。 */

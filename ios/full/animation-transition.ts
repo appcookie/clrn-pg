@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
-import type { NativeDevice as AndroidDevice } from './native-device';
+import type { NativeDevice as AndroidDevice, NativeNode } from './native-device';
 import { gameScreenshot } from './game-controls';
 import { cropNativeFrame, cropNativeRegions, cropMotionRegion, samePixels } from './motion-regions';
 import { decodeFrame, type FramePixels } from './native-frame';
@@ -247,13 +247,28 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     if (observeDelayMs) await setTimeout(observeDelayMs);
     if (afterReady) await afterReady();
   }, testInfo, 3500, shortAnimationMinimumFrames);
+  const endpointStartedAt = performance.now();
+  const endpointTiming: { phase: string; utc: string; elapsedMs: number }[] = [];
+  const markEndpoint = (phase: string) => endpointTiming.push({ phase, utc: new Date().toISOString(),
+    elapsedMs: performance.now() - endpointStartedAt });
+  markEndpoint('recorder-returned');
   await afterRecording?.();
   expect(recorded.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
   const originals = recorded;
   if (inspectFrames) await inspectFrames(originals, testInfo);
-  const afterNodes = /^(?:texas-holdem|zhajinhua)-chat-enter$/.test(name)
-    ? await chatEndpointNodes(device) : await device.nodes();
-  const afterScreen = await gameScreenshot(device);
+  let afterNodes: NativeNode[], afterScreen: Buffer;
+  try {
+    markEndpoint('nodes-start');
+    afterNodes = /^(?:texas-holdem|zhajinhua)-chat-enter$/.test(name)
+      ? await chatEndpointNodes(device) : await device.nodes();
+    markEndpoint('nodes-complete');
+    afterScreen = await gameScreenshot(device);
+    markEndpoint('screenshot-complete');
+  } finally {
+    await testInfo.attach(`${name}-endpoint-timing`, {
+      body: JSON.stringify(endpointTiming), contentType: 'application/json',
+    });
+  }
   if (name === 'texas-holdem-own-profile-enter') {
     endCompareMasks = [...endCompareMasks, ...ownProfileIdentityMask(afterNodes, device.screenSize)];
   } else if (name === 'texas-holdem-own-profile-exit') {

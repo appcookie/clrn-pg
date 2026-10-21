@@ -66,6 +66,11 @@ test('两种牌谱入场都拒绝只有遮罩的假中间帧，真实侧栏滑�
       const attachments = await run([before, dimmer, sliding, after]);
       const middle = JSON.parse(attachments.get(`${game}-game-record-enter-middle-progress`).body);
       assert.equal(middle.index, 2, '实际选中的中间帧必须包含滑入侧栏');
+      const timings = JSON.parse(attachments.get(`${game}-game-record-enter-endpoint-timing`).body);
+      assert.deepEqual(timings.map(item => item.phase),
+        ['recorder-returned', 'nodes-start', 'nodes-complete', 'screenshot-complete']);
+      assert.ok(timings.every(item => Number.isFinite(Date.parse(item.utc))));
+      assert.ok(timings.every((item, index) => !index || item.elapsedMs >= timings[index - 1].elapsedMs));
     }
   } finally {
     if (previous === undefined) delete process.env.IOS_VISUAL_MODE;
