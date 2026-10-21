@@ -215,5 +215,12 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
 export async function gameTapCurrent(device: AndroidDevice, res: string,
   pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number }): Promise<void> {
   await device.prepareTransientCapture();
-  await gameTap(device, res, false, undefined, () => device.inputObservation(res), pointForTarget);
+  await gameTap(device, res, false, undefined, async () => {
+    const observation = await device.inputObservation(res);
+    // 39614829016 的牌谱按钮在真实 XML 和截图中可见，但 predicate 查询持续为空。
+    // 只有目标缺失且没有连接遮挡时，改读本轮完整原生树；不复用旧坐标或补造节点。
+    if (observation.some(node => node.res === res) || gameConnectionState(observation).connecting)
+      return observation;
+    return gameNodes(device);
+  }, pointForTarget);
 }

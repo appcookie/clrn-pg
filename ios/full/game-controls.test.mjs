@@ -247,3 +247,32 @@ test('点击诊断仅在实际tap前调用一次，传入副本不允许改变�
   assert.deepEqual(taps[0].point, notifications[0].point);
   assert.ok(taps[0].at >= notifications[0].at);
 });
+
+
+test('predicate遗漏实际可见入口时读取新原生树，仍需两次稳定布局且只点击一次', async () => {
+  const { device, reads, taps } = driverFixture([[button], [{ ...button, x: 20 }], [{ ...button, x: 20 }]]);
+  const request = device.driver.request;
+  let queries = 0;
+  device.driver.request = async (method, path, body) => {
+    if (path === '/appium/settings') return;
+    if (path === '/elements') { queries++; return []; }
+    return request(method, path, body);
+  };
+  await gameTapCurrent(device, 'target');
+  assert.equal(queries, 3); assert.equal(reads.length, 3);
+  assert.deepEqual(taps.map(tap => tap.point), [{ x: 35, y: 40 }]);
+});
+
+test('完整树回查的连接超时和驱动错误不能被空predicate掩盖', async () => {
+  for (const snapshot of [[button, message('Connection Timeout')], new Error('source failed')]) {
+    const { device, taps } = driverFixture([snapshot]);
+    const request = device.driver.request;
+    device.driver.request = async (method, path, body) => {
+      if (path === '/appium/settings') return;
+      if (path === '/elements') return [];
+      return request(method, path, body);
+    };
+    await assert.rejects(gameTapCurrent(device, 'target'), /Connection Timeout|source failed/);
+    assert.equal(taps.length, 0);
+  }
+});

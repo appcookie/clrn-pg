@@ -1,7 +1,7 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { gameGone, gameNodes, gameReady, gameScreenshot, gameTap, gameTextWithin } from './game-controls';
+import { gameGone, gameNodes, gameReady, gameScreenshot, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
 import { closeGameMask } from './game-pregame';
 import { dismissKeyboard } from './keyboard';
 import { focusedCaretMask } from './screenshot';
@@ -26,7 +26,7 @@ export async function texasHall(context: TexasContext): Promise<void> {
   await gameReady(device, 'auto-rebuy-button');
   await gameReady(device, 'report-pair-play-button');
   await capture('hall_table');
-  await gameTap(device, 'menu-button');
+  await gameTapCurrent(device, 'menu-button');
   await gameReady(device, 'drawer-menu-item-exit');
   await capture('hall_menu');
   await closeGameMask(device, 'drawer-menu-item-exit');
