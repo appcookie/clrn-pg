@@ -11,6 +11,7 @@ import { gameTapText, restoreTexas, texasEvents, type TexasContext } from './tex
 import { animateGamePanel } from './game-panel-animation';
 import { captureNativeTransition, captureTransientTransition, framePaletteDistance } from './animation-transition';
 import { captureMovingKeyframes } from './loop-keyframes';
+import { nativeReviewTab } from './review-tab';
 
 /**
  * 复用 Web 的二十一个面板、聊天、带入审核和手牌展示状态。
@@ -41,9 +42,15 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await capture('leaderboard_players');
   await closeGameMask(device, 'public-leader-board-container');
   await gameTap(device, 'game-record-button');
-  await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'PlayerBenefitView_Container').length,
-    { timeout: 30_000 }).toBe(2);
-  await gameTapText(device, /settle|结算|結算/i);
+  await gameReady(device, 'review-board-close-button');
+  await expect.poll(async () => (await gameNodes(device))
+    .filter(node => node.res === 'PlayerBenefitView_Settlement').map(node => node.text).sort(),
+  { timeout: 30_000 }).toEqual(['-180', '180']);
+  const selectRecordTab = async (mode: 'settlement' | 'record') => {
+    const { bounds } = nativeReviewTab(await gameNodes(device), mode);
+    await device.input.tap({ x: Math.round(bounds.x + bounds.width / 2), y: Math.round(bounds.y + bounds.height / 2) });
+  };
+  await selectRecordTab('settlement');
   await gameGone(device, 'TexasPlayerActionIcon_container');
   /**
    * 通过真实输入固定页码焦点，只排除检测到的细光标，保留页码与边框。
@@ -59,7 +66,7 @@ export async function texasPanels(context: TexasContext): Promise<void> {
     await capture(state, [translateCaret(caret!, input.bounds)]);
   };
   await captureRecord('record_settlement');
-  await gameTapText(device, /^(Record|Details?|牌局详情|牌局詳情)$/i);
+  await selectRecordTab('record');
   await gameReady(device, 'TexasPlayerActionIcon_container');
   await captureRecord('record_actions');
   await gameTap(device, 'review-board-close-button');
