@@ -6121,6 +6121,1356 @@
         "releaseTag": "ios-staging-20-1-c96084f2f1bf",
         "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
       }
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-game-block/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "834c56eda015e4b0a73f26372deccb08c7b58008a1c648d56c81acd38d84c0fe",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-game-own-profile/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "10c94a92eca2a5769ac49148e29f461793cbe2fdd4707d4e70ebf9856acbbe39",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-game-player-profile/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "e66344850872f464226f1878fe634bf1fe5c776100068561e8fe3f4864f17592",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-game-player-statistics-1000/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "1f31bf8bfa7f4b60b8a9175c1222a86b4e321ea335c5bcb2076ab4add6696dfb",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-game-report/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "e978c0bb0c3e9362768d8b5b881d8170c08be85de842106c576fcb0b96519a07",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-game-statistics-help/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "51540e04544e40c9f8866f96aa82f0f7bb37f43a865fe82255127d6b25ec3e20",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-1-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "9bcd886103a414c7c3fd126e673291a134e135d91b9ee24fa56069a2aae6ff05",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-1-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "877983e635673900698fce6a414b81b8f0a86899b4eab7bd7c60e4fb532d063c",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-1-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "8ad869f2b6687b6405e112f18407f3d7b65857f9d72b53341253c5d015c1ad69",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-2-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "9bcd886103a414c7c3fd126e673291a134e135d91b9ee24fa56069a2aae6ff05",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-2-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "3404da3930ff16a5a91c7317130ec92776dc868b8340b8410e591d283cc11c70",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-2-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "2776f09b113de093c89bd3cf66d2abb438adc319c9499dbdfcecc20c338521cc",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-2-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a109493ce2679c14e550ae8305b9d23c361a9d53c3e894b8df2107f7e8efacb6",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-2-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "316bc4b5c6466ce4435674661a6f955df1ffc7811b6f79bfd811c42efbf045b1",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-opponent-profile-2-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "b834562cac75428ce6dc854715c45753139472fb7447e6185b0793bf270db902",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-own-profile-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "18e509bcca606139873ec0cb7e2a508d38f5ac1a23f7131902ac16e61caaff64",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-own-profile-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "be47c947a0d5051b4fbeefde2cca44e5b40d6571fe61a6b5824eb307a6743173",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-own-profile-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "cc0becbb98b9683e52ee8e7f198a46c91c0f80ef1fa01972419e340c77148eaa",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-own-profile-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "d848d189ac3efbe386c9b7291b02f89479bb8a8e058f5823569ce94434279102",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-own-profile-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "fe137dcedb406e92a5fec494d6f92efb158f8004f34b1c2aa8bc7e16009135a1",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-own-profile-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "18e509bcca606139873ec0cb7e2a508d38f5ac1a23f7131902ac16e61caaff64",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-report-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "f6ac5b1d7b3fba66b43ac1eb759c7b8e7982c95c349149d4697b78d6ba1fea02",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-report-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "9bc1344373b3c17acb8e89f3a8679107f6dc0a01a5ceff6ac14b6c77e60d0550",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-report-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "497cd80b3bd9c837a079750fcab4d0d1e32ee43087fa13e929584d272193ee49",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-report-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "8795ca64b16ba5abf07d71762f95c0919ca86908f93e5de695831335e41ea944",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-report-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "d98dd08dd85068c68765766e3c0a0e75eed0d1089a57e62e8878b84792f02470",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-report-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "f6ac5b1d7b3fba66b43ac1eb759c7b8e7982c95c349149d4697b78d6ba1fea02",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-beer/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "47bfdb84468272e1ce78a14011a3d7d11766d1b521f16fcbafd9492ff8814ab3",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-beer-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "44059c7a0e7fc7a5974cf314cf2d837e05a16c05aec1c47e61df40cd1ebd5717",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-beer-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "156946f037899f6cd4a531116324a82cf293bca6d712ff197b01327472dd8e2d",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-beer-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "b00b6bc22d6e42529d6bf6a43dc77e062eff2d0b8ca95c7a70a3db0c8b0d8f64",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-beer/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "d04ca0721f9a82f738abc0e3b54976a85f8be6bc8855f20b856da6bb00a8a0f3",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-beer/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "e193b8173186c66887599d10ac32a7d449364532e6dc15cff5ed0f0d4df810a3",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-flower/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "5c23923a65838f77365f25136b5e772da3a064043438b75362252dcc0bb8a245",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-flower-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "76870fd9ac1c78995adf4aa3e0404101a5a949520f4f1635957a98bb4f4478e9",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-flower-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "01bfb5a35a9eb5f5010b1f1d7749a139edf21f745a6376942cc28e0fc88a890d",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-flower-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6ea2a4e255e6e39af27634fcbc67fb79c777b2d2ea445c3cfa8c862742759a93",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-flower/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "d15f276425f95d6d29ce6e907eb036dfb0b730220e03fe786344e26d0ae08258",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-flower/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "9396976308fded3905c952c131200a85825d5c6c519a722c15b35951e773ccc7",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-good/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "60ae6d975c25925a8d8d91efc7298ffb13af1462139cd03fdd7bb21a23bc3756",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-good-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "18c27964f82df732def86c5753b1958573d9dc36ab94825d384851187a5a2a8e",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-good-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "30917a495321a109a298706c41f9bdfc0b1a27aedf6a4d6b9f1483db8d35e7f1",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-good-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6ea2a4e255e6e39af27634fcbc67fb79c777b2d2ea445c3cfa8c862742759a93",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-good/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "8eae13fe86ca0daec775c070cfff7a175d9155182d142960355ba1e06d0635fe",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-good/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "9396976308fded3905c952c131200a85825d5c6c519a722c15b35951e773ccc7",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-heart/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "5bb3bb2ccfcd30f45ac2779135363a45590358ebb03a718868225e74096d67a8",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-heart-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "e2e3fdca2afc6a522a8cfbd7bb4b40aec0be346fc5ffe50eb03ea62b72bd5ce9",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-heart-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "b4126eda88d84af3587e76ce7e1ef4086a4986cb0f979ef3b37cac80da794bf2",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-heart-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6ea2a4e255e6e39af27634fcbc67fb79c777b2d2ea445c3cfa8c862742759a93",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-heart/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "2bbf8c0e96c9b221f0cec381d4dec0923ea89a9cfb75d522142a6e4017b50d36",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-heart/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "e193b8173186c66887599d10ac32a7d449364532e6dc15cff5ed0f0d4df810a3",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tea/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "4148ca3c89bbb9bdd27410588a9eda8ce3800c21fcd9098d28d696a6a2a8f472",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tea-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "20e2ba0e1268b700124c065f939765a61eccfa56447c57387fbcee81584063c5",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tea-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "831d5dbdb601dbacbf585b5a6351df48e33d182e3177599c60d1521423c7a0d3",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tea-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6ea2a4e255e6e39af27634fcbc67fb79c777b2d2ea445c3cfa8c862742759a93",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tea/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "f82b3ff582c3c6d5bc586c4a082b5067f308033fa50f73a3b546b2828257d66f",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tea/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "58f0cba041e9b96f4b4d99ab88ae37dcb19fe5bc7ad5fb38959e2bc86be627f7",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tomato/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "5dba8e2e6aef2ef06a71101dbbbcbfca63dbc24bf8f48d975f8a66f6b5541418",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tomato-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "e374362aed8ca891dc9cb728f78034da9733f7e31828d4b4fc7465353566e1b3",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tomato-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "3ebc23b96e2dea3dfd46f8df07fb170d63e1e793abe2261b38604ee95d6f38c4",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tomato-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "963aa91e8cf6110a3cd36dcafac2d9ffa922922c6f4d6e9b9e573a5fda2f4385",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tomato/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "73835710a7695b2bbd81043dd052e87563128009e2235870c7aa87c65f0a3257",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-tomato/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "507d287c10cb02f6c61a742990b3ab728543be3c8e2c82d274cf05a6b0d2f4f0",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-water/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "14bdb3928c19feb26acd915592bfe9376fceea6734b849937d4f7924978993b0",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-water-flight/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "4f17f4014f01b5396bfc72dbf773a2ef59724d0155a40be93513e6851528969b",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-water-flight/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "19a01dfc938835726a0abfa54e64caa3ec8874d1f8a1c74a140661826df863b0",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-water-flight/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "6ea2a4e255e6e39af27634fcbc67fb79c777b2d2ea445c3cfa8c862742759a93",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-water/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "8c33fd5816787854ae4161f289976e147b36f8e64f03df48130ce84bc5ccd0b0",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-prop-water/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "e193b8173186c66887599d10ac32a7d449364532e6dc15cff5ed0f0d4df810a3",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-angry/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "d7614dfb1c9374015ab6bf0327f1fbf9bdfa37456d09a46655ebea5328fcf244",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-angry/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "69d74378fc4952d4c3e6797dca3bdaee29e3a3e2581967364d79099a8695024b",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-angry/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "274479aaebc90f79fe1e9a7b5bf1af8c587eafbd890959c8d49ee9b578a3945b",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-cry/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "ff7f9bdc9b2ab68fa428f5e30b7c840b0884f0f553dc1f8abdf71d862fb74c3a",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-cry/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "4e6dc8b5b17e49f0c0001adb4071acb5bc0ec40988171a89744e5e8ce97b2e52",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-cry/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "3cb2f6ec19f6efdbba78914000d7a00d5f1f4f6b8f924fbcdd19c47ce3bb0792",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-drink/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "c7ebe21369d9f059d5186c61de7a833e65c4a3ae68283993e50d48212eb6a5d8",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-drink/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "85ee6ba57e4a006c1a8e8891a7d08cb638cd106f7ea928137cf16c04e43992ff",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-drink/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5dc99078256a2d638945366ef22331a3269bd466dec30960c5d7ff535e122774",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-handclap/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "03e3f9dd1e4d2c30961a7ec7065d94eb77886a4f2c9868a131ec3786e78a8857",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-handclap/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "18f743c169ea8924bf9e30cb0a8bf2cf49a1404b93a8e9302018e576f6b32a6d",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-handclap/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5dc99078256a2d638945366ef22331a3269bd466dec30960c5d7ff535e122774",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-puchi/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "ecfa5eb96e38c1878d609ba33b4b868e83464039a9a389d9d68ba964aff264ef",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-puchi/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "3ce6472ceb157c7ed70abe2c48ddd5f290e306cb0fb1f6d58e8585ee4fb2d8ad",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-puchi/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "3cb2f6ec19f6efdbba78914000d7a00d5f1f4f6b8f924fbcdd19c47ce3bb0792",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-smirk/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "442a0c4ec17bbb65160bac1bc4b28906c919c6a8ea0361c87a7eddb84d1a6986",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-smirk/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "36df04f17fd8eb9b354760c6c8bd2f062f756c9e7aae7b4af1e7f3e47d931dfb",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-smirk/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5dc99078256a2d638945366ef22331a3269bd466dec30960c5d7ff535e122774",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-titter/ios/iphone16-ios18.5/en/animation/changed.png",
+      "sha256": "cf2f79608c7121786c45c2b39650f662a931bf3e66ebcb1e0050602146d83e2f",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-titter/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "a20da7f80a4afdd1a2839f10f31aee355dfed1a9607ef46f9dae0d8b22dd2260",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
+    },
+    {
+      "path": "texas-holdem/table/texas-sticker-titter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "21e454c5f682eba7050958d1874cb3e5831fc0a65bfcf1b263c954140d1d3af9",
+      "source": {
+        "sourceRun": 39633314504,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39633314504",
+        "sourceWorkflowHead": "444b9551a59ce12931f4131048d561190200bf2b",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-13-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      }
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
