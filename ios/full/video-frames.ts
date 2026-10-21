@@ -40,9 +40,9 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 出现 7.376667→7.375000 的 PTS 倒退；该动作改用合成器采集。
   const useCompositor = name === 'zhajinhua-leaderboard-enter'
     || name === 'zhajinhua-card-rank-exit'
-    // 39560079179's own-profile first appeared at full size; later data filling
-    // cannot prove zoom. Collect the three exact profile entrances afresh.
-    || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)
+  // 39560079179's older XCTest profile capture first appeared at full size;
+  // retain compositor capture for the two opponent entrances.
+    || /^texas-holdem-opponent-profile-[12]-enter$/.test(name)
     || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);
   // 39573708795 的拼三张菜单合成器原片出现 PTS 倒退；此入口恢复使用
   // 39560084809 已采到 192 帧及 5 个真实中间姿态的 XCTest 录屏。
@@ -67,9 +67,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 30fps单次采集，仍需完整目标的真实中间运动，不使用数据加载冒充动画。
   // 39659693989 的举报入场合成器原片在触发后相隔358ms，跨过300ms
   // 弹窗滑入；改用固定XCTest单次采集，继续校验已审查的中途轨迹。
+  // 39670012835 的本人资料入场合成器在43.136→43.221秒跳过可验证的
+  // 0.69～0.92倍缩放；对当前原生驱动改用固定XCTest采样，四边与关闭图形门禁不变。
   const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter', 'texas-holdem-leaderboard-enter',
     'texas-holdem-personal-leaderboard-enter', 'texas-holdem-personal-leaderboard-exit',
-    'texas-holdem-report-enter'].includes(name);
+    'texas-holdem-report-enter', 'texas-holdem-own-profile-enter'].includes(name);
   const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',

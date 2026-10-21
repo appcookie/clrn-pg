@@ -43,10 +43,10 @@ export async function texasHall(context: TexasContext): Promise<void> {
       let regions!: ReturnType<typeof gameLoadingRegions>, loadingLayout!: NativeLayoutNode[], loaded!: Buffer;
       // 先预热录屏，再触发一次真实开关动作，并在代理45秒保留窗口内采集。
       const recorded = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, async () => {
-        // WDA waits for the request to finish before resolving the tap. Observe
-        // the one real request while that native tap is still in flight; the
-        // proxy hold must not expire before the loading frames are recorded.
-        switchTap = gameTap(device, 'auto-rebuy-switch');
+        // Full-tree target lookup exceeded the request observation budget in
+        // 39670806561. Use the same fresh two-sample native target lookup as
+        // other recorded actions, then observe the one in-flight real request.
+        switchTap = gameTapCurrent(device, 'auto-rebuy-switch');
         void switchTap.catch(() => {});
         // The native tap can also return before the game sends its request.
         // Wait for that one real request; the proxy hold expires at 45s.
