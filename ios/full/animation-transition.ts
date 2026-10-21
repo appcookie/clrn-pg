@@ -1,3 +1,4 @@
+import { chatEndpointNodes } from './chat-readiness';
 import { animationRegion, endpointMasksInRegion } from './animation-region';
 import { assertVisual } from './device';
 import { baselinePath } from './baseline-path.mjs';
@@ -223,8 +224,9 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   expect(recorded.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
   const originals = recorded;
   if (inspectFrames) await inspectFrames(originals, testInfo);
+  const afterNodes = /^(?:texas-holdem|zhajinhua)-chat-enter$/.test(name)
+    ? await chatEndpointNodes(device) : await device.nodes();
   const afterScreen = await gameScreenshot(device);
-  const afterNodes = await device.nodes();
   if (/^texas-alert-(?:retry|balance|auth)-enter$/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...alertEndpointClockMasks(beforeNodes)];
   } else if (/^texas-alert-(?:retry|balance|auth)-exit$/.test(name)) {

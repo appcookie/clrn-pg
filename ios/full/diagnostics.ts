@@ -1,3 +1,4 @@
+import { recentNativeCrashes } from './native-crash';
 import type { NativeDevice } from './native-device';
 import type { TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
@@ -57,7 +58,13 @@ export function safeFailureScreenshot(bytes: Buffer, nodes: DiagnosticNode[]): B
 /** 先获得脱敏所需树；树不可读时不退回输出原始屏幕。 */
 export async function captureFailure(device: NativeDevice, testInfo: TestInfo): Promise<void> {
   const nodes = await device.nodes().catch(() => undefined);
-  if (!nodes) return;
+  if (!nodes) {
+    if (!device.applicationId) return;
+    const crashes = await recentNativeCrashes(device.applicationId).catch(error => ({ diagnosticError: String(error) }));
+    await testInfo.attach('native-app-crash-summary', { body: JSON.stringify(crashes),
+      contentType: 'application/json' }).catch(() => {});
+    return;
+  }
   await testInfo.attach('failure-accessibility', { body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json' }).catch(() => {});
   await device.nativeScreenshot().then(body => testInfo.attach('failure-screen-redacted', {
     body: safeFailureScreenshot(body, nodes), contentType: 'image/png',
