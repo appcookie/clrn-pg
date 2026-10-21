@@ -49,6 +49,17 @@ test('原始PTS相同的真实编码帧全部保留，不混入best_effort的DTS
   assert.equal(result.durationMs, 6000);
 });
 
+test('XCTest 原始 MOV 的一个刻度倒退也必须失败，不能排序或修正时间戳', () => {
+  // Original MOV from CI 39528661625, frames 120..134. This backwards
+  // presentation time already exists before the lossless MP4 remux.
+  const input = [2.781667, 2.783333, 2.786667, 2.786667, 2.788333,
+    2.790000, 2.793333, 2.791667, 2.793333, 2.795000,
+    2.803333, 2.805000, 2.811667, 2.813333, 2.820000]
+    .map(time => ({ pts_time: String(time) }));
+  assert.throws(() => validateRecordedTimeline(input, 3500, shortAnimationMinimumFrames),
+    /"invalidIndex":7/);
+});
+
 test('静态启动页可接受真实低帧率录屏，动画仍保持默认20帧门槛', () => {
   const lowRate = frames(16000, 1);
   assert.throws(() => validateRecordedTimeline(lowRate, 14000), /真实连续帧/);

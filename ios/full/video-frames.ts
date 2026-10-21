@@ -25,7 +25,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Simulator compositor recorder for this specific transition, with the same
   // original timestamps, endpoints and mandatory middle-frame assertions.
   // This is one recording/action, never a fallback after a failed assertion.
-  const backend = name === 'texas-holdem-raise-bet-enter' ? 'simctl' : device.nativeVideoBackend;
+  // The original XCTest MOV in 39528661625 also contains a backwards PTS
+  // during the ZJH leaderboard entrance (2.793333 -> 2.791667). Recording
+  // through the compositor avoids repairing/reordering that invalid media.
+  const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter';
+  const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
   if (backend === 'xctest') {
