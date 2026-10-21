@@ -1605,6 +1605,305 @@
         ]
       },
       "review": "已逐图检查全部30张原始PNG（5页联系表）：等待牌桌、菜单、牌型说明整页正常，TestRoom及固定房号一致，无重连或错误遮罩；九个座位箭头各自两相位均完整保留箭头与运动余量；菜单下滑和牌型说明左右滑动的起点、中间、终点画面有效。牌型列表末行在真实设备视口中部分可见，整页保留标题和关闭按钮，未通过后处理补图或改像素。动态背景箭头有独立18张基准，菜单前景完整可见。采集整例通过，比较仍须独立CI验证。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-applications-pending/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "49dfa60c68d39b2459db9e424dfccd2c9c753d0f5502b76420c68b4df03250f0",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-applications-resolved/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "88d1bdccbe98e3e74b7d7a3e35c988503afb7289ca80727ecbf660485863614d",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-applications-more/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "b21daa12f4d4edd89e31a9a2c3eb238168e1e876998ae6172fe689fa5807b33a",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-chat-audio-history/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "6835f5c94522856d6c9dd81371112a32000acb51ad428d19701e8729925de19b",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-chat-barrage-off/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "a76e6fb74f1652053cab9c65ea6bd3cd14664068dfbba25469051073ebdf673d",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-retry-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "af974cb992a843b318db0c08410e31f92333f3f6633dacff7325dbb95ff5d15f",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-retry-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "1f65d34f4dc5151bbe0af0d2e34ba93a5d9dd448e975668760cc7f096f46b5c8",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-retry-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "f56c43a31082d1e3d23641dd6037d265e12c17a1c5af5e410aee6844c5214d00",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-alert-retry/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "fafea356b4fff9f781f06fceab14e72b320a66d5b75eb741b89de6e33c2132b6",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-retry-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a9d54f2b176c1c6757bc5f36bc0bec11751f4adfa518361236a0b3f4444273bf",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-retry-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8111b3bc7aefe6aee89e219067a7a2a563392cf001b4e44321d461cb307715a9",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-retry-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "af2c09d6401cfc4f244cf4116c92275e7df362d1c2f250a15f9ba74e6e28f182",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-balance-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5a8d35b84807cb872c6f0e8e2345c7087cf99bd849ba67b730a7cb31cc585c55",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-balance-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8a9d8237d9a3e8cf25ae3b147093406cea38534edbbb30cc80dee11a840e9d81",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-balance-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "157e3fd3e1f92685bb00550a8f3c10e00c528c224ac6319dd9d88a4a87d97acb",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-alert-insufficient-balance/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "ee617ca276bb3667d55c0ecd98617592014d2f7255a40b4b2037fde7ef2caeb6",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-balance-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "44c1ebdcf35a951428c1fe22b0341aec930607af7d760f6a5cee41292c2ae832",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-balance-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "7cec76a35604d73e5355c75712901815e4244311c6d5686de944bb54534e3fd9",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-balance-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "49616bb1a7013e38ef90ae9cb8bc595fad776eb2888e5155190fefa29676f304",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-auth-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "fe1381bf6c89619afafe4973f04eb1cd0cc7c838fb9de38a0fe4486ae8a04931",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-auth-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "09c3f063978cccd2f42b12b0f9e49d9a9545034816f95b0bffc0521b1f11ddf4",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/texas-alert-auth-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "7b92e8d1800c4efd31686c35b1833d2ce102a578d15e00cc502e55311e798bbb",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panel-variants-alert-authentication-failed/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "a4aa514724580ffb0a9f229bd20158c818ffe2f643a4be27fc409c55b045b220",
+      "source": {
+        "sourceRun": 39523022363,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39523022363",
+        "sourceWorkflowHead": "216a18c5e9485c7e829784318dac5f5e31747d43",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-21-1"
+        ]
+      },
+      "review": "逐张审查本轮 23 张原生 PNG：买入申请待处理/已处理/更多、语音历史及弹幕开关画面完整；重试与余额不足弹窗保留完整背景、标题、所有按钮及真实缩放进退场中间相位，关闭中间帧确有尺寸变化，不能仅以按钮按下变暗代替；身份校验失败弹窗入场保留半透明缩放相位与完整文字/退出按钮。未见连接遮罩、裁掉目标内容或空白关键帧。5 段原始 MP4 文件头与成功报告均核对；后续独立 compare 必须验证这些基准。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"

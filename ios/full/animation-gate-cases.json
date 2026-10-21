@@ -262,7 +262,31 @@
       "group": "texas",
       "file": "tests/games.spec.ts",
       "title": "en / texas / signed_in_texas_panel_variants",
-      "images": []
+      "images": [
+        "en-signed-in-texas-panel-variants-applications-pending.png",
+        "en-signed-in-texas-panel-variants-applications-resolved.png",
+        "en-signed-in-texas-panel-variants-applications-more.png",
+        "en-signed-in-texas-panel-variants-chat-audio-history.png",
+        "en-signed-in-texas-panel-variants-chat-barrage-off.png",
+        "texas-alert-retry-enter-start.png",
+        "texas-alert-retry-enter-middle.png",
+        "texas-alert-retry-enter-end.png",
+        "en-signed-in-texas-panel-variants-alert-retry.png",
+        "texas-alert-retry-exit-start.png",
+        "texas-alert-retry-exit-middle.png",
+        "texas-alert-retry-exit-end.png",
+        "texas-alert-balance-enter-start.png",
+        "texas-alert-balance-enter-middle.png",
+        "texas-alert-balance-enter-end.png",
+        "en-signed-in-texas-panel-variants-alert-insufficient-balance.png",
+        "texas-alert-balance-exit-start.png",
+        "texas-alert-balance-exit-middle.png",
+        "texas-alert-balance-exit-end.png",
+        "texas-alert-auth-enter-start.png",
+        "texas-alert-auth-enter-middle.png",
+        "texas-alert-auth-enter-end.png",
+        "en-signed-in-texas-panel-variants-alert-authentication-failed.png"
+      ]
     },
     {
       "id": "animation-22",
