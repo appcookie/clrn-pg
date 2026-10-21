@@ -1,4 +1,5 @@
 import { leaderboardSlideLayout, leaderboardSlideEvidence } from './personal-leaderboard-slide';
+import { compareAnimationEndpoint } from './animation-endpoint';
 import { chatEndpointNodes } from './chat-readiness';
 import { animationRegion, endpointMasksInRegion } from './animation-region';
 import { ownProfileIdentityMask } from './profile-region';
@@ -614,10 +615,17 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
           : samePixels(maskScreenshot(before, startMasks),
             maskScreenshot(reference, startMasks));
       }), '动画起点视觉回归').toBe(true);
-    expect([`${name}-end.png`, ...endPhaseAnchors.filter(file => existsSync(baselinePath(file)))]
-      .some(file => samePixels(maskScreenshot(after, endMasks),
-        maskScreenshot(readFileSync(baselinePath(file)), endMasks))),
-    '动画终点视觉回归').toBe(true);
+    const endpoint = compareAnimationEndpoint(maskScreenshot(after, endMasks),
+      [`${name}-end.png`, ...endPhaseAnchors.filter(file => existsSync(baselinePath(file)))]
+        .map(file => ({ name: file, bytes: maskScreenshot(readFileSync(baselinePath(file)), endMasks) })));
+    await testInfo.attach(`${name}-endpoint-comparison`, {
+      body: JSON.stringify({ channelTolerance: 12, maximumChangedRatio: 0.001,
+        comparisons: endpoint.comparisons }), contentType: 'application/json',
+    });
+    if (!endpoint.matches && endpoint.diff) await testInfo.attach(`${name}-endpoint-diff`, {
+      body: endpoint.diff, contentType: 'image/png',
+    });
+    expect(endpoint.matches, '动画终点视觉回归').toBe(true);
     const reference = readFileSync(baselinePath(`${name}-middle.png`));
     // 原生截图可能落在已审查中途相位的两侧，但靠近起止帧的无关闪屏不能冒充转场。
     // 非录屏路径要求基准变化幅度；录屏路径在空间匹配时逐个检查已审查相位。
