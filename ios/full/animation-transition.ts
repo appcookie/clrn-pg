@@ -269,6 +269,31 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     // 39579293828在滑入期间查询昵称时9.6秒只录到17帧。与牌谱/资料卡
     // 一样先保留不受查询打断的录屏，再严格确认业务数据和独立终点。
     || name === 'texas-holdem-personal-leaderboard-enter';
+  const endpointStartedAt = performance.now();
+  const endpointTiming: { phase: string; utc: string; elapsedMs: number }[] = [];
+  const markEndpoint = (phase: string) => endpointTiming.push({ phase, utc: new Date().toISOString(),
+    elapsedMs: performance.now() - endpointStartedAt });
+  let immediateEndpoint: { nodes: NativeNode[]; screen: Buffer } | undefined;
+  // 39583869949的末帧操作按钮仍完整可见、倒计时32秒；解码和整树查询
+  // 44秒后才截图已变成0秒。录屏真正停止后立即取独立终点，避免分析耗时
+  // 跨越回合；不重发switch_player，也不从录像末帧替代原生截图。
+  const observeBeforeDecode = name === 'zhajinhua-operation-buttons' ? async () => {
+    markEndpoint('recording-stopped');
+    try {
+      markEndpoint('nodes-start');
+      const nodes = await device.nodes();
+      markEndpoint('nodes-complete');
+      const screen = await gameScreenshot(device);
+      markEndpoint('screenshot-complete');
+      immediateEndpoint = { nodes, screen };
+    } catch (error) {
+      markEndpoint('observation-failed');
+      await testInfo.attach(`${name}-endpoint-timing`, {
+        body: JSON.stringify(endpointTiming), contentType: 'application/json',
+      });
+      throw error;
+    }
+  } : undefined;
   // 使用原分辨率原生视频，截图通道只用于精确端点。
   const recorded = await videoRecorder(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
     await trigger();
@@ -277,11 +302,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     // then require the same semantics before observing the endpoint.
     if (settleMs) await setTimeout(settleMs);
     if (!deferredReady && afterReady) await afterReady();
-  }, testInfo, 3500, shortAnimationMinimumFrames);
-  const endpointStartedAt = performance.now();
-  const endpointTiming: { phase: string; utc: string; elapsedMs: number }[] = [];
-  const markEndpoint = (phase: string) => endpointTiming.push({ phase, utc: new Date().toISOString(),
-    elapsedMs: performance.now() - endpointStartedAt });
+  }, testInfo, 3500, shortAnimationMinimumFrames, observeBeforeDecode);
   markEndpoint('recorder-returned');
   const originals = recorded;
   let afterNodes: NativeNode[], afterScreen: Buffer;
@@ -299,12 +320,18 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     await afterRecording?.();
     expect(recorded.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
     if (inspectFrames) await inspectFrames(originals, testInfo);
-    markEndpoint('nodes-start');
-    afterNodes = /^(?:texas-holdem|zhajinhua)-chat-enter$/.test(name)
-      ? await chatEndpointNodes(device) : await device.nodes();
-    markEndpoint('nodes-complete');
-    afterScreen = await gameScreenshot(device);
-    markEndpoint('screenshot-complete');
+    if (observeBeforeDecode) {
+      if (!immediateEndpoint) throw new Error('操作按钮录屏必须在解码前读取独立原生终点');
+      afterNodes = immediateEndpoint.nodes;
+      afterScreen = immediateEndpoint.screen;
+    } else {
+      markEndpoint('nodes-start');
+      afterNodes = /^(?:texas-holdem|zhajinhua)-chat-enter$/.test(name)
+        ? await chatEndpointNodes(device) : await device.nodes();
+      markEndpoint('nodes-complete');
+      afterScreen = await gameScreenshot(device);
+      markEndpoint('screenshot-complete');
+    }
   } finally {
     await testInfo.attach(`${name}-endpoint-timing`, {
       body: JSON.stringify(endpointTiming), contentType: 'application/json',

@@ -75,19 +75,31 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
   const before = picture(), after = picture('end');
   const previous = process.env.IOS_VISUAL_MODE;
   process.env.IOS_VISUAL_MODE = 'smoke';
-  const run = async (middle, axGrouped = false, reuse = false) => {
-    let observations = 0, screenshots = 0, triggers = 0;
+  const run = async (middle, axGrouped = false, reuse = false, skipEndpoint = false) => {
+    let observations = 0, screenshots = 0, triggers = 0, decoded = false;
     const grouped = [{ ...node('zhajinhua-cancel-challenge-choosing', { x:0,y:0,...size }), enabled:false,
       children:nodes.map(item => ({ ...item, visible:false, enabled:true })) }];
     const prepared = reuse ? { completedAt:Date.now(), nodes:[
       {...node('zhajinhua-cancel-challenge-choosing',{x:0,y:0,...size}),enabled:true},
       ...Array.from({length:4},(_,i)=>node('challenge_player_selector',{x:20+i*40,y:10,width:20,height:20})),
     ] } : undefined;
-    const device = { screenSize: size, nodes: async () => observations++ || reuse ? axGrouped ? grouped : nodes : [],
-      nativeScreenshot: async () => screenshots++ ? after : before };
+    const device = { screenSize: size, nodes: async () => {
+      assert.equal(decoded, false, '解码后回合已结束，必须使用录屏刚停止时的独立观测');
+      return observations++ || reuse ? axGrouped ? grouped : nodes : [];
+    }, nativeScreenshot: async () => {
+      assert.equal(decoded, false, '独立终点截图不能等待长时间解码');
+      return screenshots++ ? after : before;
+    } };
     await captureNativeTransition(device, 'zhajinhua-operation-buttons', { attach: async () => {} },
       { x: 0, y: 0, ...size }, () => {}, [], [], 0, 'videoFrames', undefined, undefined,
-      [], [], [], [], [], async (_device, _name, _region, trigger) => { triggers++; await trigger(); return [before, ...(Array.isArray(middle) ? middle : [middle]), after]; },
+      [], [], [], [], [], async (_device, _name, _region, trigger, _info, _duration, _minimum, onRecorded) => {
+        triggers++;
+        await trigger();
+        assert.equal(screenshots, 1, '录屏中的真实动作不能被终点截图打断');
+        if (!skipEndpoint) await onRecorded();
+        decoded = true;
+        return [before, ...(Array.isArray(middle) ? middle : [middle]), after];
+      },
       undefined,prepared);
     return { observations,screenshots,triggers };
   };
@@ -95,6 +107,7 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
     await run(picture('middle'));
     await run(picture('middle'), true);
     assert.deepEqual(await run(picture('middle'), true, true), { observations:1,screenshots:2,triggers:1 });
+    await assert.rejects(run(picture('middle'), true, true, true), /必须在解码前读取独立原生终点/);
     for (let index=0;index<9;index++)
       await assert.rejects(run(picture('middle', index), true), /真实局部中间态/);
     // All main buttons zoom in, but delay hard-cuts to its end state and
