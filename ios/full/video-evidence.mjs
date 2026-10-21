@@ -50,7 +50,7 @@ export function exportVideoEvidence(artifactDirectory, outputDirectory, source =
       if (verified) entry.keyframeKind = 'asserted';
       let previous = -1;
       for (const frame of metadata ? JSON.parse(attachmentBytes(metadata).toString('utf8')) : []) {
-        if (!Number.isFinite(frame.timestampMs) || frame.timestampMs <= previous) throw new Error('关键帧时间戳必须递增');
+        if (!Number.isFinite(frame.timestampMs) || frame.timestampMs < 0 || frame.timestampMs <= previous) throw new Error('关键帧时间戳必须递增');
         previous = frame.timestampMs;
         const image = clipAttachments.find(a => a.name === frame.attachment && a.contentType === 'image/png');
         if (!image) throw new Error('关键帧原图缺失');

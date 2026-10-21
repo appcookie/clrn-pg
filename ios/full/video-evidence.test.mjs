@@ -56,7 +56,7 @@ for (const mode of ['missing-video', 'missing-image', 'duplicate-video', 'bad-ti
         mkdirSync(join(f.artifact, 'full-results/other'));
         writeFileSync(join(f.artifact, 'full-results/other/clip.mp4'), f.bytes);
       }
-      if (mode === 'bad-time') f.attachments[2].body = Buffer.from(JSON.stringify([{ attachment: 'keyframe', timestampMs: -2 }])).toString('base64');
+      if (mode === 'bad-time') f.attachments[2].body = Buffer.from(JSON.stringify([{ attachment: 'keyframe', timestampMs: -0.5 }])).toString('base64');
       if (mode === 'bad-build') writeFileSync(join(f.artifact, 'release/build-info.json'), '{}');
       f.save(); assert.throws(() => exportVideoEvidence(f.artifact, f.output));
     } finally { rmSync(f.root, { recursive: true, force: true }); }
