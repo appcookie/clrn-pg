@@ -214,11 +214,19 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   // 战绩从右侧展开；说明文字只占面板中间，不能用其边界判断遮罩位置。
   const reviewMask = (await gameReady(device, 'screen-mask-touch-to-close')).bounds;
   const reviewPoint = gameMaskPoint(reviewMask, nativeReviewPanelBounds(await device.nodes(), device.screenSize), device.screenSize);
-  /** 点击侧栏外的遮罩，触发真实侧滑退出。 */
-  const closeRecord = () => device.input.tap(reviewPoint);
+  /** 确认后台房间连接稳定，再点击侧栏外遮罩触发一次真实侧滑退出。 */
+  const closeRecord = async () => {
+    await gameConnected(device, 2_000);
+    await device.input.tap(reviewPoint);
+  };
   if (animationInfo) await captureNativeTransition(device, `${game}-game-record-exit`, animationInfo,
     screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), closeRecord, [], [], 0,
-    game === 'zhajinhua' ? 'videoFrames' : 'motionFrames');
+    game === 'zhajinhua' ? 'videoFrames' : 'motionFrames', undefined, async () => {
+      // 39574774993 的原片末帧仍在重连，解码后截图已恢复；必须在同一次
+      // 录屏内等到真实终态，不能丢弃末帧或把 Connecting 遮罩排除比较。
+      await gameGone(device, 'review-board-description-text');
+      await gameConnected(device, 2_000);
+    });
   else await closeRecord();
   await gameGone(device, 'review-board-description-text');
   await animateGamePanel(device, game, 'chat', `${game}-chat-button`,
