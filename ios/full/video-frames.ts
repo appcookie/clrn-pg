@@ -53,6 +53,12 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     || name === 'zhajinhua-showdown-cards'
     || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
     || name === 'texas-holdem-personal-leaderboard-exit'
+    // Its entrance in 39563456373 likewise had only nine original frames;
+    // the first sidebar was already full size, followed by data loading.
+    || name === 'texas-holdem-personal-leaderboard-enter'
+    // 39560079179's own-profile first appeared at full size; later data filling
+    // cannot prove zoom. Collect the three exact profile entrances afresh.
+    || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)
     || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);
   const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);

@@ -1,6 +1,8 @@
+import { leaderboardSlideLayout, leaderboardSlideEvidence } from './personal-leaderboard-slide';
 import { chatEndpointNodes } from './chat-readiness';
 import { animationRegion, endpointMasksInRegion } from './animation-region';
 import { ownProfileIdentityMask } from './profile-region';
+import { profileZoomLayout, profileZoomEvidence } from './profile-zoom';
 import { assertVisual } from './device';
 import { baselinePath } from './baseline-path.mjs';
 import { screenBounds } from './screen-geometry';
@@ -426,6 +428,24 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
       `第${card.card}张牌必须有自身牌面真实水平展开，字体加载或其他牌运动不能代替`).toBeGreaterThan(0);
     candidates = candidates.filter(item=>horizontal.middleIndices.includes(item.index));
     expect(candidates.length, '第二与第三张牌必须在同一真实展开中途可见').toBeGreaterThan(0);
+  }
+  if (/^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)) {
+    const layout = profileZoomLayout(afterNodes, device.screenSize, region);
+    const zoom = await profileZoomEvidence(before, after, timeline, candidates.map(item => item.index), layout);
+    await testInfo.attach(`${name}-profile-zoom`, { body: JSON.stringify(zoom), contentType: 'application/json' });
+    const realZoom = new Set(zoom.candidates);
+    candidates = candidates.filter(item => realZoom.has(item.index));
+    expect(candidates.length, '资料卡四边及静态关闭图形必须有同一次真实缩放中间姿态；重连、数据加载或硬切不能代替')
+      .toBeGreaterThan(0);
+  }
+  if (name === 'texas-holdem-personal-leaderboard-enter') {
+    const layout = leaderboardSlideLayout(afterNodes, device.screenSize, region);
+    const slide = await leaderboardSlideEvidence(before, after, timeline, candidates.map(item => item.index), layout);
+    await testInfo.attach(`${name}-sidebar-slide`, { body: JSON.stringify(slide), contentType: 'application/json' });
+    const moved = new Set(slide.candidates);
+    candidates = candidates.filter(item => moved.has(item.index));
+    expect(candidates.length, '个人排行榜侧栏边界和关闭按钮必须同帧真实平移；昵称或统计加载不能代替滑入')
+      .toBeGreaterThan(0);
   }
   if (/^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)) {
     const targetEvidence = await nativeTargetMotionEvidence(before, after, timeline);

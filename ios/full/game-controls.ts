@@ -140,7 +140,8 @@ async function connectedObservation(device: AndroidDevice, stableMs = 0): Promis
  * @param res - 与 Web 共用的 testID。
  * @param nativeInput - 短时提示使用现有驱动点击，避免启动 shell 输入进程耗尽显示时间。
  */
-export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false): Promise<void> {
+export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false,
+  onTap?: (point: Readonly<{ x: number; y: number }>) => void): Promise<void> {
   console.log(`IOS > 游戏点击 ${res}`);
   let previous: NativeNode | undefined;
   let stabilityStarted = false;
@@ -181,5 +182,6 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
   }
   const { x, y, width, height } = node.bounds;
   const point = { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
+  onTap?.({ ...point });
   await device.input.tap(point);
 }

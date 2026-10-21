@@ -1,0 +1,112 @@
+{
+  "sourceRun": "39560079179",
+  "sourceCommit": "d9d703c4673ba3051dbef28cb9e9351bfa64b224",
+  "appCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+  "screen": {
+    "width": 1178,
+    "height": 2556
+  },
+  "region": {
+    "x": 67,
+    "y": 689,
+    "width": 1044,
+    "height": 1178
+  },
+  "nodes": [
+    {
+      "clazz": "XCUIElementTypeOther",
+      "bounds": {
+        "x": 71,
+        "y": 693,
+        "width": 1036,
+        "height": 1170
+      },
+      "visible": true,
+      "children": []
+    },
+    {
+      "res": "avatar_image",
+      "clazz": "XCUIElementTypeImage",
+      "bounds": {
+        "x": 86,
+        "y": 732,
+        "width": 226,
+        "height": 225
+      },
+      "visible": true,
+      "children": []
+    },
+    {
+      "res": "player-profile-popup-close",
+      "clazz": "XCUIElementTypeOther",
+      "bounds": {
+        "x": 1040,
+        "y": 738,
+        "width": 37,
+        "height": 36
+      },
+      "visible": true,
+      "children": []
+    },
+    {
+      "res": "PlayerStatisticComponent_List",
+      "clazz": "XCUIElementTypeOther",
+      "bounds": {
+        "x": 116,
+        "y": 1191,
+        "width": 946,
+        "height": 639
+      },
+      "visible": true,
+      "children": []
+    },
+    {
+      "res": "player-profile-nickname",
+      "clazz": "XCUIElementTypeStaticText",
+      "bounds": {
+        "x": 341,
+        "y": 741,
+        "width": 280,
+        "height": 57
+      },
+      "visible": true,
+      "children": []
+    }
+  ],
+  "notes": "Negative evidence only: actual opponent entrance background/Connecting frame20, own entrance frame11 already full-size with empty statistics, own static profile endpoint. Crops preserve pixels. No true native zoom intermediate has been observed in this run.",
+  "files": {
+    "before": {
+      "source": "opponent-before.png",
+      "sha256": "f25dbd1703ea80e8a6336bf63e61e35d28ed50f545b32d95e393199744024b77"
+    },
+    "connecting": {
+      "source": "frame20.png",
+      "sha256": "bc961394f90d49793cf730ed49358bc9ede36fdffb2e3ae36e6e478a3717391e",
+      "originalMedia": "opponent",
+      "frameIndex": 20,
+      "ptsSeconds": 1.47
+    },
+    "empty": {
+      "source": "own-enter-frame11.png",
+      "sha256": "e0f736c38aa0b606dc4c237038a67e39d2f501fffcfd5c58b7bb168372498fca",
+      "originalMedia": "own",
+      "frameIndex": 11,
+      "ptsSeconds": 4.853333
+    },
+    "after": {
+      "source": "en-signed-in-texas-game-own-profile.png.png",
+      "sha256": "65159dbbe8d1973d91ccb52c723e9168f6abf36aa82d1911ba5843cf84180fb4",
+      "sourceKind": "Actual native static screenshot, not an original video frame"
+    }
+  },
+  "originalMedia": {
+    "opponent": {
+      "filename": "texas-holdem-opponent-profile-1-enter-xctest-original-e2dc4661042a88e38c8e04c353529285cec12e59.mov",
+      "sha256": "e7a2f65bb8e7ae8a7e4039cfd652431050b2fb9e702a81b7c7a1817a4f2316a9"
+    },
+    "own": {
+      "filename": "texas-holdem-own-profile-enter-xctest-original-45901b8f7ed6ec20eeaa598c60ba2503efceaf77.mov",
+      "sha256": "1b1d39b0fa28e10c74e4c5462f7ce84f60ac87a95aa86b9a61399ac833f45f44"
+    }
+  }
+}

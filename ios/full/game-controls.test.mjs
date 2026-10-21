@@ -114,3 +114,17 @@ test('短暂消失的目标必须重新取得两份真实稳定样本', async ()
   assert.equal(reads.length, 4);
   assert.equal(taps.length, 1);
 });
+
+
+test('点击诊断仅在实际tap前调用一次，传入副本不允许改变输入坐标', async () => {
+  const { device, taps } = driverFixture([[button]]);
+  const notifications = [];
+  await gameTap(device, 'target', false, point => {
+    assert.equal(taps.length, 0);
+    notifications.push({ point: { ...point }, at: Date.now() });
+    point.x = 999;
+  });
+  assert.equal(notifications.length, 1);
+  assert.deepEqual(taps[0].point, notifications[0].point);
+  assert.ok(taps[0].at >= notifications[0].at);
+});

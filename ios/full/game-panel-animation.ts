@@ -23,13 +23,40 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
   samplingMethod: 'motionFrames' | 'launchFrames' | 'videoFrames' = game === 'zhajinhua'
     ? 'videoFrames' : 'motionFrames',
   masks: ScreenshotMask[] = [], afterReady?: () => Promise<void>,
-  videoPhaseAnchors: string[] = []): Promise<void> {
+  videoPhaseAnchors: string[] = [],
+  capture: typeof captureNativeTransition = captureNativeTransition): Promise<void> {
   if (!testInfo) { await gameTap(device, button); return; }
-  await gameConnected(device);
-  const { bounds } = await gameReady(device, button);
-  /** 通过 XCUITest 点击真实牌桌控件，Simulator 同时录制每一帧。 */
-  const press = () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) });
-  await captureNativeTransition(device, `${game}-${name}-${phase}`, testInfo, region, press,
+  const guardedProfile = game === 'texas-holdem' && phase === 'enter'
+    && /^(?:own-profile|opponent-profile-[12])$/.test(name);
+  let press: () => Promise<void>;
+  if (guardedProfile) {
+    // Run 39560079179 reconnected during recorder warm-up, after the old
+    // pre-recording readiness checks. Observe twice immediately before the
+    // one real tap; no accessibility query interrupts the ensuing animation.
+    press = async () => {
+      const timing: { preparationStartedUtc: string; tapRequestedUtc?: string;
+        point?: { x: number; y: number }; completedUtc?: string } = {
+        preparationStartedUtc: new Date().toISOString(),
+      };
+      try {
+        await gameTap(device, button, false, point => {
+          timing.tapRequestedUtc = new Date().toISOString();
+          timing.point = point;
+        });
+      } finally {
+        timing.completedUtc = new Date().toISOString();
+        await testInfo.attach(`${game}-${name}-${phase}-tap-timing`, {
+          body: JSON.stringify(timing), contentType: 'application/json',
+        });
+      }
+    };
+  } else {
+    await gameConnected(device);
+    const { bounds } = await gameReady(device, button);
+    press = () => device.input.tap({ x: Math.round(bounds.x + bounds.width / 2),
+      y: Math.round(bounds.y + bounds.height / 2) });
+  }
+  await capture(device, `${game}-${name}-${phase}`, testInfo, region, press,
     masks, [], 0, samplingMethod, undefined, afterReady, videoPhaseAnchors);
 }
 

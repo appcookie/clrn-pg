@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
+import sharp from 'sharp';
 import { profileReadiness, waitForProfileReadiness } from './profile-readiness.ts';
 import { captureNativeTransition } from './animation-transition.ts';
 
@@ -36,6 +37,7 @@ const screen = { width: 120, height: 180 };
 const node = (res, x, y, width, height, text) => ({ res, text, visible: true,
   clazz: 'XCUIElementTypeOther', bounds: { x, y, width, height }, children: [] });
 const panelNodes = [node(undefined, 10, 20, 100, 140),
+  node('avatar_image', 20, 26, 18, 18),
   node('player-profile-popup-close', 100, 25, 5, 5),
   node('player-profile-nickname', 20, 25, 40, 8, 'Player'),
   node('player-profile-level', 65, 25, 20, 8, 'Lv 1'),
@@ -43,15 +45,25 @@ const panelNodes = [node(undefined, 10, 20, 100, 140),
   node('player-profile-balance', 20, 43, 20, 7, '10000'),
   node('PlayerStatisticComponent_List', 18, 60, 84, 90),
   node('PlayerStatisticComponent_Item_0', 18, 60, 40, 14, 'Total Hands, 100')];
-function picture(scale = 0) {
+function basePicture(panel = false) {
   const png = new PNG(screen);
   for (let y = 0; y < screen.height; y++) for (let x = 0; x < screen.width; x++) {
-    const inPanel = Math.abs(x - 60) <= 50 * scale && Math.abs(y - 90) <= 70 * scale;
-    const rgb = inPanel ? [(x % 12) * 10 + 50, 30, (y % 10) * 10 + 70] : [20, 100 + (y % 20), 60];
-    png.data.set([...rgb, 255], (y * screen.width + x) * 4);
+    const inside = panel && x >= 10 && x < 110 && y >= 20 && y < 160;
+    let rgb = inside ? (y < 55 ? [27,30,45] : [50,55,76]) : [20,100+(y%20),60];
+    if (panel && x >= 20 && x < 38 && y >= 26 && y < 44)
+      rgb = (Math.floor((x-20)/3)+Math.floor((y-26)/3))%2 ? [230,230,230] : [20,20,20];
+    if (panel && x >= 100 && x < 105 && y >= 25 && y < 30)
+      rgb = ((x - 100) === (y - 25) || (x - 100) + (y - 25) === 4) ? [230,230,230] : [20,20,20];
+    png.data.set([...rgb,255],(y*screen.width+x)*4);
   }
   return PNG.sync.write(png);
 }
+const pictures = new Map([[0,basePicture()],[1,basePicture(true)]]);
+const scaledPanel = await sharp(pictures.get(1)).extract({left:10,top:20,width:100,height:140})
+  .resize(65,91).png().toBuffer();
+const dimmed = await sharp(pictures.get(0)).linear(.9, 0).png().toBuffer();
+pictures.set(.65, await sharp(dimmed).composite([{input:scaledPanel,left:28,top:45}]).png().toBuffer());
+const picture = (scale = 0) => pictures.get(scale);
 
 for (const profile of ['own-profile', 'opponent-profile-1', 'opponent-profile-2']) {
   test(`${profile} 录后严格语义，不打断录制且继续拒绝只有首尾的硬切`, async () => {
@@ -90,7 +102,7 @@ for (const profile of ['own-profile', 'opponent-profile-1', 'opponent-profile-2'
           ['recorder-returned', 'ready-start', 'ready-complete', 'nodes-start', 'nodes-complete', 'screenshot-complete']);
       };
       await run([before, middle, after]);
-      await assert.rejects(run([before, before, after]), /真实动画帧/);
+      await assert.rejects(run([before, before, after]), /真实动画帧|真实缩放中间姿态/);
     } finally {
       if (oldMode === undefined) delete process.env.IOS_VISUAL_MODE;
       else process.env.IOS_VISUAL_MODE = oldMode;
