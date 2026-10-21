@@ -22,6 +22,7 @@ import { maskScreenshot } from './screenshot';
 import { nativeOwnCardRegion, nativeCommunityCardRegion } from './texas-card-region';
 import { playerCountdown } from './game-countdown';
 import { capturePlayerCountdown } from './game-countdown-capture';
+import { stableNativeObservation } from './native-stability';
 
 /**
  * 复用网页的德州消息夹具，覆盖各街、操作、摊牌、结算和玩家资料。
@@ -158,18 +159,15 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
         '真实拖动必须改变加注数值').not.toBe(initialRaise);
     }
     // 原生录屏确认取消按钮直接移除面板，没有可供回归的退场过渡帧。
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await gameConnected(device);
-      await gameTap(device, 'raise-bet-cancel-button');
-      try {
-        await expect.poll(async () => (await gameNodes(device)).some(node => node.res === 'raise-bet-popup'),
-          { timeout: 10_000, intervals: [250] }).toBe(false);
-        break;
-      } catch (error) {
-        if (attempt === 2) throw error;
-      }
-    }
-    await gameGone(device, 'raise-bet-popup');
+    await gameTap(device, 'raise-bet-cancel-button');
+    // Full-table visibility queries can outlive a 10s poll budget. The first
+    // cancel in run 39530806154 removed the popup; retrying then searched for
+    // an already-removed button. Observe the actual target twice, once per
+    // completed native query, without repeating the action.
+    await stableNativeObservation(() => device.transientMarker('raise-bet-popup'), (previous, current) => {
+      expect(previous, '取消后加注面板必须已移除').toBeNull();
+      expect(current, '取消后加注面板必须持续消失').toBeNull();
+    }, { timeout: 45_000, interval: 250 });
     await animateGamePanel(device, 'texas-holdem', 'accurate-bet', 'texas-holdem-operation-accurate-bet-button',
       screenBounds(device, { x: 120, y: 360, width: 480, height: 330 }), animationInfo, 'enter', 'videoFrames');
     await gameReady(device, 'accurate-bet-popup-container');

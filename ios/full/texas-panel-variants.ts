@@ -6,6 +6,8 @@ import { closeGameMask } from './game-pregame';
 import { replay } from './game-replay';
 import { captureNativeTransition } from './animation-transition';
 import { enableGameSetting, restoreTexas, texasEvents, type TexasContext } from './texas-support';
+import { safeNativeTree } from './diagnostics';
+import { stableNativeObservation } from './native-stability';
 
 /**
  * 复用 Web 的申请分页、音频历史、弹幕开关及三种 RPC 错误状态。
@@ -45,8 +47,23 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
     if (mode === 'more') expect((await gameReady(device, 'buy-in-application-list-more')).enabled).toBe(true);
     await capture(`applications_${mode}`, [tableBackMasks[0], ...ownTurnMasks]);
     await closeGameMask(device, 'buy-in-application-list');
+    // The list can become inaccessible during zoomOut before its touch mask
+    // unmounts. Require the actual blocker to disappear before the next tap.
+    await stableNativeObservation(() => device.transientMarker('screen-mask-touch-to-close'), (before, current) => {
+      expect(before, '申请面板关闭后触摸遮罩必须释放').toBeNull();
+      expect(current, '申请面板关闭后触摸遮罩必须持续消失').toBeNull();
+    }, { timeout: 45_000, interval: 250 });
   }
-  await enableGameSetting(device, 'player-voice');
+  await gameConnected(device, 2_000);
+  const attachSettingsTree = async (phase: 'before' | 'after') => {
+    if (!animationInfo) return;
+    await device.nodes().then(nodes => animationInfo.attach(`settings-menu-${phase}-native-tree`, {
+      body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json',
+    })).catch(() => {});
+  };
+  await attachSettingsTree('before');
+  try { await enableGameSetting(device, 'player-voice'); }
+  finally { await attachSettingsTree('after'); }
   await replay(proxy, 'texas', room, { stream: 'room_message', payload: { action: 'audio', content: {
     from_user_id: REPLAY_PLAYER_IDS[0], from_user_nickname: 'Player1', duration: 3, codec: 'mp3', content: '',
   } } });
