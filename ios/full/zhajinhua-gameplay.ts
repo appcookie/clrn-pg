@@ -147,6 +147,12 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     await expect.poll(async () => gameSemanticText((await gameNodes(device))
       .find(node => node.res === `zhajinhua-player-container-${self}`), 'player_stack_text'),
     { timeout: 30_000 }).toBe(`${self} 960`);
+    // The raised stack arrives before the server advances the active player.
+    // Capture the completed raise after the real next-turn event removes the
+    // current player's controls; otherwise the screenshot depends on timing.
+    await send(events([{ event: 'switch_player', player_id: PLAYER_IDS[0],
+      valid_bets: validBets(false) }]));
+    await gameGone(device, 'zhajinhua-operation-button-call');
     await capture('quick_raise');
     if (animationInfo) {
       // Restoring an already-visible OperationButton never remounts zoomInDown.

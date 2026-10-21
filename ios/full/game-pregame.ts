@@ -295,13 +295,14 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture)
   for (const name of ['sound-effect', 'vibrate', 'player-voice', 'show-card', 'operation-time', 'see-remain-card', 'shake-avatar']) {
     const selector = { res: `game-settings-switch-${name}` };
     if (!(await gameNodes(device)).some(node => node.res === selector.res)) continue;
-    // 39663522184 的震动开关仍显示 off：用真实开关的左侧滑块中心点击，
-    // 且仅在连接恢复后再次观测仍为 off 时，才重试这项幂等的启用操作。
+    // 39663522184 的震动开关仍显示 off：先点击真实开关左侧滑块。
+    // 39686222283 的最后一个开关在两次左侧点击后仍 off；只有再次
+    // 确认状态仍 off，第二次才改点同一开关右半侧。
     for (let attempt = 0; attempt < 2; attempt++) {
       if (attempt) await gameConnected(device, 2_000);
       if ((await gameReady(device, selector.res)).checked) break;
       await tap(device, selector.res, false, undefined, undefined, bounds => ({
-        x: Math.round(bounds.x + bounds.height / 2),
+        x: Math.round(bounds.x + (attempt ? bounds.width - bounds.height / 2 : bounds.height / 2)),
         y: Math.round(bounds.y + bounds.height / 2),
       }));
       try {
