@@ -208,33 +208,48 @@ export class NativeDevice {
    * failures still fail the test. All geometry remains native screenshot pixels.
    */
   async transientMarker(res: string): Promise<Pick<NativeNode, 'res' | 'text' | 'bounds'> | null> {
-    const elements = await this.driver.request('POST', this.driver.path('/elements'),
-      { using: 'accessibility id', value: res });
-    if (elements.length === 0) return null;
-    if (elements.length !== 1) throw new Error(`短时提示标记不唯一：${res}`);
-    const id = elements[0]['element-6066-11e4-a52e-4f735466cecf'];
-    if (!id) throw new Error(`短时提示缺少原生控件 ID：${res}`);
-    try {
-      const [displayed, rect, text] = this.richTransientElements
-        ? [elements[0].displayed, elements[0].rect, elements[0].label]
-        : await Promise.all([
-          this.driver.request('GET', this.driver.path(`/element/${id}/displayed`)),
-          this.driver.request('GET', this.driver.path(`/element/${id}/rect`)),
-          this.driver.request('GET', this.driver.path(`/element/${id}/attribute/label`)),
-        ]);
-      if (typeof displayed !== 'boolean' || !rect
-        || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
-        throw new Error(`短时提示缺少真实可见性或位置属性：${res}`);
+    return this.transientMarkerReader(res)();
+  }
+  /** 在一次提示窗口内复用原生元素身份，后续仍重新读取实际可见性、边界和文字。
+   * 失效或隐藏即返回缺失并清空身份；不把旧属性当作当前观测。
+   */
+  transientMarkerReader(res: string): () => Promise<Pick<NativeNode, 'res' | 'text' | 'bounds'> | null> {
+    let cachedId: string | undefined;
+    return async () => {
+      const reused = Boolean(cachedId);
+      const elements = cachedId ? [{ 'element-6066-11e4-a52e-4f735466cecf': cachedId }]
+        : await this.driver.request('POST', this.driver.path('/elements'),
+          { using: 'accessibility id', value: res });
+      if (elements.length === 0) return null;
+      if (elements.length !== 1) throw new Error(`短时提示标记不唯一：${res}`);
+      const id = elements[0]['element-6066-11e4-a52e-4f735466cecf'];
+      if (!id) throw new Error(`短时提示缺少原生控件 ID：${res}`);
+      try {
+        const [displayed, rect, text] = this.richTransientElements && !reused
+          ? [elements[0].displayed, elements[0].rect, elements[0].label]
+          : await Promise.all([
+            this.driver.request('GET', this.driver.path(`/element/${id}/displayed`)),
+            this.driver.request('GET', this.driver.path(`/element/${id}/rect`)),
+            this.driver.request('GET', this.driver.path(`/element/${id}/attribute/label`)),
+          ]);
+        if (typeof displayed !== 'boolean' || !rect
+          || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
+          throw new Error(`短时提示缺少真实可见性或位置属性：${res}`);
+        }
+        if (displayed !== true || rect.width <= 0 || rect.height <= 0) { cachedId = undefined; return null; }
+        cachedId = id;
+        return { res, text: typeof text === 'string' ? text : undefined, bounds: {
+          x: Math.round(rect.x * this.scale.x), y: Math.round(rect.y * this.scale.y),
+          width: Math.round(rect.width * this.scale.x), height: Math.round(rect.height * this.scale.y),
+        } };
+      } catch (error) {
+        if (['stale element reference', 'no such element'].includes((error as { code?: string }).code || '')) {
+          cachedId = undefined;
+          return null;
+        }
+        throw error;
       }
-      if (displayed !== true || rect.width <= 0 || rect.height <= 0) return null;
-      return { res, text: typeof text === 'string' ? text : undefined, bounds: {
-        x: Math.round(rect.x * this.scale.x), y: Math.round(rect.y * this.scale.y),
-        width: Math.round(rect.width * this.scale.x), height: Math.round(rect.height * this.scale.y),
-      } };
-    } catch (error) {
-      if (['stale element reference', 'no such element'].includes((error as { code?: string }).code || '')) return null;
-      throw error;
-    }
+    };
   }
   async wait(selector: NativeSelector, options: { timeout?: number; state?: 'gone' | 'visible' } = {}) {
     const deadline = Date.now() + (options.timeout ?? this.timeout);

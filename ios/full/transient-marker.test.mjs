@@ -56,6 +56,43 @@ test('短提示预先配置后一次原生查询同时返回可见性、文字�
   await assert.rejects(d.transientMarker('toastText1'), /缺少真实可见性或位置/);
 });
 
+test('短提示复用元素身份但重新读取三项真实属性，失效或隐藏后清空身份', async () => {
+  let lookups = 0, label = 'initial', x = 10, displayed = true, failure;
+  const attributes = [];
+  const d = new NativeDevice({ path: p => p, request: async (method, path) => {
+    if (path === '/appium/settings') return;
+    if (path === '/elements') {
+      lookups++;
+      return [{ 'element-6066-11e4-a52e-4f735466cecf': `id-${lookups}`, label,
+        displayed, rect: { x, y: 20, width: 100, height: 30 } }];
+    }
+    assert.equal(method, 'GET'); attributes.push(path);
+    if (failure) throw failure;
+    if (path.endsWith('/displayed')) return displayed;
+    if (path.endsWith('/rect')) return { x, y: 20, width: 100, height: 30 };
+    if (path.endsWith('/attribute/label')) return label;
+    throw new Error('unexpected request');
+  } }, 'unused', async () => {}, async () => {}, 'app');
+  await d.prepareTransientCapture();
+  const observe = d.transientMarkerReader('toastText1');
+  assert.equal((await observe()).text, 'initial');
+  label = 'changed'; x = 40;
+  const next = await observe();
+  assert.equal(next.text, 'changed'); assert.equal(next.bounds.x, 40);
+  assert.equal(lookups, 1);
+  assert.deepEqual(attributes.sort(), ['/element/id-1/attribute/label', '/element/id-1/displayed', '/element/id-1/rect']);
+  failure = Object.assign(new Error('stale'), { code: 'stale element reference' });
+  assert.equal(await observe(), null);
+  failure = undefined;
+  assert.equal((await observe()).text, 'changed'); assert.equal(lookups, 2);
+  displayed = false;
+  assert.equal(await observe(), null);
+  displayed = true;
+  await observe(); assert.equal(lookups, 3);
+  failure = new Error('transport failed');
+  await assert.rejects(observe(), error => error === failure);
+});
+
 test('短提示点击及采样期间关闭驱动冷却，成功和失败都恢复实际原设置', async () => {
   for (const fails of [false, true]) {
     let coolOff = 3.5, calls = 0;

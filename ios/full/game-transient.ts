@@ -22,10 +22,11 @@ export async function captureToast(device: AndroidDevice, name: string, testInfo
   const frames: Frame[] = [];
   const rawSamples: Buffer[] = [];
   const observations: { phase: string; at: number }[] = [];
+  const observeText = device.transientMarkerReader('toastText1');
   const deadline = Date.now() + 4000;
   while (Date.now() < deadline) {
     observations.push({ phase: 'before-query', at: Date.now() });
-    const before = await device.transientMarker('toastText1');
+    const before = await observeText();
     observations.push({ phase: before?.text ? 'before-visible' : 'before-absent', at: Date.now() });
     if (!before?.text) {
       if (frames.length) break;
@@ -33,23 +34,21 @@ export async function captureToast(device: AndroidDevice, name: string, testInfo
       continue;
     }
     // 使用已建立的XCTest会话返回无损PNG，避免每帧另起simctl进程。
-    // 两张真实截图共享前后语义观测，减少短提示期间的AX往返；原始采集
+    // 连续真实截图共享前后语义观测，减少短提示期间的AX往返；原始采集
     // 时刻在截图返回时记录，不能用后续面板查询的耗时冒充像素稳定时间。
     const samples: { png: Buffer; capturedAt: number }[] = [];
-    let previousStartedAt = 0;
-    for (let index = 0; index < 2; index++) {
-      // CI单张截图已耗时420ms，不在其后再固定等250ms浪费显示窗口。
-      // 至少间隔250ms发起截图，稳定门禁仍使用真实返回时间而非推算时刻。
-      if (index) await setTimeout(Math.max(0, 250 - (Date.now() - previousStartedAt)));
-      previousStartedAt = Date.now();
-      observations.push({ phase: 'screenshot-start', at: previousStartedAt });
+    do {
+      // 连续采样到实际返回跨度至少250ms；第一张的耗时不能算作
+      // 后续稳定时间（39604350686两张返回只相隔185ms）。
+      observations.push({ phase: 'screenshot-start', at: Date.now() });
       const png = await device.screenshot();
       const capturedAt = Date.now();
       samples.push({ png, capturedAt });
       observations.push({ phase: 'screenshot', at: capturedAt });
       rawSamples.push(png);
-    }
-    const after = await device.transientMarker('toastText1');
+    } while (Date.now() < deadline && (samples.length < 2
+      || samples.at(-1)!.capturedAt - samples[0].capturedAt < 250));
+    const after = await observeText();
     observations.push({ phase: after?.text ? 'after-visible' : 'after-absent', at: Date.now() });
     if (!after?.text) break;
     const panel = (await device.transientMarker('toast-container')) || before;
