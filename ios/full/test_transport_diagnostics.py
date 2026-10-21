@@ -1,12 +1,29 @@
 import json
 from types import SimpleNamespace
 import unittest
-from mitmproxy import http
+from mitmproxy import http, websocket
+from wsproto.frame_protocol import Opcode
 from test_network_observer import flow
 from transport_diagnostics import TransportDiagnostics
 
 
 class TransportTests(unittest.TestCase):
+    def socket_flow(self, host='64.kr-seoul.api.staging.laiwan.shafayouxi.com'):
+        result = flow('/v2/centrifugo/connection/websocket?token=private-token')
+        result.id = 'private-flow-identity'
+        result.request.host = host
+        result.request.headers['Authorization'] = 'private-auth'
+        result.response = http.Response.make(101)
+        result.websocket = websocket.WebSocketData()
+        return result
+
+    @staticmethod
+    def message(result, content, from_client=False, injected=False, binary=False):
+        message = websocket.WebSocketMessage(Opcode.BINARY if binary else Opcode.TEXT,
+            from_client, content, injected=injected)
+        result.websocket.messages.append(message)
+        return message
+
     def test_metadata_versions_and_health_status_are_counted_without_payload(self):
         diagnostics = TransportDiagnostics()
         request = flow('/public/v14/metadata/servers?token=private-secret')
@@ -40,3 +57,95 @@ class TransportTests(unittest.TestCase):
         self.assertEqual(result['tlsFailures'][1]['host'], '<other>')
         self.assertNotIn('private-secret', json.dumps(result))
         self.assertNotIn('secret-user', json.dumps(result))
+
+    def test_real_websocket_lifecycle_counts_only_safe_protocol_metadata(self):
+        now = [10.0]
+        diagnostics = TransportDiagnostics(clock=lambda: now[0])
+        request = self.socket_flow()
+        diagnostics.request(request)
+        diagnostics.response(request)
+        diagnostics.websocket_start(request)
+        diagnostics.websocket_start(request)
+        now[0] = 11
+        outgoing = self.message(request, b'{"method":1,"params":{"channel":"private-room-user"}}', True)
+        diagnostics.websocket_message(request)
+        now[0] = 12
+        content = b'{"id":1,"error":{"code":109,"message":"private-token"}}\n{"result":{"data":{"error":{"code":987},"body":"private-body"}}}'
+        incoming = self.message(request, content)
+        diagnostics.websocket_message(request)
+        injected = self.message(request, b'{"error":{"code":999}}', injected=True)
+        diagnostics.websocket_message(request)
+        now[0] = 13
+        diagnostics.websocket_message(request)  # injected traffic cannot refresh last activity
+        request.websocket.close_code = 1006
+        request.websocket.closed_by_client = False
+        request.websocket.close_reason = 'private-close-reason'
+        diagnostics.websocket_end(request)
+        diagnostics.websocket_end(request)
+        now[0] = 15
+        result = diagnostics.snapshot()
+        self.assertEqual(result['responses'][0]['status'], 101)
+        ws = result['websocket']
+        self.assertEqual(ws['opened'], 1)
+        self.assertEqual(sum(item['count'] for item in ws['messages']), 2)
+        self.assertEqual([item['code'] for item in ws['protocolErrors']], [109])
+        self.assertEqual(ws['closed'][0]['code'], 1006)
+        self.assertEqual(ws['closed'][0]['initiator'], 'server')
+        self.assertEqual(ws['closed'][0]['count'], 1)
+        self.assertEqual(ws['connections'][0]['state'], 'closed')
+        self.assertEqual(ws['connections'][0]['lastDataMessageAgoMs'], 3000)
+        self.assertEqual(ws['connections'][0]['lastClientMessageAgoMs'], 4000)
+        self.assertEqual(ws['connections'][0]['lastServerMessageAgoMs'], 3000)
+        self.assertEqual(ws['connections'][0]['closedAgoMs'], 2000)
+        self.assertEqual(incoming.content, content)
+        self.assertFalse(incoming.dropped)
+        self.assertFalse(outgoing.dropped)
+        self.assertTrue(injected.injected)
+        for sensitive in ('private', 'token=', 'Authorization', '987', '999'):
+            self.assertNotIn(sensitive, json.dumps(result))
+
+    def test_other_endpoints_binary_invalid_json_and_unknown_close_are_safe(self):
+        diagnostics = TransportDiagnostics()
+        other = self.socket_flow('private-user.example.com')
+        diagnostics.websocket_start(other)
+        self.message(other, b'{"error":{"code":100}}')
+        diagnostics.websocket_message(other)
+        diagnostics.websocket_end(other)
+        wrong_path = self.socket_flow()
+        wrong_path.request.path = '/v2/private-user/websocket'
+        diagnostics.websocket_start(wrong_path)
+        request = self.socket_flow()
+        diagnostics.websocket_start(request)
+        for content, binary in [(b'\xffprivate-binary', True), (b'\xff', False),
+                (b'{"error":{"code":"private-code"}}', False),
+                (b'{"error":{"code":true}}', False),
+                (b'{"error":{"code":100000000}}', False),
+                (b'{"error":{"code":101}}' + b' ' * (256 * 1024), False)]:
+            self.message(request, content, binary=binary)
+            diagnostics.websocket_message(request)
+        diagnostics.websocket_end(request)
+        result = diagnostics.snapshot()['websocket']
+        self.assertEqual(result['opened'], 1)
+        self.assertEqual(sum(item['count'] for item in result['messages']), 6)
+        self.assertEqual(result['protocolErrors'], [])
+        self.assertIsNone(result['closed'][0]['code'])
+        self.assertEqual(result['closed'][0]['initiator'], 'unknown')
+        self.assertNotIn('private', json.dumps(result))
+
+    def test_reconnect_and_failed_upgrade_remain_distinguishable_without_flow_ids(self):
+        diagnostics = TransportDiagnostics()
+        first = self.socket_flow()
+        diagnostics.websocket_start(first)
+        diagnostics.websocket_end(first)
+        second = self.socket_flow()
+        second.id = 'private-second-connection'
+        diagnostics.websocket_start(second)
+        failed = self.socket_flow()
+        failed.response = http.Response.make(503, b'private-server-error')
+        diagnostics.request(failed)
+        diagnostics.response(failed)
+        result = diagnostics.snapshot()
+        self.assertEqual(result['websocket']['opened'], 2)
+        self.assertEqual([item['state'] for item in result['websocket']['connections']], ['closed', 'open'])
+        self.assertEqual(result['responses'][0]['status'], 503)
+        self.assertNotIn('private', json.dumps(result))

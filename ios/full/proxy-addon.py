@@ -97,7 +97,11 @@ class IosVisualProxy:
                 self.records.user_id = self.presentation.user_id
             self.records.response(flow)
 
+    def websocket_start(self, flow):
+        self.transport.websocket_start(flow)
+
     def websocket_message(self, flow):
+        self.transport.websocket_message(flow)
         if self.slot and flow.websocket:
             message = flow.websocket.messages[-1]
             if message.from_client and message.is_text and not message.injected:
@@ -154,6 +158,7 @@ class IosVisualProxy:
             self.game.websocket_message(flow)
 
     def websocket_end(self, flow):
+        self.transport.websocket_end(flow)
         if self.game:
             self.game.websocket_end(flow)
 
