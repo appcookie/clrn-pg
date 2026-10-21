@@ -5,6 +5,16 @@ import { safeNativeTree, safeFailureScreenshot, captureFailure } from './diagnos
 import { NativeCase } from './functional/shared/case.ts';
 
 const bounds = { x: 5, y: 5, width: 4, height: 4 };
+test('脱敏诊断保留当次可见性，隐藏子节点不能被误认为可见', () => {
+  const [root] = safeNativeTree([{ res: 'panel', visible: true, children: [
+    { res: 'chat-control', visible: false },
+    { res: 'username-input', text: 'synthetic-secret', visible: true },
+  ] }]);
+  assert.equal(root.visible, true);
+  assert.equal(root.children[0].visible, false);
+  assert.equal(root.children[1].visible, true);
+  assert.equal(JSON.stringify(root).includes('synthetic-secret'), false);
+});
 test('麦克风按钮不是电话号码，真实敏感输入及安全标记仍脱敏', () => {
   const mic = { res: 'in-game-audio-microphone-button', text: 'Hold to talk', bounds };
   const output = JSON.stringify(safeNativeTree([mic,

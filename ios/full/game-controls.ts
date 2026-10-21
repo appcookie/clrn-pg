@@ -3,7 +3,7 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { stableNativeObservation } from './native-stability';
 
-export type NativeNode = { res?: string; text?: string; enabled?: boolean; checked?: boolean;
+export type NativeNode = { res?: string; text?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
 
 /** XCUITest 截图保留原始像素，错误不能变成空帧。 */

@@ -2,7 +2,7 @@ import type { NativeDevice } from './native-device';
 import type { TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 
-type DiagnosticNode = { res?: string; clazz?: string; bounds?: unknown; enabled?: boolean; checked?: boolean;
+type DiagnosticNode = { res?: string; clazz?: string; bounds?: unknown; enabled?: boolean; checked?: boolean; visible?: boolean;
   secure?: boolean; text?: string; children?: DiagnosticNode[] };
 
 /** nodes() 同时返回父节点及其子节点；先建立整个对象图的敏感上下文，再处理每个根。 */
@@ -27,7 +27,7 @@ export function safeNativeTree(nodes: DiagnosticNode[]): unknown[] {
   const { secrets, containers } = sensitiveNodes(nodes);
   const redact = (node: DiagnosticNode): unknown => ({
     res: containers.has(node) ? '[redacted]' : node.res, clazz: node.clazz, bounds: node.bounds,
-    enabled: node.enabled, checked: node.checked,
+    enabled: node.enabled, checked: node.checked, visible: node.visible,
     text: secrets.has(node) || containers.has(node) ? '[redacted]' : node.text,
     children: node.children?.map(redact),
   });

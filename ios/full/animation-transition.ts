@@ -16,6 +16,7 @@ import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
 import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask } from './game-masks';
 import { shortAnimationMinimumFrames } from './video-timeline';
+import { safeNativeTree } from './diagnostics';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -236,7 +237,18 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   if (endCompareMasks.length) await testInfo.attach(`${name}-end-masks`, {
     body: JSON.stringify(endCompareMasks), contentType: 'application/json',
   });
-  const selectedRegion = animationRegion(name, beforeNodes, afterNodes, device, region);
+  let selectedRegion: ReturnType<typeof animationRegion>;
+  try {
+    selectedRegion = animationRegion(name, beforeNodes, afterNodes, device, region);
+  } catch (error) {
+    // Preserve the exact observations used by the failed assertion. A later
+    // failure handler may observe a different accessibility/connection state.
+    await testInfo.attach(`${name}-region-observations`, {
+      body: JSON.stringify({ before: safeNativeTree(beforeNodes), after: safeNativeTree(afterNodes) }),
+      contentType: 'application/json',
+    });
+    throw error;
+  }
   region = selectedRegion.bounds;
   const startMasks = endpointMasksInRegion(startCompareMasks, region);
   const endMasks = endpointMasksInRegion(endCompareMasks, region);

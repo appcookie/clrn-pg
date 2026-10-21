@@ -92,9 +92,11 @@ export function nativeAudioPanelBounds(nodes: NativeNode[], screen: { width: num
 
 /** 已有原生标记的面板用实际 bounds，包含 iOS safe area 和真实布局位置。 */
 export function nativeChatPanelBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
-  const controls = ['in-game-chat-send-message', '-in-game-chat-record-tab', 'in-game-chat-content-container']
+  const markers = ['in-game-chat-send-message', '-in-game-chat-record-tab', 'in-game-chat-content-container'];
+  const controls = markers
     .map(res => nodes.find(node => node.res === res && node.visible !== false));
-  if (controls.some(node => !node)) throw new Error('聊天面板缺少可见发送按钮、标签或内容');
+  const missing = markers.filter((_, index) => !controls[index]);
+  if (missing.length) throw new Error(`聊天面板缺少可见控件：${missing.join(', ')}`);
   const containers = nodes.filter(node => node.visible !== false && node.clazz === 'XCUIElementTypeOther'
     && node.bounds.x === 0 && node.bounds.width === screen.width && node.bounds.y > 0
     && node.bounds.height > 0 && node.bounds.y + node.bounds.height <= screen.height

@@ -12,6 +12,7 @@ import { captureChallengeAnimation } from './game-animation';
 import { verifyLoopAnimation } from './loop-animation';
 import { captureMovingKeyframes } from './loop-keyframes';
 import { stableNativeObservation } from './native-stability';
+import { texasCountdownNodes } from './texas-countdown';
 
 /**
  * 使原生控件边界及绘制余量落到实际截图的整数像素。
@@ -51,7 +52,8 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   const masks: ScreenshotMask[] = [...inputMasks];
   const panels = foregroundPanels(nodes, device.screenSize);
   await testInfo.attach(`${name}-native-tree`, { body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json' });
-  for (const node of screenshotMaskNodes(nodes)) {
+  const countdownNodes = name.includes('-texas-') ? texasCountdownNodes(nodes) : [];
+  for (const node of new Set([...screenshotMaskNodes(nodes), ...countdownNodes])) {
     /**
      * 只排除仍可见的动态内容，保留覆盖其上的真实弹窗。
      * @param mask - 当前动态控件的范围。
@@ -103,7 +105,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   }
   if (/-signed-in-(?:texas|zhajinhua)-game-opponent-turn$/.test(name)) {
     const marker = name.includes('-zhajinhua-') ? 'zhajinhua-active-countdown' : 'texas-holdem-active-countdown';
-    const countdown = nodes.filter(node => node.res === marker);
+    const countdown = name.includes('-texas-') ? countdownNodes : nodes.filter(node => node.res === marker);
     expect(countdown, '对手行动时必须出现原生倒计时').toHaveLength(1);
     const regions = countdown.map(node => pixelBounds({ x: node.bounds.x - 2, y: node.bounds.y - 2,
       width: node.bounds.width + 4, height: node.bounds.height + 4 }));
