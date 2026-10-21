@@ -52,6 +52,26 @@ test('functional五片账号槽位独立稳定，少量账号只复用已配置�
   assert.match(workflow, /args\+=\(--shard "\$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1\)/);
 });
 
+test('拼三张英文首中尾和牌局两片覆盖真实收集的全部用例，新增中组账号不碰旧槽位', () => {
+  const entries = iosAccountMatrix('123', 'zhajinhua', 'en', ciAccounts).include;
+  const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
+    { cwd: process.cwd(), env: { ...process.env, IOS_GROUP: 'zhajinhua', IOS_LOCALE: 'en' } }));
+  const titles = [];
+  const visit = suite => {
+    for (const spec of suite.specs || []) {
+      assert.equal(spec.tests[0].expectedStatus, 'passed');
+      titles.push(spec.title);
+    }
+    for (const child of suite.suites || []) visit(child);
+  };
+  report.suites.forEach(visit);
+  assert.equal(titles.length, 5);
+  for (const title of titles) assert.equal(entries.filter(entry => new RegExp(entry.filter).test(title)).length, 1, title);
+  assert.equal(entries.find(entry => entry.shard === 'pregame-middle').account, allocateCiAccount('123', 43));
+  assert.deepEqual(entries.filter(entry => entry.shard !== 'pregame-middle').map(entry => entry.account),
+    [23, 32, 33, 34].map(offset => allocateCiAccount('123', offset)));
+});
+
 test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或重复', { timeout: 120_000 }, () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(shard) {

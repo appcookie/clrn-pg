@@ -15,7 +15,7 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
   const matrix = iosAccountMatrix('123', 'pr', 'all', ciAccounts).include;
   const jobs = matrix.filter(entry => entry.animation);
   assert.equal(source.animations.length, 21);
-  assert.equal(animationCases.length, 24);
+  assert.equal(animationCases.length, 25);
   assert.equal(jobs.length, animationCases.length);
   assert.equal(new Set(jobs.map(entry => entry.animation)).size, jobs.length);
   for (const row of source.animations) {

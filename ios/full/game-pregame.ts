@@ -145,6 +145,9 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
           });
         await gameGone(device, 'game-rule-popup');
       }
+      // 拼三张首组在规则出入场后结束；主题、设置、买入及续费由独立中组
+      // 完整执行，避免13次原片处理累计超过单例90分钟预算。
+      if (phase === 'first') return;
     }
     for (const [state, ready, close] of [
       ['theme', 'game-settings-card-theme-simple', 'game-settings-close-button'],
@@ -196,7 +199,7 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
       await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
         { timeout: 45_000 }).toBe(false);
     }
-    if (phase === 'first' || phase === 'middle') return;
+    if (phase === 'middle') return;
   }
   await animateGamePanel(device, game, 'leaderboard',
     game === 'texas-holdem' ? 'texas-holdem-leaderboard-button' : 'zhajinhua-learder-borard-button',

@@ -477,6 +477,13 @@
         "native-stack-exit-middle.png",
         "native-stack-exit-end.png"
       ]
+    },
+    {
+      "id": "animation-25",
+      "group": "zhajinhua",
+      "file": "tests/games.spec.ts",
+      "title": "en / zhajinhua / signed_in_zhajinhua_pre_game_middle",
+      "images": []
     }
   ]
 }

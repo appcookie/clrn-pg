@@ -34,12 +34,11 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
     const parts = locale !== 'en' ? ['all'] as const
       : ['signed_in_texas_game', 'signed_in_zhajinhua_game'].includes(scenario.pageLabel)
         ? ['table', 'effects'] as const
-        : scenario.pageLabel === 'signed_in_texas_pre_game' ? ['first', 'middle', 'second'] as const
-          : scenario.pageLabel === 'signed_in_zhajinhua_pre_game' ? ['first', 'second'] as const
+        : ['signed_in_texas_pre_game', 'signed_in_zhajinhua_pre_game'].includes(scenario.pageLabel)
+          ? ['first', 'middle', 'second'] as const
             : ['all'] as const;
     for (const part of parts) {
-      const states = part === 'first' ? scenario.snapshotStates!.slice(0,
-        scenario.pageLabel === 'signed_in_texas_pre_game' ? 3 : 7)
+      const states = part === 'first' ? scenario.snapshotStates!.slice(0, 3)
         : part === 'middle' ? scenario.snapshotStates!.slice(3, 7)
         : part === 'second' ? scenario.snapshotStates!.slice(7)
           : part === 'table' ? scenario.pageLabel === 'signed_in_texas_game'
@@ -49,8 +48,8 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
               : scenario.snapshotStates!;
       const label = part === 'all' ? scenario.pageLabel : `${scenario.pageLabel}_${part}`;
       test(`${locale} / ${suite} / ${label}`, async ({ ownedRoom }, testInfo) => {
-        // 炸金花首组含 13 次转场，真实 CI 在第 7 次处理原始帧时用完 45 分钟。
-        // 多面板整例预留 90 分钟，仍低于 job 的 120 分钟；单次操作及所有视觉断言不变。
+        // 拼三张13次转场在39577538185耗尽90分钟，现将首组5次与中组8次
+        // 分到独立房间；保留所有原始状态、动画断言和原有90分钟上限。
         test.setTimeout(5_400_000);
         await withAndroidProxy(async proxy => {
           if (scenario.pageLabel === 'signed_in_texas_records_v2') await proxy.command('texas/records', { empty: true });
@@ -116,7 +115,8 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
               animationInfo: gameAnimation ? testInfo : undefined },
             part === 'table' || part === 'effects' ? part : 'all');
             else if (scenario.pageLabel.endsWith('_pre_game')) await gamePreGame(device, game, capture,
-            panelAnimation ? testInfo : undefined, part === 'first' || part === 'second' ? part : 'all');
+            panelAnimation ? testInfo : undefined,
+            part === 'first' || part === 'middle' || part === 'second' ? part : 'all');
             else await zhajinhuaGameplay(device, proxy, room!.roomId, account!.userId, capture,
               gameAnimation ? testInfo : undefined, part === 'table' || part === 'effects' ? part : 'all');
             // 英文大厅的升级提示会自动消失，已由入场、倒计时和退场帧覆盖。

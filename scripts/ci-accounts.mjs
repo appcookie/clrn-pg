@@ -74,6 +74,7 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
       ['pregame-second', 'signed_in_zhajinhua_pre_game_second$'],
       ['game-table', 'signed_in_zhajinhua_game_table$'],
       ['game-effects', 'signed_in_zhajinhua_game_effects$'],
+      ['pregame-middle', 'signed_in_zhajinhua_pre_game_middle$'],
     ],
   };
   const shardOffsets = {
@@ -95,7 +96,9 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
         return parts.map(([shard, filter, playwrightShard = ''], index) => ({ group, locale, shard, filter, playwrightShard,
           label: `${group} / ${locale}${shard === 'all' ? '' : ` / ${shard}`}`,
           // 原 functional 槽位 35 留给第一片；新片使用 39–42，保留其余组槽位。
-          account: group === 'guest' ? '' : allocateCiAccount(runId, group === 'functional' && index > 0
+          // 新拼三张中组使用43，保留其余功能组及旧分片的独立账号槽位。
+          account: group === 'guest' ? '' : allocateCiAccount(runId, group === 'zhajinhua' && shard === 'pregame-middle'
+            ? 43 : group === 'functional' && index > 0
             ? 38 + index : functionalGroups.includes(group)
             ? 35 + functionalGroups.indexOf(group) : index === 0
               ? groups.indexOf(group) * 3 + locales.indexOf(locale) : shardOffsets[key] + index - 1, available) }));
