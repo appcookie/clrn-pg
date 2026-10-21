@@ -60,7 +60,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     // cannot prove zoom. Collect the three exact profile entrances afresh.
     || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)
     || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);
-  const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
+  // 39573708795 的拼三张菜单合成器原片出现 PTS 倒退；此入口恢复使用
+  // 39560084809 已采到 192 帧及 5 个真实中间姿态的 XCTest 录屏。
+  // 在动作前固定后端，不重试动作，也不排序或修正失败录像的原始时戳。
+  const backend = name === 'zhajinhua-drawer-menu-enter' ? 'xctest'
+    : useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
   if (backend === 'xctest') {

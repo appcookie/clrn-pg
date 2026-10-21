@@ -57,22 +57,25 @@ function* pngFiles(directory) {
   }
 }
 for (const file of pngFiles(baselineRoot)) if (!paths.has(file)) throw new Error(`未审查 PNG 混入基准：${file}`);
+// 一次列出本轮所有缺失项，避免补完一个分片后才发现下一个；仍在分配原生 runner 前失败。
+const missingBaselines = [];
 for (const item of matrix.include.filter(item => item.animation)) {
   const entry = animationCase(item.animation);
-  if (!entry.images.length) throw new Error(`${entry.id} 缺少完整审查后的动画基准清单：${entry.title}`);
+  if (!entry.images.length) missingBaselines.push(`${entry.id} 缺少完整审查后的动画基准清单：${entry.title}`);
   for (const image of entry.images) {
     const path = baselineRelativePath(image, 'en');
-    if (!paths.has(path)) throw new Error(`动画门禁缺少基准：${path}（${entry.title}）`);
+    if (!paths.has(path)) missingBaselines.push(`动画门禁缺少基准：${path}（${entry.title}）`);
   }
 }
 for (const item of matrix.include.filter(item => item.group === 'guest' && !item.animation)) {
   for (const test of guestScreenshotTests(item.locale, item.shard)) {
     for (const image of test.images) {
       const path = baselineRelativePath(image, item.locale);
-      if (!paths.has(path)) throw new Error(`游客验收清单缺少基准：${path}（${test.title}）`);
+      if (!paths.has(path)) missingBaselines.push(`游客验收清单缺少基准：${path}（${test.title}）`);
     }
   }
 }
+if (missingBaselines.length) throw new Error(`compare 基准预检失败：\n${missingBaselines.join('\n')}`);
 for (const locale of locales) {
   if (!['en', 'zh-Hans', 'zh-Hant'].includes(locale)) throw new Error(`未知 iOS 基准语言：${locale}`);
   if (!reviewedLocales.has(locale)) throw new Error(`compare 缺少已审查的 ${locale} PNG 基准：${baselineRoot}`);
