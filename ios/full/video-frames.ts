@@ -35,7 +35,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // frames 162/163 only dim the table, then frame 164 has the finished panel.
   // Record this shared transition through the compositor; the target-motion
   // assertion still rejects a capture without a real intermediate panel.
+  // Auto-rebuy entrance in 39533568946 reported 60 fps but encoded only six
+  // frames, with a 4.12 s gap after the first. Preserve the minimum frame and
+  // motion requirements by collecting this entrance through the compositor.
   const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
+    || name === 'texas-holdem-auto-rebuy-enter'
     || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);
   const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
