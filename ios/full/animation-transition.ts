@@ -28,6 +28,7 @@ import { texasActionClockMasks, texasOperationControls, texasPlayerActionMotionB
 import { texasRaiseClockMasks, texasRaiseValueMask } from './texas-raise-masks';
 import { texasEffectEndpointMasks } from './texas-showdown-region';
 import { accurateBetEntrance, accurateBetPanel, accurateBetEndpointMasks, assertAccurateBetRegion } from './zhajinhua-accurate-bet';
+import { texasActionStart, compareTexasActionStart } from './texas-action-start';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -372,6 +373,17 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const timeline: Buffer[] = [];
   for (const frame of originals) timeline.push(await crop(frame));
   const after = await crop(afterScreen);
+  const actionStart = /^texas-player-action-(?:call|raise|check|fold)$/.test(name)
+    ? texasActionStart(name, beforeNodes, afterNodes, device.screenSize, region) : undefined;
+  const firstStartDistance = actionStart
+    ? compareTexasActionStart(timeline[0], before, actionStart).distance
+    : frameColorDistance(timeline[0], before);
+  if (actionStart) await testInfo.attach(`${name}-start-alignment`, {
+    body: JSON.stringify({ ...actionStart, ...compareTexasActionStart(timeline[0], before, actionStart),
+      rawDistance: frameColorDistance(timeline[0], before), threshold: 10,
+      scope: 'Only first-frame alignment and exact start baseline; raw motion and full end remain unchanged' }),
+    contentType: 'application/json',
+  });
   console.log(`IOS > 录屏 ${name}：完成 ${timeline.length} 张遮罩裁图`);
   await testInfo.attach(`${name}-timeline`, {
     body: JSON.stringify(recorded.map((_, index) => recorded.timestampsMs?.[index] ?? null)), contentType: 'application/json',
@@ -382,7 +394,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   }
   await testInfo.attach(`${name}-start`, { body: before, contentType: 'image/png' });
   await testInfo.attach(`${name}-end`, { body: after, contentType: 'image/png' });
-  expect(frameColorDistance(timeline[0], before), '录屏首帧须包含动作前的实际布局').toBeLessThan(10);
+  expect(firstStartDistance, '录屏首帧须包含动作前的实际布局').toBeLessThan(10);
   expect(framePaletteDistance(timeline.at(-1)!, after), '录屏结束时动画必须完成').toBeLessThan(10);
   if (requiredRegions.length) {
     const parts: Buffer[][] = [];
@@ -495,8 +507,9 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   }
   console.log(`IOS > 录屏 ${name}：完成轨迹分析，${candidates.length} 张中间帧`);
   expect(total, '入口点击必须产生足够大的可见变化').toBeGreaterThan(3);
-  expect(frameColorDistance(timeline[0], before), '录屏首帧必须更接近起点，不能只有动作后的画面')
-    .toBeLessThan(frameColorDistance(timeline[0], after));
+  expect(firstStartDistance, '录屏首帧必须更接近起点，不能只有动作后的画面')
+    .toBeLessThan(actionStart ? compareTexasActionStart(timeline[0], after, actionStart).distance
+      : frameColorDistance(timeline[0], after));
   // BottomSheet 的弹簧轨迹可能越过终点；用“同时区别于首尾”选关键帧。
   await testInfo.attach(`${name}-progress`, {
     body: JSON.stringify({ total, frames: progress }),
@@ -520,6 +533,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         const reference = readFileSync(baselinePath(file));
         return name === 'native-launch-and-staging-notice'
           ? reviewedLauncherStart(before, reference)
+          : actionStart ? compareTexasActionStart(before, reference, actionStart).samePixels
           : samePixels(maskScreenshot(before, startMasks),
             maskScreenshot(reference, startMasks));
       }), '动画起点视觉回归').toBe(true);

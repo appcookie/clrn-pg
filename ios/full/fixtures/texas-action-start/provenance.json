@@ -1,0 +1,44 @@
+{
+  "purpose": "Regression-only real failed first-frame alignment; not baseline approval or evidence that this failed run passed.",
+  "run": 39556455127,
+  "sourceCommit": "71e6d92fd017af46bebb41a473c29392cdb1ba00",
+  "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+  "artifact": 12327676774,
+  "sourceVideo": "texas-player-action-call-native-video-af46e25e2f5f1cf2b08c1b14850934ba4b0f2915.mp4",
+  "sourceVideoSha256": "ca711fda9e931867c3e71c8821051068543bea203a10d4cce6d278074e4fb32d",
+  "region": {
+    "x": 142,
+    "y": 1025,
+    "width": 135,
+    "height": 86
+  },
+  "startMasks": [
+    {
+      "x": 50,
+      "y": 1014,
+      "width": 160,
+      "height": 162,
+      "reason": "\u4ec5\u7aef\u70b9\u6bd4\u8f83\u6392\u9664\u539f\u751f\u73a9\u5bb6\u5012\u8ba1\u65f6\uff1b\u52a8\u4f5c\u524d\u666f\u548c\u539f\u59cb\u4e2d\u9014\u5e27\u5b8c\u6574\u4fdd\u7559"
+    }
+  ],
+  "frameIndex": 0,
+  "frames": {
+    "before.png": {
+      "sha256": "268a5cb4e1d806abeba7ba0d84c12e4231eeff114d5d44c2ec3973ea2f3640a3",
+      "source": "texas-player-action-call-start.png"
+    },
+    "first.png": {
+      "sha256": "45ad22ce385e03af8128753a4993c012c445149a0b17d013f626641d7610ea06",
+      "source": "Original MP4 decoded frame 0, exact native ROI crop"
+    },
+    "end.png": {
+      "sha256": "de2e8d3bf511c28035acabbcde219b5701dc624ff0879e1e5ba97244f8a75df5",
+      "source": "texas-player-action-call-end.png"
+    },
+    "middle.png": {
+      "sha256": "b2421a492a769f49bc98fc53f4357d9e416bd2ed662cc7424f75a7f9dff95c6c",
+      "source": "Original MP4 decoded frame 49, exact native ROI crop; existing unchanged target gate accepts real frames 46 through 55."
+    }
+  },
+  "nativeGeometryNote": "Timer bounds are the exact start-masks attachment. Player/action geometry was checked in the later failure tree; the exact beforeNodes tree was not attached in this failed run. Test nodes model these observed bounds without claiming to be the full original before tree."
+}
