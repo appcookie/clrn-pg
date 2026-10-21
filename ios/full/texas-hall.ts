@@ -80,7 +80,11 @@ export async function texasHall(context: TexasContext): Promise<void> {
   await animateGamePanel(device, 'texas-holdem', 'personal-leaderboard', 'texas-holdem-leaderboard-button',
     screenBounds(device, { x: 200, y: 200, width: 400, height: 900 }), animationInfo, 'enter', 'motionFrames', [],
     async () => {
-      await expect.poll(async () => (await gameReady(device, 'personal-leader-board-nickname')).text,
+      // Run 39540787548 painted the real nickname by 15s, but full-tree
+      // readiness polling still timed out with an empty value.
+      // Query this unique displayed native label; the complete endpoint and
+      // statistics still receive their independent checks after recording.
+      await expect.poll(async () => (await device.transientMarker('personal-leader-board-nickname'))?.text,
         { timeout: 30_000 }).toBe(accountPresentation.nickname);
     });
   await texasEvents(context, [{ event: 'player_statistics', player_id: self,
