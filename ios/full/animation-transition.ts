@@ -130,7 +130,7 @@ export async function nativeTransitionEvidence(before: Buffer, after: Buffer, ti
 }
 
 /** Require motion of the target itself. An outgoing menu or dimmer cannot
- * supply a valid phase of a new card or control's zoom.
+ * supply a valid phase of a new panel or control's animation.
  */
 export async function nativeTargetMotionEvidence(before: Buffer, after: Buffer, timeline: Buffer[]) {
   const evidence = await nativeTransitionEvidence(before, after, timeline);
@@ -315,6 +315,16 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const evidence = await nativeTransitionEvidence(before, after, timeline);
   const { total, progress } = evidence;
   let candidates = evidence.candidates;
+  if (/^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)) {
+    const targetEvidence = await nativeTargetMotionEvidence(before, after, timeline);
+    await testInfo.attach(`${name}-target-motion`, { body: JSON.stringify({ bounds: region,
+      total: targetEvidence.total, progress: targetEvidence.progress,
+      minimumLocalMotion: targetEvidence.minimumLocalMotion,
+      candidates: targetEvidence.localMotionCandidates }), contentType: 'application/json' });
+    const targetIndices = new Set(targetEvidence.candidates.map(item => item.index));
+    candidates = candidates.filter(item => targetIndices.has(item.index));
+    expect(candidates.length, '牌谱侧栏本身必须有真实滑入中间帧，牌桌遮罩变暗不能冒充').toBeGreaterThan(0);
+  }
   if (/^(?:texas-holdem|zhajinhua)-buy_in-enter$/.test(name)) {
     const target = buyInTargetMotionBounds(region, beforeNodes);
     const targetFrames: Buffer[] = [];

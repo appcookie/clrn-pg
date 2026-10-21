@@ -1,6 +1,7 @@
 import { texasRaiseRegion } from './texas-raise-region';
 import { zhajinhuaBetRegion } from './zhajinhua-bet-region';
 import { nativePregamePanelBounds } from './pregame-panel-region';
+import { nativeApplicationsPanelBounds } from './applications-region';
 import { zhajinhuaOperationRegion } from './zhajinhua-operation-region';
 import type { NativeDevice, NativeNode } from './native-device';
 import { nativeProfilePanelBounds } from './profile-region';
@@ -205,6 +206,10 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
     bounds: nativeBuyInPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
     source: 'native-buy-in-content-container',
   };
+  if (/^(?:texas-holdem|zhajinhua)-buy-in-applications-(?:enter|exit)$/.test(name)) return {
+    bounds: nativeApplicationsPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-complete-applications-card',
+  };
   if (/^(?:texas-holdem-raise-bet-enter|texas-raise-slider)$/.test(name)) return {
     bounds: texasRaiseRegion(after, device.screenSize), source: 'native-raise-slider-and-buttons',
   };
@@ -254,7 +259,6 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
     [/accurate-bet/, /^accurate-bet-popup-container$/], [/raise-bet|raise-slider/, /^raise-bet-popup$/],
     [/card-rank/, /^card-rank-list$/], [/game-rule/, /^game-rule-popup$/],
     [/-theme-|-(?:settings)-/, /^game-settings-popup-container$/],
-    [/buy-in-applications/, /^buy-in-application-list$/],
     [/game-record/, /^base-review-board-container$/],
     [/-chat-(?:enter|exit)$/, /^in-game-chat-container$/],
     [/personal-leaderboard/, /^personal-leader-board-container$/],

@@ -31,8 +31,12 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Buy-in XCTest media 39527425854 captured the menu closing, then jumped
   // directly to the completed 300 ms zoom. Its menu frames are not evidence
   // of the popup's motion; collect that target through the compositor too.
+  // Review entrance in 39531480973 skipped 211.7 ms of its 300 ms slide:
+  // frames 162/163 only dim the table, then frame 164 has the finished panel.
+  // Record this shared transition through the compositor; the target-motion
+  // assertion still rejects a capture without a real intermediate panel.
   const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
-    || /^(?:texas-holdem|zhajinhua)-buy_in-enter$/.test(name);
+    || /^(?:texas-holdem|zhajinhua)-(?:buy_in|game-record)-enter$/.test(name);
   const backend = useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
