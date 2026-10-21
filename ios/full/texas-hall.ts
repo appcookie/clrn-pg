@@ -12,6 +12,7 @@ import { captureMovingKeyframes } from './loop-keyframes';
 import accountPresentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { recordScreenSamples } from './video-frames';
 import { gameLoadingRegions } from './game-loading-region';
+import { triggerPredictionResult } from './prediction-result';
 
 /**
  * 复用 Web 的大厅牌桌、自动带入、举报、个人收益、猜牌及升级状态。
@@ -101,9 +102,7 @@ export async function texasHall(context: TexasContext): Promise<void> {
   await texasEvents(context, [{ event: 'settlement', players: [{ player_id: REPLAY_PLAYER_IDS[0], net: 180, prize: 180, stack: 1140 }] }]);
   await gameReady(device, 'bet-next-hand-button');
   await capture('prediction');
-  await texasEvents(context, [{ event: 'settlement_hand_prediction', result: { net: 10, currency_name: 'coin' } }]);
-  await gameReady(device, 'bet-next-hand-result-amount', '+10');
-  await capture('prediction_result');
+  await capture('prediction_result', [], () => triggerPredictionResult(context));
   await texasEvents(context, [{ event: 'new_game', game_id: 'visual-fixed-game', settings: { small_blind: 1, big_blind: 2, ante: 0 } }]);
   await gameGone(device, 'bet-next-hand-button');
   await restoreTexas(context);

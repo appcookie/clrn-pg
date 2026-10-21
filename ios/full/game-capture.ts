@@ -15,6 +15,7 @@ import { stableNativeObservation } from './native-stability';
 import { playerCountdownNodes } from './game-countdown';
 import { modalBackgroundMasks } from './modal-background-masks';
 import { texasRaiseClockMasks } from './texas-raise-masks';
+import { requirePredictionResult } from './prediction-result';
 
 /**
  * 使原生控件边界及绘制余量落到实际截图的整数像素。
@@ -34,11 +35,15 @@ function pixelBounds(bounds: ScreenshotBounds): ScreenshotBounds {
  * @param transientMarker - 仅用于会自动消失的提示，截图前后都必须实际存在。
  * @param expectedAlertMarker - 错误分支已断言内容后，允许截图的特定业务弹窗按钮。
  * @param inputMasks - 已根据真实输入框位移校准的光标区域。
- * @param triggerToast - 仅浮层提示可在准备背景遮罩后触发，不改变底层页面布局。
+ * @param triggerToast - 短时提示或猜牌中奖结果，在背景遮罩准备后仅触发一次。
  */
 export async function captureGame(device: AndroidDevice, name: string, testInfo: TestInfo, transientMarker?: string,
   expectedAlertMarker?: string, inputMasks: ScreenshotMask[] = [], triggerToast?: () => Promise<string | void>): Promise<void> {
-  if (triggerToast && transientMarker !== 'toastText1') throw new Error('提前准备遮罩仅用于不改变布局的短时文字提示。');
+  const preparedPrediction = transientMarker === 'bet-next-hand-result-amount'
+    && /^(?:en|zh-Hans|zh-Hant)-signed-in-texas-hall-prediction-result$/.test(name);
+  if (triggerToast && transientMarker !== 'toastText1' && !preparedPrediction) {
+    throw new Error('提前准备遮罩仅用于短时文字提示或已指定的猜牌中奖结果。');
+  }
   if (expectedAlertMarker) await gameReady(device, expectedAlertMarker);
   let nodes = await gameNodes(device);
   if ((!transientMarker || transientMarker === 'level-up-title') && foregroundPanels(nodes, device.screenSize).length) {
@@ -117,6 +122,25 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   }
   if (triggerToast) {
     const expectedText = await triggerToast();
+    if (preparedPrediction) {
+      expect(expectedText, '猜牌中奖夹具必须明确要求真实 +10').toBe('+10');
+      // The native app hides this result after 3000ms. Prepare the full tree
+      // before sending its single event, then only query the displayed amount.
+      // Every screenshot retains the existing before/after and stability gates.
+      const observations: object[] = [];
+      try {
+        await expect.poll(async () => (await device.transientMarker('bet-next-hand-result-amount'))?.text,
+          { timeout: 3000, intervals: [40] }).toBe('+10');
+        await compareScreenshot(device, name, testInfo, masks,
+          async () => { observations.push(await requirePredictionResult(device, masks)); },
+          () => gameScreenshot(device), [], backgroundMasks);
+      } finally {
+        await testInfo.attach(`${name}-transient-observations`, {
+          body: JSON.stringify(observations), contentType: 'application/json',
+        });
+      }
+      return;
+    }
     await captureToast(device, name, testInfo, masks, expectedText || undefined);
     return;
   }
