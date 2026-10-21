@@ -2,65 +2,50 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
 import { captureToast } from './game-transient.ts';
+import { toastKeyframes } from './toast-keyframes.ts';
 
-function setup(t, mode = 'stable') {
-  t.mock.timers.enable({ apis: ['Date'], now: 1000 });
+function setup(mode = 'stable') {
   const bounds = { x: 0, y: 0, width: 4, height: 4 };
-  const png = new PNG({ width: 4, height: 4 }); png.data.fill(255);
-  const original = PNG.sync.write(png);
-  const attachments = [];
-  let queries = 0, screenshots = 0;
-  return { original, attachments, device: {
-    transientMarkerReader(res) { return () => this.transientMarker(res); },
-    transientMarker: async res => {
-      t.mock.timers.tick(100);
-      if (Date.now() > 2600) return null;
-      if (res === 'toast-container') return { res, bounds };
-      queries++;
-      if (mode === 'disappeared' && queries === 2) return null;
-      return { res, bounds, text: mode === 'changed-text' && queries % 2 === 0 ? 'different' : 'explanation' };
-    },
-    screenshot: async () => {
-      screenshots++; t.mock.timers.tick(mode === 'variable' ? ([416, 183, 183][screenshots - 1] ?? 300) : 300);
-      if (mode === 'moving' && screenshots % 2 === 0) {
-        const dark = PNG.sync.read(original); dark.data.fill(0); return PNG.sync.write(dark);
-      }
-      return original;
-    },
-    nativeScreenshot: async () => { throw new Error('不应为短提示另起simctl截图进程'); },
-  }, info: { attach: async (name, value) => attachments.push({ name, ...value }) } };
+  const image = value => { const png = new PNG({ width: 4, height: 4 }); png.data.fill(value); return PNG.sync.write(png); };
+  const background = image(255), original = image(100);
+  const frames = [background, original, mode === 'moving' ? image(0) : original, original, background];
+  frames.timestampsMs = [0, 100, 250, 450, 600];
+  const attachments = [], calls = [];
+  const device = { screenSize: { width: 4, height: 4 },
+    inputObservation: async names => { calls.push('observe'); assert.deepEqual(names, ['toastText1', 'toast-container']);
+      return mode === 'absent' ? [] : [{ res: 'toastText1', text: 'explanation', bounds }, { res: 'toast-container', bounds }]; },
+    screenshot: async () => { throw new Error('不应在短提示窗口截屏'); },
+  };
+  const record = async (_device, _name, _region, trigger) => {
+    calls.push('record-start'); await trigger(); calls.push('record-stop'); return frames;
+  };
+  const trigger = async () => { calls.push('trigger'); return mode === 'wrong' ? 'other' : 'explanation'; };
+  return { original, frames, attachments, calls, device, record, trigger,
+    info: { attach: async (name, value) => attachments.push({ name, ...value }) } };
 }
 
-test('会话无损截图仍要求两个实际可见帧及250毫秒未遮罩稳定性', async t => {
+test('先录像再触发一次：一次语义查询，原始PTS的三帧验收，保留同名基准', async () => {
   const previous = process.env.IOS_VISUAL_MODE; process.env.IOS_VISUAL_MODE = 'smoke';
   try {
-    const { device, info, original, attachments } = setup(t);
-    await captureToast(device, 'unit-toast', info, [], 'explanation');
-    assert.deepEqual(attachments.find(a => a.name === 'unit-toast.png').body, original);
-    assert.ok(attachments.filter(a => a.name.endsWith('-original')).length >= 2);
-    assert.ok(attachments.some(a => a.name === 'unit-toast-capture-timing'));
-  } finally {
-    if (previous === undefined) delete process.env.IOS_VISUAL_MODE; else process.env.IOS_VISUAL_MODE = previous;
-  }
+    const s = setup();
+    await captureToast(s.device, 'unit-toast', s.info, [], s.trigger, s.record);
+    assert.deepEqual(s.calls, ['record-start', 'trigger', 'observe', 'record-stop']);
+    assert.deepEqual(s.attachments.find(a => a.name === 'unit-toast.png').body, s.original);
+    const frames = JSON.parse(s.attachments.find(a => a.name === 'unit-toast-video-keyframes').body);
+    assert.deepEqual(frames.map(f => f.timestampMs), [100, 250, 450]);
+    for (const f of frames) assert.deepEqual(s.attachments.find(a => a.name === f.attachment).body, s.original);
+  } finally { if (previous === undefined) delete process.env.IOS_VISUAL_MODE; else process.env.IOS_VISUAL_MODE = previous; }
 });
-
-test('首张截图较慢不能冒充250毫秒稳定跨度，继续采集第三张真实画面', async t => {
-  const previous = process.env.IOS_VISUAL_MODE; process.env.IOS_VISUAL_MODE = 'smoke';
-  try {
-    const { device, info, attachments } = setup(t, 'variable');
-    await captureToast(device, 'variable-toast', info, [], 'explanation');
-    const frames = JSON.parse(attachments.find(a => a.name === 'variable-toast-frames').body);
-    assert.equal(frames.length, 3);
-    assert.equal(frames[1].capturedAt - frames[0].capturedAt, 183);
-    assert.equal(frames[2].capturedAt - frames[0].capturedAt, 366);
-  } finally {
-    if (previous === undefined) delete process.env.IOS_VISUAL_MODE; else process.env.IOS_VISUAL_MODE = previous;
-  }
-});
-
-for (const [mode, message] of [['disappeared', /至少两帧/], ['changed-text', /文字必须保持一致/], ['moving', /稳定至少 250/]]) {
-  test(`短提示${mode}不能成为通过截图`, async t => {
-    const { device, info } = setup(t, mode);
-    await assert.rejects(captureToast(device, 'unit-toast', info, [], 'explanation'), message);
+for (const [mode, error] of [['absent', /实际观察到/], ['wrong', /other/], ['moving', /稳定至少 250/]])
+  test(`录像不能掩盖 ${mode}`, async () => {
+    const s = setup(mode); await assert.rejects(captureToast(s.device, 'toast', s.info, [], s.trigger, s.record), error);
   });
-}
+test('背景、时间戳倒退和短片段不能冒充稳定可见提示', async () => {
+  const s = setup(); const bounds = { x: 0, y: 0, width: 4, height: 4 };
+  s.frames.fill(s.frames[0]);
+  await assert.rejects(toastKeyframes(s.frames, bounds, []), /稳定至少 250/);
+  s.frames.timestampsMs = [0, 100, 90, 300, 600];
+  await assert.rejects(toastKeyframes(s.frames, bounds, []), /时间戳/);
+  const fast = setup().frames; fast.timestampsMs = [0, 100, 150, 200, 300];
+  await assert.rejects(toastKeyframes(fast, bounds, []), /稳定至少 250/);
+});

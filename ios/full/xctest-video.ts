@@ -52,6 +52,7 @@ export async function recordXCTestVideo(device: Pick<NativeDevice, 'execute'>, n
     await info.attach(`${name}-xctest-original`, { path: original, contentType: 'video/quicktime' });
     await runMedia('ffmpeg', ['-y', '-v', 'error', '-i', original,
       '-map', '0:v:0', '-c:v', 'copy', '-an', '-movflags', '+faststart', video], { timeout: 60_000 });
+    await info.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
     await info.attach(`${name}-recorder-process`, { contentType: 'application/json',
       body: JSON.stringify({ backend: 'xctest', uuid: start.uuid, requestedFps: 60,
         actualFps: end.fps, startedAt: start.startedAt, triggerAt, stoppedAt, originalBytes: bytes.length }) });

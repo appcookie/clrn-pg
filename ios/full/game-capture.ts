@@ -159,8 +159,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     }
     await device.prepareTransientCapture();
     await device.withImmediateAnimationInput(async () => {
-      const expectedText = await triggerToast();
-      await captureToast(device, name, testInfo, masks, expectedText || undefined);
+      await captureToast(device, name, testInfo, masks, triggerToast);
     });
     return;
   }

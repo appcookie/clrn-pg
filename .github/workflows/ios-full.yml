@@ -171,6 +171,17 @@ jobs:
         env:
           ANIMATION_CASE: ${{ matrix.animation }}
         run: node ios/full/animation-gate.mjs ios/artifacts/full-results/report.json "$ANIMATION_CASE"
+      - name: 导出本轮视频与关键帧（含失败运行）
+        if: always() && hashFiles('ios/artifacts/full-results/report.json') != '' && hashFiles('ios/artifacts/release/build-info.json') != ''
+        run: node ios/full/video-evidence.mjs ios/artifacts ios/artifacts/video-evidence
+      - name: 发布可回看的视频证据
+        if: always() && hashFiles('ios/artifacts/video-evidence/manifest.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-video-evidence-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
+          retention-days: 30
+          if-no-files-found: error
+          path: ios/artifacts/video-evidence/
       - name: 保存测试产物
         if: always()
         uses: actions/upload-artifact@v4

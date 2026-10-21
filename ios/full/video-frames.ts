@@ -17,7 +17,7 @@ const runMedia = promisify(execFile);
 /** 在真实 Simulator 录屏开始后触发动作，以原始分辨率解码；MP4 永远保留供回看。 */
 export async function recordNativeVideoFrames(device: NativeDevice, name: string, region: ScreenshotBounds,
   trigger: () => unknown, testInfo: TestInfo, durationMs = 3500, minimumDistinctFrames = 20,
-  onRecorded?: () => Promise<void>): Promise<RecordedFrames> {
+  onRecorded?: () => Promise<void>, backendOverride?: 'xctest' | 'simctl'): Promise<RecordedFrames> {
   if (!/^[A-Fa-f0-9-]{36}$/.test(device.udid)) throw new Error('录屏需要明确的专用 iOS 模拟器 UUID。');
   const directory = testInfo.outputPath(`video-${name}-${Date.now()}`);
   mkdirSync(directory, { recursive: true });
@@ -68,11 +68,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 39608277325 的举报入场合成器原片只有9帧且存在5.068秒空档；
   // 39608143748 的德州排行榜入场在第112→113帧跨过1.733秒，
   // 从牌桌直接到完整侧栏。两者改用固定XCTest，保留帧数及目标运动门禁。
-  const backend = ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
+  const backend = backendOverride ?? (['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
     'texas-holdem-leaderboard-enter'].includes(name) ? 'xctest'
-    : useCompositor ? 'simctl' : device.nativeVideoBackend;
+    : useCompositor ? 'simctl' : device.nativeVideoBackend);
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
   if (backend === 'xctest') {
@@ -124,6 +124,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
       if (result.signal === 'SIGKILL' || (result.code !== 0 && result.code !== 130 && result.signal !== 'SIGINT')) {
         throw new Error(`iOS 录屏失败：${stderr}`);
       }
+      await testInfo.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
     }
   }
   const processingStartedAt = performance.now();
@@ -136,7 +137,6 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   mark('recording-complete');
   const frames = path.join(directory, 'frames');
   try {
-    await testInfo.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
     // Release a held fixture once native recording has stopped, before expensive
     // decoding. The application must not time out while PNGs are processed.
     await onRecorded?.();
@@ -167,6 +167,18 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     mark('decode-complete');
     const pictures = await readRecordedFrameFiles(frames, timeline.timestampsMs.length);
     mark('frames-read');
+    const keyframes = [];
+    const distinct = timeline.timestampsMs.map((time, index) => ({ time, index }))
+      .filter(({ time }, index) => index === 0 || time > timeline.timestampsMs[index - 1]);
+    const previewIndices = [distinct[0].index, distinct[Math.floor(distinct.length / 2)].index, distinct.at(-1)!.index];
+    for (const [order, index] of previewIndices.entries()) {
+      const attachment = `${name}-preview-keyframe-${order + 1}`;
+      await testInfo.attach(attachment, { body: pictures[index], contentType: 'image/png' });
+      keyframes.push({ attachment, timestampMs: timeline.timestampsMs[index] });
+    }
+    await testInfo.attach(`${name}-video-preview-keyframes`, {
+      body: JSON.stringify(keyframes), contentType: 'application/json',
+    });
     console.log(`IOS > 录屏 ${name}：完成 ${pictures.length} 张原始帧解码和读取`);
     return Object.assign(pictures, { timestampsMs: timeline.timestampsMs });
   } finally {

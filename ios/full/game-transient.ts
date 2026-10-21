@@ -1,92 +1,42 @@
+// 短提示先开始原生录像，再单次触发并取得语义；图像验收使用原片关键帧。
 import { assertVisual } from './device';
 import { expect, type TestInfo } from '@playwright/test';
-import type { NativeDevice as AndroidDevice } from './native-device';
-import { setTimeout } from 'node:timers/promises';
-import type { NativeNode } from './game-controls';
+import type { NativeDevice } from './native-device';
+import { gameConnectionState } from './game-controls';
 import { subtractPanel } from './game-masks';
-import { samePixels } from './motion-regions';
 import { maskScreenshot, type ScreenshotMask } from './screenshot';
+import { recordNativeVideoFrames } from './video-frames';
+import { samePixels } from './motion-regions';
+import { toastKeyframes } from './toast-keyframes';
 
-type Frame = { before: NativeNode; after: NativeNode; panel: NativeNode; capturedAt: number; png: string };
-
-/**
- * 在设备上连续采集短时提示，先检查节点与真实位图，再编码传回；不延长提示或改变动画。
- * @param device - 固定原生驱动连接。
- * @param name - 共用场景的截图名。
- * @param testInfo - 当前测试报告。
- * @param backgroundMasks - 提示出现前准备的背景动态区域。
- * @param expectedText - 操作分支应出现的语义文字。
- */
-export async function captureToast(device: AndroidDevice, name: string, testInfo: TestInfo,
-  backgroundMasks: ScreenshotMask[], expectedText?: string): Promise<void> {
-  const frames: Frame[] = [];
-  const rawSamples: Buffer[] = [];
-  const observations: { phase: string; at: number }[] = [];
-  const observeText = device.transientMarkerReader('toastText1');
-  const deadline = Date.now() + 4000;
-  while (Date.now() < deadline) {
-    observations.push({ phase: 'before-query', at: Date.now() });
-    const before = await observeText();
-    observations.push({ phase: before?.text ? 'before-visible' : 'before-absent', at: Date.now() });
-    if (!before?.text) {
-      if (frames.length) break;
-      await setTimeout(40);
-      continue;
-    }
-    // 使用已建立的XCTest会话返回无损PNG，避免每帧另起simctl进程。
-    // 连续真实截图共享前后语义观测，减少短提示期间的AX往返；原始采集
-    // 时刻在截图返回时记录，不能用后续面板查询的耗时冒充像素稳定时间。
-    const samples: { png: Buffer; capturedAt: number }[] = [];
-    do {
-      // 连续采样到实际返回跨度至少250ms；第一张的耗时不能算作
-      // 后续稳定时间（39604350686两张返回只相隔185ms）。
-      observations.push({ phase: 'screenshot-start', at: Date.now() });
-      const png = await device.screenshot();
-      const capturedAt = Date.now();
-      samples.push({ png, capturedAt });
-      observations.push({ phase: 'screenshot', at: capturedAt });
-      rawSamples.push(png);
-    } while (Date.now() < deadline && (samples.length < 2
-      || samples.at(-1)!.capturedAt - samples[0].capturedAt < 250));
-    const after = await observeText();
-    observations.push({ phase: after?.text ? 'after-visible' : 'after-absent', at: Date.now() });
-    if (!after?.text) break;
-    const panel = (await device.transientMarker('toast-container')) || before;
-    for (const { png, capturedAt } of samples)
-      frames.push({ before, after, panel, capturedAt, png: png.toString('base64') });
+/** 保留完整录像，即使后续语义、关键帧或基准验证失败也能回看本次动作。 */
+export async function captureToast(device: NativeDevice, name: string, testInfo: TestInfo,
+  backgroundMasks: ScreenshotMask[], trigger: () => Promise<string | void>,
+  record = recordNativeVideoFrames): Promise<void> {
+  let expectedText: string | void;
+  let observation: Awaited<ReturnType<NativeDevice['inputObservation']>> = [];
+  const frames = await record(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
+    expectedText = await trigger();
+    observation = await device.inputObservation(['toastText1', 'toast-container']);
+  }, testInfo, 3500, 10, undefined, 'xctest');
+  await testInfo.attach(`${name}-toast-observation`, { body: JSON.stringify(observation), contentType: 'application/json' });
+  expect(gameConnectionState(observation).connecting, '提示期间不能出现连接等待').toBe(false);
+  const text = observation.find(node => node.res === 'toastText1');
+  const panel = observation.find(node => node.res === 'toast-container');
+  expect(text?.text, '录像期间必须实际观察到提示文字').toBeTruthy();
+  if (expectedText!) expect(text!.text).toContain(expectedText!);
+  expect(panel, '提示面板必须具有真实原生边界').toBeDefined();
+  const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, panel!.bounds));
+  const indices = await toastKeyframes(frames, text!.bounds, masks);
+  const keyframes = [];
+  for (const [order, index] of indices.entries()) {
+    const attachment = `${name}-verified-keyframe-${order + 1}`;
+    await testInfo.attach(attachment, { body: frames[index], contentType: 'image/png' });
+    keyframes.push({ attachment, timestampMs: frames.timestampsMs![index] });
   }
-  await testInfo.attach(`${name}-frames`, {
-    body: JSON.stringify(frames.map(({ png: _png, ...metadata }) => metadata)), contentType: 'application/json',
-  });
-  await testInfo.attach(`${name}-capture-timing`, {
-    body: JSON.stringify(observations), contentType: 'application/json',
-  });
-  for (const [index, png] of rawSamples.entries())
-    await testInfo.attach(`${name}-sample-${index}-original`, { body: png, contentType: 'image/png' });
-  expect(frames.length, '提示可见时必须采集至少两帧真实屏幕').toBeGreaterThanOrEqual(2);
-  let reference: Buffer | undefined;
-  let stableSince = 0;
-  let stable: Buffer | undefined;
-  for (const [index, frame] of frames.entries()) {
-    expect(frame.before.text, '截图前提示必须可见').toBeTruthy();
-    expect(frame.after.text, '截图后提示文字必须保持一致').toBe(frame.before.text);
-    if (expectedText) expect(frame.before.text).toContain(expectedText);
-    expect(frame.panel, '提示面板不能被背景遮罩覆盖').toBeTruthy();
-    const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, frame.panel.bounds));
-    const original = Buffer.from(frame.png, 'base64');
-    const current = maskScreenshot(original, masks);
-    await testInfo.attach(`${name}-frame-${index}-original`, { body: original, contentType: 'image/png' });
-    await testInfo.attach(`${name}-frame-${index}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
-    if (JSON.stringify(frame.before.bounds) !== JSON.stringify(frame.after.bounds)) {
-      reference = undefined;
-      continue;
-    }
-    if (!reference || !samePixels(current, reference)) {
-      reference = current;
-      stableSince = frame.capturedAt;
-    } else if (frame.capturedAt - stableSince >= 250) stable = current;
-  }
-  expect(stable, '提示存在期间全部未遮罩像素必须连续稳定至少 250 毫秒').toBeDefined();
-  await testInfo.attach(name, { body: stable!, contentType: 'image/png' });
-  await assertVisual(stable!, `${name}.png`, testInfo);
+  await testInfo.attach(`${name}-video-keyframes`, { body: JSON.stringify(keyframes), contentType: 'application/json' });
+  await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
+  const representative = maskScreenshot(frames[indices[1]], masks);
+  for (const index of indices) expect(samePixels(maskScreenshot(frames[index], masks), representative)).toBe(true);
+  await assertVisual(representative, `${name}.png`, testInfo);
 }
