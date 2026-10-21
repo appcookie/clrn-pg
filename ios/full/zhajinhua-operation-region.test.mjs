@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { PNG } from 'pngjs';
 import { zhajinhuaOperationMarkers, zhajinhuaOperationRegion, zhajinhuaOperationClockMasks,
-  zhajinhuaChallengeCancel, readyZhajinhuaChallengeCancel } from './zhajinhua-operation-region.ts';
-import { captureNativeTransition } from './animation-transition.ts';
+  zhajinhuaOperationControls, zhajinhuaChallengeCancel, readyZhajinhuaChallengeCancel } from './zhajinhua-operation-region.ts';
+import { captureNativeTransition, nativeTargetMotionEvidence } from './animation-transition.ts';
 const node = (res, bounds) => ({ res, bounds, visible: true, clazz: 'XCUIElementTypeOther' });
 const actualBounds = [
   [206, 1626, 136, 162], [416, 1626, 136, 162], [626, 1626, 136, 162], [836, 1626, 136, 162],
@@ -47,17 +49,17 @@ test('隐藏操作区、4个挑战目标与取消区域复用同一次完整原�
   await assert.rejects(readyZhajinhuaChallengeCancel(async () => { throw new Error('native driver disconnected'); }), /native driver disconnected/);
 });
 
-test('三大操作按钮必须分别采到真实局部变化，单个按钮硬切或纯遮罩变化不能通过', async () => {
+test('九个操作控件必须分别采到真实局部变化，AX容器disabled不豁免运动和终点证据', async () => {
   const size = { width: 360, height: 400 };
   const positions = [[50, 50, 35, 30], [115, 50, 35, 30], [180, 50, 35, 30], [245, 50, 35, 30],
     [150, 140, 50, 50], [50, 220, 50, 50], [250, 220, 50, 50], [320, 300, 35, 35], [20, 300, 35, 30]];
   const nodes = positions.map(([x, y, width, height], index) => node(zhajinhuaOperationMarkers[index], { x, y, width, height }));
-  const picture = (phase, hardCut = false) => {
+  const picture = (phase, hardCut = -1) => {
     const png = new PNG(size);
     for (let offset = 0; offset < png.data.length; offset += 4) png.data.set([20, 90, 70, 255], offset);
     if (!phase) return PNG.sync.write(png);
     for (const [index, { bounds }] of nodes.entries()) {
-      const factor = phase === 'middle' && !(hardCut && index === 5) ? .6 : 1;
+      const factor = phase === 'middle' && hardCut !== index ? .6 : 1;
       const width = Math.round(bounds.width * factor), height = Math.round(bounds.height * factor);
       const left = bounds.x + Math.floor((bounds.width - width) / 2), top = bounds.y + Math.floor((bounds.height - height) / 2);
       for (let y = top; y < top + height; y++) for (let x = left; x < left + width; x++) {
@@ -70,9 +72,11 @@ test('三大操作按钮必须分别采到真实局部变化，单个按钮硬�
   const before = picture(), after = picture('end');
   const previous = process.env.IOS_VISUAL_MODE;
   process.env.IOS_VISUAL_MODE = 'smoke';
-  const run = middle => {
+  const run = (middle, axGrouped = false) => {
     let observations = 0, screenshots = 0;
-    const device = { screenSize: size, nodes: async () => observations++ ? nodes : [],
+    const grouped = [{ ...node('zhajinhua-cancel-challenge-choosing', { x:0,y:0,...size }), enabled:false,
+      children:nodes.map(item => ({ ...item, visible:false, enabled:true })) }];
+    const device = { screenSize: size, nodes: async () => observations++ ? axGrouped ? grouped : nodes : [],
       nativeScreenshot: async () => screenshots++ ? after : before };
     return captureNativeTransition(device, 'zhajinhua-operation-buttons', { attach: async () => {} },
       { x: 0, y: 0, ...size }, () => {}, [], [], 0, 'videoFrames', undefined, undefined,
@@ -80,13 +84,49 @@ test('三大操作按钮必须分别采到真实局部变化，单个按钮硬�
   };
   try {
     await run(picture('middle'));
-    await assert.rejects(run(picture('middle', true)), /fold.*真实局部中间态/);
+    await run(picture('middle'), true);
+    for (let index=0;index<9;index++)
+      await assert.rejects(run(picture('middle', index), true), /真实局部中间态/);
     const dimmer = PNG.sync.read(before);
     for (let offset = 0; offset < dimmer.data.length; offset += 4)
       for (let channel = 0; channel < 3; channel++) dimmer.data[offset + channel] = Math.round(dimmer.data[offset + channel] * .8);
-    await assert.rejects(run(PNG.sync.write(dimmer)), /真实局部中间态/);
+    await assert.rejects(run(PNG.sync.write(dimmer), true), /真实局部中间态/);
   } finally {
     if (previous === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = previous;
+  }
+});
+
+const fixture = new URL('./fixtures/zhajinhua-cancel-motion/', import.meta.url);
+test('真实Cancel前后AX树仅在唯一可见全屏disabled父层内解析9个目标，保留visible=false', () => {
+  const { before, after }=JSON.parse(readFileSync(new URL('native-state.json',fixture)));
+  const screen={width:1178,height:2556};
+  assert.deepEqual(zhajinhuaOperationRegion([before],[after],screen),{x:58,y:1622,width:1120,height:773});
+  assert.equal(zhajinhuaOperationControls([after],screen).length,9);
+  assert.ok(zhajinhuaOperationControls([after],screen).every(node=>node.visible===false));
+  assert.throws(()=>zhajinhuaOperationControls([after]),/原生控件/);
+  for(const patch of [{enabled:true},{visible:false},{res:'unrelated-container'},
+    {bounds:{...after.bounds,width:1177}},{bounds:{...after.bounds,height:2557}}])
+    assert.throws(()=>zhajinhuaOperationRegion([before],[{...after,...patch}],screen),/原生控件/);
+  for(const children of [after.children.slice(1),[...after.children,after.children[0]],
+    after.children.map((n,i)=>i? n:{...n,bounds:{...n.bounds,width:0}}),
+    after.children.map((n,i)=>i? n:{...n,enabled:false})])
+    assert.throws(()=>zhajinhuaOperationRegion([before],[{...after,children}],screen),/原生控件/);
+  assert.throws(()=>zhajinhuaOperationRegion([{...before,children:[...before.children,after.children[0]]}],[after],screen),/起点必须全部消失/);
+  assert.throws(()=>zhajinhuaOperationRegion([before],[{...after,children:[...after.children,before.children[0]]}],screen),/不得残留/);
+});
+test('实际原片frame121九控件均有独立结构中间态；静态出现的目标不得凭AX状态通过', async () => {
+  const provenance=JSON.parse(readFileSync(new URL('provenance.json',fixture)));
+  for(const control of provenance.controls){
+    const frames=Object.fromEntries(Object.entries(control.images).map(([key,image])=>{
+      const bytes=readFileSync(new URL(image.file,fixture));
+      assert.equal(createHash('sha256').update(bytes).digest('hex'),image.sha256);
+      return[key,bytes];
+    }));
+    const evidence=await nativeTargetMotionEvidence(frames.start,frames.end,[frames.middle]);
+    assert.ok(evidence.total>3,control.marker);
+    assert.equal(evidence.candidates.length,1,control.marker);
+    const hardCut=await nativeTargetMotionEvidence(frames.start,frames.end,[frames.start,frames.end]);
+    assert.equal(hardCut.candidates.length,0,control.marker);
   }
 });

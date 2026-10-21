@@ -1,4 +1,4 @@
-import type { NativeNode } from './game-controls';
+import { flattenNodes, type NativeNode } from './game-controls';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { playerCountdownNodes } from './game-countdown';
 import { setTimeout as delay } from 'node:timers/promises';
@@ -16,19 +16,42 @@ export function visibleZhajinhuaOperationControls(nodes: NativeNode[]): NativeNo
     && node.bounds.width > 0 && node.bounds.height > 0);
 }
 
+function mountedControls(nodes: NativeNode[]): NativeNode[] {
+  const parents = nodes.filter(node => node.res === 'zhajinhua-cancel-challenge-choosing' && node.visible !== false);
+  if (parents.length > 1) throw new Error('操作区必须属于唯一取消选择原生容器');
+  const scoped = [...new Set([...nodes, ...parents.flatMap(flattenNodes)])];
+  return scoped.filter(node => zhajinhuaOperationMarkers.includes(node.res || '')
+    && node.bounds.width > 0 && node.bounds.height > 0);
+}
+
 /** zoomInDown remounts only after all controls have actually disappeared. */
-export function zhajinhuaOperationControls(nodes: NativeNode[]): NativeNode[] {
+export function zhajinhuaOperationControls(nodes: NativeNode[], screen?: { width: number; height: number }): NativeNode[] {
   const visible = visibleZhajinhuaOperationControls(nodes);
+  // Pinned MainScreen wraps the table in TouchableWithoutFeedback. After
+  // Cancel its disabled=true makes XCTest report its still-rendered controls
+  // visible=false. Read only this exact, visible, disabled parent subtree;
+  // callers must also prove all nine controls' raw endpoint pixels and motion.
+  const parent = nodes.find(node => node.res === 'zhajinhua-cancel-challenge-choosing'
+    && node.visible === true && node.enabled === false && node.bounds.x === 0 && node.bounds.y === 0
+    && screen && node.bounds.width === screen.width && node.bounds.height === screen.height);
+  mountedControls(nodes); // Reject ambiguous visible parent containers.
+  const mounted = parent ? flattenNodes(parent).filter(node => zhajinhuaOperationMarkers.includes(node.res || '')) : [];
+  if (parent && flattenNodes(parent).some(node => node.res === 'challenge_player_selector'))
+    throw new Error('取消选择后不得残留挑战目标子树');
+  const controls = visible.length === zhajinhuaOperationMarkers.length ? visible : parent
+    ? mounted.filter(node => node.enabled === true && node.bounds.x >= parent.bounds.x
+      && node.bounds.y >= parent.bounds.y && node.bounds.x + node.bounds.width <= parent.bounds.width
+      && node.bounds.y + node.bounds.height <= parent.bounds.height) : visible;
   return zhajinhuaOperationMarkers.map(marker => {
-    const found = visible.filter(node => node.res === marker);
-    if (found.length !== 1) throw new Error(`操作按钮终点必须有唯一可见原生控件：${marker}`);
+    const found = controls.filter(node => node.res === marker);
+    if (found.length !== 1) throw new Error(`操作按钮终点必须有唯一可见或取消后可验证的原生控件：${marker}`);
     return found[0];
   });
 }
 
 /** Validate the entire prepared state from one completed native observation. */
 export function zhajinhuaChallengeCancel(nodes: NativeNode[]): NativeNode {
-  if (visibleZhajinhuaOperationControls(nodes).length) throw new Error('选择对手时全部9个操作控件必须消失');
+  if (mountedControls(nodes).length) throw new Error('选择对手时全部9个操作控件必须消失');
   const visible = nodes.filter(node => node.visible !== false && node.bounds.width > 0 && node.bounds.height > 0);
   if (visible.filter(node => node.res === 'challenge_player_selector').length !== 4)
     throw new Error('选择对手时必须有4个真实挑战目标');
@@ -58,11 +81,11 @@ export async function readyZhajinhuaChallengeCancel(read: () => Promise<NativeNo
  */
 export function zhajinhuaOperationRegion(before: NativeNode[], after: NativeNode[],
   screen: { width: number; height: number }): ScreenshotBounds {
-  if (visibleZhajinhuaOperationControls(before).length)
+  if (mountedControls(before).length)
     throw new Error('操作按钮入场起点必须全部消失，已显示的按钮不能重复恢复冒充入场');
   if (after.some(node => node.visible !== false && node.res === 'challenge_player_selector'))
     throw new Error('取消选择后不得残留挑战目标');
-  const bounds = zhajinhuaOperationControls(after).map(node => node.bounds);
+  const bounds = zhajinhuaOperationControls(after, screen).map(node => node.bounds);
   if (bounds.some(b => b.x < 0 || b.y < 0 || b.x + b.width > screen.width || b.y + b.height > screen.height))
     throw new Error('操作按钮必须完整位于原生屏幕内');
   const x = Math.max(0, Math.min(...bounds.map(b => b.x)) - 4);
@@ -75,7 +98,7 @@ export function zhajinhuaOperationRegion(before: NativeNode[], after: NativeNode
  * A changed layout must never allow this exclusion to cover a target button.
  */
 export function zhajinhuaOperationClockMasks(nodes: NativeNode[]): ScreenshotMask[] {
-  const controls = visibleZhajinhuaOperationControls(nodes);
+  const controls = mountedControls(nodes);
   return playerCountdownNodes(nodes, 'zhajinhua').map(timer => {
     const b = timer.bounds;
     if (controls.some(control => {

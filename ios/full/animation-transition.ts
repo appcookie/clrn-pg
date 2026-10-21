@@ -396,8 +396,10 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     expect(candidates.length, '目标本身必须有真实中间帧，旧按钮或倒计时消失不能冒充').toBeGreaterThan(0);
   }
   if (name === 'zhajinhua-operation-buttons' || name === 'texas-operation-buttons') {
-    const controls = (name === 'texas-operation-buttons' ? texasOperationControls(afterNodes) : zhajinhuaOperationControls(afterNodes))
-      .filter(node => /^(?:zhajinhua|texas-holdem)-operation-button-(battle|raise|fold|call)$/.test(node.res || ''));
+    const controls = (name === 'texas-operation-buttons' ? texasOperationControls(afterNodes)
+      : zhajinhuaOperationControls(afterNodes, device.screenSize))
+      .filter(node => name === 'zhajinhua-operation-buttons'
+        || /^texas-holdem-operation-button-(raise|fold|call)$/.test(node.res || ''));
     const targetIndices = new Set<number>();
     const newControlPhases = name === 'texas-operation-buttons'
       ? new Set(candidates.map(item => item.index)) : undefined;
