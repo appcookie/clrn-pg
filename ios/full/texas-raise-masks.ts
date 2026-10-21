@@ -20,8 +20,31 @@ function descendants(nodes: NativeNode[]): NativeNode[] {
 function thumbImage(nodes: NativeNode[], screen: { width: number; height: number }) {
   const { thumb, value } = texasRaiseControls(nodes);
   const images = descendants([thumb]).filter(node => node.clazz === 'XCUIElementTypeImage'
-    && node.visible !== false && contains(node.bounds, value.bounds));
+    && contains(node.bounds, value.bounds));
   if (images.length !== 1) throw new Error('加注数字必须位于唯一实际滑块背景图片内');
+  const imageNode = images[0];
+  if (imageNode.visible === false) {
+    // run39542210460: after the real 40→618 drag, Fabric reports the
+    // ImageBackground wrapper and its image hidden while both remain drawn.
+    // Accept only that exact mounted thumb subtree, never an arbitrary hidden
+    // image or a node elsewhere in the full-screen popup. Keep AX fields intact.
+    const roots = descendants(nodes).filter(node => node.res === 'raise-bet-popup' && node.visible !== false);
+    const wrapper: NativeNode | undefined = thumb.children?.find(node => node.children?.includes(imageNode));
+    const sameBounds = (a: ScreenshotBounds, b: ScreenshotBounds) => a.x === b.x && a.y === b.y
+      && a.width === b.width && a.height === b.height;
+    const s = screen.width / 1178;
+    if (roots.length !== 1 || roots[0].enabled !== true || !sameBounds(roots[0].bounds, { x: 0, y: 0, ...screen })
+      || thumb.visible !== false || value.visible !== false || thumb.enabled !== true || value.enabled !== true
+      || imageNode.enabled !== true || imageNode.res || imageNode.children?.length || !wrapper || wrapper.clazz !== 'XCUIElementTypeOther'
+      || wrapper.visible !== false || wrapper.enabled !== true || wrapper.res
+      || !sameBounds(wrapper.bounds, imageNode.bounds) || wrapper.children?.length !== 1
+      || thumb.children?.length !== 2 || !thumb.children.includes(value)
+      || Math.abs(imageNode.bounds.y - thumb.bounds.y) > 2
+      || thumb.bounds.x < imageNode.bounds.x || thumb.bounds.x + thumb.bounds.width > imageNode.bounds.x + imageNode.bounds.width
+      || imageNode.bounds.height < thumb.bounds.height || imageNode.bounds.height - thumb.bounds.height > 12 * s) {
+      throw new Error('隐藏AX滑块图片必须匹配唯一可见全屏弹窗内的实际ImageBackground子树');
+    }
+  }
   const image = images[0].bounds, s = screen.width / 1178;
   if (!contains({ x: 0, y: 0, ...screen }, image) || image.width < 180 * s || image.width > 260 * s
     || image.height < 80 * s || image.height > 115 * s

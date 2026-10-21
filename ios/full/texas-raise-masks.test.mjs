@@ -63,3 +63,67 @@ test('数字溢出、错误格式、图片超界、遮刻度或按钮均拒绝�
     f => f.thumb.bounds.y -= 10];
   for (const change of changes) { const f = fixture(); change(f); assert.throws(() => texasRaiseValueMask(f.nodes, screen)); }
 });
+
+const nativeFixture = new URL('./fixtures/texas-raise-hidden-thumb/', import.meta.url);
+async function recordedFixture() {
+  const { readFileSync } = await import('node:fs');
+  return JSON.parse(readFileSync(new URL('native-state.json', nativeFixture)));
+}
+test('真实40→618拖动后AX隐藏金色图片仍按唯一原生ImageBackground定位，保留原visible值', async () => {
+  const { before, after } = await recordedFixture();
+  assert.deepEqual(texasRaiseValueMask(before, screen).map(({ reason, ...b }) => b),
+    [{ x: 701, y: 1521, width: 154, height: 63 }]);
+  assert.deepEqual(texasRaiseValueMask(after, screen).map(({ reason, ...b }) => b),
+    [{ x: 701, y: 1015, width: 154, height: 64 }]);
+  const controls = (await import('./texas-raise-region.ts')).texasRaiseControls(after);
+  const background = controls.thumb.children[0], image = background.children[0];
+  assert.equal(controls.value.text, '618');
+  assert.equal(image.visible, false);
+  assert.equal(background.visible, false);
+  assert.equal(controls.thumb.visible, false);
+  assert.deepEqual(texasRaiseClockMasks(after, screen).map(({ reason, ...b }) => b),
+    [{ x: 584, y: 1434, width: 184, height: 45 }]);
+  for (const point of [[663, 1040], [800, 997], [549, 1030]])
+    assert.equal(covered(texasRaiseValueMask(after, screen), ...point), false);
+});
+
+test('隐藏图片兼容只接受原生thumb精确子树，错误包装、重复、禁用或越界均拒绝', async () => {
+  const { texasRaiseControls } = await import('./texas-raise-region.ts');
+  const changes = [
+    f => { f.image.enabled = false; }, f => { f.image.res = 'unrelated-image'; },
+    f => { f.root.enabled = false; }, f => { f.thumb.enabled = false; }, f => { f.value.enabled = false; },
+    f => { f.wrapper.enabled = false; }, f => { f.wrapper.visible = true; },
+    f => { f.wrapper.res = 'unrelated'; }, f => { f.wrapper.clazz = 'XCUIElementTypeScrollView'; },
+    f => { f.wrapper.bounds = { ...f.wrapper.bounds, width: f.wrapper.bounds.width + 1 }; },
+    f => { f.wrapper.children.push({ ...f.image }); },
+    f => { f.thumb.children = [f.image, f.value]; },
+    f => { f.thumb.children.push({ ...f.wrapper }); },
+    f => { f.thumb.visible = true; }, f => { f.value.visible = true; },
+    f => { f.root.bounds = { ...f.root.bounds, height: 2555 }; },
+    f => { f.confirm.visible = false; }, f => { f.value.bounds.x = 0; },
+    f => { f.image.bounds.x = -1; },
+  ];
+  for (const change of changes) {
+    const { after } = await recordedFixture(), { thumb, value, confirm } = texasRaiseControls(after);
+    const wrapper = thumb.children[0], image = wrapper.children[0];
+    change({ root: after[0], thumb, value, confirm, wrapper, image });
+    assert.throws(() => texasRaiseValueMask(after, screen));
+  }
+});
+
+test('原始录像金色滑块和完整数字实际向上移动，静态硬切不能充当中间帧', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { createHash } = await import('node:crypto');
+  const { nativeRecordedTargetMotionEvidence } = await import('./animation-transition.ts');
+  const provenance = JSON.parse(readFileSync(new URL('provenance.json', nativeFixture)));
+  const frames = provenance.images.map(image => {
+    const bytes = readFileSync(new URL(image.file, nativeFixture));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), image.sha256);
+    return bytes;
+  });
+  const real = await nativeRecordedTargetMotionEvidence(frames[0], frames[2], frames);
+  assert.ok(real.total > 3);
+  assert.deepEqual(real.candidates.map(item => item.index), [1]);
+  const hardCut = await nativeRecordedTargetMotionEvidence(frames[0], frames[2], [frames[0], frames[2], frames[2]]);
+  assert.equal(hardCut.candidates.length, 0);
+});

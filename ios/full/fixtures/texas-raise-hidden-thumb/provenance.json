@@ -1,0 +1,38 @@
+{
+  "purpose": "Regression evidence only, not baseline candidates. Field-preserving projections of actual before-static and later failure AX trees; after-screen timing is not inferred. Raw unmodified recording crops prove the real gold thumb moves.",
+  "run": "39542210460",
+  "sourceSHA": "daaac1ab0e869aabc25979f44051d97fea3eb3c7",
+  "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+  "video": "texas-raise-slider-native-video-7b59ec7fe7c26888110cb2bc04596780ae2aeb0a.mp4",
+  "videoSHA256": "27aa56a939802ba8f1344ab98cbe113d22038948dd8cea89d7bf46141df560d9",
+  "crop": {
+    "x": 650,
+    "y": 990,
+    "width": 256,
+    "height": 620
+  },
+  "images": [
+    {
+      "file": "start.png",
+      "frame": 0,
+      "sha256": "a8c14bd297ed4e3e85ab622c498ab95d71ed565250f03c6e585d7749a28a9dac"
+    },
+    {
+      "file": "middle.png",
+      "frame": 20,
+      "sha256": "652b71f097bcf7eff24e428f9b20b198318c0d4d08c3f031c35e010cba64d3dc"
+    },
+    {
+      "file": "end.png",
+      "frame": 40,
+      "sha256": "03a5865e3c1433d7859c8afe129fc71600de9947ac8e22fb9d9a98c2d631cb44"
+    }
+  ],
+  "nativeState": {
+    "file": "native-state.json",
+    "sha256": "b47d4c9fe647329257d3800e9dbfbc3fadde2baa3231b5fddfd29576c8009a7f",
+    "beforeAttachment": "en-signed-in-texas-game-raise-native-tree",
+    "afterAttachment": "failure-accessibility",
+    "note": "The failing afterNodes observation was not attached by this source; this retained later failure tree proves the same drawn endpoint has AX-visible=false. No claim that it is the exact earlier observation."
+  }
+}
