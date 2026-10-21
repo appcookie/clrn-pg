@@ -20,7 +20,7 @@ function setup(t, mode = 'stable') {
       return { res, bounds, text: mode === 'changed-text' && queries % 2 === 0 ? 'different' : 'explanation' };
     },
     screenshot: async () => {
-      screenshots++; t.mock.timers.tick(100);
+      screenshots++; t.mock.timers.tick(300);
       if (mode === 'moving' && screenshots % 2 === 0) {
         const dark = PNG.sync.read(original); dark.data.fill(0); return PNG.sync.write(dark);
       }

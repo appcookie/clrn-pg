@@ -53,3 +53,25 @@ test('短提示预先配置后一次原生查询同时返回可见性、文字�
   element = { ...element, displayed: true, rect: undefined };
   await assert.rejects(d.transientMarker('toastText1'), /缺少真实可见性或位置/);
 });
+
+test('短提示点击及采样期间关闭驱动冷却，成功和失败都恢复实际原设置', async () => {
+  for (const fails of [false, true]) {
+    let coolOff = 3.5, calls = 0;
+    const failure = new Error('native sampling failed');
+    const d = new NativeDevice({ path: p => p, request: async (method, path, body) => {
+      assert.equal(path, '/appium/settings');
+      if (method === 'GET') return { animationCoolOffTimeout: coolOff };
+      coolOff = body.settings.animationCoolOffTimeout;
+    } }, 'unused', async () => {}, async () => {}, 'app');
+    const result = d.withImmediateAnimationInput(async () => {
+      calls++;
+      assert.equal(coolOff, 0);
+      if (fails) throw failure;
+      return 'captured';
+    });
+    if (fails) await assert.rejects(result, e => e === failure);
+    else assert.equal(await result, 'captured');
+    assert.equal(calls, 1, '只触发一次真实动作及采样');
+    assert.equal(coolOff, 3.5, '恢复读取到的设置，不能假定默认值');
+  }
+});

@@ -159,6 +159,21 @@ export class NativeDevice {
     } });
     this.richTransientElements = true;
   }
+  /** 只关闭驱动点击后的动画冷却等待；应用动画不变，成功或失败后都恢复原设置。 */
+  async withImmediateAnimationInput<T>(task: () => Promise<T>): Promise<T> {
+    const settings = await this.driver.request('GET', this.driver.path('/appium/settings'));
+    const previous = settings.animationCoolOffTimeout;
+    if (!Number.isFinite(previous) || previous < 0) throw new Error('无法读取真实动画冷却设置');
+    await this.driver.request('POST', this.driver.path('/appium/settings'), {
+      settings: { animationCoolOffTimeout: 0 },
+    });
+    try { return await task(); }
+    finally {
+      await this.driver.request('POST', this.driver.path('/appium/settings'), {
+        settings: { animationCoolOffTimeout: previous },
+      });
+    }
+  }
   /** Read one short-lived native label without computing visibility for every
    * node on a populated poker table. A missing/stale element is absence; driver
    * failures still fail the test. All geometry remains native screenshot pixels.

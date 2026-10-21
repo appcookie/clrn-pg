@@ -121,9 +121,8 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     if (name.startsWith('en-')) await captureMovingKeyframes(device, `${name}-countdown`, testInfo, regions);
   }
   if (triggerToast) {
-    if (!preparedPrediction) await device.prepareTransientCapture();
-    const expectedText = await triggerToast();
     if (preparedPrediction) {
+      const expectedText = await triggerToast();
       expect(expectedText, '猜牌中奖夹具必须明确要求真实 +10').toBe('+10');
       // The native app hides this result after 3000ms. Prepare the full tree
       // before sending its single event, then only query the displayed amount.
@@ -142,7 +141,11 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
       }
       return;
     }
-    await captureToast(device, name, testInfo, masks, expectedText || undefined);
+    await device.prepareTransientCapture();
+    await device.withImmediateAnimationInput(async () => {
+      const expectedText = await triggerToast();
+      await captureToast(device, name, testInfo, masks, expectedText || undefined);
+    });
     return;
   }
   /** 不允许把提示消失后的稳定页面当成提示截图。 */

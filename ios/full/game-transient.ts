@@ -20,6 +20,7 @@ type Frame = { before: NativeNode; after: NativeNode; panel: NativeNode; capture
 export async function captureToast(device: AndroidDevice, name: string, testInfo: TestInfo,
   backgroundMasks: ScreenshotMask[], expectedText?: string): Promise<void> {
   const frames: Frame[] = [];
+  const rawSamples: Buffer[] = [];
   const observations: { phase: string; at: number }[] = [];
   const deadline = Date.now() + 4000;
   while (Date.now() < deadline) {
@@ -32,13 +33,23 @@ export async function captureToast(device: AndroidDevice, name: string, testInfo
       continue;
     }
     // 使用已建立的XCTest会话返回无损PNG，避免每帧另起simctl进程。
-    const png = await device.screenshot();
-    observations.push({ phase: 'screenshot', at: Date.now() });
+    // 两张真实截图共享前后语义观测，减少短提示期间的AX往返；原始采集
+    // 时刻在截图返回时记录，不能用后续面板查询的耗时冒充像素稳定时间。
+    const samples: { png: Buffer; capturedAt: number }[] = [];
+    for (let index = 0; index < 2; index++) {
+      if (index) await setTimeout(250);
+      const png = await device.screenshot();
+      const capturedAt = Date.now();
+      samples.push({ png, capturedAt });
+      observations.push({ phase: 'screenshot', at: capturedAt });
+      rawSamples.push(png);
+    }
     const after = await device.transientMarker('toastText1');
     observations.push({ phase: after?.text ? 'after-visible' : 'after-absent', at: Date.now() });
     if (!after?.text) break;
     const panel = (await device.transientMarker('toast-container')) || before;
-    frames.push({ before, after, panel, capturedAt: Date.now(), png: png.toString('base64') });
+    for (const { png, capturedAt } of samples)
+      frames.push({ before, after, panel, capturedAt, png: png.toString('base64') });
   }
   await testInfo.attach(`${name}-frames`, {
     body: JSON.stringify(frames.map(({ png: _png, ...metadata }) => metadata)), contentType: 'application/json',
@@ -46,6 +57,8 @@ export async function captureToast(device: AndroidDevice, name: string, testInfo
   await testInfo.attach(`${name}-capture-timing`, {
     body: JSON.stringify(observations), contentType: 'application/json',
   });
+  for (const [index, png] of rawSamples.entries())
+    await testInfo.attach(`${name}-sample-${index}-original`, { body: png, contentType: 'image/png' });
   expect(frames.length, '提示可见时必须采集至少两帧真实屏幕').toBeGreaterThanOrEqual(2);
   let reference: Buffer | undefined;
   let stableSince = 0;
