@@ -36,8 +36,13 @@ export async function captureToast(device: AndroidDevice, name: string, testInfo
     // 两张真实截图共享前后语义观测，减少短提示期间的AX往返；原始采集
     // 时刻在截图返回时记录，不能用后续面板查询的耗时冒充像素稳定时间。
     const samples: { png: Buffer; capturedAt: number }[] = [];
+    let previousStartedAt = 0;
     for (let index = 0; index < 2; index++) {
-      if (index) await setTimeout(250);
+      // CI单张截图已耗时420ms，不在其后再固定等250ms浪费显示窗口。
+      // 至少间隔250ms发起截图，稳定门禁仍使用真实返回时间而非推算时刻。
+      if (index) await setTimeout(Math.max(0, 250 - (Date.now() - previousStartedAt)));
+      previousStartedAt = Date.now();
+      observations.push({ phase: 'screenshot-start', at: previousStartedAt });
       const png = await device.screenshot();
       const capturedAt = Date.now();
       samples.push({ png, capturedAt });
