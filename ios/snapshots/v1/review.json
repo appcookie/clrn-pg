@@ -5161,6 +5161,546 @@
         "releaseTag": "ios-staging-20-1-c96084f2f1bf",
         "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
       }
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-card-rank/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "4610cc2f577bba0cc53e5ce9a1c553dc3f31180e3aaea6b15e228f90c9d7ecba",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-menu/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "c15f2f1b467bc3e7d89deb9615982651765a95d7d9317fc683cbd25bb3bef1d5",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/signed-in-zhajinhua-pre-game-waiting-table/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "9ec1a88922095c6b3f85df9522fc13dfe3c4a3d0e53cb275b9246080acc3efbf",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-card-rank-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "bc81ee16f7295cc64b2029518ce0cd6522650fbb6f4133eef3cc8292336fd56a",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-card-rank-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "9e51016ef873c1005d96abd824cf86cd83608c6e9a5b22d5bc93921c284179c6",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-card-rank-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "0927c2851a5445156b3e72871d4625ac6a430e90ade3106fad702b817ef7e76b",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-card-rank-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "849fd2d828ea47d2dfe937e151d099e0b954baf367b2d1d3e764f16bfd909d7c",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-card-rank-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "729c4427f0d8e19d1a7c38470d5ce608e22a507c834e06ce3ba8423ef693f3c5",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-card-rank-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "bc81ee16f7295cc64b2029518ce0cd6522650fbb6f4133eef3cc8292336fd56a",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-menu-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "bb1bc5bb42f4408ec7e5556cccb1c80db08c7828323345ab0bae5065c6aa5479",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-menu-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "3bec8b1aae196bd09ca997690a0290d6f1e8b0a076a7961571fb9c4bed3f6613",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-menu-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "53ea93101eb65d80463a27f1f540fc254cbc61403c85ebfce65ecc34586213b2",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-game-rule-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "dc19966b677362ac09738b071fb0584971df4a9d1ac78b57164b6371287e3818",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-game-rule-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "cb0921071b74f8d6eb2089a5f035b76baccdc79afecda27e9a22f1754dec838d",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-game-rule-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5a3e6440835fa86af2b39b4e6e2ecf9ad2cf7fcc2a1bfbbd0dbae5cca1271bfa",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-game-rule-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "babd127cd657b257e9c00a0d2e48431d0ba4e4a52be4b5599662330853a06eb1",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-game-rule-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8b3cb1f1b12a6bcc340013b50a3f44d3a67daae31307ebcc1adc36f2979d8f22",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-game-rule-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "dc19966b677362ac09738b071fb0584971df4a9d1ac78b57164b6371287e3818",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-1/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "5e514787458f37e0d67439c1f4aedc3809b361ed6bd06f9645b9a66d0cb6c582",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-1/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "5a4d84cc32f06cd0f5b1ea1186c5596d5fed07c5431401ecf1a66f31da5134ae",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-2/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "7cf01ca91f9d206cf482efe71828485a904893f394aa773b6067dc5856dec167",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-2/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "2d6641ea0be3263368c402d832c67eceb0f8bb78a73f5642c0e7b92ec95899b9",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-3/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "ab3b9ec4541abb92772a2b6f2b1de8b41206832ce67a899baa748b5dc6975584",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-3/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "8a6808048774e5feb48232e1fcc63f188196fedb561feae32a9807122834ef10",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-4/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "034793705eb4dcc488629d0070ea742bea55b3cc92231255c1a657a87d9bfc44",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-4/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "d2b2bf746f10bcadd4b40b7845dd2c30760e4c19cf5cb2db990b746aa517f9dc",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-5/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "0b52798478cc6199d8c7d46c03a6e9874968bbe931184f8e80f7021170fe21ac",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-5/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "551fe77ea9556eab33526113e986e57f3de57952942217d000f85ad46618fd0b",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-6/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "c9615af2d1743eeb0e8d5d979bc04f9c03e2505dc5136804204a87d24c64fbaa",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-6/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "044023468ede0450c024670ed0bf0b90126fb3dbf76112cdfc5fce9a6b69a8a9",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-7/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "36a1a9dde536c0fbf1f7adfa3e4fb90c74c2753bff90b2834230d80808d655a6",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-7/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "cf1199a9e6f7ee08ab92617de8b4302e5a7f55fd302177764856dd999e6d77f8",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-8/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "2d0c8fdd5cea800bfb4d29fda8e43c3c44d572688ce279b21d588512bbf6a965",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-8/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "0802a7283e121024d9c7e8c1ea5e18ebdfbe1a77b504cd6ed4773af12a2b91d8",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-9/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "ab9e22ab7a0ac559e1d85467ba6db9e9d831da4a06b0526cc3a9fa30b992101c",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
+    },
+    {
+      "path": "zhajinhua/table/zhajinhua-seat-guides-9/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "99bd32a8d07c29ee7620aed5d27e206b75b79d956ef52ebf37b858971b896e30",
+      "source": {
+        "sourceRun": 39592234558,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39592234558",
+        "sourceWorkflowHead": "66776d9604ae23fab797851401387f9e98ff8706",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-15-1"
+        ],
+        "applicationCommit": "c96084f2f1bfd6e439100d6fc16363826123947a",
+        "releaseTag": "ios-staging-20-1-c96084f2f1bf",
+        "packageSha256": "0af983fd952aeef5e0c1f94d6d98031aca6d33fa7df7dbe2b232ca5a06a13aee"
+      }
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
