@@ -87,7 +87,7 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
       nativeScreenshot: async () => screenshots++ ? after : before };
     await captureNativeTransition(device, 'zhajinhua-operation-buttons', { attach: async () => {} },
       { x: 0, y: 0, ...size }, () => {}, [], [], 0, 'videoFrames', undefined, undefined,
-      [], [], [], [], [], async (_device, _name, _region, trigger) => { triggers++; await trigger(); return [before, middle, after]; },
+      [], [], [], [], [], async (_device, _name, _region, trigger) => { triggers++; await trigger(); return [before, ...(Array.isArray(middle) ? middle : [middle]), after]; },
       undefined,prepared);
     return { observations,screenshots,triggers };
   };
@@ -97,6 +97,13 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
     assert.deepEqual(await run(picture('middle'), true, true), { observations:1,screenshots:2,triggers:1 });
     for (let index=0;index<9;index++)
       await assert.rejects(run(picture('middle', index), true), /真实局部中间态/);
+    // All main buttons zoom in, but delay hard-cuts to its end state and
+    // animates only later. A later loop must not satisfy its entrance gate.
+    const lateDelay = PNG.sync.read(after), delayedPose = PNG.sync.read(picture('middle'));
+    const delayBounds = nodes[8].bounds;
+    PNG.bitblt(delayedPose, lateDelay, delayBounds.x, delayBounds.y, delayBounds.width, delayBounds.height,
+      delayBounds.x, delayBounds.y);
+    await assert.rejects(run([picture('middle', 8), PNG.sync.write(lateDelay)], true), /真实入场窗口/);
     const dimmer = PNG.sync.read(before);
     for (let offset = 0; offset < dimmer.data.length; offset += 4)
       for (let channel = 0; channel < 3; channel++) dimmer.data[offset + channel] = Math.round(dimmer.data[offset + channel] * .8);
@@ -138,5 +145,45 @@ test('实际原片frame121九控件均有独立结构中间态；静态出现的
     assert.equal(evidence.candidates.length,1,control.marker);
     const hardCut=await nativeTargetMotionEvidence(frames.start,frames.end,[frames.start,frames.end]);
     assert.equal(hardCut.candidates.length,0,control.marker);
+  }
+});
+
+test('真实9控件录像中间帧保留，截图色偏导致的静态尾帧和硬切必须拒绝', async () => {
+  const { nativeRecordedTargetMotionEvidence } = await import('./animation-transition.ts');
+  const provenance = JSON.parse(readFileSync(new URL('provenance.json', fixture)));
+  for (const control of provenance.controls) {
+    const frames = Object.fromEntries(Object.entries(control.images).map(([key, image]) =>
+      [key, readFileSync(new URL(image.file, fixture))]));
+    // Synthetic negative only: a screenshot color shift must not turn an
+    // unchanged raw-video endpoint into evidence of structural animation.
+    const shifted = PNG.sync.read(frames.end);
+    for (let offset = 0; offset < shifted.data.length; offset += 4)
+      for (let channel = 0; channel < 3; channel++)
+        shifted.data[offset + channel] = Math.min(255, shifted.data[offset + channel] + 35);
+    const screenshotEnd = PNG.sync.write(shifted);
+    const old = await nativeTargetMotionEvidence(frames.start, screenshotEnd, [frames.end]);
+    assert.equal(old.candidates.length, 1, `${control.marker}: negative exercises the old color-shift gap`);
+    const hardCut = await nativeRecordedTargetMotionEvidence(frames.start, screenshotEnd,
+      [frames.start, frames.end, frames.end]);
+    assert.equal(hardCut.candidates.length, 0, control.marker);
+    const real = await nativeRecordedTargetMotionEvidence(frames.start, frames.end,
+      [frames.start, frames.middle, frames.end]);
+    assert.deepEqual(real.candidates.map(item => item.index), [1], control.marker);
+  }
+});
+
+test('9区域一次解码与逐区域裁图的原始像素完全一致', async () => {
+  const { cropNativeFrame, cropNativeRegions } = await import('./motion-regions.ts');
+  const provenance = JSON.parse(readFileSync(new URL('provenance.json', fixture)));
+  for (const phase of ['start', 'middle', 'end']) {
+    const screen = new PNG({ width: 1178, height: 2556 });
+    for (const control of provenance.controls) {
+      const picture = PNG.sync.read(readFileSync(new URL(control.images[phase].file, fixture)));
+      PNG.bitblt(picture, screen, 0, 0, picture.width, picture.height, control.bounds.x, control.bounds.y);
+    }
+    const bytes = PNG.sync.write(screen), bounds = provenance.controls.map(item => item.bounds);
+    const batched = await cropNativeRegions(bytes, bounds);
+    for (const [index, region] of bounds.entries())
+      assert.deepEqual(batched[index], await cropNativeFrame(bytes, region), `${phase}/${index}`);
   }
 });

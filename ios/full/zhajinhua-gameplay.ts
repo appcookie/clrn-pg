@@ -5,15 +5,16 @@ import type { Mitmproxy } from '../../e2e/helpers/mitmproxy-client';
 import { events, PLAYER_IDS, restoreTable, validBets } from '../../visual/cases/zhajinhua/replayData';
 import { gameReady, gameGone, gameTap, gameNodes, gameSemanticText } from './game-controls';
 import { replay, gameCardNames } from './game-replay';
-import { closeAnimatedGameMask, closeGameMask } from './game-pregame';
+import { closeGameMask } from './game-pregame';
 import { captureNativeTransition } from './animation-transition';
-import { animateGamePanel, captureTimedLevelUp } from './game-panel-animation';
+import { captureTimedLevelUp } from './game-panel-animation';
 import { captureConcurrentMotion, captureLoopKeyframes, captureMovingKeyframes } from './loop-keyframes';
 import { captureAssetSequence } from './asset-sequence';
 import type { ScreenshotMask } from './screenshot';
 import { zhajinhuaCardRegions, currentZhajinhuaCards, zhajinhuaSeeButton } from './zhajinhua-card-region';
 import { capturePlayerCountdown } from './game-countdown-capture';
 import { readyZhajinhuaChallengeCancel } from './zhajinhua-operation-region';
+import { prepareAccurateBetEntrance, readyAccurateBetPanel } from './zhajinhua-accurate-bet';
 
 /**
  * 直接使用 Web 八个牌局状态的网络事件，真实点击原生操作按钮。
@@ -159,19 +160,41 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
           y: Math.round(cancel.bounds.y + cancel.bounds.height / 2),
         }), [], [], 400, 'videoFrames', undefined, undefined, [], [], [], [], [], undefined, undefined, prepared);
     } else await send(restoreTable(self, false, true));
-    await beginSeenTurn();
-    await gameReady(device, 'zhajinhua-operation-accurate-bet-button');
-    const accurateBetClock = [screenBounds(device, { x: 350, y: 725, width: 90, height: 40,
-      reason: '独立运行的玩家操作倒计时，不属于精确加注弹窗' })];
-    await animateGamePanel(device, 'zhajinhua', 'accurate-bet', 'zhajinhua-operation-accurate-bet-button',
-      screenBounds(device, { x: 150, y: 400, width: 430, height: 480 }), animationInfo, 'enter', 'videoFrames', accurateBetClock,
-      async () => { await gameReady(device, 'accurate-bet-popup-container'); });
-    await gameReady(device, 'accurate-bet-popup-container');
+    // Native analysis can outlast a real 120-second turn. Entrance, static
+    // screenshot and exit are separate requested phases, each prepared once in
+    // a fresh real turn; no failed recording is retried or reused.
+    const accurateRegion = screenBounds(device, { x: 150, y: 400, width: 430, height: 480 });
+    const pressAccurate = (button: { bounds: { x: number; y: number; width: number; height: number } }) =>
+      device.input.tap({ x: Math.round(button.bounds.x + button.bounds.width / 2),
+        y: Math.round(button.bounds.y + button.bounds.height / 2) });
+    const prepareAccuratePhase = async (phase: 'entrance' | 'static' | 'exit') => {
+      const prepared = await prepareAccurateBetEntrance(device, beginSeenTurn);
+      await animationInfo?.attach(`zhajinhua-accurate-bet-${phase}-setup`, {
+        body: JSON.stringify({ phase, turnStartedAt: prepared.turnStartedAt,
+          preparedAt: prepared.completedAt, cleanedPreviousPanel: prepared.cleanedPreviousPanel,
+          actionPolicy: 'one requested phase; one real switch_player; no animation retry' }),
+        contentType: 'application/json',
+      });
+      return prepared;
+    };
+    if (animationInfo) {
+      const entrance = await prepareAccuratePhase('entrance');
+      await captureNativeTransition(device, 'zhajinhua-accurate-bet-enter', animationInfo,
+        accurateRegion, () => pressAccurate(entrance.button), [], [], 0, 'videoFrames',
+        undefined, undefined, [], [], [], [], [], undefined, undefined, entrance);
+    }
+    const staticEntrance = await prepareAccuratePhase('static');
+    await pressAccurate(staticEntrance.button);
+    await readyAccurateBetPanel(device);
     await capture('accurate_raise');
-    if (animationInfo) await closeAnimatedGameMask(device, 'zhajinhua', 'accurate-bet',
-      'accurate-bet-popup-container', screenBounds(device, { x: 150, y: 400, width: 430, height: 480 }), animationInfo,
-      accurateBetClock, 'videoFrames');
-    else await closeGameMask(device, 'accurate-bet-popup-container');
+    if (animationInfo) {
+      const exitEntrance = await prepareAccuratePhase('exit');
+      await pressAccurate(exitEntrance.button);
+      const exit = await readyAccurateBetPanel(device);
+      await captureNativeTransition(device, 'zhajinhua-accurate-bet-exit', animationInfo,
+        accurateRegion, () => device.input.tap(exit.close), [], [], 600, 'videoFrames',
+        undefined, undefined, [], [], [], [], [], undefined, undefined, exit);
+    } else await closeGameMask(device, 'accurate-bet-popup-container');
     await beginSeenTurn();
     await gameTap(device, 'zhajinhua-operation-button-battle');
     await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector').length,

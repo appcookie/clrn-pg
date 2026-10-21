@@ -27,6 +27,7 @@ import { texasActionClockMasks, texasOperationControls, texasPlayerActionMotionB
   texasShortcutMotionBounds } from './texas-action-region';
 import { texasRaiseClockMasks, texasRaiseValueMask } from './texas-raise-masks';
 import { texasEffectEndpointMasks } from './texas-showdown-region';
+import { accurateBetEntrance, accurateBetPanel, accurateBetEndpointMasks, assertAccurateBetRegion } from './zhajinhua-accurate-bet';
 
 /**
  * 局部画面平均色差；忽略编码差异，保留移动、缩放及透明度变化。
@@ -147,6 +148,17 @@ export async function nativeTargetMotionEvidence(before: Buffer, after: Buffer, 
     candidates: evidence.candidates.filter(item => accepted.has(item.index)) };
 }
 
+/** Keep the native screenshot gate and require a middle phase between the
+ * same recording's endpoints. Screenshot/video color shifts and a settled
+ * target cannot manufacture an intermediate pose.
+ */
+export async function nativeRecordedTargetMotionEvidence(before: Buffer, after: Buffer, timeline: Buffer[]) {
+  const native = await nativeTargetMotionEvidence(before, after, timeline);
+  const recorded = await nativeTargetMotionEvidence(timeline[0], timeline.at(-1)!, timeline);
+  const recordedIndices = new Set(recorded.candidates.map(item => item.index));
+  return { ...native, recorded, candidates: native.candidates.filter(item => recordedIndices.has(item.index)) };
+}
+
 /** Require a recorded frame to follow an approved spatial phase, away from both endpoints.
  * @param before - Exact start frame.
  * @param after - Exact end frame.
@@ -214,7 +226,7 @@ export function reviewedVideoMiddleEvidence(before: Buffer, after: Buffer,
  * @param startCompareMasks - 仅比较起点时排除的独立动态区域，使用原生屏幕坐标。
  * @param videoRecorder - 可替换的原生录屏采集器，供完整录屏路径回归测试使用。
  * @param afterRecording - 录屏停止后、端点比较前校验静态布局，避免慢速原生树查询阻塞短动画。
- * @param preparedStart - 本次Cancel准备刚完成的原生观测；复用语义树而仍当场截取实际起点，避免重复慢查询耗尽操作回合。
+ * @param preparedStart - 本次Cancel或精确加注阶段准备刚完成的原生观测；复用语义树而仍当场截取实际起点，避免重复慢查询耗尽操作回合。
  */
 export async function captureNativeTransition(device: AndroidDevice, name: string, testInfo: TestInfo,
   region: ScreenshotBounds, trigger: () => unknown, masks: ScreenshotMask[] = [],
@@ -234,8 +246,10 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const crop = (bytes: Buffer) => cropNativeFrame(bytes, region, masks);
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   if (preparedStart) {
-    expect(name, '仅真实Cancel准备可复用该次原生观测').toBe('zhajinhua-operation-buttons');
-    zhajinhuaChallengeCancel(preparedStart.nodes);
+    if (name === 'zhajinhua-operation-buttons') zhajinhuaChallengeCancel(preparedStart.nodes);
+    else if (name === 'zhajinhua-accurate-bet-enter') accurateBetEntrance(preparedStart.nodes, device.screenSize);
+    else if (name === 'zhajinhua-accurate-bet-exit') accurateBetPanel(preparedStart.nodes, device.screenSize);
+    else throw new Error('该动画不允许复用准备观测');
     await testInfo.attach(`${name}-prepared-start-observation`, {
       body: JSON.stringify({ completedAt: preparedStart.completedAt, usedAt: Date.now(),
         nodes: safeNativeTree(preparedStart.nodes) }), contentType: 'application/json',
@@ -286,6 +300,13 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     await testInfo.attach(`${name}-endpoint-timing`, {
       body: JSON.stringify(endpointTiming), contentType: 'application/json',
     });
+  }
+  if (name === 'zhajinhua-accurate-bet-enter') accurateBetPanel(afterNodes, device.screenSize);
+  if (name === 'zhajinhua-accurate-bet-exit') expect(afterNodes.some(node =>
+    node.res === 'accurate-bet-popup-container' && node.visible !== false), '精确加注退场后弹窗必须消失').toBe(false);
+  if (/^zhajinhua-accurate-bet-(enter|exit)$/.test(name)) {
+    startCompareMasks = [...startCompareMasks, ...accurateBetEndpointMasks(beforeNodes)];
+    endCompareMasks = [...endCompareMasks, ...accurateBetEndpointMasks(afterNodes)];
   }
   if (name === 'texas-holdem-own-profile-enter') {
     endCompareMasks = [...endCompareMasks, ...ownProfileIdentityMask(afterNodes, device.screenSize)];
@@ -341,6 +362,8 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     throw error;
   }
   region = selectedRegion.bounds;
+  if (/^zhajinhua-accurate-bet-(enter|exit)$/.test(name))
+    assertAccurateBetRegion(name.endsWith('-exit') ? beforeNodes : afterNodes, device.screenSize, region);
   const startMasks = endpointMasksInRegion(startCompareMasks, region);
   const endMasks = endpointMasksInRegion(endCompareMasks, region);
   await testInfo.attach(`${name}-capture-region`, { body: JSON.stringify(selectedRegion), contentType: 'application/json' });
@@ -419,23 +442,53 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
       .filter(node => name === 'zhajinhua-operation-buttons'
         || /^texas-holdem-operation-button-(raise|fold|call)$/.test(node.res || ''));
     const targetIndices = new Set<number>();
+    const perControlCandidates: { marker: string | undefined; indices: number[] }[] = [];
     const newControlPhases = name === 'texas-operation-buttons'
       ? new Set(candidates.map(item => item.index)) : undefined;
-    for (const control of controls) {
-      const targetFrames: Buffer[] = [];
-      for (const frame of originals) targetFrames.push(await cropNativeFrame(frame, control.bounds, masks));
-      const targetEvidence = await nativeTargetMotionEvidence(
-        await cropNativeFrame(beforeScreen, control.bounds, masks),
-        await cropNativeFrame(afterScreen, control.bounds, masks), targetFrames);
+    // Each full-resolution frame is decoded once for the non-overlapping
+    // controls. All original frames and timestamps remain in the evidence.
+    const controlRegions = controls.map(control => control.bounds);
+    const starts = await cropNativeRegions(beforeScreen, controlRegions, { masks });
+    const ends = await cropNativeRegions(afterScreen, controlRegions, { masks });
+    const parts: Buffer[][] = [];
+    for (const frame of originals) parts.push(await cropNativeRegions(frame, controlRegions, { masks }));
+    for (const [index, control] of controls.entries()) {
+      const targetFrames = parts.map(sample => sample[index]);
+      const recordedEvidence = name === 'zhajinhua-operation-buttons'
+        ? await nativeRecordedTargetMotionEvidence(starts[index], ends[index], targetFrames) : undefined;
+      const targetEvidence = recordedEvidence
+        ?? await nativeTargetMotionEvidence(starts[index], ends[index], targetFrames);
       await testInfo.attach(`${name}-${control.res}-target-motion`, { body: JSON.stringify({ bounds: control.bounds,
         total: targetEvidence.total, progress: targetEvidence.progress,
         minimumLocalMotion: targetEvidence.minimumLocalMotion,
-        candidates: targetEvidence.localMotionCandidates }), contentType: 'application/json' });
+        candidates: targetEvidence.localMotionCandidates,
+        ...(recordedEvidence ? { recorded: {
+          total: recordedEvidence.recorded.total, progress: recordedEvidence.recorded.progress,
+          minimumLocalMotion: recordedEvidence.recorded.minimumLocalMotion,
+          candidates: recordedEvidence.recorded.localMotionCandidates,
+          accepted: targetEvidence.candidates.map(item => item.index),
+        } } : {}),
+      }), contentType: 'application/json' });
       expect(targetEvidence.total, `${control.res} 自身必须产生明显可见变化`).toBeGreaterThan(3);
+      if (recordedEvidence) expect(recordedEvidence.recorded.total,
+        `${control.res} 同一原片端点必须产生明显可见变化`).toBeGreaterThan(3);
       const controlCandidates = targetEvidence.candidates.filter(item => !newControlPhases || newControlPhases.has(item.index));
       expect(controlCandidates.length, `${control.res} 必须有真实局部中间态，旧控件或选择遮罩退场不能冒充`)
         .toBeGreaterThan(0);
-      controlCandidates.forEach(item => targetIndices.add(item.index));
+      perControlCandidates.push({ marker: control.res, indices: controlCandidates.map(item => item.index) });
+      // The delay button has a continuing highlight animation. It must pass its
+      // own gate, but cannot extend the group's entrance beyond the main buttons.
+      if (name !== 'zhajinhua-operation-buttons' || /^zhajinhua-operation-button-(battle|fold|call)$/.test(control.res || ''))
+        controlCandidates.forEach(item => targetIndices.add(item.index));
+    }
+    if (name === 'zhajinhua-operation-buttons') {
+      await testInfo.attach(`${name}-entrance-window`, { body: JSON.stringify({
+        mainControlCandidates: [...targetIndices].sort((a, b) => a - b),
+        controls: perControlCandidates.map(control => ({ ...control,
+          entranceCandidates: control.indices.filter(index => targetIndices.has(index)) })),
+      }), contentType: 'application/json' });
+      for (const control of perControlCandidates) expect(control.indices.some(index => targetIndices.has(index)),
+        `${control.marker} 必须在主按钮真实入场窗口内运动，后续循环高亮不能代替入场`).toBe(true);
     }
     candidates = candidates.filter(item => targetIndices.has(item.index));
   }
