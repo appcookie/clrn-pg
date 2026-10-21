@@ -6,7 +6,7 @@ import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { PNG } from 'pngjs';
 import { frameColorDistance } from './animation-transition';
-import { cropMotionRegion, cropMotionRegions } from './motion-regions';
+import { cropNativeFrame, cropNativeRegions } from './motion-regions';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 type NativeFrame = { capturedAt: number; png: string };
@@ -47,7 +47,9 @@ export async function captureLoopKeyframes(device: AndroidDevice, name: string, 
     timeline.push(...samples);
     // Native cells can share a border. Preserve every pixel of both independent
     // controls; these are complete crops, not a partition with an outside image.
-    pictures.push(...samples.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions, { maxSharedBorder: 3 })));
+    for (const frame of samples) {
+      pictures.push(await cropNativeRegions(Buffer.from(frame.png, 'base64'), regions, { maxSharedBorder: 3 }));
+    }
     if (regions.every((_, index) => {
       const levels = pictures.map(parts => brightness(parts[index]));
       return Math.max(...levels) - Math.min(...levels) > 0.5;
@@ -101,7 +103,9 @@ export async function captureMovingKeyframes(device: AndroidDevice, name: string
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const timeline = recordedSamples ?? await recordScreenSamples(device, name, testInfo);
     expect(timeline.length).toBeGreaterThanOrEqual(10);
-    pictures.push(...timeline.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions, { masks })));
+    for (const frame of timeline) {
+      pictures.push(await cropNativeRegions(Buffer.from(frame.png, 'base64'), regions, { masks }));
+    }
     if (regions.every((_, index) => pictures.some(parts => frameColorDistance(parts[index], pictures[0][index]) > 1))) break;
   }
   for (const index of regions.keys()) {
@@ -132,7 +136,8 @@ export async function captureMovingKeyframes(device: AndroidDevice, name: string
  */
 export async function captureConcurrentMotion(frames: Buffer[], name: string, testInfo: TestInfo,
   region: ScreenshotBounds): Promise<void> {
-  const pictures = frames.map(frame => cropMotionRegion(frame, region));
+  const pictures: Buffer[] = [];
+  for (const frame of frames) pictures.push(await cropNativeFrame(frame, region));
   const first = pictures[0];
   const distances = pictures.map(frame => frameColorDistance(first, frame));
   const moved = pictures[distances.indexOf(Math.max(...distances))];

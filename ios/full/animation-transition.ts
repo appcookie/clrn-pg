@@ -8,7 +8,7 @@ import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameScreenshot } from './game-controls';
-import { cropNativeFrame, cropMotionRegions, motionParts, samePixels } from './motion-regions';
+import { cropNativeFrame, cropNativeRegions, cropMotionRegion, samePixels } from './motion-regions';
 import { decodeFrame, type FramePixels } from './native-frame';
 import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { attachFrameEvidence } from './frame-evidence';
@@ -49,8 +49,8 @@ export function reviewedLauncherStart(actual: Buffer, reference: Buffer): boolea
   return stable.every(([x, y, width, height]) => {
     const bounds = { x: Math.round(x * a.width / 1178), y: Math.round(y * a.height / 2556),
       width: Math.round(width * a.width / 1178), height: Math.round(height * a.height / 2556) };
-    return frameColorDistance(motionParts(actual, [bounds]).regions[0],
-      motionParts(reference, [bounds]).regions[0]) <= 2;
+    return frameColorDistance(cropMotionRegion(actual, bounds),
+      cropMotionRegion(reference, bounds)) <= 2;
   });
 }
 
@@ -258,7 +258,8 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   expect(frameColorDistance(timeline[0], before), '录屏首帧须包含动作前的实际布局').toBeLessThan(10);
   expect(framePaletteDistance(timeline.at(-1)!, after), '录屏结束时动画必须完成').toBeLessThan(10);
   if (requiredRegions.length) {
-    const parts = originals.map(frame => cropMotionRegions(frame, requiredRegions, { masks }));
+    const parts: Buffer[][] = [];
+    for (const frame of originals) parts.push(await cropNativeRegions(frame, requiredRegions, { masks }));
     for (const index of requiredRegions.keys()) {
       expect(parts.some(sample => !samePixels(sample[index], parts[0][index])),
         `${name} 第 ${index + 1} 个区域必须独立运动`).toBe(true);
@@ -343,12 +344,15 @@ export async function captureTransientTransition(device: AndroidDevice, name: st
    * 从完整原生截图裁切提示区域。
    * @param bytes - 原生完整屏幕 PNG。
    */
-  const crop = (bytes: Buffer) => motionParts(bytes, [region]).regions[0];
-  const before = crop(await gameScreenshot(device));
-  const frames = (await recordScreenSamples(device, name, testInfo, trigger)).map(frame => crop(Buffer.from(frame.png, 'base64')));
+  const crop = (bytes: Buffer) => cropNativeFrame(bytes, region);
+  const before = await crop(await gameScreenshot(device));
+  const frames: Buffer[] = [];
+  for (const frame of await recordScreenSamples(device, name, testInfo, trigger)) {
+    frames.push(await crop(Buffer.from(frame.png, 'base64')));
+  }
   expect(frames.length).toBeGreaterThanOrEqual(10);
   await setTimeout(settleMs);
-  const after = crop(await gameScreenshot(device));
+  const after = await crop(await gameScreenshot(device));
   for (const [index, frame] of frames.entries()) {
     await attachFrameEvidence(testInfo, `${name}-frame-${index}`, frame);
   }
@@ -388,8 +392,8 @@ export async function captureTimedPrompt(device: AndroidDevice, name: string, te
    * 裁切固定上方面板。
    * @param bytes - 原生完整屏幕 PNG。
    */
-  const crop = (bytes: Buffer) => motionParts(bytes, [region]).regions[0];
-  const before = crop(await gameScreenshot(device));
+  const crop = (bytes: Buffer) => cropNativeFrame(bytes, region);
+  const before = await crop(await gameScreenshot(device));
   const frames = await recordNativeVideoFrames(device, name, region, trigger, testInfo);
   expect(frames.length).toBeGreaterThanOrEqual(20);
   expect(framePaletteDistance(before, frames[0]), `${name} 须在采样开始后出现`).toBeLessThan(7);
@@ -399,12 +403,12 @@ export async function captureTimedPrompt(device: AndroidDevice, name: string, te
    * 只截完整提示标题。
    * @param frame - 顶部提示区域的截图。
    */
-  const title = (frame: Buffer) => motionParts(frame, [screenBounds(device, { x: 80, y: 45, width: 520, height: 110 })]).regions[0];
+  const title = (frame: Buffer) => cropMotionRegion(frame, screenBounds(device, { x: 80, y: 45, width: 520, height: 110 }));
   /**
    * 只截底部秒数，避免把提示滑入误认为倒计时。
    * @param frame - 顶部提示区域的截图。
    */
-  const timer = (frame: Buffer) => motionParts(frame, [screenBounds(device, { x: 0, y: 165, width: 70, height: 45 })]).regions[0];
+  const timer = (frame: Buffer) => cropMotionRegion(frame, screenBounds(device, { x: 0, y: 165, width: 70, height: 45 }));
   const beforeTitle = title(before);
   const settled = visible.map(frame => ({ frame, heading: title(frame), seconds: timer(frame) }))
     .filter(item => frameColorDistance(beforeTitle, item.heading) > 30);
@@ -419,7 +423,7 @@ export async function captureTimedPrompt(device: AndroidDevice, name: string, te
   }
   expect(pair, `${name} 标题稳定后倒计时数字必须变化`).toBeDefined();
   await setTimeout(6000);
-  const after = crop(await gameScreenshot(device));
+  const after = await crop(await gameScreenshot(device));
   expect(samePixels(after, before), `${name} 倒计时结束后须恢复画面`).toBe(true);
   for (const [phase, frame] of [['start', before], ['visible', pair!.first],
     ['countdown', pair!.changed], ['end', after]] as const) {

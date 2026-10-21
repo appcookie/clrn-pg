@@ -5,17 +5,34 @@ import { decodeFrame, encodeFrame, type FramePixels } from './native-frame';
 /** Use native codecs for hundreds of video frames, preserving every source pixel. */
 export async function cropNativeFrame(bytes: Buffer, region: ScreenshotBounds,
   masks: ScreenshotMask[] = []): Promise<Buffer> {
+  return (await cropNativeRegions(bytes, [region], { masks }))[0];
+}
+
+/** Decode each full native frame once, yielding during codec work so fixture
+ * HTTP requests remain responsive. Preserve the synchronous region contract.
+ */
+export async function cropNativeRegions(bytes: Buffer, regions: ScreenshotBounds[],
+  { maxSharedBorder = 0, masks = [] }: { maxSharedBorder?: number; masks?: ScreenshotMask[] } = {}): Promise<Buffer[]> {
   const picture = await decodeFrame(bytes);
   applyScreenshotMasks(picture, masks);
-  const { x, y, width, height } = region;
-  if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
-    || x + width > picture.width || y + height > picture.height) throw new Error('动画比较分区超出实际截图');
-  const part: FramePixels = { width, height, data: Buffer.alloc(width * height * 4) };
-  for (let row = 0; row < height; row++) {
-    const offset = ((y + row) * picture.width + x) * 4;
-    picture.data.copy(part.data, row * width * 4, offset, offset + width * 4);
+  const result: Buffer[] = [];
+  for (const [index, { x, y, width, height }] of regions.entries()) {
+    if (![x, y, width, height].every(Number.isInteger) || x < 0 || y < 0 || width <= 0 || height <= 0
+      || x + width > picture.width || y + height > picture.height) throw new Error('动画比较分区超出实际截图');
+    if (regions.slice(0, index).some(other => {
+      const w = Math.min(x + width, other.x + other.width) - Math.max(x, other.x);
+      const h = Math.min(y + height, other.y + other.height) - Math.max(y, other.y);
+      return w > 0 && h > 0 && (Math.min(w, h) > maxSharedBorder
+        || w * h >= Math.min(width * height, other.width * other.height));
+    })) throw new Error('动画比较分区不能重叠（仅允许明确声明的原生共享边界）');
+    const part: FramePixels = { width, height, data: Buffer.alloc(width * height * 4) };
+    for (let row = 0; row < height; row++) {
+      const offset = ((y + row) * picture.width + x) * 4;
+      picture.data.copy(part.data, row * width * 4, offset, offset + width * 4);
+    }
+    result.push(await encodeFrame(part));
   }
-  return encodeFrame(part);
+  return result;
 }
 
 /** Crop the same original pixels without encoding an unused full-screen complement for every video frame. */
