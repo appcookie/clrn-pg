@@ -20,3 +20,13 @@ test('旧提示未消失、缺控件、重复控件或内容超出面板都失�
   assert.throws(() => nativeLevelUpRegions([root, { ...timer }], screen), /唯一/);
   assert.throws(() => nativeLevelUpRegions([{ ...panel, bounds: { ...panel.bounds, height: 200 } }], screen), /完整位于/);
 });
+
+test('拼三张使用自己的原生标题和关闭按钮，不能误用德州 testID', () => {
+  const zh = { ...panel, children: [
+    { ...title, res: 'zhajinhua-level-up-level-text' }, timer,
+    { ...close, res: 'zhajinhua-level-up-close-button' },
+  ] };
+  assert.deepEqual(nativeLevelUpRegions([zh], screen, 'zhajinhua'), nativeLevelUpRegions([root], screen));
+  assert.throws(() => nativeLevelUpRegions([zh], screen, 'texas-holdem'), /唯一/);
+  assert.throws(() => nativeLevelUpRegions([root], screen, 'zhajinhua'), /唯一/);
+});

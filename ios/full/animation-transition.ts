@@ -433,7 +433,7 @@ export function timedPromptEvidence(before: Buffer, frames: Buffer[], layout: Pi
 export async function captureTimedPrompt(device: AndroidDevice, name: string, testInfo: TestInfo,
   trigger: () => unknown): Promise<void> {
   const nodes = await device.nodes();
-  const layout = nativeLevelUpRegions(nodes, device.screenSize);
+  const layout = nativeLevelUpRegions(nodes, device.screenSize, name.startsWith('zhajinhua-') ? 'zhajinhua' : 'texas-holdem');
   const region = layout.panel;
   const endpointMasks = endpointMasksInRegion(nodes.filter(node => node.res === 'ping-screen-container')
     .map(node => networkStatusMask(node.bounds)), region);

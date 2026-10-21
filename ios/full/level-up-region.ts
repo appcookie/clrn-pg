@@ -7,7 +7,8 @@ export type LevelUpRegions = { panel: ScreenshotBounds; title: ScreenshotBounds;
  * show(). Read those actual native bounds and undo that documented translation.
  * Do not query the slow accessibility service during the five-second prompt.
  */
-export function nativeLevelUpRegions(nodes: NativeNode[], screen: { width: number; height: number }): LevelUpRegions {
+export function nativeLevelUpRegions(nodes: NativeNode[], screen: { width: number; height: number },
+  game: 'texas-holdem' | 'zhajinhua' = 'texas-holdem'): LevelUpRegions {
   const seen = new Set<NativeNode>();
   const visit = (node: NativeNode) => {
     if (seen.has(node)) return;
@@ -15,7 +16,9 @@ export function nativeLevelUpRegions(nodes: NativeNode[], screen: { width: numbe
   };
   nodes.forEach(visit);
   const all = [...seen];
-  const markers = ['level-up-title', 'countdown_timer_text', 'level-up-close-button'];
+  const markers = game === 'zhajinhua'
+    ? ['zhajinhua-level-up-level-text', 'countdown_timer_text', 'zhajinhua-level-up-close-button']
+    : ['level-up-title', 'countdown_timer_text', 'level-up-close-button'];
   const controls = markers.map(res => {
     const found = all.filter(node => node.res === res);
     if (found.length !== 1) throw new Error(`升级提示必须有唯一的当前原生控件：${res}`);
