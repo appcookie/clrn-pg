@@ -2775,6 +2775,454 @@
         ]
       },
       "review": "逐张查看 review-01.jpg 至 review-12.jpg 共 67 张候选 PNG。七种表情各有真实 start/peak/changed：生气张嘴/闭嘴、哭泣泪水和嘴部变化、喝水杯子倾角、噗嗤飞沫、偷笑手势、坏笑露齿/闭嘴、鼓掌双手位置；changed 全部仍有可辨识前景表情，未用空背景或压缩色差冒充。七种道具各有目标处 start/peak/changed 和飞行 start/peak/changed，实际素材及两个不同飞行位置清晰可见。玫瑰目标靠近屏幕左边，额外从本轮原始视频取第 88 帧核对整个 1178×2556 画面，候选从 x=0 起保留全部屏内花瓣，没有裁图额外截断素材。升级提示完整覆盖原生 1178×384 顶部面板，等级 6 标题、奖励说明、右上关闭按钮、5s 与 4s 均完整可见，结束恢复原页面，非平移标题冒充秒数变化。所有图片无 Connecting/空白错误屏。实际报告唯一测试 passed、retry=0、skipped=0、flaky=0；本轮 15 个原始 MP4 已逐一核验本地非空及 ftyp 文件头。固定 app commit/package SHA 与现有版本一致。这里只认可本次成功 reference 产物，不包含早先失败运行或离线重分析图片。"
+    },
+    {
+      "path": "texas-holdem/table/texas-theme-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "abf27cfefdb400d8bc06028ec812a61322a55513b000f8588e2ccfac5fe4d063",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-theme-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "b88eb6d40959b9e9fa7191f830d97df6f34d65e554fbf5599e9ecf4fef01f88e",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-theme-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a3b6c23c76be0dbd4b1999a997fe97afbb8bd26f440b95558238200106911b07",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-theme/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "0ae5c406d441107a61f61d2e99b191e8bdc9f7db9feb64c9300efe2544493bf8",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-theme-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "a3b6c23c76be0dbd4b1999a997fe97afbb8bd26f440b95558238200106911b07",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-theme-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "909f1f44c45cf4cd880a0b09095fa91fd6eb988947140fe1b8d5e75b083309ae",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-theme-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "227529898521420073d838c7645b42957844f80b8261547b81b392f847900ebd",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-settings-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "92cb316ae8345bc98046e41c5307f8dd9e80be7c6ceda61b1a8e04ae8c013559",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-settings-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "ff0101bd1667b8985242df61cbc2683b15fd2caaab9d6b8fd2c028c35cc8a131",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-settings-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "5c3113c6680139fccc431dc9bbfdfa481e5c55eff23e1b61b4dcab6f58d760e7",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-settings/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "d095132c3b82ecbda49d3ef414813e242a137f471d5c5f7d9458501f893815f0",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-settings-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5c3113c6680139fccc431dc9bbfdfa481e5c55eff23e1b61b4dcab6f58d760e7",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-settings-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "a22ff8756371c402afaafd5400cb2be83b8d6f9ca1a092077f9e06a8fb2d90e3",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-settings-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "9a594e4ba0e4f57d692d453542c004555354f3b6fafd94e6f5026429be5fee89",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy_in-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "48215ae1fb1c8c3a11dbd8d4653dbf9813f629c484f04a1d18f2ea7c472e677d",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy_in-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8b6c9cb73b0b6477b3b50a87358197517db42abc573ede88c4f2ca6164001334",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy_in-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "c56ffb0b20db8d5039b8ff757eb48daaafeaf120f5547386140ee52a164c3ec1",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-buy-in/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "6e2e534fd17d4b7500682d1e8e0fa3a105fa8ab8cb16e2ca4ade3dcc3b3d5922",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy_in-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "d169c6f521fc3969b1dc5825472e4a30bcc43748647ba427c56dca7deba997e5",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy_in-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "af6eb15aab5a2227e5ae1dd8540abe25f903c34865042b624fe896480ebfe4d9",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy_in-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "388235126f83b9b5b93e3ff731c480c3934ccc0ab6fe0446833fdbcc4d6f0f3e",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-renew-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "e786033d07e52699ae13672543f9f90af7e61cec612f2c817e8007740799c2b7",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-renew-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "e021724fad4d9f1da94ca9b0cb54ba030192591c62f01048d1b79c5e0fb1ad60",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-renew-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "cbeb47758fa1eb087c1761a981154bccef043b83515975a7e579f8973d71e368",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-pre-game-renew/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "e21b5fda1689bfc660f52fda70b71b0d1fbd02fb3ca24f172ea8f9abb370b38d",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-renew-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "cbeb47758fa1eb087c1761a981154bccef043b83515975a7e579f8973d71e368",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-renew-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "0cbdae4c91bf5481ccc21f7c7541ec7c5644eafcfd92b097e8b007637e05d654",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
+    },
+    {
+      "path": "texas-holdem/table/texas-renew-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "830b5cc9aaac012202e8ea64521746cbbdf954da20a6c46199881756f491c934",
+      "source": {
+        "sourceRun": 39535846227,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39535846227",
+        "sourceWorkflowHead": "c3ceef610a65e4b232843ee5b64dacc75614ddae",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-18-1"
+        ],
+        "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+        "releaseTag": "ios-staging-6-1-36142b647703",
+        "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9"
+      },
+      "review": "逐张目视审查全部28张PNG（review-01至05）。主题保留完整4套纸牌、四个桌布选项、底部勾选和右上关闭按钮；续费保留完整标题、余额/花费、0.5h至6h刻度、取消/确认及关闭按钮。两者进出中间帧均有真实面板缩放，完整边框未裁切。设置保留7个开关及关闭按钮，进出均真实缩放。买入保留完整标题、滑杆/筹码、4个快捷金额、说明、确认及关闭；入场middle为原始simctl录像frame338，帧338→339→340面板/文字/按钮继续扩大，区别于终点，确为目标自身zoom后段而非旧菜单退场；退场为完整面板缩小。所有起终帧与4张完整屏幕图均无错误遮罩或目标缺失。续费入场middle原生显示初始0余额/花费，终点已加载固定12345/12，此状态来自原片并未改图。8个原始MP4及7个XCTest MOV均验证ftyp、SHA256、ffprobe可完整解码且1178×2556。此批准仅对应来源App 36142b64770331e3cfae173d830bcb784b478732；最新master App b99077e07427仍需独立compare验证。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
