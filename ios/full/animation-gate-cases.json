@@ -583,7 +583,36 @@
       "group": "zhajinhua",
       "file": "tests/games.spec.ts",
       "title": "en / zhajinhua / signed_in_zhajinhua_pre_game_middle",
-      "images": []
+      "images": [
+        "en-signed-in-zhajinhua-pre-game-buy-in.png",
+        "en-signed-in-zhajinhua-pre-game-renew.png",
+        "en-signed-in-zhajinhua-pre-game-settings.png",
+        "en-signed-in-zhajinhua-pre-game-theme.png",
+        "zhajinhua-buy_in-enter-end.png",
+        "zhajinhua-buy_in-enter-middle.png",
+        "zhajinhua-buy_in-enter-start.png",
+        "zhajinhua-buy_in-exit-end.png",
+        "zhajinhua-buy_in-exit-middle.png",
+        "zhajinhua-buy_in-exit-start.png",
+        "zhajinhua-renew-enter-end.png",
+        "zhajinhua-renew-enter-middle.png",
+        "zhajinhua-renew-enter-start.png",
+        "zhajinhua-renew-exit-end.png",
+        "zhajinhua-renew-exit-middle.png",
+        "zhajinhua-renew-exit-start.png",
+        "zhajinhua-settings-enter-end.png",
+        "zhajinhua-settings-enter-middle.png",
+        "zhajinhua-settings-enter-start.png",
+        "zhajinhua-settings-exit-end.png",
+        "zhajinhua-settings-exit-middle.png",
+        "zhajinhua-settings-exit-start.png",
+        "zhajinhua-theme-enter-end.png",
+        "zhajinhua-theme-enter-middle.png",
+        "zhajinhua-theme-enter-start.png",
+        "zhajinhua-theme-exit-end.png",
+        "zhajinhua-theme-exit-middle.png",
+        "zhajinhua-theme-exit-start.png"
+      ]
     }
   ]
 }
