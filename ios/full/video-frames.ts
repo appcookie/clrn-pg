@@ -45,12 +45,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // Personal leaderboard exit in 39557022339 encoded just eight frames, with
   // a 3.52s first gap and no intermediate panel pose. Keep the frame/target
   // motion gates and record only this exact transition through the compositor.
-  // ZJH showdown in 39555899245 has no horizontal card spread in the original
-  // XCTest MOV: frame 44 has only Pair; frame 45 already has all final card
-  // positions with temporarily oversized sprite glyphs. Preserve the separate
-  // card identity/displacement gates and collect one compositor recording.
   const useCompositor = name === 'texas-holdem-raise-bet-enter' || name === 'zhajinhua-leaderboard-enter'
-    || name === 'zhajinhua-showdown-cards'
     || name === 'texas-holdem-auto-rebuy-enter' || name === 'zhajinhua-card-rank-exit'
     || name === 'texas-holdem-personal-leaderboard-exit'
     // Its entrance in 39563456373 likewise had only nine original frames;
@@ -63,7 +58,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 39573708795 的拼三张菜单合成器原片出现 PTS 倒退；此入口恢复使用
   // 39560084809 已采到 192 帧及 5 个真实中间姿态的 XCTest 录屏。
   // 在动作前固定后端，不重试动作，也不排序或修正失败录像的原始时戳。
-  const backend = name === 'zhajinhua-drawer-menu-enter' ? 'xctest'
+  // 摊牌已在应用7aa0902改用原生驱动；39577739591的合成器录像只采到
+  // 重叠起步，随后113ms空档越过第二张牌露出的中段。此动作改用XCTest
+  // 单次采集，仍须独立证明第二、三张牌身份及水平位移。
+  const backend = ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards'].includes(name) ? 'xctest'
     : useCompositor ? 'simctl' : device.nativeVideoBackend;
   console.log(`IOS > 录屏 ${name}：${backend}`);
   let triggerAt = 0, stoppedAt = 0;
