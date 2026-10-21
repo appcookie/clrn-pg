@@ -105,6 +105,15 @@ export class NativeDevice {
   constructor(public driver: WebDriver, public udid: string, private onClose: () => Promise<void>,
     private onReset: () => Promise<void>, public applicationId: string) {}
   async initialize() {
+    // XCUITest 12.19.1 的 GET settings 只返回驱动已登记的值，不包含
+    // WDA 的 animationCoolOffTimeout 默认值。建立会话时显式设置其文档
+    // 默认 2 秒并读回；短提示才能保存/恢复真实值，不能在采样时猜默认值。
+    await this.driver.request('POST', this.driver.path('/appium/settings'), {
+      settings: { animationCoolOffTimeout: 2 },
+    });
+    const settings = await this.driver.request('GET', this.driver.path('/appium/settings'));
+    if (settings.animationCoolOffTimeout !== 2) throw new Error('原生会话未确认动画冷却设置');
+    this.richTransientElements = false;
     const image = PNG.sync.read(await this.screenshot());
     const window = await this.driver.request('GET', this.driver.path('/window/rect'));
     this.screenSize = { width: image.width, height: image.height };

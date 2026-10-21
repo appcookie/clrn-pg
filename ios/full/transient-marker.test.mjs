@@ -1,6 +1,7 @@
 // 验证短提示及即时输入查询保留真实属性、像素坐标与驱动错误。
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { PNG } from 'pngjs';
 import { NativeDevice } from './native-device.ts';
 function device(overrides = {}) {
   const driver = { path: p => p, request: async (method, path, body) => {
@@ -74,5 +75,41 @@ test('短提示点击及采样期间关闭驱动冷却，成功和失败都恢�
     else assert.equal(await result, 'captured');
     assert.equal(calls, 1, '只触发一次真实动作及采样');
     assert.equal(coolOff, 3.5, '恢复读取到的设置，不能假定默认值');
+  }
+});
+
+test('新会话没有登记WDA默认值时先显式初始化，重建会话也重新配置', async () => {
+  let settings = {}, writes = [];
+  const d = new NativeDevice({ path: p => p,
+    screenshot: async () => PNG.sync.write(new PNG({ width: 30, height: 60 })),
+    request: async (method, path, body) => {
+      if (path === '/window/rect') return { width: 10, height: 20 };
+      assert.equal(path, '/appium/settings');
+      if (method === 'GET') return { ...settings };
+      writes.push(body.settings);
+      settings = { ...settings, ...body.settings };
+    },
+  }, 'unused', async () => {}, async () => { settings = {}; }, 'app');
+  await d.initialize();
+  assert.deepEqual(d.screenSize, { width: 30, height: 60 });
+  assert.equal(settings.animationCoolOffTimeout, 2);
+  await d.prepareTransientCapture();
+  await d.withImmediateAnimationInput(async () => assert.equal(settings.animationCoolOffTimeout, 0));
+  assert.equal(settings.animationCoolOffTimeout, 2);
+  await d.reset();
+  assert.equal(settings.animationCoolOffTimeout, 2);
+  await d.prepareTransientCapture();
+  assert.equal(writes.filter(value => value.shouldUseCompactResponses === false).length, 2,
+    '重建后的真实驱动设置已经清空，必须再次配置完整元素属性');
+});
+
+test('驱动未确认初始化设置或读取非法冷却值时不能触发动作', async () => {
+  for (const value of [undefined, null, -1, '2', NaN]) {
+    let calls = 0;
+    const d = new NativeDevice({ path: p => p, request: async () => ({ animationCoolOffTimeout: value }) },
+      'unused', async () => {}, async () => {}, 'app');
+    await assert.rejects(d.initialize(), /未确认动画冷却设置/);
+    await assert.rejects(d.withImmediateAnimationInput(async () => { calls++; }), /无法读取真实动画冷却设置/);
+    assert.equal(calls, 0);
   }
 });
