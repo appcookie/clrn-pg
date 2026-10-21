@@ -7,7 +7,7 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import { PNG } from 'pngjs';
 import { frameColorDistance } from './animation-transition';
 import { cropMotionRegion, cropMotionRegions } from './motion-regions';
-import type { ScreenshotBounds } from './screenshot';
+import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 type NativeFrame = { capturedAt: number; png: string };
 
@@ -92,13 +92,16 @@ export async function captureLoopKeyframes(device: AndroidDevice, name: string, 
 export async function captureMovingKeyframes(device: AndroidDevice, name: string, testInfo: TestInfo,
   regions: ScreenshotBounds[], distanceLimit = 18,
   compareDistance: (left: Buffer, right: Buffer) => number = frameColorDistance,
-  maxAttempts = 1, phaseAnchors: string[] = []): Promise<void> {
+  maxAttempts = 1, phaseAnchors: string[] = [], recordedSamples?: NativeFrame[],
+  masks: ScreenshotMask[] = []): Promise<void> {
   expect(regions.length).toBeGreaterThan(0);
+  if (recordedSamples && maxAttempts !== 1) throw new Error('已有真实录像只能分析一次');
+  if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   const pictures: Buffer[][] = [];
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    const timeline = await recordScreenSamples(device, name, testInfo);
+    const timeline = recordedSamples ?? await recordScreenSamples(device, name, testInfo);
     expect(timeline.length).toBeGreaterThanOrEqual(10);
-    pictures.push(...timeline.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions)));
+    pictures.push(...timeline.map(frame => cropMotionRegions(Buffer.from(frame.png, 'base64'), regions, { masks })));
     if (regions.every((_, index) => pictures.some(parts => frameColorDistance(parts[index], pictures[0][index]) > 1))) break;
   }
   for (const index of regions.keys()) {

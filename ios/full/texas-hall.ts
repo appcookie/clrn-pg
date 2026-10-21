@@ -1,8 +1,7 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
-import { setTimeout } from 'node:timers/promises';
 import { REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { gameGone, gameNodes, gameReady, gameScreenshot, gameTap, gameTextWithin } from './game-controls';
+import { gameGone, gameNodes, gameReady, gameTap, gameTextWithin } from './game-controls';
 import { closeGameMask } from './game-pregame';
 import { dismissKeyboard } from './keyboard';
 import { focusedCaretMask } from './screenshot';
@@ -10,6 +9,9 @@ import { translateCaret } from './caret-mask';
 import { enableGameSetting, restoreTexas, texasEvents, type TexasContext } from './texas-support';
 import { animateGamePanel, captureTimedLevelUp } from './game-panel-animation';
 import { captureMovingKeyframes } from './loop-keyframes';
+import accountPresentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
+import { recordScreenSamples } from './video-frames';
+import { gameLoadingRegions } from './game-loading-region';
 
 /**
  * 复用 Web 的大厅牌桌、自动带入、举报、个人收益、猜牌及升级状态。
@@ -36,14 +38,21 @@ export async function texasHall(context: TexasContext): Promise<void> {
       await gameTap(device, 'auto-rebuy-switch');
       await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
         { timeout: 5000 }).toBe(true);
-      await animationInfo.attach('texas-loading-full', { body: await gameScreenshot(device), contentType: 'image/png' });
-      // 两层图标分别旋转，逐区保存真实画面明暗/位置相位。
-      const results = await Promise.allSettled([
-        captureMovingKeyframes(device, 'texas-loading-spinner', animationInfo,
-          [screenBounds(device, { x: 300, y: 550, width: 26, height: 50 }), screenBounds(device, { x: 338, y: 580, width: 42, height: 52 })]),
-        setTimeout(1_500).then(() => proxy.command('android/auto-rebuy-hold', { hold: false })),
-      ]);
-      for (const result of results) if (result.status === 'rejected') throw result.reason;
+      const regions = gameLoadingRegions(await device.nodes(), device.screenSize);
+      await animationInfo.attach('texas-loading-regions', { body: JSON.stringify(regions), contentType: 'application/json' });
+      // Keep both images alive through the entire recording. A fixed delayed
+      // release could finish before XCTest warmed up and record popup text.
+      const samples = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, () => {}, 3000,
+        async () => {
+          expect(gameLoadingRegions(await device.nodes(), device.screenSize),
+            '录屏停止时两层加载图标仍须在同一原生位置').toEqual(regions);
+          await proxy.command('android/auto-rebuy-hold', { hold: false });
+        });
+      await animationInfo.attach('texas-loading-full', { body: Buffer.from(samples[0].png, 'base64'), contentType: 'image/png' });
+      await captureMovingKeyframes(device, 'texas-loading-ring', animationInfo, [regions.ring],
+        18, undefined, 1, [], samples, regions.ringMasks);
+      await captureMovingKeyframes(device, 'texas-loading-spade', animationInfo, [regions.spade],
+        18, undefined, 1, [], samples);
     } finally { await proxy.command('android/auto-rebuy-hold', { hold: false }); }
     await expect.poll(async () => (await gameReady(device, 'auto-rebuy-switch')).checked,
       { timeout: 30_000 }).toBe(true);
@@ -64,13 +73,15 @@ export async function texasHall(context: TexasContext): Promise<void> {
     screenBounds(device, { x: 200, y: 200, width: 400, height: 900 }), animationInfo, 'enter', 'motionFrames', [],
     async () => {
       await expect.poll(async () => (await gameReady(device, 'personal-leader-board-nickname')).text,
-        { timeout: 30_000 }).toMatch(/\S/);
+        { timeout: 30_000 }).toBe(accountPresentation.nickname);
     });
   await texasEvents(context, [{ event: 'player_statistics', player_id: self,
     history_buy_in_amount: 1000, played_game_count: 10, settlement_net_amount: 180 }]);
-  await gameReady(device, 'personal-leader-board-record-container');
-  await expect.poll(async () => (await gameReady(device, 'personal-leader-board-round')).text,
-    { timeout: 30_000 }).toMatch(/(?:^|\s)10$/);
+  await expect.poll(async () => {
+    const nodes = await gameNodes(device);
+    return ['buy-in', 'round', 'profit'].map(field => nodes
+      .find(node => node.res === `personal-leader-board-${field}`)?.text?.match(/(?:^|\s)(-?\d+)$/)?.[1]);
+  }, { timeout: 30_000 }).toEqual(['1000', '10', '180']);
   await capture('personal_leaderboard');
   await animateGamePanel(device, 'texas-holdem', 'personal-leaderboard', 'personal-leader-board-close-button',
     screenBounds(device, { x: 200, y: 200, width: 400, height: 900 }), animationInfo, 'exit');

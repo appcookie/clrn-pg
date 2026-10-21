@@ -120,6 +120,20 @@ export function nativeReviewPanelBounds(nodes: NativeNode[], screen: { width: nu
   return { ...panel.bounds };
 }
 
+export function nativePersonalLeaderboardBounds(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotBounds {
+  const controls = ['personal-leader-board-nickname', 'personal-leader-board-round',
+    'personal-leader-board-profit', 'personal-leader-board-close-button']
+    .map(res => nodes.find(node => node.res === res && node.visible !== false));
+  if (controls.some(node => !node)) throw new Error('个人排行榜缺少可见身份、数据或关闭按钮');
+  const panel = nodes.find(node => node.visible !== false && node.clazz === 'XCUIElementTypeOther'
+    && node.bounds.x === 0 && node.bounds.y === 0 && node.bounds.height === screen.height
+    && node.bounds.width > 0 && node.bounds.width < screen.width
+    && controls.every(control => control!.bounds.x >= 0
+      && control!.bounds.x + control!.bounds.width <= node.bounds.width));
+  if (!panel) throw new Error('找不到完整个人排行榜原生侧栏');
+  return { ...panel.bounds };
+}
+
 export function animationRegion(name: string, before: NativeNode[], after: NativeNode[],
   device: Pick<NativeDevice, 'screenSize'>, fallback: ScreenshotBounds): { bounds: ScreenshotBounds; source: string } {
   // The preflop caller has already required the current self player's two
@@ -130,6 +144,10 @@ export function animationRegion(name: string, before: NativeNode[], after: Nativ
   };
   if (/^zhajinhua-(?:deal|flip)-cards$/.test(name)) return {
     bounds: fallback, source: 'native-self-player-three-card-slots',
+  };
+  if (/^texas-holdem-personal-leaderboard-/.test(name)) return {
+    bounds: nativePersonalLeaderboardBounds(name.endsWith('-exit') ? before : after, device.screenSize),
+    source: 'native-personal-leaderboard-container',
   };
   if (/^(?:texas-holdem|zhajinhua)-chat-(?:enter|exit)$/.test(name)) return {
     bounds: nativeChatPanelBounds(name.endsWith('-exit') ? before : after, device.screenSize),
