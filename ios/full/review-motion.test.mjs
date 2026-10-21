@@ -37,7 +37,7 @@ test('两种牌谱入场都拒绝只有遮罩的假中间帧，真实侧栏滑�
     for (const game of ['texas-holdem', 'zhajinhua']) {
       const run = async frames => {
         let nodeCalls = 0, screenshotCalls = 0;
-        let tapCount = 0, tapAt = 0, readyAt = 0, recording = false;
+        let tapCount = 0, readyCalled = false, recording = false;
         const attachments = new Map();
         const device = { screenSize: size, nodes: async () => {
           assert.equal(recording, false, '侧栏绘制窗口不能并行查询整棵可见树');
@@ -46,34 +46,68 @@ test('两种牌谱入场都拒绝只有遮罩的假中间帧，真实侧栏滑�
           nativeScreenshot: async () => screenshotCalls++ ? after : before };
         await captureNativeTransition(device, `${game}-game-record-enter`,
           { attach: async (name, value) => attachments.set(name, value) }, region,
-          () => { tapCount++; tapAt = performance.now(); }, [], [], 0, 'videoFrames', undefined,
+          () => { tapCount++; }, [], [], 0, 'videoFrames', undefined,
           async () => {
-            readyAt = performance.now();
-            assert.equal(recording, true, '业务就绪仍在同一次真实录屏内验证');
-            assert.ok(readyAt - tapAt >= 340, '300ms动画窗口内不得提前开始afterReady查询');
+            readyCalled = true;
+            assert.equal(recording, false, '业务就绪在完整录屏结束后验证');
+            assert.equal(nodeCalls, 1, '语义就绪必须先于完整终点树');
+            assert.equal(screenshotCalls, 1, '语义就绪必须先于终点截图');
           }, [], [], [], [], [],
-          async (_device, _name, _region, trigger) => {
+          async (_device, _name, _region, trigger, _info, durationMs) => {
             recording = true;
             await trigger();
-            assert.ok(readyAt > tapAt, '录屏结束前必须执行语义就绪断言');
+            assert.equal(durationMs, 3500, '保留完整3.5秒录屏窗口');
+            assert.equal(readyCalled, false, '录屏窗口内不发就绪查询');
             recording = false;
             return frames;
           });
         assert.equal(tapCount, 1, '不通过重复点击重采缺失相位');
         return attachments;
       };
+      await assert.rejects(run([before, before, after]), /牌桌遮罩变暗不能冒充/);
       await assert.rejects(run([before, dimmer, after]), /牌桌遮罩变暗不能冒充/);
       const attachments = await run([before, dimmer, sliding, after]);
       const middle = JSON.parse(attachments.get(`${game}-game-record-enter-middle-progress`).body);
       assert.equal(middle.index, 2, '实际选中的中间帧必须包含滑入侧栏');
       const timings = JSON.parse(attachments.get(`${game}-game-record-enter-endpoint-timing`).body);
       assert.deepEqual(timings.map(item => item.phase),
-        ['recorder-returned', 'nodes-start', 'nodes-complete', 'screenshot-complete']);
+        ['recorder-returned', 'ready-start', 'ready-complete', 'nodes-start', 'nodes-complete', 'screenshot-complete']);
       assert.ok(timings.every(item => Number.isFinite(Date.parse(item.utc))));
       assert.ok(timings.every((item, index) => !index || item.elapsedMs >= timings[index - 1].elapsedMs));
     }
   } finally {
     if (previous === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = previous;
+  }
+});
+
+test('录后牌谱就绪失败保留UTC诊断且不读取终点；其他动作仍在录屏中验证就绪', async () => {
+  for (const name of ['texas-holdem-game-record-enter', 'zhajinhua-game-record-enter',
+    'zhajinhua-game-record-exit', 'zhajinhua-settings-enter']) {
+    const deferred = name.endsWith('game-record-enter');
+    const attachments = new Map();
+    let recording = false, nodeCalls = 0, screenshotCalls = 0, taps = 0;
+    const failure = new Error('native readiness failed');
+    await assert.rejects(captureNativeTransition({ screenSize: size,
+      nodes: async () => { nodeCalls++; return []; },
+      nativeScreenshot: async () => { screenshotCalls++; return picture(); } }, name,
+    { attach: async (key, value) => attachments.set(key, value) }, region,
+    () => { taps++; }, [], [], 0, 'videoFrames', undefined,
+    async () => {
+      assert.equal(recording, !deferred);
+      throw failure;
+    }, [], [], [], [], [], async (_device, _name, _region, trigger) => {
+      recording = true;
+      try { await trigger(); return [picture(), picture(), picture(25, true)]; }
+      finally { recording = false; }
+    }), error => error === failure);
+    assert.equal(taps, 1);
+    assert.equal(nodeCalls, 1);
+    assert.equal(screenshotCalls, 1);
+    if (deferred) {
+      const timing = JSON.parse(attachments.get(`${name}-endpoint-timing`).body);
+      assert.deepEqual(timing.map(item => item.phase), ['recorder-returned', 'ready-start', 'ready-failed']);
+      assert.ok(timing.every(item => Number.isFinite(Date.parse(item.utc))));
+    }
   }
 });
