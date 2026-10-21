@@ -15,6 +15,23 @@ const bytes = Object.fromEntries(
   })
 );
 const layout = profileZoomLayout(source.nodes, source.screen, source.region);
+test('真实原生缩放保留四边及关闭图形，单像素取整对齐不接受端点硬切', async () => {
+  const directory = new URL('./fixtures/profile-zoom-native/', import.meta.url);
+  const provenance = JSON.parse(readFileSync(new URL('provenance.json', directory)));
+  const images = Object.fromEntries(Object.entries(provenance.files).map(([name, item]) => {
+    const buffer = readFileSync(new URL(`${name}.png`, directory));
+    assert.equal(createHash('sha256').update(buffer).digest('hex'), item.sha256);
+    return [name, buffer];
+  }));
+  const result = await profileZoomEvidence(images.before, images.after,
+    [images.before, images.middle, images.after], [0, 1, 2], provenance.layout);
+  assert.deepEqual(result.candidates, [1]);
+  const middle = result.measurements[1];
+  assert.ok(middle.scale > 0.85 && middle.scale < 0.9);
+  assert.ok(middle.edges.every(ratio => ratio >= 0.8));
+  assert.ok(middle.closeDistance <= 12);
+  assert.ok(Math.abs(middle.closeOffset.x) <= 1 && Math.abs(middle.closeOffset.y) <= 1);
+});
 async function syntheticZoom(
   scale,
   {

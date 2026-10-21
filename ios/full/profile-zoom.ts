@@ -123,6 +123,7 @@ export async function profileZoomEvidence(
     scale: number | null;
     edges?: number[];
     closeDistance?: number;
+    closeOffset?: { x: number; y: number };
   }[] = [];
   for (const index of candidateIndices) {
     const frame = await decodeFrame(frames[index]);
@@ -199,14 +200,26 @@ export async function profileZoomEvidence(
       // unscaled high-contrast icon would confuse resampling with a change.
       const left = Math.round(cx - width / 2),
         top = Math.round(cy - height / 2);
-      const closeDistance =
-        features.reduce((sum, point) => {
-          const x = Math.round(((point.x - p.x + 0.5) * width) / p.width - 0.5);
-          const y = Math.round(((point.y - p.y + 0.5) * height) / p.height - 0.5);
-          return sum + distance(color(frame, left + x, top + y), color(template!, x, y));
-        }, 0) / features.length;
+      // AX 边界、缩放尺寸和合成器采样分别取整，静态小图形可能相差一个
+      // 原生像素。整幅图形统一对齐，不能逐点找颜色或改变像素容差；四边
+      // 仍须在同一中心、同一缩放比例满足上面的独立检查。
+      let closeDistance = Infinity;
+      let closeOffset = { x: 0, y: 0 };
+      for (let dx = -1; dx <= 1; dx++) {
+        for (let dy = -1; dy <= 1; dy++) {
+          const value = features.reduce((sum, point) => {
+            const x = Math.round(((point.x - p.x + 0.5) * width) / p.width - 0.5);
+            const y = Math.round(((point.y - p.y + 0.5) * height) / p.height - 0.5);
+            return sum + distance(color(frame, left + x + dx, top + y + dy), color(template!, x, y));
+          }, 0) / features.length;
+          if (value < closeDistance) {
+            closeDistance = value;
+            closeOffset = { x: dx, y: dy };
+          }
+        }
+      }
       if (closeDistance > 12) continue;
-      accepted = { index, scale, edges, closeDistance };
+      accepted = { index, scale, edges, closeDistance, closeOffset };
       break;
     }
     measurements.push(accepted ?? { index, scale: null });
