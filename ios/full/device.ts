@@ -124,6 +124,26 @@ export async function waitForHall(device: NativeDevice) {
   await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM');
   await device.hideKeyboard();
   await device.tap({ res: 'confirm-button' });
+  // Run 39817619684 returned from the first native tap with the staging
+  // dialog and keyboard still visible. Only retry the reversible confirmation
+  // when its original input and enabled button are still mounted.
+  await delay(500);
+  const settled = await device.nodes();
+  if (!settled.some(node => node.res === 'settings-tab')
+    && settled.some(node => node.res === 'staging-dialog-wrapper')) {
+    const input = settled.find(node => node.res === 'staging-confirmation-input');
+    const confirm = settled.find(node => node.res === 'confirm-button');
+    if (input && confirm?.enabled) {
+      await device.hideKeyboard();
+      const current = await device.nodes();
+      if (current.some(node => node.res === 'staging-dialog-wrapper')
+        && current.some(node => node.res === 'staging-confirmation-input')
+        && current.some(node => node.res === 'confirm-button' && node.enabled)
+        && !current.some(node => node.clazz === 'XCUIElementTypeKeyboard')) {
+        await device.tap({ res: 'confirm-button' });
+      }
+    }
+  }
   await device.wait({ res: 'settings-tab' }, { timeout: 120_000 });
 }
 /** smoke 只采集，reference 生成独立 iOS 基准，compare 缺失基准或变化必须失败。 */
