@@ -66,6 +66,19 @@ export async function closeGameMask(device: AndroidDevice, marker: string,
   maskMarker = 'screen-mask-touch-to-close'): Promise<void> {
   const point = await gameMaskClosePoint(device, marker, maskMarker);
   await device.input.tap({ x: Number(String(Math.round(point!.x))), y: Number(String(Math.round(point!.y))) });
+  // Run 39808962563 returned from a real mask tap with the hall drawer still
+  // mounted. Confirm the same mask and panel persist before one more tap;
+  // do not mistake a Connecting overlay or a delayed 300 ms exit for success.
+  if ((await gameNodes(device)).some(node => node.res === marker)) {
+    await setTimeout(1_000);
+    const settled = await gameNodes(device);
+    if (settled.some(node => node.res === marker)) {
+      expect(settled.some(node => node.res === maskMarker && node.visible !== false),
+        '重试关闭前，原遮罩必须仍可见').toBe(true);
+      expect(gameConnectionState(settled).connecting, '重试关闭前，牌桌不能处于重连遮挡').toBe(false);
+      await device.input.tap({ x: Math.round(point.x), y: Math.round(point.y) });
+    }
+  }
   await gameGone(device, marker);
 }
 
