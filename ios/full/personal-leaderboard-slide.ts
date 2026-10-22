@@ -88,48 +88,51 @@ export async function leaderboardSlideEvidence(
     if (frame.width !== end.width || frame.height !== end.height)
       throw new Error('个人排行榜帧尺寸变化');
     let accepted: (typeof measurements)[number] | undefined;
-    // At least 24 px leaves 12 px on each side of the measured moving edge.
-    // All evidence remains inside the original full-panel ROI.
-    for (let offset = 24; offset <= Math.floor(panel.width / 2); offset++) {
+    // The real sidebar can cast an approximately 20 px shadow to its right.
+    // Check both the original and shadow-safe probes inside the same ROI.
+    for (let offset = 32; offset <= Math.floor(panel.width / 2); offset++) {
       const boundary = panel.width - offset;
-      let valid = 0,
-        matches = 0,
-        first = 1,
-        last = 0;
-      for (let row = 1; row <= 49; row++) {
-        const fraction = row / 50,
-          y = Math.round(panel.height * fraction);
-        const foreground = color(end, panel.width - 12, y);
-        // The actual ScreenMask is rgba(0,0,0,0.1), not an arbitrary color shift.
-        const background = color(start, boundary + 12, y).map((channel) =>
-          Math.round(channel * 0.9)
-        );
-        if (distance(foreground, background) < 24) continue;
-        valid++;
-        first = Math.min(first, fraction);
-        last = Math.max(last, fraction);
-        const inside = color(frame, boundary - 12, y),
-          outside = color(frame, boundary + 12, y);
-        const insideDistance = distance(inside, foreground),
-          outsideDistance = distance(outside, background);
-        if (
-          insideDistance <= 12 &&
-          outsideDistance <= 12 &&
-          distance(inside, background) >= insideDistance + 12 &&
-          distance(outside, foreground) >= outsideDistance + 12
-        )
-          matches++;
+      for (const probe of [12, 24]) {
+        let valid = 0,
+          matches = 0,
+          first = 1,
+          last = 0;
+        for (let row = 1; row <= 49; row++) {
+          const fraction = row / 50,
+            y = Math.round(panel.height * fraction);
+          const foreground = color(end, panel.width - 12, y);
+          // The actual ScreenMask is rgba(0,0,0,0.1), not an arbitrary color shift.
+          const background = color(start, boundary + probe, y).map((channel) =>
+            Math.round(channel * 0.9)
+          );
+          if (distance(foreground, background) < 24) continue;
+          valid++;
+          first = Math.min(first, fraction);
+          last = Math.max(last, fraction);
+          const inside = color(frame, boundary - probe, y),
+            outside = color(frame, boundary + probe, y);
+          const insideDistance = distance(inside, foreground),
+            outsideDistance = distance(outside, background);
+          if (
+            insideDistance <= 12 &&
+            outsideDistance <= 12 &&
+            distance(inside, background) >= insideDistance + 12 &&
+            distance(outside, foreground) >= outsideDistance + 12
+          )
+            matches++;
+        }
+        const edgeRatio = valid >= 12 && last - first >= 0.75 ? matches / valid : 0;
+        if (edgeRatio < 0.8) continue;
+        const closeDistance =
+          features.reduce(
+            (sum, point) => sum + distance(color(frame, point.x - offset, point.y), point.reference),
+            0
+          ) / features.length;
+        if (closeDistance > 12) continue;
+        accepted = { index, offset, edgeRatio, closeDistance };
+        break;
       }
-      const edgeRatio = valid >= 12 && last - first >= 0.75 ? matches / valid : 0;
-      if (edgeRatio < 0.8) continue;
-      const closeDistance =
-        features.reduce(
-          (sum, point) => sum + distance(color(frame, point.x - offset, point.y), point.reference),
-          0
-        ) / features.length;
-      if (closeDistance > 12) continue;
-      accepted = { index, offset, edgeRatio, closeDistance };
-      break;
+      if (accepted) break;
     }
     measurements.push(accepted ?? { index, offset: null });
   }

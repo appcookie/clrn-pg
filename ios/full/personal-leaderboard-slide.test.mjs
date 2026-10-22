@@ -15,6 +15,9 @@ const images = Object.fromEntries(
   })
 );
 const layout = leaderboardSlideLayout(source.nodes, source.screen, source.region);
+const realSlide = JSON.parse(readFileSync(new URL('real-slide-provenance.json', root)));
+const realSlideFrame = readFileSync(new URL('real-slide.png', root));
+assert.equal(createHash('sha256').update(realSlideFrame).digest('hex'), realSlide.sha256);
 async function translated(offset, { stationaryClose = false, eraseClose = false } = {}) {
   const p = layout.panel,
     c = layout.close;
@@ -73,6 +76,14 @@ test('真实9帧采样首现已是全尺寸，昵称与数据加载不是侧栏�
   );
   assert.deepEqual(result.candidates, []);
   assert.deepEqual(images.loading, original);
+});
+
+test('真实合成器帧的阴影边界和关闭按钮同帧平移，近终点色差不否定滑入', async () => {
+  assert.deepEqual(realSlide.crop, source.region);
+  const result = await leaderboardSlideEvidence(images.before, images.after,
+    [realSlideFrame], [0], layout);
+  assert.deepEqual(result.candidates, [0]);
+  assert.ok(result.measurements[0].offset >= 80 && result.measurements[0].offset <= 95);
 });
 
 test('合成平移仅验证算法：完整边界和关闭图形须具有同一位移', async () => {
@@ -175,6 +186,7 @@ test('完整capture保留一次触发和业务检查，真实数据加载负例�
   try {
     await assert.rejects(run(images.loading), /边界和关闭按钮|真实动画帧/);
     await run(await translated(150));
+    await run(realSlideFrame);
   } finally {
     if (oldMode === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = oldMode;

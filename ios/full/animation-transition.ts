@@ -490,10 +490,15 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   }
   if (name === 'texas-holdem-personal-leaderboard-enter') {
     const layout = leaderboardSlideLayout(afterNodes, device.screenSize, region);
-    const slide = await leaderboardSlideEvidence(before, after, timeline, candidates.map(item => item.index), layout);
+    // 39799182630: the 89 px sidebar slide continues in frame 13 even though
+    // its whole-ROI colour distance to the endpoint has fallen below 2%.
+    // Judge every recorded intermediate frame by the moving edge and close
+    // icon together; the generic colour threshold cannot define this window.
+    const slide = await leaderboardSlideEvidence(before, after, timeline,
+      timeline.map((_, index) => index).slice(1, -1), layout);
     await testInfo.attach(`${name}-sidebar-slide`, { body: JSON.stringify(slide), contentType: 'application/json' });
-    const moved = new Set(slide.candidates);
-    candidates = candidates.filter(item => moved.has(item.index));
+    candidates = slide.candidates.map(index => ({ frame: timeline[index], index, progress: progress[index],
+      remaining: frameColorDistance(timeline[index], after) / total }));
     expect(candidates.length, '个人排行榜侧栏边界和关闭按钮必须同帧真实平移；昵称或统计加载不能代替滑入')
       .toBeGreaterThan(0);
   }
