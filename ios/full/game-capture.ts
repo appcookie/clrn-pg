@@ -74,6 +74,19 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     '截图前不能存在意外错误提示').toBe(false);
   const backgroundMasks = [...modalBackgroundMasks(nodes, device.screenSize),
     ...(/-signed-in-texas-game-raise$/.test(name) ? texasRaiseClockMasks(nodes, device.screenSize) : [])];
+  // 39695657156: the real next-turn event removes our operation buttons but
+  // may highlight Player1 while the completed quick raise is photographed.
+  // Exclude only that unrelated, native-located opponent turn from baseline
+  // comparison; keep the original unmasked PNG and all own raise/hand pixels.
+  const nextTurn = name.endsWith('-signed-in-zhajinhua-game-quick-raise')
+    ? nodes.find(node => /^zhajinhua-player-container-.*-operating$/.test(node.res || '')) : undefined;
+  const nextTurnExclusions = nextTurn ? [{
+    x: Math.max(0, nextTurn.bounds.x - 50), y: Math.max(0, nextTurn.bounds.y - 26),
+    width: Math.min(device.screenSize.width, nextTurn.bounds.x + nextTurn.bounds.width + 90)
+      - Math.max(0, nextTurn.bounds.x - 50),
+    height: Math.min(device.screenSize.height, nextTurn.bounds.y + nextTurn.bounds.height + 53)
+      - Math.max(0, nextTurn.bounds.y - 26),
+  }] : [];
   const masks: ScreenshotMask[] = [...inputMasks, ...backgroundMasks];
   const panels = foregroundPanels(nodes, device.screenSize);
   await testInfo.attach(`${name}-native-tree`, { body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json' });
@@ -169,5 +182,5 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
       `${transientMarker} 必须在截图前后可见`).toBeTruthy();
   };
   await compareScreenshot(device, name, testInfo, masks, transientMarker ? assertTransient : undefined,
-    transientMarker ? () => gameScreenshot(device) : undefined, [], backgroundMasks);
+    transientMarker ? () => gameScreenshot(device) : undefined, [], [...backgroundMasks, ...nextTurnExclusions]);
 }
