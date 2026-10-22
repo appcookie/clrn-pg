@@ -107,24 +107,28 @@ export async function texasHall(context: TexasContext): Promise<void> {
           }
         }
         // The native action can still return before the game sends its request.
-        // Require that one real request; the proxy hold expires at 45s.
+        // Require one real request, then finish capture before the app's 10s
+        // HTTP deadline; the proxy's longer hold limit is only a fail-safe.
         await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
           { timeout: 20_000 }).toBe(true);
-        loadingLayout = await device.layoutNodes();
-        await animationInfo.attach('texas-loading-native-layout', {
-          body: JSON.stringify(loadingLayout), contentType: 'application/json',
-        });
-        regions = gameLoadingRegions(loadingLayout, device.screenSize);
-        // Capture an independent native endpoint while the request is held;
-        // the original movie below still has to retain Loading through its
-        // final frame. Release immediately after recording stops, before MOV
-        // attachment/remux can push the app past its 10-second HTTP timeout.
-        loaded = await gameScreenshot(device);
-        await animationInfo.attach('texas-loading-independent-endpoint', {
-          body: loaded, contentType: 'image/png',
-        });
-      }, 2000,
+        // The held PUT has a 10-second client deadline. The Simulator PNG
+        // capture is independent of WDA's source query, so collect both at
+        // once instead of spending their latencies in sequence. The native
+        // endpoint and geometry still come from this same visible Loading.
+        [loadingLayout, loaded] = await Promise.all([
+          device.layoutNodes(), gameScreenshot(device),
+        ]);
+        // The original movie must retain Loading through its final frame.
+        // Release immediately after recording stops, before MOV attachment.
+      }, 0,
         async () => { await proxy.command('android/auto-rebuy-hold', { hold: false }); }, 20, 'xctest');
+      await animationInfo.attach('texas-loading-native-layout', {
+        body: JSON.stringify(loadingLayout), contentType: 'application/json',
+      });
+      await animationInfo.attach('texas-loading-independent-endpoint', {
+        body: loaded, contentType: 'image/png',
+      });
+      regions = gameLoadingRegions(loadingLayout, device.screenSize);
       const flatten = (node: NativeLayoutNode): NativeLayoutNode[] => [node, ...node.children.flatMap(flatten)];
       const labels = loadingLayout.flatMap(flatten).filter(node => node.res === 'Loading'
         && node.clazz === 'XCUIElementTypeStaticText');
