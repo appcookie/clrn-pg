@@ -225,6 +225,7 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
     || point.x >= x + width || point.y >= y + height) throw new Error('点击位置必须位于当前真实目标内');
   onTap?.({ ...point });
   await device.input.tap(point);
+  console.log(`IOS > 游戏已点击 ${res}`);
 }
 
 /** 聊天、牌谱入口和关闭遮罩使用同一次轻量原生观测；保留两样本、重连恢复和错误即失败规则。 */

@@ -49,9 +49,10 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
               : scenario.snapshotStates!;
       const label = part === 'all' ? scenario.pageLabel : `${scenario.pageLabel}_${part}`;
       test(`${locale} / ${suite} / ${label}`, async ({ ownedRoom }, testInfo) => {
-        // 拼三张13次转场在39577538185耗尽90分钟，现将首组5次与中组8次
-        // 分到独立房间；保留所有原始状态、动画断言和原有90分钟上限。
-        test.setTimeout(5_400_000);
+        // 面板组 39780356637 已完成前 20 张截图，但在第 88 分钟进入退出确认时
+        // 被原有 90 分钟总上限中断；给最后的真实菜单操作和失败诊断留足时间。
+        // 其他场景仍保留原有上限。
+        test.setTimeout(scenario.pageLabel === 'signed_in_texas_panels' ? 6_300_000 : 5_400_000);
         await withAndroidProxy(async proxy => {
           if (scenario.pageLabel === 'signed_in_texas_records_v2') await proxy.command('texas/records', { empty: true });
           const panelAnimation = locale === 'en' && scenario.pageLabel.endsWith('_pre_game');

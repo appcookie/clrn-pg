@@ -83,7 +83,7 @@ jobs:
       group: ios-account-${{ matrix.account || format('{0}-{1}-{2}-{3}', github.run_id, matrix.group, matrix.locale, matrix.shard) }}
       queue: max
     runs-on: macos-15
-    timeout-minutes: 120
+    timeout-minutes: ${{ matrix.animation == 'animation-20' && 135 || 120 }}
     name: ${{ matrix.label }}
     env:
       DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer

@@ -86,7 +86,13 @@ export async function captureRemainingCards(device: NativeDevice, testInfo: Test
     }
     const panel = { x: Math.floor(device.screenSize.width * .18), y: Math.floor(device.screenSize.height * .17),
       width: Math.ceil(device.screenSize.width * .64), height: Math.ceil(device.screenSize.height * .19) };
-    const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, panel));
+    // The held Simulator frame is captured before the accessibility query can
+    // finish, so its ten-second numeral varies between runs. Cover only that
+    // numeral; the title, close button and all five card faces remain visible.
+    const countdown = { x: Math.floor(device.screenSize.width * .57), y: Math.floor(device.screenSize.height * .236),
+      width: Math.ceil(device.screenSize.width * .065), height: Math.ceil(device.screenSize.height * .04),
+      reason: 'view-community-cards-countdown' };
+    const masks = [...backgroundMasks.flatMap(mask => subtractPanel(mask, panel)), countdown];
     await capture('remaining_cards', masks, undefined, result.image);
   });
 }
