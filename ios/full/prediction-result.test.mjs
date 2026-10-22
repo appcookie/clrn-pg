@@ -7,7 +7,7 @@ import { capturePredictionResult, requirePredictionResult, triggerPredictionResu
 const amount = { res: 'bet-next-hand-result-amount', text: '+10',
   bounds: { x: 35, y: 45, width: 30, height: 15 } };
 
-for (const locale of ['en', 'zh-Hans', 'zh-Hant']) test(`${locale} 猜牌完成背景准备后委托同次录像，不查询过期AX`, async () => {
+for (const locale of ['en', 'zh-Hans', 'zh-Hant']) test(`${locale} 猜牌完成背景准备后委托同次截图，不查询过期AX`, async () => {
   const events = [], attachments = new Map();
   const name = `${locale}-signed-in-texas-hall-prediction-result`;
   await captureGame({ screenSize: { width: 100, height: 100 },
@@ -23,7 +23,7 @@ for (const locale of ['en', 'zh-Hans', 'zh-Hant']) test(`${locale} 猜牌完成�
   assert.deepEqual(events, ['tree', 'trigger']);
 });
 
-test('真实时间递增的原片三帧须同时显示中奖文案和 +10，且仅发送一次', async () => {
+test('真实时间递增的三张截图须同时显示中奖文案和 +10，且仅发送一次', async () => {
   const previous = process.env.IOS_VISUAL_MODE;
   process.env.IOS_VISUAL_MODE = 'smoke';
   const frame = visible => {
@@ -45,21 +45,19 @@ test('真实时间递增的原片三帧须同时显示中奖文案和 +10，且�
   const run = (observations = recognized, samples = frames) => capturePredictionResult(
     { screenSize: { width: 100, height: 100 } }, 'en-signed-in-texas-hall-prediction-result', info, [],
     async () => { triggered++; return '+10'; },
-    async (_device, _name, _region, action, _info, duration, floor, _after, backend) => {
-      assert.equal(duration, 3500); assert.equal(floor, 10); assert.equal(backend, 'xctest');
-      await action(); return samples;
-    }, async () => observations);
+    async (_device, _name, _info, action) => ({ frames: samples, result: await action() }),
+    async () => observations);
   try {
     await run();
     assert.equal(triggered, 1);
     assert.ok(attachments.has('en-signed-in-texas-hall-prediction-result.png'));
-    assert.deepEqual(JSON.parse(attachments.get('en-signed-in-texas-hall-prediction-result-video-keyframes').body)
+    assert.deepEqual(JSON.parse(attachments.get('en-signed-in-texas-hall-prediction-result-screenshot-keyframes').body)
       .map(item => item.frameIndex), [1, 2, 3]);
     await assert.rejects(run([[], [title, { ...win, text: '+100' }], [title, win], [title, win], []]),
-      /同次原生录像必须拍到/);
+      /同次原生截图序列必须拍到/);
     await assert.rejects(run([[], [title, { ...win, bounds: { ...win.bounds, y: 0.62 } }],
-      [title, win], [title, win], []]), /同次原生录像必须拍到/);
-    await assert.rejects(run([[], [title, win], [title, win], [title, win], [title, win]]), /原片结束前消失/);
+      [title, win], [title, win], []]), /同次原生截图序列必须拍到/);
+    await assert.rejects(run([[], [title, win], [title, win], [title, win], [title, win]]), /截图序列结束前消失/);
     await assert.rejects(run(recognized, Object.assign([...frames],
       { timestampsMs: [0, 100, 150, 200, 500], sourceFrameIndices: frames.sourceFrameIndices })), /250 毫秒/);
     assert.equal(triggered, 5, '失败诊断也不能在同次运行内重放事件');

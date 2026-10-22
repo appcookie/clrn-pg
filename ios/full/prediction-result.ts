@@ -5,7 +5,7 @@ import { subtractPanel } from './game-masks';
 import { maskScreenshot, type ScreenshotBounds } from './screenshot';
 import { recognizeRecordedText, type RecordedText } from './recorded-text';
 import { toastKeyframes } from './toast-keyframes';
-import { recordNativeVideoFrames } from './video-frames';
+import { captureTransientScreenshots } from './transient-screenshots';
 import type { TestInfo } from '@playwright/test';
 import type { NativeDevice } from './native-device';
 import type { ScreenshotMask } from './screenshot';
@@ -67,27 +67,24 @@ function predictionPanel(lines: RecordedText[], screen: { width: number; height:
     height: Math.min(screen.height, Math.ceil(bottom) + padding) - y };
 }
 
-/** The native result lasts three seconds; retain one real recording before
- * sending its one event, then validate the visible amount in the recorded PNGs.
- * A slow XCTest accessibility query cannot observe this transient reliably.
+/** The native result lasts three seconds. Sample real Simulator screenshots
+ * before and after one event, then validate the visible amount in those PNGs.
+ * XCTest's variable-rate video can encode only two frames during this prompt.
  */
 export async function capturePredictionResult(device: NativeDevice, name: string, testInfo: TestInfo,
   backgroundMasks: ScreenshotMask[], trigger: () => Promise<string | void>,
-  record = recordNativeVideoFrames, recognize = recognizeRecordedText): Promise<void> {
+  capture = captureTransientScreenshots, recognize = recognizeRecordedText): Promise<void> {
   const locale = /^(en|zh-Hans|zh-Hant)-/.exec(name)?.[1];
   if (!locale) throw new Error('猜牌结果缺少已知语言');
-  let expectedText: string | void = undefined;
-  const frames = await record(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
-    expectedText = await trigger();
-  }, testInfo, 3500, 10, undefined, 'xctest');
+  const { frames, result: expectedText } = await capture(device, name, testInfo, trigger);
   expect(expectedText, '猜牌中奖夹具必须明确要求真实 +10').toBe('+10');
   const recognized = await recognize(frames);
   expect(recognized).toHaveLength(frames.length);
   const visible = recognized.flatMap((lines, index) => predictionLines(lines, locale, device.screenSize).length
     ? [index] : []);
-  expect(visible.length, '同次原生录像必须拍到带 +10 的中奖结果和文案').toBeGreaterThanOrEqual(3);
+  expect(visible.length, '同次原生截图序列必须拍到带 +10 的中奖结果和文案').toBeGreaterThanOrEqual(3);
   expect(visible[0], '中奖结果不能在动作前已经显示').toBeGreaterThan(0);
-  expect(visible.at(-1), '中奖结果必须在原片结束前消失').toBeLessThan(frames.length - 1);
+  expect(visible.at(-1), '中奖结果必须在截图序列结束前消失').toBeLessThan(frames.length - 1);
   const panel = predictionPanel(predictionLines(recognized[visible[0]], locale, device.screenSize), device.screenSize);
   const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, panel));
   const indices = await toastKeyframes(frames, panel, masks, visible);
@@ -103,7 +100,7 @@ export async function capturePredictionResult(device: NativeDevice, name: string
     keyframes.push({ attachment, timestampMs: frames.timestampsMs![index],
       frameIndex: frames.sourceFrameIndices?.[index] ?? index });
   }
-  await testInfo.attach(`${name}-video-keyframes`, { body: JSON.stringify(keyframes), contentType: 'application/json' });
+  await testInfo.attach(`${name}-screenshot-keyframes`, { body: JSON.stringify(keyframes), contentType: 'application/json' });
   await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   const representative = maskScreenshot(frames[indices[1]], masks);
   for (const index of indices) expect(comparePixels(maskScreenshot(frames[index], masks), representative).matches).toBe(true);

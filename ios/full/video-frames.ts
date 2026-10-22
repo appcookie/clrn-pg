@@ -77,17 +77,12 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 39730704182 和 39768797235 的聊天操作菜单合成器原片从起点
   // 直接跳到终点，300ms 动画中没有中间帧；固定 XCTest 60fps 采集，
   // 保留起点、中间帧与终点的原有运动门禁。
-  // 39846207529 的 60fps 猜牌中奖原片在 8.35 秒只编码 7 帧，中间
-  // 跳过 2.06 秒；中奖提示虽真实出现，只有两张相隔 75ms 的可见帧。
-  // 使用同场景加载动画已验证的 30fps XCTest，仍要求原片中连续
-  // 250ms 的真实 +10 与中奖文案，不补帧或延长应用的三秒提示。
   const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter', 'texas-loading-spinner',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
     'texas-holdem-leaderboard-enter', 'zhajinhua-operation-buttons',
     'texas-holdem-personal-leaderboard-enter',
     'texas-holdem-personal-leaderboard-exit',
-    'texas-holdem-report-enter', 'texas-holdem-own-profile-enter'].includes(name)
-    || name.endsWith('-prediction-result');
+    'texas-holdem-report-enter', 'texas-holdem-own-profile-enter'].includes(name);
   const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
     'texas-holdem-chat-actions-enter', 'texas-holdem-chat-actions-return-enter',
