@@ -689,7 +689,12 @@ export async function captureTransientTransition(device: AndroidDevice, name: st
   const crop = (bytes: Buffer) => cropNativeFrame(bytes, region);
   const before = await crop(await gameScreenshot(device));
   const frames: Buffer[] = [];
-  for (const frame of await recordScreenSamples(device, name, testInfo, trigger)) {
+  // The simulator encoded 19 genuine, monotonic-PTS frames for this short
+  // prompt in 39747974656. Its later checks still require a real start,
+  // translucent middle, visible peak and disappearance. Use the established
+  // short-animation floor instead of the generic 20-frame floor.
+  for (const frame of await recordScreenSamples(device, name, testInfo, trigger,
+    2500, undefined, shortAnimationMinimumFrames)) {
     frames.push(await crop(Buffer.from(frame.png, 'base64')));
   }
   expect(frames.length).toBeGreaterThanOrEqual(10);
