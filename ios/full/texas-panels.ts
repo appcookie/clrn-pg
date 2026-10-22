@@ -2,7 +2,7 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { events, REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { flattenNodes, gameConnected, gameGone, gameNodes, gameReady, gameSemanticText, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
+import { flattenNodes, gameConnected, gameGone, gameNodes, gameReady, gameReadyCurrent, gameSemanticText, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
 import { captureGameThemes, closeGameMask, gameMenu } from './game-pregame';
 import { gameCardNames, replay } from './game-replay';
 import { dismissKeyboard } from './keyboard';
@@ -152,11 +152,15 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await texasEvents(context, [{ event: 'settlement', players: [{ player_id: self, net: 180, prize: 180, stack: 1180 }] }]);
   await expect.poll(async () => gameSemanticText(await ownPlayer(), 'text-holdem-own-balance-text'),
     { timeout: 30_000 }).toBe('1180');
+  // 39708478102 kept both settlement buttons mounted but hid them behind a
+  // real Connecting overlay. Wait for this room to recover before judging the
+  // hand-end controls or taking its screenshot.
+  await gameConnected(device, 2_000);
   await gameReady(device, 'texas-holdem-show-hand-card-button');
   await gameReady(device, 'texas-holdem-show-remain-community-card-button');
   await capture('hand_end');
   await gameTap(device, 'texas-holdem-show-remain-community-card-button');
-  await gameReady(device, 'view-community-cards-container');
+  await gameReadyCurrent(device, 'view-community-cards-container');
   await gameCardNames(device, 'community_card', 'community_card_name_text', ['ah', 'kd', '7c', '2s', 'qs'], {
     scope: 'view-community-cards-container',
     inspectFirst: async nodes => {
