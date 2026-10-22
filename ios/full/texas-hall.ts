@@ -1,5 +1,6 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
+import { setTimeout as delay } from 'node:timers/promises';
 import { REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
 import { gameConnected, gameGone, gameNodes, gameReady, gameScreenshot, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
 import { closeGameMask } from './game-pregame';
@@ -27,6 +28,25 @@ export async function texasHall(context: TexasContext): Promise<void> {
   await gameReady(device, 'report-pair-play-button');
   await capture('hall_table');
   await gameTapCurrent(device, 'menu-button');
+  // Run 39805489332 returned from a real menu tap, but the drawer never
+  // mounted: the failure screen and native tree still showed the closed table.
+  // Recheck the resulting UI before a second tap, so a slow 300 ms entrance
+  // cannot accidentally be toggled closed again.
+  if (!(await gameNodes(device)).some(node => node.res === 'drawer-menu-item-exit')) {
+    await delay(1_000);
+    const settled = await gameNodes(device);
+    if (!settled.some(node => node.res === 'drawer-menu-item-exit')) {
+      expect(settled.some(node => node.res === 'menu-button' && node.visible !== false),
+        '菜单未打开时，牌桌菜单按钮仍须可见').toBe(true);
+      expect(settled.some(node => /Connecting\.\.\./.test(node.text || '')),
+        '菜单未打开时，牌桌不能处于重连遮挡').toBe(false);
+      await animationInfo?.attach('texas-hall-menu-first-tap-unopened', {
+        body: JSON.stringify({ menu: settled.find(node => node.res === 'menu-button'),
+          drawerMounted: false }), contentType: 'application/json',
+      });
+      await gameTapCurrent(device, 'menu-button');
+    }
+  }
   await gameReady(device, 'drawer-menu-item-exit');
   await capture('hall_menu');
   await closeGameMask(device, 'drawer-menu-item-exit');
