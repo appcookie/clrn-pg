@@ -38,8 +38,11 @@ test('正式汇总在前置失败、取消、跳过后仍执行，不能被默�
 test('真实汇总命令仅接受全部成功，任一失败、取消或跳过均返回失败', () => {
   assert.ok(command);
   const results = ['success', 'failure', 'cancelled', 'skipped'];
-  for (const PLAN of results) for (const PROXY of results) for (const NATIVE of results) {
-    const result = spawnSync('sh', ['-c', command], { env: { ...process.env, PLAN, PROXY, NATIVE } });
-    assert.equal(result.status === 0, [PLAN, PROXY, NATIVE].every(value => value === 'success'));
+  for (const PLAN of results) for (const PREFLIGHT of results)
+    for (const PROXY of results) for (const NATIVE of results) {
+      const result = spawnSync('sh', ['-c', command],
+        { env: { ...process.env, PLAN, PREFLIGHT, PROXY, NATIVE } });
+      assert.equal(result.status === 0,
+        [PLAN, PREFLIGHT, PROXY, NATIVE].every(value => value === 'success'));
   }
 });

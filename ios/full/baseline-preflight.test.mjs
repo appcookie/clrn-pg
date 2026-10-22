@@ -20,11 +20,15 @@ test('compare 预检阻断缺图、删审查记录、改图和未补齐的动画
     path: baselineRelativePath(name, 'en'), sha256: createHash('sha256').update(png).digest('hex'),
   }));
   const review = { ...approved, files };
+  const output = join(directory, 'github-output');
   const writeReview = () => writeFileSync(join(root, 'review.json'), JSON.stringify(review));
-  const run = (animations = ['animation-1']) => spawnSync(process.execPath, [command], {
-    cwd: directory, encoding: 'utf8', env: { ...process.env,
-      IOS_CI_MATRIX: JSON.stringify({ include: animations.map(animation => ({ group: 'guest', locale: 'en', animation })) }) },
-  });
+  const run = (animations = ['animation-1']) => {
+    writeFileSync(output, '');
+    return spawnSync(process.execPath, [command], {
+      cwd: directory, encoding: 'utf8', env: { ...process.env, GITHUB_OUTPUT: output,
+        IOS_CI_MATRIX: JSON.stringify({ include: animations.map(animation => ({ group: 'guest', locale: 'en', animation })) }) },
+    });
+  };
   try {
     for (const file of files) {
       mkdirSync(dirname(join(root, file.path)), { recursive: true });
@@ -53,5 +57,12 @@ test('compare 预检阻断缺图、删审查记录、改图和未补齐的动画
     }
     assert.ok(!incomplete.stderr.includes(baselineRelativePath(animationCases[0].images[0], 'en')),
       '已完整审查的分片不能被误报为缺失');
+    assert.equal(readFileSync(output, 'utf8'), '', '图片缺失不能触发 reference 诊断');
+    const reference = run(['animation-1', 'animation-14']);
+    assert.match(reference.stderr, /animation-14 缺少完整审查后的动画基准清单/);
+    assert.equal(readFileSync(output, 'utf8'), 'reference_cases=animation-14\n');
+    writeFileSync(join(root, files[0].path), Buffer.concat([png, Buffer.from('changed')]));
+    run(['animation-1', 'animation-14']);
+    assert.equal(readFileSync(output, 'utf8'), '', '篡改基准时不能启动 reference 诊断');
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });

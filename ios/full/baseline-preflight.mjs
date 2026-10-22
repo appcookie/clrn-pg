@@ -1,6 +1,6 @@
 // compare 运行前检查人工审查记录和每张 PNG 的原始 SHA，避免未审查图进入回归基准。
 import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { appendFileSync, existsSync, readFileSync, readdirSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 import { baselineRoot, baselineRelativePath } from './baseline-path.mjs';
 import { guestScreenshotTests } from './guest-screenshot-contract.mjs';
@@ -59,9 +59,13 @@ function* pngFiles(directory) {
 for (const file of pngFiles(baselineRoot)) if (!paths.has(file)) throw new Error(`未审查 PNG 混入基准：${file}`);
 // 一次列出本轮所有缺失项，避免补完一个分片后才发现下一个；仍在分配原生 runner 前失败。
 const missingBaselines = [];
+const missingInventoryCases = [];
 for (const item of matrix.include.filter(item => item.animation)) {
   const entry = animationCase(item.animation);
-  if (!entry.images.length) missingBaselines.push(`${entry.id} 缺少完整审查后的动画基准清单：${entry.title}`);
+  if (!entry.images.length) {
+    missingInventoryCases.push(entry.id);
+    missingBaselines.push(`${entry.id} 缺少完整审查后的动画基准清单：${entry.title}`);
+  }
   for (const image of entry.images) {
     const path = baselineRelativePath(image, 'en');
     if (!paths.has(path)) missingBaselines.push(`动画门禁缺少基准：${path}（${entry.title}）`);
@@ -75,7 +79,14 @@ for (const item of matrix.include.filter(item => item.group === 'guest' && !item
     }
   }
 }
-if (missingBaselines.length) throw new Error(`compare 基准预检失败：\n${missingBaselines.join('\n')}`);
+if (missingBaselines.length) {
+  // Only an otherwise valid baseline with solely incomplete inventory may
+  // start a reference capture. Hash or provenance failures never do.
+  if (process.env.GITHUB_OUTPUT && missingBaselines.length === missingInventoryCases.length) {
+    appendFileSync(process.env.GITHUB_OUTPUT, `reference_cases=${missingInventoryCases.join(',')}\n`);
+  }
+  throw new Error(`compare 基准预检失败：\n${missingBaselines.join('\n')}`);
+}
 for (const locale of locales) {
   if (!['en', 'zh-Hans', 'zh-Hant'].includes(locale)) throw new Error(`未知 iOS 基准语言：${locale}`);
   if (!reviewedLocales.has(locale)) throw new Error(`compare 缺少已审查的 ${locale} PNG 基准：${baselineRoot}`);

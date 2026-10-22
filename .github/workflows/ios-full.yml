@@ -31,7 +31,9 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.plan.outputs.matrix }}
+      matrix: ${{ steps.select.outputs.matrix }}
+      run_native: ${{ steps.select.outputs.run_native }}
+      preflight: ${{ steps.preflight.outcome }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,13 +52,23 @@ jobs:
             echo 'PR 和 master push 执行三语言游客矩阵及全部英文动画；缺账号、缺基准、漏跑或视觉差异均失败。' >> "$GITHUB_STEP_SUMMARY"
           fi
           node scripts/plan-ci-accounts.mjs ios
-      - name: compare 基准预检
+      - name: 安装基准预检依赖
         if: inputs.mode == 'compare' || github.event_name != 'workflow_dispatch'
+        run: npm ci
+      - name: compare 基准预检
+        id: preflight
+        if: inputs.mode == 'compare' || github.event_name != 'workflow_dispatch'
+        continue-on-error: true
         env:
           IOS_CI_MATRIX: ${{ steps.plan.outputs.matrix }}
-        run: |
-          npm ci
-          node ios/full/baseline-preflight.mjs
+        run: node ios/full/baseline-preflight.mjs
+      - name: 选择完整比较或缺基准的诊断采集
+        id: select
+        env:
+          IOS_CI_MATRIX: ${{ steps.plan.outputs.matrix }}
+          IOS_BASELINE_PREFLIGHT_OUTCOME: ${{ steps.preflight.outcome == 'skipped' && 'success' || steps.preflight.outcome }}
+          IOS_REFERENCE_CASES: ${{ steps.preflight.outputs.reference_cases }}
+        run: node ios/full/select-ci-matrix.mjs
   proxy-check:
     runs-on: ubuntu-latest
     steps:
@@ -75,6 +87,7 @@ jobs:
       - run: npm run check:python
   native:
     needs: [plan, proxy-check]
+    if: needs.plan.outputs.run_native == 'true'
     strategy:
       fail-fast: false
       max-parallel: 5
@@ -91,7 +104,7 @@ jobs:
       IOS_SIMULATOR_UDID: ''
       IOS_GROUP: ${{ matrix.group }}
       IOS_LOCALE: ${{ matrix.locale }}
-      IOS_VISUAL_MODE: ${{ inputs.mode || 'compare' }}
+      IOS_VISUAL_MODE: ${{ matrix.mode || inputs.mode || 'compare' }}
       CLRN_CI_ACCOUNT: ${{ matrix.account }}
       CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
     steps:
@@ -194,7 +207,7 @@ jobs:
             ios/artifacts/full-report/
             ios/artifacts/release/build-info.json
       - name: 保存待审查的视觉基准候选
-        if: success() && inputs.mode == 'reference'
+        if: success() && env.IOS_VISUAL_MODE == 'reference'
         uses: actions/upload-artifact@v4
         with:
           name: ios-reference-candidates-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}
@@ -215,6 +228,7 @@ jobs:
       - name: 所有动画分片必须成功；取消、跳过和缺基准均阻断
         env:
           PLAN: ${{ needs.plan.result }}
+          PREFLIGHT: ${{ needs.plan.outputs.preflight }}
           PROXY: ${{ needs.proxy-check.result }}
           NATIVE: ${{ needs.native.result }}
-        run: test "$PLAN" = success && test "$PROXY" = success && test "$NATIVE" = success
+        run: test "$PLAN" = success && test "$PREFLIGHT" = success && test "$PROXY" = success && test "$NATIVE" = success
