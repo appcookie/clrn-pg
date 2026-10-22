@@ -44,10 +44,15 @@ export async function replay(proxy: Mitmproxy, game: 'texas' | 'zhajinhua', room
  * @param options - 可限定前景区域，或仅验证已取得牌名的明牌。
  */
 export async function gameCardNames(device: AndroidDevice, container: string, marker: string, expected: string[],
-  options: { scope?: string; namedOnly?: boolean } = {}): Promise<void> {
+  options: { scope?: string; namedOnly?: boolean; inspectFirst?: (nodes: Awaited<ReturnType<typeof gameNodes>>) => Promise<void> } = {}): Promise<void> {
+  let inspected = false;
   await expect.poll(async () => {
     const started = performance.now();
     const nodes = await gameNodes(device);
+    if (!inspected && options.inspectFirst) {
+      inspected = true;
+      await options.inspectFirst(nodes);
+    }
     const names = (options.scope ? gameNodesWithin(nodes, options.scope) : nodes).filter(node => node.res === container)
       .map(node => gameSemanticText(node, marker) || '')
       .filter(text => !options.namedOnly || text !== '').sort();

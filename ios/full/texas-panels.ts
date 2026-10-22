@@ -157,7 +157,16 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await capture('hand_end');
   await gameTap(device, 'texas-holdem-show-remain-community-card-button');
   await gameReady(device, 'view-community-cards-container');
-  await gameCardNames(device, 'community_card', 'community_card_name_text', ['ah', 'kd', '7c', '2s', 'qs'], { scope: 'view-community-cards-container' });
+  await gameCardNames(device, 'community_card', 'community_card_name_text', ['ah', 'kd', '7c', '2s', 'qs'], {
+    scope: 'view-community-cards-container',
+    inspectFirst: async nodes => {
+      if (animationInfo) await animationInfo.attach('texas-remaining-cards-first-native-layout', {
+        body: JSON.stringify(nodes.map(node => ({ res: node.res, text: node.text,
+          bounds: node.bounds, children: node.children?.map(child => child.res) }))),
+        contentType: 'application/json',
+      });
+    },
+  });
   await capture('remaining_cards');
   await gameTap(device, 'view-community-close-button');
   await gameGone(device, 'view-community-cards-container');
