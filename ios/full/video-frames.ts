@@ -75,7 +75,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 只产生 7 帧；按同轮已通过的自动带入录制使用 30fps，运动门禁不变。
   // 39682044700 的操作按钮合成器原片虽有 314 帧，却在弃牌按钮
   // 300ms 入场期间完全跳帧；改用 XCTest 单次录制，逐按钮门禁仍须通过。
-  const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter',
+  const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter', 'texas-loading-spinner',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
     'texas-holdem-leaderboard-enter', 'zhajinhua-operation-buttons',
     'texas-holdem-personal-leaderboard-exit',
@@ -211,8 +211,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
 
 /** 连续帧使用同一真实视频的编码时戳，不补帧或推算 30fps。 */
 export async function recordScreenSamples(device: NativeDevice, name: string, info: TestInfo,
-  trigger: () => unknown = () => {}, durationMs = 2500, onRecorded?: () => Promise<void>, minimumDistinctFrames = 20) {
+  trigger: () => unknown = () => {}, durationMs = 2500, onRecorded?: () => Promise<void>,
+  minimumDistinctFrames = 20, backendOverride?: 'xctest' | 'simctl') {
   const frames = await recordNativeVideoFrames(device, name,
-    { x: 0, y: 0, ...device.screenSize }, trigger, info, durationMs, minimumDistinctFrames, onRecorded);
+    { x: 0, y: 0, ...device.screenSize }, trigger, info, durationMs, minimumDistinctFrames,
+    onRecorded, backendOverride);
   return frames.map((png, index) => ({ capturedAt: frames.timestampsMs![index], png: png.toString('base64') }));
 }

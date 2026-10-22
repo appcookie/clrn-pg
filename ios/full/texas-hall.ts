@@ -52,12 +52,14 @@ export async function texasHall(context: TexasContext): Promise<void> {
         y: Math.round(currentSwitch.bounds.y + currentSwitch.bounds.height / 2) };
       const beforeLoading = await gameScreenshot(device);
       let regions!: ReturnType<typeof gameLoadingRegions>, loadingLayout!: NativeLayoutNode[], loaded!: Buffer;
-      // 先预热录屏，再触发一次真实开关动作，并在代理45秒保留窗口内采集。
+      // 39695625593 的 simctl 原片在 23 秒墙钟内只编码了 4 秒，
+      // 39702206750 中同一路径下的原生点击也未触发请求。让 XCTest
+      // 录屏和原生点击走同一驱动，并确认点击已完成再等待实际请求。
       const recorded = await recordScreenSamples(device, 'texas-loading-spinner', animationInfo, async () => {
-        // Use that verified current target for one native tap without a WDA
-        // snapshot during recording; still require the actual proxy request.
+        // Use the verified current target for one native tap, without another
+        // potentially stalled accessibility snapshot during recording.
         switchTap = device.input.tap(switchPoint);
-        void switchTap.catch(() => {});
+        await switchTap;
         // The native tap can also return before the game sends its request.
         // Wait for that one real request; the proxy hold expires at 45s.
         await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
@@ -77,7 +79,7 @@ export async function texasHall(context: TexasContext): Promise<void> {
             '录屏停止时两层加载图标仍须在同一原生位置').toEqual(regions);
           loaded = await gameScreenshot(device);
           await proxy.command('android/auto-rebuy-hold', { hold: false });
-        });
+        }, 20, 'xctest');
       const flatten = (node: NativeLayoutNode): NativeLayoutNode[] => [node, ...node.children.flatMap(flatten)];
       const labels = loadingLayout.flatMap(flatten).filter(node => node.res === 'Loading'
         && node.clazz === 'XCUIElementTypeStaticText');
