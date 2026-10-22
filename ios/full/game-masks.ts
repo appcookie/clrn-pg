@@ -2,8 +2,9 @@ import type { NativeNode } from './game-controls';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 /** iOS hides background accessibility elements while a modal is open even when
- * their pixels remain visible. Only recover seat guides for masking, never for
- * interaction/readiness, and keep their current-tree identity for panel clipping.
+ * their pixels remain visible. Recover only native-located seat guides and the
+ * room clock for masking, never for interaction/readiness. Keep their current-tree
+ * identity for panel clipping.
  */
 export function screenshotMaskNodes(nodes: NativeNode[]): NativeNode[] {
   const result = new Set(nodes);
@@ -11,7 +12,9 @@ export function screenshotMaskNodes(nodes: NativeNode[]): NativeNode[] {
   const visit = (node: NativeNode) => {
     if (visited.has(node)) return;
     visited.add(node);
-    if (/^seat-guide-\d+$/.test(node.res || '') && node.bounds.width > 0 && node.bounds.height > 0) result.add(node);
+    if ((/^seat-guide-\d+$/.test(node.res || '')
+      || (node.res === 'countdown-text' && /^\d{2}:\d{2}:\d{2}$/.test(node.text || '')))
+      && node.bounds.width > 0 && node.bounds.height > 0) result.add(node);
     node.children?.forEach(visit);
   };
   nodes.forEach(visit);

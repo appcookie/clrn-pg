@@ -10,6 +10,15 @@ test('modal-hidden seat guides remain maskable without promoting other hidden co
   assert.deepEqual(screenshotMaskNodes([root, arrow]), [root, arrow]);
 });
 
+test('challenge overlay keeps the visible room clock mask when accessibility marks its node hidden', () => {
+  const clock = { res: 'countdown-text', text: '00:38:11', visible: false,
+    bounds: { x: 566, y: 1449, width: 184, height: 45 } };
+  const unrelated = { res: 'countdown-text', text: 'not a room clock', visible: false,
+    bounds: { x: 10, y: 10, width: 184, height: 45 } };
+  const root = { bounds: { x: 0, y: 0, width: 1178, height: 2556 }, children: [clock, unrelated] };
+  assert.deepEqual(screenshotMaskNodes([root]), [root, clock]);
+});
+
 test('real menu geometry preserves every foreground pixel while masking exposed arrow travel', () => {
   const panel = { bounds: { x: 0, y: 0, width: 492, height: 1461 } };
   const hidden = { res: 'seat-guide-5', bounds: { x: 341, y: 303, width: 76, height: 63 } };
