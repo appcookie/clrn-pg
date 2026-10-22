@@ -144,6 +144,43 @@ test('异步面板就绪发生在录像停止前，检查帧与终点截图发�
   }
 });
 
+test('语音退场在读取缓慢的原生树前保存独立终点截图', async () => {
+  const { captureNativeTransition } = await import('./animation-transition.ts');
+  const previousMode = process.env.IOS_VISUAL_MODE;
+  process.env.IOS_VISUAL_MODE = 'smoke';
+  const events = [];
+  let screenshots = 0, trees = 0;
+  const bounds = (x, y, width, height) => ({ x, y, width, height });
+  const panel = [
+    { clazz: 'XCUIElementTypeOther', bounds: bounds(0, 1, 120, 179), visible: true },
+    ...['in-game-audio-top-tips', 'in-game-audio-microphone-button', 'in-game-audio-bottom-tips']
+      .map((res, index) => ({ res, bounds: bounds(35, 25 + index * 55, 50, 20), visible: true })),
+  ];
+  const device = { screenSize: { width: 120, height: 180 },
+    nodes: async () => { events.push(trees ? 'end-tree' : 'start-tree'); return trees++ ? [] : panel; },
+    nativeScreenshot: async () => {
+      events.push(screenshots ? 'end-screenshot' : 'start-screenshot');
+      return screenshots++ ? after : before;
+    } };
+  const info = { attach: async () => {}, snapshotPath: () => { throw new Error('smoke不能读取基准'); } };
+  try {
+    await captureNativeTransition(device, 'texas-holdem-voice-exit', info,
+      bounds(0, 1, 120, 179), () => { events.push('trigger'); }, [], [], 0, 'videoFrames',
+      undefined, undefined, [], [], [], [], [],
+      async (_device, _name, _region, trigger, _info, _duration, _minimum, onRecorded) => {
+        await trigger();
+        events.push('record-stop');
+        await onRecorded();
+        return [before, middle, after];
+      });
+    assert.deepEqual(events, ['start-screenshot', 'start-tree', 'trigger', 'record-stop',
+      'end-screenshot', 'end-tree']);
+  } finally {
+    if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
+    else process.env.IOS_VISUAL_MODE = previousMode;
+  }
+});
+
 
 test('稀疏转场仍必须保留真实中途过程，首尾硬切失败', async () => {
   const { captureNativeTransition } = await import('./animation-transition.ts');

@@ -301,14 +301,25 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   // 39583869949的末帧操作按钮仍完整可见、倒计时32秒；解码和整树查询
   // 44秒后才截图已变成0秒。录屏真正停止后立即取独立终点，避免分析耗时
   // 跨越回合；不重发switch_player，也不从录像末帧替代原生截图。
-  const observeBeforeDecode = name === 'zhajinhua-operation-buttons' ? async () => {
+  const observeBeforeDecode = ['zhajinhua-operation-buttons', 'texas-holdem-voice-exit'].includes(name) ? async () => {
     markEndpoint('recording-stopped');
     try {
+      // Run 39813378984 finished the voice exit with the same cards as the
+      // recording, but a 7.5 s tree query let the next hand clear them before
+      // the independent endpoint screenshot. Observe that screen first.
+      let screen: Buffer | undefined;
+      if (name === 'texas-holdem-voice-exit') {
+        screen = await gameScreenshot(device);
+        markEndpoint('screenshot-complete');
+      }
       markEndpoint('nodes-start');
       const nodes = await device.nodes();
       markEndpoint('nodes-complete');
-      const screen = await gameScreenshot(device);
-      markEndpoint('screenshot-complete');
+      if (name !== 'texas-holdem-voice-exit') {
+        screen = await gameScreenshot(device);
+        markEndpoint('screenshot-complete');
+      }
+      if (!screen) throw new Error(`${name} 独立终点截图缺失`);
       immediateEndpoint = { nodes, screen };
     } catch (error) {
       markEndpoint('observation-failed');
@@ -345,7 +356,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     expect(recorded.length, '原生驱动至少采集三帧').toBeGreaterThanOrEqual(3);
     if (inspectFrames) await inspectFrames(originals, testInfo);
     if (observeBeforeDecode) {
-      if (!immediateEndpoint) throw new Error('操作按钮录屏必须在解码前读取独立原生终点');
+      if (!immediateEndpoint) throw new Error(`${name} 录屏必须在解码前读取独立原生终点`);
       afterNodes = immediateEndpoint.nodes;
       afterScreen = immediateEndpoint.screen;
     } else {
