@@ -20,6 +20,12 @@ function within(bounds: ScreenshotBounds, container: ScreenshotBounds): boolean 
     && bounds.y + bounds.height <= container.y + container.height;
 }
 
+/** Native card-name labels sit 50 logical points below each modal card. */
+function modalCardLabel(bounds: ScreenshotBounds, container: ScreenshotBounds): boolean {
+  return bounds.x >= container.x && bounds.x + bounds.width <= container.x + container.width
+    && bounds.y >= container.y && bounds.y + bounds.height <= container.y + container.height * 1.5;
+}
+
 /** Read the five cards and live countdown from one focused XCTest query. */
 export function remainingCardsState(nodes: Observation): { container: ScreenshotBounds; countdown: NativeNode } | undefined {
   if (gameConnectionState(nodes).connecting) return;
@@ -29,7 +35,7 @@ export function remainingCardsState(nodes: Observation): { container: Screenshot
   const container = containers[0].bounds;
   const countdown = nodes.find(node => node.res === 'view-community-cards-countdown' && within(node.bounds, container));
   const close = nodes.find(node => node.res === 'view-community-close-button' && within(node.bounds, container));
-  const names = nodes.filter(node => node.res === 'community_card_name_text' && within(node.bounds, container))
+  const names = nodes.filter(node => node.res === 'community_card_name_text' && modalCardLabel(node.bounds, container))
     .map(node => node.text || '').sort();
   // Cards briefly expose their backs while the real reveal animation runs.
   if (!countdown || !close || names.length !== 5 || names.some((name, index) => name !== expectedCards[index])) return;

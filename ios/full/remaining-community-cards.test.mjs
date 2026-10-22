@@ -14,6 +14,9 @@ test('remaining cards use the five live names inside the modal, ignoring table c
   const state = remainingCardsState([...popupNodes,
     node('community_card_name_text', 'back', rect(40, 1200, 40, 30))]);
   assert.deepEqual(state, { container: popup.bounds, countdown: popupNodes[2] });
+  const labelBelowPopup = popupNodes.map(item => item.res === 'community_card_name_text'
+    ? { ...item, bounds: { ...item.bounds, y: 880 } } : item);
+  assert.deepEqual(remainingCardsState(labelBelowPopup), state);
 });
 
 test('incomplete cards or reconnect cannot establish the transient state', () => {
