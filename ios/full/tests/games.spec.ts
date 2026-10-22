@@ -12,6 +12,7 @@ import { gamePreGame } from '../game-pregame';
 import { runTexasScenario } from '../texas-flows';
 import { zhajinhuaGameplay } from '../zhajinhua-gameplay';
 import type { ScreenshotMask } from '../screenshot';
+import { maskScreenshot } from '../screenshot';
 
 const test = base.extend<{ ownedRoom: { value: RoomSession | null } }>({
   /**
@@ -96,8 +97,13 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
                 delay_cooldown_alert: 'common-alert-message',
               };
               if (heldScreenshot) {
-                await testInfo.attach('drag-held-original', { body: heldScreenshot, contentType: 'image/png' });
-                await assertVisual(heldScreenshot, `${locale}-${scenario.pageLabel.replaceAll('_', '-')}-${state.replaceAll('_', '-')}.png`, testInfo);
+                const name = `${locale}-${scenario.pageLabel.replaceAll('_', '-')}-${state.replaceAll('_', '-')}`;
+                await testInfo.attach(masks.length ? `${name}-original` : 'drag-held-original',
+                  { body: heldScreenshot, contentType: 'image/png' });
+                if (masks.length) await testInfo.attach(`${name}-masks`,
+                  { body: JSON.stringify(masks), contentType: 'application/json' });
+                await assertVisual(masks.length ? maskScreenshot(heldScreenshot, masks) : heldScreenshot,
+                  `${name}.png`, testInfo);
                 index++;
                 return;
               }

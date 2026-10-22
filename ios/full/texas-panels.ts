@@ -2,9 +2,9 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { events, REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { flattenNodes, gameConnected, gameGone, gameNodes, gameReady, gameReadyCurrent, gameSemanticText, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
+import { flattenNodes, gameConnected, gameGone, gameGoneCurrent, gameNodes, gameReady, gameSemanticText, gameTap, gameTapCurrent, gameTextWithin } from './game-controls';
 import { captureGameThemes, closeGameMask, gameMenu } from './game-pregame';
-import { gameCardNames, replay } from './game-replay';
+import { replay } from './game-replay';
 import { dismissKeyboard } from './keyboard';
 import { gameTapText, restoreTexas, texasEvents, type TexasContext } from './texas-support';
 import { animateGamePanel } from './game-panel-animation';
@@ -12,6 +12,7 @@ import { captureNativeTransition, captureTransientTransition } from './animation
 import { captureBarrageMotion } from './barrage-motion';
 import { nativeReviewTab } from './review-tab';
 import { waitReviewCloseButton, waitReviewContent } from './review-readiness';
+import { captureRemainingCards } from './remaining-community-cards';
 
 /**
  * 复用 Web 的二十一个面板、聊天、带入审核和手牌展示状态。
@@ -159,21 +160,8 @@ export async function texasPanels(context: TexasContext): Promise<void> {
   await gameReady(device, 'texas-holdem-show-hand-card-button');
   await gameReady(device, 'texas-holdem-show-remain-community-card-button');
   await capture('hand_end');
-  await gameTap(device, 'texas-holdem-show-remain-community-card-button');
-  await gameReadyCurrent(device, 'view-community-cards-container');
-  await gameCardNames(device, 'community_card', 'community_card_name_text', ['ah', 'kd', '7c', '2s', 'qs'], {
-    scope: 'view-community-cards-container',
-    inspectFirst: async nodes => {
-      if (animationInfo) await animationInfo.attach('texas-remaining-cards-first-native-layout', {
-        body: JSON.stringify(nodes.map(node => ({ res: node.res, text: node.text,
-          bounds: node.bounds, children: node.children?.map(child => child.res) }))),
-        contentType: 'application/json',
-      });
-    },
-  });
-  await capture('remaining_cards');
-  await gameTap(device, 'view-community-close-button');
-  await gameGone(device, 'view-community-cards-container');
+  await captureRemainingCards(device, animationInfo, capture);
+  await gameGoneCurrent(device, 'view-community-cards-container');
   await gameTap(device, 'texas-holdem-show-hand-card-button');
   await texasEvents(context, [{ event: 'publish_hole_card', player_id: self, public_hole_card: ['as', 'ad'] }]);
   await gameReady(device, 'texas-holdem-player-hole-cards');
