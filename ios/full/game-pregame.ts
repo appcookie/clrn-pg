@@ -3,7 +3,8 @@ import { screenBounds } from './screen-geometry';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
-import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameReady, gameGone, gameGoneCurrent, gameNodes } from './game-controls';
+import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameConnectionState, gameReady, gameReadyCurrent,
+  gameGone, gameGoneCurrent, gameNodes } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
@@ -25,8 +26,22 @@ type Capture = (state: string) => Promise<void>;
 export async function gameMenu(device: AndroidDevice, item: string, ready: string): Promise<void> {
   await tap(device, 'menu-button');
   await tap(device, `drawer-menu-item-${item}`);
-  await gameGone(device, 'drawer-menu-item-exit');
-  await gameReady(device, ready);
+  // 39725551167: a room reconnect covered the still-open drawer just after
+  // its Theme tap. A full-tree absence under Connecting is not drawer exit.
+  await gameConnected(device, 2_000);
+  let observed = await device.inputObservation([ready, 'drawer-menu-item-exit']);
+  if (gameConnectionState(observed).connecting) {
+    await gameConnectedCurrent(device, 2_000);
+    observed = await device.inputObservation([ready, 'drawer-menu-item-exit']);
+  }
+  if (observed.some(node => node.res === 'drawer-menu-item-exit')
+    && !observed.some(node => node.res === ready)) {
+    // The first navigation tap did not change the UI. Retry only this
+    // reversible menu action after proving the drawer is still open.
+    await gameTapCurrent(device, `drawer-menu-item-${item}`);
+  }
+  await gameGoneCurrent(device, 'drawer-menu-item-exit');
+  await gameReadyCurrent(device, ready);
 }
 
 /**
