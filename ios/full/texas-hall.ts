@@ -15,7 +15,10 @@ import { recordScreenSamples } from './video-frames';
 import { gameLoadingRegions } from './game-loading-region';
 import { triggerPredictionResult } from './prediction-result';
 import { loadingWindow } from './loading-window';
+import { MissingLeaderboardSlideError } from './personal-leaderboard-slide';
+import { capturePanelWithMotionRecaptures } from './recapture-panel';
 import type { NativeLayoutNode } from './native-device';
+import type { TestInfo } from '@playwright/test';
 
 /**
  * 复用 Web 的大厅牌桌、自动带入、举报、个人收益、猜牌及升级状态。
@@ -163,8 +166,9 @@ export async function texasHall(context: TexasContext): Promise<void> {
   await animateGamePanel(device, 'texas-holdem', 'pair-play-report', 'report-pair-play-close-button',
     screenBounds(device, { x: 200, y: 260, width: 440, height: 700 }), animationInfo, 'exit', 'videoFrames');
   await gameGone(device, 'report-pair-play-reason-input');
-  await animateGamePanel(device, 'texas-holdem', 'personal-leaderboard', 'texas-holdem-leaderboard-button',
-    screenBounds(device, { x: 200, y: 200, width: 400, height: 900 }), animationInfo, 'enter', 'motionFrames', [],
+  const openPersonalLeaderboard = (info?: TestInfo) => animateGamePanel(device, 'texas-holdem',
+    'personal-leaderboard', 'texas-holdem-leaderboard-button',
+    screenBounds(device, { x: 200, y: 200, width: 400, height: 900 }), info, 'enter', 'motionFrames', [],
     async () => {
       // Run 39540787548 painted the real nickname by 15s, but full-tree
       // readiness polling still timed out with an empty value.
@@ -173,6 +177,17 @@ export async function texasHall(context: TexasContext): Promise<void> {
       await expect.poll(async () => (await device.transientMarker('personal-leader-board-nickname'))?.text,
         { timeout: 30_000 }).toBe(accountPresentation.nickname);
     });
+  if (animationInfo) {
+    // XCTest sometimes encodes no frames during the 300 ms sidebar slide
+    // (39851785925: 0 -> 6.128 s, then only complete-panel frames). A fresh
+    // real close/open action is allowed solely for missing video motion. All
+    // recordings remain in the report; one original movie must still pass
+    // every unchanged slide, endpoint, and business assertion.
+    await capturePanelWithMotionRecaptures(animationInfo, openPersonalLeaderboard, async () => {
+      await gameTap(device, 'personal-leader-board-close-button');
+      await gameGone(device, 'personal-leader-board-close-button');
+    }, error => error instanceof MissingLeaderboardSlideError);
+  } else await openPersonalLeaderboard();
   await texasEvents(context, [{ event: 'player_statistics', player_id: self,
     history_buy_in_amount: 1000, played_game_count: 10, settlement_net_amount: 180 }]);
   await expect.poll(async () => {

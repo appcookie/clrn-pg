@@ -1,4 +1,4 @@
-import { leaderboardSlideLayout, leaderboardSlideEvidence } from './personal-leaderboard-slide';
+import { leaderboardSlideLayout, leaderboardSlideEvidence, MissingLeaderboardSlideError } from './personal-leaderboard-slide';
 import { compareAnimationEndpoint } from './animation-endpoint';
 import { chatEndpointNodes } from './chat-readiness';
 import { animationRegion, endpointMasksInRegion } from './animation-region';
@@ -542,8 +542,8 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     await testInfo.attach(`${name}-sidebar-slide`, { body: JSON.stringify(slide), contentType: 'application/json' });
     candidates = slide.candidates.map(index => ({ frame: timeline[index], index, progress: progress[index],
       remaining: frameColorDistance(timeline[index], after) / total }));
-    expect(candidates.length, '个人排行榜侧栏边界和关闭按钮必须同帧真实平移；昵称或统计加载不能代替滑入')
-      .toBeGreaterThan(0);
+    if (!candidates.length) throw new MissingLeaderboardSlideError(
+      '个人排行榜侧栏边界和关闭按钮必须同帧真实平移；昵称或统计加载不能代替滑入');
   }
   if (/^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)) {
     const targetEvidence = await nativeTargetMotionEvidence(before, after, timeline);

@@ -3,6 +3,9 @@ import type { ScreenshotBounds } from './screenshot';
 import { nativePersonalLeaderboardBounds } from './animation-region';
 import { decodeFrame, type FramePixels } from './native-frame';
 
+/** The recorder missed the native slide; a fresh real panel opening may be captured. */
+export class MissingLeaderboardSlideError extends Error {}
+
 export type LeaderboardSlideLayout = {
   panel: ScreenshotBounds;
   close: ScreenshotBounds;
