@@ -75,8 +75,9 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 只产生 7 帧；按同轮已通过的自动带入录制使用 30fps，运动门禁不变。
   // 39682044700 的操作按钮合成器原片虽有 314 帧，却在弃牌按钮
   // 300ms 入场期间完全跳帧；改用 XCTest 单次录制，逐按钮门禁仍须通过。
-  // 39730704182 的聊天操作菜单再次入场合成器原片从起点直接跳到
-  // 终点，300ms 动画中没有中间帧；固定 XCTest 60fps 采集并保留运动门禁。
+  // 39730704182 和 39768797235 的聊天操作菜单合成器原片从起点
+  // 直接跳到终点，300ms 动画中没有中间帧；固定 XCTest 60fps 采集，
+  // 保留起点、中间帧与终点的原有运动门禁。
   const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter', 'texas-loading-spinner',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
     'texas-holdem-leaderboard-enter', 'zhajinhua-operation-buttons',
@@ -84,7 +85,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     'texas-holdem-report-enter', 'texas-holdem-own-profile-enter'].includes(name);
   const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
-    'texas-holdem-chat-actions-return-enter',
+    'texas-holdem-chat-actions-enter', 'texas-holdem-chat-actions-return-enter',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
     ].includes(name) ? 'xctest'
     : useCompositor ? 'simctl' : device.nativeVideoBackend);
