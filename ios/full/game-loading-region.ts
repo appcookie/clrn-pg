@@ -20,7 +20,19 @@ export function gameLoadingRegions(nodes: NativeLayoutNode[], screen: { width: n
   const [circle] = circles, [spade] = spades;
   const s = spade.bounds, c = circle.bounds;
   const diameter = s.height * 2;
-  const center = { x: Math.round(s.x + s.width / 2), y: Math.round(s.y + s.height / 2) };
+  const imageCenterX = Math.round(s.x + s.width / 2);
+  // The rotating spade's XCTest image box changes width and rounds its x by
+  // two pixels between frames. The adjacent native Loading label retains the
+  // same horizontal center throughout that rotation.
+  const labels = [...new Map(current
+    .filter(n => n.res === 'Loading' && n.clazz === 'XCUIElementTypeStaticText')
+    .map(n => [JSON.stringify(n.bounds), n])).values()];
+  const labelCenterX = labels.length === 1
+    ? Math.round(labels[0].bounds.x + labels[0].bounds.width / 2) : undefined;
+  if (labelCenterX !== undefined && Math.abs(labelCenterX - imageCenterX) > 3) {
+    throw new Error('加载文字与原生旋转图标必须保持同一水平中心');
+  }
+  const center = { x: labelCenterX ?? imageCenterX, y: Math.round(s.y + s.height / 2) };
   if (s.height <= 0 || diameter ** 2 >= screen.width * screen.height / 4
     || s.width < 0 || s.width > s.height + 2
     || Math.abs(c.x + c.width / 2 - center.x) > 2
@@ -38,8 +50,10 @@ export function gameLoadingRegions(nodes: NativeLayoutNode[], screen: { width: n
     && Math.abs(n.bounds.y + n.bounds.height / 2 - center.y) <= 2
     && contains(n, circle) && contains(n, spade))
     .sort((a, b) => a.bounds.width - b.bounds.width)[0];
-  const p = panel?.bounds || { x: center.x - diameter / 2, y: center.y - diameter / 2,
+  const measured = panel?.bounds || { x: center.x - diameter / 2, y: center.y - diameter / 2,
     width: diameter, height: diameter };
+  const p = labelCenterX === undefined ? measured
+    : { ...measured, x: Math.round(labelCenterX - measured.width / 2) };
   // Pinned LoadingStyle uses a 60pt ring and 30pt spade. Keep its complete
   // maximum rotation envelope, with 4px raster padding for both layers.
   const ring: ScreenshotBounds = { x: p.x - 4, y: p.y - 4, width: p.width + 8, height: p.height + 8 };

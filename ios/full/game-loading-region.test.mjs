@@ -32,6 +32,26 @@ test('加载范围由稳定父容器确定，不跟随旋转图片的外接矩�
   assert.throws(() => gameLoadingRegions([], screen), /同时看到/);
 });
 
+test('旋转图片的两像素水平取整不会移动由同一原生 Loading 文字定位的裁图', () => {
+  const label = { clazz: 'XCUIElementTypeStaticText', res: 'Loading',
+    bounds: { x: 500, y: 1383, width: 178, height: 54 }, children: [] };
+  const layout = (panelX, circleBounds, spadeBounds) => {
+    const circle = image('icon_loading_circle', circleBounds);
+    const spade = image('icon_loading_spade', spadeBounds);
+    const panel = { clazz: 'XCUIElementTypeOther',
+      bounds: { x: panelX, y: 1142, width: 186, height: 186 }, children: [circle, spade] };
+    return [panel, circle, spade, label, { ...label }];
+  };
+  const first = gameLoadingRegions(layout(498,
+    { x: 476, y: 1122, width: 226, height: 225 },
+    { x: 545, y: 1188, width: 91, height: 93 }), screen);
+  const last = gameLoadingRegions(layout(496,
+    { x: 494, y: 1140, width: 190, height: 189 },
+    { x: 542, y: 1188, width: 94, height: 93 }), screen);
+  assert.deepEqual(first, last);
+  assert.deepEqual(first.ring, { x: 492, y: 1138, width: 194, height: 194 });
+});
+
 test('只有黑桃变化不能冒充圆环旋转，只有圆环变化也不能代替黑桃运动', async () => {
   const previous = process.env.IOS_VISUAL_MODE; process.env.IOS_VISUAL_MODE = 'smoke';
   const ring = { x: 30, y: 30, width: 20, height: 20 }, spade = { x: 36, y: 36, width: 8, height: 8 };
