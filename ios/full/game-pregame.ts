@@ -29,6 +29,7 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
   // 39725551167: a room reconnect covered the still-open drawer just after
   // its Theme tap. A full-tree absence under Connecting is not drawer exit.
   await gameConnected(device, 2_000);
+  await device.prepareTransientCapture();
   let observed = await device.inputObservation([ready, 'drawer-menu-item-exit']);
   if (gameConnectionState(observed).connecting) {
     await gameConnectedCurrent(device, 2_000);

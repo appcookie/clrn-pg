@@ -11,7 +11,7 @@ const panel = node('game-settings-card-theme-simple', 100);
 const connecting = node('connection', 200, 'Connecting...');
 
 test('menu navigation retries the UI tap only after reconnect leaves the drawer open', async () => {
-  let state = 'table', connectionReads = 0, themeTaps = 0;
+  let state = 'table', connectionReads = 0, themeTaps = 0, rich = false;
   const visible = () => state === 'table' ? [menu]
     : state === 'drawer' ? [theme, drawerExit]
       : state === 'connecting' ? [connecting] : [panel];
@@ -21,8 +21,9 @@ test('menu navigation retries the UI tap only after reconnect leaves the drawer 
       if (state === 'connecting' && ++connectionReads >= 2) state = 'drawer';
       return visible();
     },
-    prepareTransientCapture: async () => {},
+    prepareTransientCapture: async () => { rich = true; },
     inputObservation: async names => {
+      assert.ok(rich, 'focused XCTest observation requires response attributes');
       const targets = Array.isArray(names) ? names : names ? [names] : [];
       return visible().filter(item => targets.includes(item.res) || item === connecting);
     },
@@ -40,14 +41,17 @@ test('menu navigation retries the UI tap only after reconnect leaves the drawer 
 });
 
 test('menu navigation does not repeat a successful tap', async () => {
-  let state = 'table', themeTaps = 0;
+  let state = 'table', themeTaps = 0, rich = false;
   const visible = () => state === 'table' ? [menu] : state === 'drawer' ? [theme, drawerExit] : [panel];
   const device = {
     screenSize: { width: 1178, height: 2556 },
     nodes: async () => visible(),
-    prepareTransientCapture: async () => {},
-    inputObservation: async names => visible().filter(item =>
-      (Array.isArray(names) ? names : names ? [names] : []).includes(item.res)),
+    prepareTransientCapture: async () => { rich = true; },
+    inputObservation: async names => {
+      assert.ok(rich, 'focused XCTest observation requires response attributes');
+      return visible().filter(item =>
+        (Array.isArray(names) ? names : names ? [names] : []).includes(item.res));
+    },
     input: { tap: async ({ x }) => {
       if (x === 20) state = 'drawer';
       else if (x === 50) { themeTaps++; state = 'panel'; }
