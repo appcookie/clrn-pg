@@ -26,13 +26,13 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
   videoPhaseAnchors: string[] = [],
   capture: typeof captureNativeTransition = captureNativeTransition): Promise<void> {
   if (!testInfo) { await gameTap(device, button); return; }
-  const guardedProfile = game === 'texas-holdem' && phase === 'enter'
-    && /^(?:own-profile|opponent-profile-[12])$/.test(name);
+  const guardedEntrance = game === 'texas-holdem' && phase === 'enter'
+    && /^(?:own-profile|opponent-profile-[12]|auto-rebuy)$/.test(name);
   let press: () => Promise<void>;
-  if (guardedProfile) {
-    // Run 39560079179 reconnected during recorder warm-up, after the old
-    // pre-recording readiness checks. Observe twice immediately before the
-    // one real tap; no accessibility query interrupts the ensuing animation.
+  if (guardedEntrance) {
+    // Runs 39560079179 and 39695625593 reconnected during recorder warm-up,
+    // after the old pre-recording readiness checks. Observe twice immediately
+    // before the one real tap; no query interrupts the ensuing animation.
     press = async () => {
       const timing: { preparationStartedUtc: string; tapRequestedUtc?: string;
         point?: { x: number; y: number }; completedUtc?: string } = {
