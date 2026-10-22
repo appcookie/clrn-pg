@@ -40,8 +40,6 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 出现 7.376667→7.375000 的 PTS 倒退；该动作改用合成器采集。
   const useCompositor = name === 'zhajinhua-leaderboard-enter'
     || name === 'zhajinhua-card-rank-exit'
-    // 39690648899 的个人排行榜 XCTest 首帧后仍空 6.65s，完整越过滑入。
-    || name === 'texas-holdem-personal-leaderboard-enter'
   // 39560079179's older XCTest profile capture first appeared at full size;
   // retain compositor capture for the two opponent entrances.
     || /^texas-holdem-opponent-profile-[12]-enter$/.test(name)
@@ -64,9 +62,10 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   // 39608277325 的举报入场合成器原片只有9帧且存在5.068秒空档；
   // 39608143748 的德州排行榜入场在第112→113帧跨过1.733秒，
   // 从牌桌直接到完整侧栏。两者改用固定XCTest，保留帧数及目标运动门禁。
-  // 应用59ba已把个人榜单切到原生驱动；39625229676 的合成器原片
-  // 曾漏过同步侧栏位移。入口重新固定合成器，仍须通过完整目标门禁；
-  // 退场继续由 XCTest 30fps 采集。
+  // 应用59ba已把个人榜单切到原生驱动；本轮39828951426的合成器
+  // 首帧后空5.7秒，只录到完整侧栏。此前39690648899的60fps XCTest
+  // 也曾跨过滑入；入口改为30fps XCTest单次采集，仍验证侧栏边界与
+  // 关闭按钮同帧真实位移，退场保持30fps XCTest。
   // 39659693989 的举报入场合成器原片在触发后相隔358ms，跨过300ms
   // 弹窗滑入；改用固定XCTest单次采集，继续校验已审查的中途轨迹。
   // 39670012835 的本人资料入场合成器在43.136→43.221秒跳过可验证的
@@ -81,6 +80,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   const thirtyFpsRecording = ['texas-holdem-auto-rebuy-enter', 'texas-loading-spinner',
     'texas-holdem-pair-play-report-enter', 'texas-holdem-pair-play-report-exit',
     'texas-holdem-leaderboard-enter', 'zhajinhua-operation-buttons',
+    'texas-holdem-personal-leaderboard-enter',
     'texas-holdem-personal-leaderboard-exit',
     'texas-holdem-report-enter', 'texas-holdem-own-profile-enter'].includes(name);
   const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
