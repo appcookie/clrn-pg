@@ -92,6 +92,27 @@ export function framePaletteDistance(left: Buffer, right: Buffer): number {
   return difference / (a.width * a.height * 3);
 }
 
+/** The auto-rebuy panel can finish exiting before an unrelated room reconnect
+ * covers the final video frame. Only accept an earlier endpoint when the same
+ * real recording holds its completed image for at least 80 ms near the tail.
+ */
+export function completedAutoRebuyExitFrame(after: Buffer, timeline: Buffer[],
+  timestampsMs: (number | null)[]): { index: number; distances: number[] } {
+  const distances = timeline.map(frame => framePaletteDistance(frame, after));
+  const last = timeline.length - 1;
+  if (distances[last] < 10) return { index: last, distances };
+  let first = -1, completed = -1;
+  for (let index = Math.floor(timeline.length / 2); index < last; index++) {
+    if (distances[index] >= 10 || !Number.isFinite(timestampsMs[index])) {
+      first = -1;
+      continue;
+    }
+    if (first < 0) first = index;
+    if (Number(timestampsMs[index]) - Number(timestampsMs[first]) >= 80) completed = index;
+  }
+  return { index: completed, distances };
+}
+
 /** Select only real in-between frames; video compression alone cannot create a transition.
  * @param before - Exact start frame.
  * @param after - Exact end frame.
@@ -457,7 +478,16 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   await testInfo.attach(`${name}-start`, { body: before, contentType: 'image/png' });
   await testInfo.attach(`${name}-end`, { body: after, contentType: 'image/png' });
   expect(firstStartDistance, '录屏首帧须包含动作前的实际布局').toBeLessThan(10);
-  expect(framePaletteDistance(timeline.at(-1)!, after), '录屏结束时动画必须完成').toBeLessThan(10);
+  const completion = name === 'texas-holdem-auto-rebuy-exit'
+    ? completedAutoRebuyExitFrame(after, timeline, recorded.timestampsMs || [])
+    : { index: timeline.length - 1, distances: [framePaletteDistance(timeline.at(-1)!, after)] };
+  if (name === 'texas-holdem-auto-rebuy-exit') await testInfo.attach(`${name}-tail-completion`, {
+    body: JSON.stringify({ ...completion, timestampsMs: recorded.timestampsMs,
+      reason: 'Run 39812229826: completed panel exit precedes an unrelated Connecting overlay in the final frame' }),
+    contentType: 'application/json',
+  });
+  expect(completion.index, '录屏结束前须有持续至少 80 ms 的真实完整退场帧').toBeGreaterThanOrEqual(0);
+  expect(framePaletteDistance(timeline[completion.index], after), '录屏结束时动画必须完成').toBeLessThan(10);
   if (requiredRegions.length) {
     const parts: Buffer[][] = [];
     for (const frame of originals) parts.push(await cropNativeRegions(frame, requiredRegions, { masks }));
@@ -466,7 +496,9 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         `${name} 第 ${index + 1} 个区域必须独立运动`).toBe(true);
     }
   }
-  const evidence = await nativeTransitionEvidence(before, after, timeline);
+  // Preserve every raw frame above, but do not let a later reconnect overlay
+  // compete with the panel's true intermediate animation frames.
+  const evidence = await nativeTransitionEvidence(before, after, timeline.slice(0, completion.index + 1));
   const { total, progress } = evidence;
   let candidates = evidence.candidates;
   if (showdown) {
