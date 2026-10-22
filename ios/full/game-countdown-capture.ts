@@ -48,7 +48,11 @@ export async function capturePlayerCountdown(device: NativeDevice, game: 'texas-
     expect(before.seconds, '本轮计时事件必须已经开始').toBeGreaterThan(60);
   }).toPass({ timeout: 30_000, intervals: [250] });
   const name = `${game === 'texas-holdem' ? 'texas' : game}-operation-countdown`;
-  const frames = await recordScreenSamples(device, name, info, undefined, 3000, async () => {
+  // The 39712684694 compositor recording had 154 real frames across 7.23s,
+  // yet the 120s sweep advanced only 1.17 color-distance units. Keep the
+  // shape threshold and record enough real clock time to exceed it.
+  const frames = await recordScreenSamples(device, name, info, undefined,
+    game === 'zhajinhua' ? 15000 : 3000, async () => {
     const after = playerCountdown(await gameNodes(device), playerId, game);
     expect(after.node.bounds, '倒计时须保持在同一个玩家位置').toEqual(before!.node.bounds);
     expect(after.seconds, '录像期间真实倒计时必须递减').toBeLessThan(before!.seconds);
