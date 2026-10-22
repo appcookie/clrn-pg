@@ -2,6 +2,11 @@ export type ProbeFrame = { pts_time?: string };
 
 // 候选池须有足够的真实帧；各场景另外验证选出的起点、中间和终点状态。
 export const shortAnimationMinimumFrames = 10;
+// Panel transitions independently verify the recorded start, a real middle
+// pose, and the completed endpoint. Simctl can encode only a few frames while
+// XCTest and the fixture are busy; a raw-frame floor must not reject a valid
+// three-phase transition before those visual checks run.
+export const semanticTransitionMinimumFrames = 3;
 
 /** 从原片帧序选出时间递增的候选；异常原始PTS保留诊断，绝不排序、补帧或重写。 */
 export function validateRecordedTimeline(frames: ProbeFrame[], postTriggerWallMs: number,

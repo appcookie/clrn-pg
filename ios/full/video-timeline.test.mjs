@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { validateRecordedTimeline, shortAnimationMinimumFrames } from './video-timeline.ts';
+import { validateRecordedTimeline, semanticTransitionMinimumFrames, shortAnimationMinimumFrames } from './video-timeline.ts';
 
 const frames = (durationMs, fps = 30) => Array.from({ length: Math.floor(durationMs * fps / 1000) + 1 },
   (_, index) => ({ pts_time: String(index / fps) }));
@@ -79,4 +79,12 @@ test('真实低帧率和短动画继续要求足够的候选，不补帧或重�
   const input = [0, 5.395, 5.436667, 5.505, 5.551667, 5.596667, 5.733333, 5.776667, 5.78, 5.798333, 5.8, 5.801667, 6.811667, 6.91].map(time => ({ pts_time: String(time) }));
   assert.equal(validateRecordedTimeline(input, 3500, shortAnimationMinimumFrames).timestampsMs.length, 14);
   assert.throws(() => validateRecordedTimeline(input.slice(0, 9), 3500, shortAnimationMinimumFrames), /真实候选帧/);
+});
+test('稀疏的真实弹窗转场保留八张原片帧，由后续起点、中间帧、终点检查判断画面', () => {
+  const input = [0, 4.416667, 4.468333, 4.511667, 4.563333, 4.57, 4.575, 6.908333]
+    .map(time => ({ pts_time: time.toFixed(6) }));
+  const result = validateRecordedTimeline(input, 3500, semanticTransitionMinimumFrames);
+  assert.deepEqual(result.frameIndices, [0, 1, 2, 3, 4, 5, 6, 7]);
+  assert.equal(result.durationMs, 6908.333);
+  assert.throws(() => validateRecordedTimeline(input.slice(0, 2), 3500, semanticTransitionMinimumFrames), /真实候选帧/);
 });

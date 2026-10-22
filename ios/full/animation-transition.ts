@@ -21,7 +21,7 @@ import { attachFrameEvidence } from './frame-evidence';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
 import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask, networkStatusMask } from './game-masks';
-import { shortAnimationMinimumFrames } from './video-timeline';
+import { semanticTransitionMinimumFrames, shortAnimationMinimumFrames } from './video-timeline';
 import { safeNativeTree } from './diagnostics';
 import { alertEndpointClockMasks } from './alert-endpoint-masks';
 import { nativeLevelUpRegions, type LevelUpRegions } from './level-up-region';
@@ -305,7 +305,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     // then require the same semantics before observing the endpoint.
     if (settleMs) await setTimeout(settleMs);
     if (!deferredReady && afterReady) await afterReady();
-  }, testInfo, 3500, shortAnimationMinimumFrames, observeBeforeDecode);
+  }, testInfo, 3500, semanticTransitionMinimumFrames, observeBeforeDecode);
   markEndpoint('recorder-returned');
   const originals = recorded;
   let afterNodes: NativeNode[], afterScreen: Buffer;

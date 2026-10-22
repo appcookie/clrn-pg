@@ -145,7 +145,7 @@ test('异步面板就绪发生在录像停止前，检查帧与终点截图发�
 });
 
 
-test('短录像必须保留真实中途过程，14帧首尾硬切仍失败', async () => {
+test('稀疏转场仍必须保留真实中途过程，首尾硬切失败', async () => {
   const { captureNativeTransition } = await import('./animation-transition.ts');
   const { validateRecordedTimeline } = await import('./video-timeline.ts');
   const previousMode = process.env.IOS_VISUAL_MODE;
@@ -166,7 +166,8 @@ test('短录像必须保留真实中途过程，14帧首尾硬切仍失败', asy
     await run([before, ...Array(12).fill(middle), after]);
     await assert.rejects(run([...Array(7).fill(before), ...Array(7).fill(after)]), /真实动画帧/);
     await assert.rejects(run(Array(14).fill(after)), /首帧/);
-    await assert.rejects(run([before, middle, after]), /真实候选帧/);
+    await run([before, middle, after]);
+    await assert.rejects(run([before, after]), /真实候选帧/);
   } finally {
     if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = previousMode;
