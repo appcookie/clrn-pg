@@ -98,6 +98,12 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     if (animationInfo) {
       await capturePlayerCountdown(device, 'zhajinhua', self, animationInfo, () =>
         send(events([{ event: 'operating_time_changed', player_id: self, remain_operating_seconds: 120 }])));
+      // The longer real countdown recording can carry this turn past its
+      // operation window. Start the same blind turn again through the game's
+      // native switch_player event before photographing its action controls.
+      await send(events([{ event: 'switch_player', player_id: self, valid_bets: validBets(false) }]));
+      await gameReady(device, 'zhajinhua-operation-button-call');
+      await gameReady(device, 'zhajinhua-operation-button-battle');
     }
     await capture('blind_cards');
     const seeCards = events([
