@@ -8132,6 +8132,854 @@
         "releaseTag": "ios-staging-23-1-59ba4f634fa6",
         "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
       }
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-buy-in-review/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "92730e39b83550add058416c328d2cfedfdf6fae800f1d7f31aa6a876fe56815",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-chat-actions/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "fdfeeb153da2eb22e0d9d6e853cfae7a4010db9b5cc17e97e06d2af6eff649e8",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-chat-block-confirm/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "72c7fab4cdf3734cb58922287ee0530d49c366a4ff41a1c993d5ef3de9be3a5a",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-chat-history/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "07cafd19d6a19c04421e682b0cb49b940f46a3eccc90ce184699ad2bb0a2bd1d",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-chat-phrases/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "4b3fa014f2befe47b9b0d8b4a7288cd27ab259fe59ecc33c20b9596334b31439",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-chat-report/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "91021627df9ca77532c8d29bdca02f2827dd7fa0ff792ea412bfbfb47c72f878",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-hand-end/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "edc3774cfa2b166816ca038f4f15c4c8ea2136b284036732030358ceb9bbd327",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-leaderboard-players/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "19b6d4f6d2522c91cbfad7ab8afaeb49d5f3d19d6e9e9f4a28d3153a011a57eb",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-quit-confirm/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "f1e8ab446c857c987db0b56d1c3196e6f4a67356851228ea4ca0ea5af9110e12",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-record-actions/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "15a380ff88982d078448a9730507bac4ae6729f2aa0b2f46c0048952611a3d61",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-record-settlement/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "9974e4a3d7343b8c988734b53d29a11ecd930be81a876ab2ba62c58b2d4d32bc",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-remaining-cards/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "7f19331941b7abf23dd4eaae32cbb274f45437fff1ceb411bf66f7ba3cc45540",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-settings-enabled/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "fd9efdcaf13c869fde08c5f84ca9cdda64690601caa25692cbd5fd0608b8d0e5",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-show-cards/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "7d19965c7a27bb563b2568248ad09e1f64f774dd86af264d21d455a34f5e5a5b",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-table-black/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "c445ce3b2631656e5ad8a1857cd7b01ff2abc82310e11fbffb0ac809e3ba7c73",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-table-blue/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "a7660dfd430e35c3f7e00991fe19e9e072020954958f497ffaaf36f5e5adc785",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-table-purple/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "46190cdce2329f61724562d4681d031915e838eb4ada27140d13b1c656e65e0e",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-theme-four-color-two/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "3a0399ccfdeb8c49b28ef2f3d767000d18d69b74a71eba79fdc332abc6013e51",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-theme-four-color/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "280c0150b20e455b0026f27b15d877e2827198b0c364cb70cb2c4a2f53a02dc4",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-theme-realistic/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "581a3d5904deb4ffeffdd91b446ff82770269f177206612f4d3b6b9199f19eb2",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-panels-voice/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "668a7a39d53f20f7583d19e2586ff37c8d63b8e90918b64a8bfced460383d2e3",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-barrage-1/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "7c44c79eb28f70badea1f6bfbeb209936f2bc1cd90ac7d9223b8792701c90c80",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-barrage-1/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "ecc28c3edb69b83084f17e6f67ab928966b9c38ec59944df02ab0ba574e338c1",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy-in-review-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "ecfb496860f75748ddc1ba06c02d8bd2b1270073e3d7e76232f150a5282e871d",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy-in-review-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "9d7fa52648af3d646cc6d86766a5af6b2d36dc22cd5d1f64adcd27cdd4e19032",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy-in-review-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "4e4634f127cf0e88c1710bdbd5d3f21a062941ca6ebbbab3986650032c9f7b85",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy-in-review-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "3845cd37525e3c83ec7cfe2e57b23f268e80a1a9b52e528129e6f999aa6e571a",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy-in-review-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "3cc85dec1b7e4c43e4a0af7112062df008afa57987963b108b84341f8f2b253d",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-buy-in-review-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "ecfb496860f75748ddc1ba06c02d8bd2b1270073e3d7e76232f150a5282e871d",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-actions-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "7e6aedd9f6da0ef6ec5b5224be2e72b7e03e52f968e2a82a6719f98ad7bd5c74",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-actions-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "cf8382f894f4a050839c86f6970face486aed32ee1ac8365e6eacd70baea58cb",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-actions-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "51afe63f7547feddf7d359129b68c89952c3c5da47c316cce19a9f4b89613fe8",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-actions-return-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "4b435e94438412b0e6a2af32c2d5962320a360941b6d963897890f2f3c0f5269",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-actions-return-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "cd87f6f4389895456c7928dc84112039ccde2825ebb116643b86b7e8ac8d80e8",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-actions-return-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "165beac53041f5dcecf3bf5e9fa6e62e9dacff5abf8a9b3d7ddb4fdec7ae200f",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-block-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "d7a5694f4b5c6c28bb8ae854b4ca979ae751036a94dbaedf1d3417e524f47e19",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-block-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "2dc9fed48eadcc6e16dd1c500d2d512cf111d8eca6045039bf20976d91a8bfd3",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-block-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "27ed9324fc350aa809779c4731ac32201aace173f97addd9696a7f37286d9218",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-block-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "1317b561a04fb6b453bde4b862da243a13dbc12f1955dadd58e366475469c0c5",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-block-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "b414e160309fa67106646cdd3dcc51bac2ec41bce3bb97a7ff0347661f319f9f",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-block-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "4e83d1a349db16bba77dfe4356cfacaccb25332892e9e72068ab13b6ba6d7ac8",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-report-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "bd53d7e487875181e5c3fa9ebafd264ccb9d149377fab52a799971405384368c",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-report-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "e5ecc7445db01cdbc2913653201d47d71bba7b9877e4a8fe35ff09afca238065",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-message-report-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "754c77ffad7efa7a711159c8f2036ddec95b666116549366aa560431af4e74c1",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-voice-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "e6d5a5320646c44b6cceb4d40d39f4db1e64dd534c0fee5c32b36d5603a6081c",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-voice-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "1e2b2fdff7fab344048a1e8b36a52fec8f00dbcc09eb154dc12daecd8575cf19",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-voice-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "7808fad18458d43af26964242cbd7944f8f373a023cdf0d656b1ada958b25269",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-voice-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "7808fad18458d43af26964242cbd7944f8f373a023cdf0d656b1ada958b25269",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-voice-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "7e4206318427c2f2f82f0a89e9c67fb1426176dccb6fec2e77a82b9e40c5af02",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-voice-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "e6d5a5320646c44b6cceb4d40d39f4db1e64dd534c0fee5c32b36d5603a6081c",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-system-prompt/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "e00ac7cc2c3ff968b12ca31009c7261923fa0637ec556d81a8c2bcafa920f26b",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-system-prompt/ios/iphone16-ios18.5/en/animation/peak.png",
+      "sha256": "824c21ccf2bc7c0e09b418a10b58205c5affcd6ffe33c1988c4001f5e80a00c0",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-system-prompt/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "c5f034410e84a1f951982fb13e3b607b70782a52d22b7c71ae4729ea406a13fc",
+      "source": {
+        "sourceRun": 39802504179,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39802504179",
+        "sourceWorkflowHead": "f625984d116f941a30d262d3b50557ff02b17741",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-20-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
