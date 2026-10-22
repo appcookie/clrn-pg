@@ -1,47 +1,12 @@
-import { expect, type TestInfo } from '@playwright/test';
+import type { TestInfo } from '@playwright/test';
 import { setTimeout as delay } from 'node:timers/promises';
-import { comparePixels } from '../visual.mjs';
+import { PNG } from 'pngjs';
 import type { NativeDevice } from './native-device';
-import { gameConnectionState, gameNodes, gameScreenshot, gameTapCurrent, type NativeNode } from './game-controls';
-import { countdownMask, foregroundPanels, networkStatusMask, screenshotMaskNodes,
+import { gameNodes, gameScreenshot, gameTapCurrent, type NativeNode } from './game-controls';
+import { foregroundPanels, networkStatusMask, screenshotMaskNodes,
   seatGuideMotionBounds, subtractPanel, visibleMasks } from './game-masks';
 import { playerCountdownNodes } from './game-countdown';
-import { maskScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
-
-const expectedCards = ['2s', '7c', 'ah', 'kd', 'qs'];
-const targets = ['view-community-cards-container', 'view-community-cards-countdown',
-  'view-community-close-button', 'community_card_name_text'];
-
-type Observation = Awaited<ReturnType<NativeDevice['inputObservation']>>;
-
-function within(bounds: ScreenshotBounds, container: ScreenshotBounds): boolean {
-  return bounds.x >= container.x && bounds.y >= container.y
-    && bounds.x + bounds.width <= container.x + container.width
-    && bounds.y + bounds.height <= container.y + container.height;
-}
-
-/** Native card-name labels sit 50 logical points below each modal card. */
-function modalCardLabel(bounds: ScreenshotBounds, container: ScreenshotBounds): boolean {
-  return bounds.x >= container.x && bounds.x + bounds.width <= container.x + container.width
-    && bounds.y >= container.y && bounds.y + bounds.height <= container.y + container.height * 1.5;
-}
-
-/** Read the five cards and live countdown from one focused XCTest query. */
-export function remainingCardsState(nodes: Observation): { container: ScreenshotBounds; countdown: NativeNode } | undefined {
-  if (gameConnectionState(nodes).connecting) return;
-  const containers = nodes.filter(node => node.res === 'view-community-cards-container');
-  if (!containers.length) return;
-  expect(containers, '剩余公共牌弹窗必须唯一').toHaveLength(1);
-  const container = containers[0].bounds;
-  const countdown = nodes.find(node => node.res === 'view-community-cards-countdown' && within(node.bounds, container));
-  const close = nodes.find(node => node.res === 'view-community-close-button' && within(node.bounds, container));
-  const names = nodes.filter(node => node.res === 'community_card_name_text' && modalCardLabel(node.bounds, container))
-    .map(node => node.text || '').sort();
-  // Cards briefly expose their backs while the real reveal animation runs.
-  if (!countdown || !close || names.length !== 5 || names.some((name, index) => name !== expectedCards[index])) return;
-  expect(countdown.text, '弹窗倒计时必须有效').toMatch(/^\d{1,2}$/);
-  return { container, countdown };
-}
+import { type ScreenshotMask } from './screenshot';
 
 /** Prepare only the changing table pixels while the ten-second modal is still closed. */
 export function remainingCardsBackgroundMasks(nodes: NativeNode[], screen: { width: number; height: number }): ScreenshotMask[] {
@@ -61,49 +26,67 @@ export function remainingCardsBackgroundMasks(nodes: NativeNode[], screen: { wid
   return masks;
 }
 
-/** Finish all modal assertions and the stable endpoint capture before its ten-second auto-close. */
+/** The modal covers a large, otherwise still part of the table. Simulator screenshots
+ * can observe it while an XCTest tap or accessibility query is still in flight. */
+export function remainingCardsOverlayRatio(before: PNG, after: PNG): number {
+  if (before.width !== after.width || before.height !== after.height) throw new Error('剩余公共牌截图尺寸不一致');
+  const left = Math.floor(before.width * .18), right = Math.ceil(before.width * .82);
+  const top = Math.floor(before.height * .17), bottom = Math.ceil(before.height * .36);
+  let changed = 0, samples = 0;
+  for (let y = top; y < bottom; y += 3) for (let x = left; x < right; x += 3) {
+    const offset = (y * before.width + x) * 4;
+    if ([0, 1, 2].some(channel => Math.abs(before.data[offset + channel] - after.data[offset + channel]) > 24)) changed++;
+    samples++;
+  }
+  return changed / samples;
+}
+
+async function watchRemainingCards(device: NativeDevice, before: Buffer) {
+  const baseline = PNG.sync.read(before);
+  const started = Date.now();
+  const observations: { elapsedMs: number; changedRatio: number }[] = [];
+  let firstSeen = 0;
+  let best: { image: Buffer; changedRatio: number } | undefined;
+  while (Date.now() - started < 70_000) {
+    const image = await gameScreenshot(device);
+    const changedRatio = remainingCardsOverlayRatio(baseline, PNG.sync.read(image));
+    observations.push({ elapsedMs: Date.now() - started, changedRatio });
+    if (!best || changedRatio > best.changedRatio) best = { image, changedRatio };
+    if (changedRatio > .12) {
+      firstSeen ||= Date.now();
+      if (Date.now() - firstSeen >= 1_500) return { image, observations };
+    } else firstSeen = 0;
+    await delay(250);
+  }
+  return { image: undefined, observations, best };
+}
+
+/** Preserve the live modal frame before its ten-second auto-close. The reviewed
+ * full-screen baseline checks the five card faces and all surrounding pixels. */
 export async function captureRemainingCards(device: NativeDevice, testInfo: TestInfo | undefined,
   capture: (state: string, masks: ScreenshotMask[], triggerToast: undefined, heldScreenshot: Buffer) => Promise<void>): Promise<void> {
   const backgroundMasks = remainingCardsBackgroundMasks(await gameNodes(device), device.screenSize);
+  const before = await gameScreenshot(device);
   await device.prepareTransientCapture();
   await device.withImmediateAnimationInput(async () => {
-    await gameTapCurrent(device, 'texas-holdem-show-remain-community-card-button');
-    const readyDeadline = Date.now() + 30_000;
-    const observations: Observation[] = [];
-    const observe = async () => {
-      const nodes = await device.inputObservation(targets);
-      observations.push(nodes);
-      return remainingCardsState(nodes);
-    };
-    try {
-      let state: Awaited<ReturnType<typeof observe>>;
-      do {
-        state = await observe();
-        if (state) break;
-        await delay(100);
-      } while (Date.now() < readyDeadline);
-      expect(state, '十秒倒计时内必须显示五张剩余公共牌').toBeDefined();
-      const deadline = Date.now() + Math.max(0, Number(state!.countdown.text) * 1_000 - 750);
-      const masks = [...backgroundMasks.flatMap(mask => subtractPanel(mask, state!.container)),
-        countdownMask(state!.countdown.bounds, state!.countdown.text || '')];
-      let previous = maskScreenshot(await gameScreenshot(device), masks);
-      let stableSince = Date.now();
-      let original: Buffer | undefined;
-      for (;;) {
-        expect(Date.now(), '剩余公共牌弹窗自动关闭前截图必须稳定').toBeLessThan(deadline);
-        await delay(250);
-        expect(await observe(), '截图后五张公共牌及倒计时必须仍可见').toBeDefined();
-        original = await gameScreenshot(device);
-        const current = maskScreenshot(original, masks);
-        if (comparePixels(previous, current).matches && Date.now() - stableSince >= 250) break;
-        previous = current;
-        stableSince = Date.now();
-      }
-      await capture('remaining_cards', masks, undefined, original!);
-    } finally {
-      await testInfo?.attach('texas-remaining-cards-focused-observations', {
-        body: JSON.stringify(observations), contentType: 'application/json',
+    let watcher: Promise<Awaited<ReturnType<typeof watchRemainingCards>> | Error> | undefined;
+    await gameTapCurrent(device, 'texas-holdem-show-remain-community-card-button', undefined,
+      () => { watcher = watchRemainingCards(device, before).catch(error => error as Error); });
+    if (!watcher) throw new Error('剩余公共牌点击没有启动原生截图');
+    const result = await watcher;
+    if (result instanceof Error) throw result;
+    await testInfo?.attach('texas-remaining-cards-simulator-observations', {
+      body: JSON.stringify(result.observations), contentType: 'application/json',
+    });
+    if (!result.image) {
+      if (result.best) await testInfo?.attach('texas-remaining-cards-best-observed-screen', {
+        body: result.best.image, contentType: 'image/png',
       });
+      throw new Error('原生截图在 70 秒内没有看到剩余公共牌弹窗');
     }
+    const panel = { x: Math.floor(device.screenSize.width * .18), y: Math.floor(device.screenSize.height * .17),
+      width: Math.ceil(device.screenSize.width * .64), height: Math.ceil(device.screenSize.height * .19) };
+    const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, panel));
+    await capture('remaining_cards', masks, undefined, result.image);
   });
 }

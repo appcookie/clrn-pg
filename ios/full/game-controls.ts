@@ -229,9 +229,10 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
 
 /** 聊天、牌谱入口和关闭遮罩使用同一次轻量原生观测；保留两样本、重连恢复和错误即失败规则。 */
 export async function gameTapCurrent(device: AndroidDevice, res: string,
-  pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number }): Promise<void> {
+  pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number },
+  onTap?: (point: Readonly<{ x: number; y: number }>) => void): Promise<void> {
   await device.prepareTransientCapture();
-  await gameTap(device, res, false, undefined, async () => {
+  await gameTap(device, res, false, onTap, async () => {
     const observation = await device.inputObservation(res);
     // 39614829016 的牌谱按钮在真实 XML 和截图中可见，但 predicate 查询持续为空。
     // 只有目标缺失且没有连接遮挡时，改读本轮完整原生树；不复用旧坐标或补造节点。
