@@ -80,8 +80,34 @@ export async function texasHall(context: TexasContext): Promise<void> {
         // potentially stalled accessibility snapshot during recording.
         switchTap = device.input.tap(switchPoint);
         await switchTap;
-        // The native tap can also return before the game sends its request.
-        // Wait for that one real request; the proxy hold expires at 45s.
+        // 39819950690: WDA returned from mobile: tap, but the real switch
+        // remained unchecked and no request arrived. A second action is safe
+        // only after observing that unchanged native control and popup.
+        let requested = false;
+        for (let attempt = 0; attempt < 10 && !requested; attempt++) {
+          requested = (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested;
+          if (!requested) await delay(500);
+        }
+        if (!requested) {
+          const settled = await gameNodes(device);
+          const actualSwitch = settled.find(node => node.res === 'auto-rebuy-switch' && node.visible !== false);
+          expect(settled.some(node => node.res === 'auto-rebuy-popup' && node.visible !== false),
+            '重试开关前自动带入面板必须仍可见').toBe(true);
+          expect(settled.some(node => /Connecting\.\.\./.test(node.text || '')),
+            '重试开关前牌桌不能处于重连遮挡').toBe(false);
+          expect(actualSwitch?.bounds, '重试开关前必须是同一个原生控件').toEqual(currentSwitch.bounds);
+          expect(actualSwitch?.enabled).toBe(true);
+          await animationInfo.attach('texas-loading-first-tap-state', {
+            body: JSON.stringify({ requested, switch: actualSwitch,
+              popupMounted: true }), contentType: 'application/json',
+          });
+          if (actualSwitch?.checked === false) {
+            switchTap = device.driver.tap('auto-rebuy-switch');
+            await switchTap;
+          }
+        }
+        // The native action can still return before the game sends its request.
+        // Require that one real request; the proxy hold expires at 45s.
         await expect.poll(async () => (await proxy.command<{ requested: boolean }>('android/auto-rebuy-hold')).requested,
           { timeout: 20_000 }).toBe(true);
         loadingLayout = await device.layoutNodes();
