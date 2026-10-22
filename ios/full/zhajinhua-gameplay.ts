@@ -154,6 +154,14 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       valid_bets: validBets(false) }]));
     await gameGone(device, 'zhajinhua-operation-button-call');
     await capture('quick_raise');
+    // The next-turn replay intentionally removes our controls for the static
+    // quick-raise page. Complete that opponent turn with the real Call event
+    // before later animation starts, restoring the reviewed Player1 action.
+    await send(events([{ event: 'call', player_id: PLAYER_IDS[0], amount: 10, stack: 960 },
+      { event: 'pot_update', pot_amount: 160 }]));
+    await expect.poll(async () => gameSemanticText((await gameNodes(device))
+      .find(node => node.res?.startsWith(`zhajinhua-player-container-${PLAYER_IDS[0]}`)), 'player_action_text'),
+    { timeout: 30_000 }).toBe('Call');
     if (animationInfo) {
       // Restoring an already-visible OperationButton never remounts zoomInDown.
       // Battle hides it through _selectPlayer; Cancel calls _onPressMask.show().
