@@ -103,8 +103,9 @@ test('牌谱与个人排行榜录后就绪失败保留UTC诊断且不读取终�
       finally { recording = false; }
     }), error => error === failure);
     assert.equal(taps, 1);
-    assert.equal(nodeCalls, 1);
-    assert.equal(screenshotCalls, 1);
+    const refreshesStart = name === 'texas-holdem-personal-leaderboard-exit';
+    assert.equal(nodeCalls, refreshesStart ? 2 : 1);
+    assert.equal(screenshotCalls, refreshesStart ? 2 : 1);
     if (deferred) {
       const timing = JSON.parse(attachments.get(`${name}-endpoint-timing`).body);
       assert.deepEqual(timing.map(item => item.phase), ['recorder-returned', 'ready-start', 'ready-failed']);

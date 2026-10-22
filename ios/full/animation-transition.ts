@@ -13,7 +13,7 @@ import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 import type { NativeDevice as AndroidDevice, NativeNode } from './native-device';
-import { gameScreenshot } from './game-controls';
+import { gameConnected, gameScreenshot } from './game-controls';
 import { cropNativeFrame, cropNativeRegions, cropMotionRegion, samePixels } from './motion-regions';
 import { decodeFrame, type FramePixels } from './native-frame';
 import { maskScreenshot, maskCroppedScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
@@ -284,7 +284,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
         nodes: safeNativeTree(preparedStart.nodes) }), contentType: 'application/json',
     });
   }
-  const beforeScreen = await gameScreenshot(device);
+  let beforeScreen = await gameScreenshot(device);
   const beforeNodes = preparedStart?.nodes ?? await device.nodes();
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
   samplingMethod = 'videoFrames';
@@ -331,6 +331,15 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   } : undefined;
   // 使用原分辨率原生视频，截图通道只用于精确端点。
   const recorded = await videoRecorder(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
+    if (name === 'texas-holdem-personal-leaderboard-exit') {
+      // A reconnect overlay crossed the earlier screenshot in 39867345386,
+      // while the recorder's first frame and the actual close tap saw the
+      // complete leaderboard. Observe the independent start again immediately
+      // before that tap, after recorder warm-up and connection readiness.
+      await testInfo.attach(`${name}-pre-warmup-start`, { body: beforeScreen, contentType: 'image/png' });
+      await gameConnected(device);
+      beforeScreen = await gameScreenshot(device);
+    }
     await trigger();
     // A delay measured from the tap cannot establish when the JS-driven panel
     // mounted. Keep these recording windows free of readiness tree queries,

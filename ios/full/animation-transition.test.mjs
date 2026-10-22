@@ -144,6 +144,26 @@ test('异步面板就绪发生在录像停止前，检查帧与终点截图发�
   }
 });
 
+test('个人榜单退场在录屏预热后、点击前刷新独立起点', async () => {
+  const { captureNativeTransition } = await import('./animation-transition.ts');
+  const events = [], attached = [];
+  const sentinel = new Error('stop after trigger');
+  let screenshots = 0;
+  const device = { screenSize: { width: 120, height: 180 },
+    nativeScreenshot: async () => { events.push(`screenshot-${++screenshots}`); return before; },
+    nodes: async () => { events.push('nodes'); return []; } };
+  await assert.rejects(captureNativeTransition(device, 'texas-holdem-personal-leaderboard-exit',
+    { attach: async name => attached.push(name) }, { x: 0, y: 0, width: 120, height: 180 },
+    () => { events.push('tap'); }, [], [], 0, 'videoFrames', undefined, undefined,
+    [], [], [], [], [], async (_device, _name, _region, action) => {
+      events.push('recording-warm');
+      await action();
+      throw sentinel;
+    }), error => error === sentinel);
+  assert.deepEqual(events, ['screenshot-1', 'nodes', 'recording-warm', 'nodes', 'screenshot-2', 'tap']);
+  assert.ok(attached.includes('texas-holdem-personal-leaderboard-exit-pre-warmup-start'));
+});
+
 test('语音退场在读取缓慢的原生树前保存独立终点截图', async () => {
   const { captureNativeTransition } = await import('./animation-transition.ts');
   const previousMode = process.env.IOS_VISUAL_MODE;
