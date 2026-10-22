@@ -121,7 +121,14 @@ export async function texasPanels(context: TexasContext): Promise<void> {
     user_nickname: 'Player2', nickname: 'Player2', amount: 500,
   } } };
   if (animationInfo) await captureNativeTransition(device, 'texas-holdem-buy-in-review-enter', animationInfo,
-    screenBounds(device, { x: 70, y: 440, width: 580, height: 270 }), () => replay(proxy, 'texas', room, application));
+    screenBounds(device, { x: 70, y: 440, width: 580, height: 270 }), () => replay(proxy, 'texas', room, application),
+    [], [], 0, 'videoFrames', undefined, undefined, [], [], [], [], [], undefined,
+    async () => {
+      // 39692518007 recorded the completed popup, then the independent
+      // endpoint screenshot landed under a real Connecting... overlay.
+      await gameConnected(device, 2_000);
+      await gameReady(device, 'buy-in-review-close-button');
+    });
   else await replay(proxy, 'texas', room, application);
   await gameReady(device, 'buy-in-review-close-button');
   await capture('buy_in_review');
