@@ -1,4 +1,5 @@
 import type { TestInfo } from '@playwright/test';
+import { copyFile, rm } from 'node:fs/promises';
 
 type Attachment = { name: string; options: Parameters<TestInfo['attach']>[1] };
 
@@ -12,14 +13,26 @@ export async function capturePanelWithMotionRecaptures(info: TestInfo,
   isMissedMotion: (error: unknown) => boolean): Promise<void> {
   for (let attempt = 1; attempt < 3; attempt++) {
     const attachments: Attachment[] = [];
+    const stagedPaths: string[] = [];
     const staged = {
       outputPath: (...segments: string[]) => info.outputPath(...segments),
       attach: async (name: string, options: Attachment['options']) => {
-        attachments.push({ name, options });
+        if (options?.path) {
+          // Some frame helpers remove their temporary file immediately after
+          // attach returns. Copy it while the source still exists.
+          const stablePath = info.outputPath(`recapture-${attempt}-attachment-${attachments.length}`);
+          await copyFile(options.path, stablePath);
+          stagedPaths.push(stablePath);
+          attachments.push({ name, options: { path: stablePath, contentType: options.contentType } });
+        } else attachments.push({ name, options });
       },
     } as TestInfo;
     const flush = async (suffix: string) => {
-      for (const { name, options } of attachments) await info.attach(`${name}${suffix}`, options);
+      try {
+        for (const { name, options } of attachments) await info.attach(`${name}${suffix}`, options);
+      } finally {
+        for (const path of stagedPaths) await rm(path, { force: true });
+      }
     };
     try {
       await capture(staged);
