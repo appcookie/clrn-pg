@@ -78,6 +78,9 @@ export async function texasHall(context: TexasContext): Promise<void> {
           expect(gameLoadingRegions(endingLayout, device.screenSize),
             '录屏停止时两层加载图标仍须在同一原生位置').toEqual(regions);
           loaded = await gameScreenshot(device);
+          await animationInfo.attach('texas-loading-independent-endpoint', {
+            body: loaded, contentType: 'image/png',
+          });
           await proxy.command('android/auto-rebuy-hold', { hold: false });
         }, 20, 'xctest');
       const flatten = (node: NativeLayoutNode): NativeLayoutNode[] => [node, ...node.children.flatMap(flatten)];

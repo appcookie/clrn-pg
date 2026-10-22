@@ -6,9 +6,17 @@ import type { ScreenshotBounds } from './screenshot';
 export async function loadingWindow<T extends { capturedAt: number; png: string }>(
   frames: T[], before: Buffer, loaded: Buffer, label: ScreenshotBounds,
 ): Promise<{ frames: T[]; first: number }> {
-  const reference = await cropNativeFrame(loaded, label);
+  if (!frames.length) throw new Error('真实加载录像必须包含原始帧');
+  const reference = await cropNativeFrame(Buffer.from(frames.at(-1)!.png, 'base64'), label);
+  const endpoint = await cropNativeFrame(loaded, label);
   if (frameColorDistance(await cropNativeFrame(before, label), reference) <= 15) {
     throw new Error('加载文字必须与请求前画面明确不同');
+  }
+  // The native screenshot and XCTest movie may use slightly different color
+  // paths. Prove the independent endpoint still shows Loading, then use the
+  // same original movie to require an uninterrupted final loading window.
+  if (frameColorDistance(endpoint, reference) > 20) {
+    throw new Error('录屏终帧加载文字与停止时独立截图不一致');
   }
   const matches: boolean[] = [];
   for (const frame of frames) {

@@ -21,13 +21,20 @@ test('只剔除真实加载文字出现前的连续预热帧，保留原帧与�
   assert.equal(result.frames[0].capturedAt, 360);
 });
 
+test('独立截图有轻微色差时仍按同一条原始录像判断加载文字连续性', async () => {
+  const frames = [frame(20, 0), ...Array.from({ length: 12 }, (_, i) => frame(200, i + 1))];
+  const result = await loadingWindow(frames, before, picture(213), label);
+  assert.equal(result.first, 1);
+  await assert.rejects(loadingWindow(frames, before, picture(20), label), /独立截图不一致/);
+});
+
 test('拒绝缺少加载、加载中断、超时末帧和不足一个周期的录像', async () => {
   const frames = Array.from({ length: 12 }, (_, i) => frame(200, i));
   await assert.rejects(loadingWindow(frames, loaded, loaded, label), /请求前/);
-  await assert.rejects(loadingWindow(frames.map((_, i) => frame(20, i)), before, loaded, label), /连续/);
+  await assert.rejects(loadingWindow(frames.map((_, i) => frame(20, i)), before, loaded, label), /请求前/);
   for (const index of [5, 11]) {
     const broken = frames.slice(); broken[index] = frame(20, index);
-    await assert.rejects(loadingWindow(broken, before, loaded, label), /连续/);
+    await assert.rejects(loadingWindow(broken, before, loaded, label), index === 11 ? /请求前/ : /连续/);
   }
   await assert.rejects(loadingWindow(frames.slice(0, 9), before, loaded, label), /十帧/);
   await assert.rejects(loadingWindow(frames.map((f, i) => ({ ...f, capturedAt: i * 100 })), before, loaded, label), /完整旋转周期/);
