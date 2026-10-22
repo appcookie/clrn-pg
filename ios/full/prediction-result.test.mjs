@@ -1,62 +1,68 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { setTimeout as delay } from 'node:timers/promises';
 import { PNG } from 'pngjs';
 import { captureGame } from './game-capture.ts';
-import { requirePredictionResult, triggerPredictionResult } from './prediction-result.ts';
+import { capturePredictionResult, requirePredictionResult, triggerPredictionResult } from './prediction-result.ts';
 
 const amount = { res: 'bet-next-hand-result-amount', text: '+10',
   bounds: { x: 35, y: 45, width: 30, height: 15 } };
 
-for (const locale of ['en', 'zh-Hans', 'zh-Hant']) test(`${locale} 猜牌先准备再单次触发，全部截图前后定向检查 +10`, async () => {
+for (const locale of ['en', 'zh-Hans', 'zh-Hant']) test(`${locale} 猜牌完成背景准备后委托同次录像，不查询过期AX`, async () => {
+  const events = [], attachments = new Map();
+  const name = `${locale}-signed-in-texas-hall-prediction-result`;
+  await captureGame({ screenSize: { width: 100, height: 100 },
+    nodes: async () => { events.push('tree'); return []; },
+    transientMarker: async () => { throw new Error('短时结果不应再查询AX'); } }, name,
+  { attach: async (key, value) => { attachments.set(key, value); } }, amount.res, undefined, [],
+  async () => { events.push('trigger'); return '+10'; },
+  async (_device, actualName, _info, _masks, trigger) => {
+    assert.equal(actualName, name);
+    assert.ok(attachments.has(`${name}-native-tree`));
+    assert.equal(await trigger(), '+10');
+  });
+  assert.deepEqual(events, ['tree', 'trigger']);
+});
+
+test('真实时间递增的原片三帧须同时显示中奖文案和 +10，且仅发送一次', async () => {
   const previous = process.env.IOS_VISUAL_MODE;
   process.env.IOS_VISUAL_MODE = 'smoke';
+  const frame = visible => {
+    const image = new PNG({ width: 100, height: 100 }); image.data.fill(255);
+    if (visible) for (let y = 40; y < 62; y++) for (let x = 20; x < 80; x++) {
+      const p = (y * 100 + x) * 4; image.data[p] = 6; image.data[p + 1] = 26; image.data[p + 2] = 35;
+    }
+    return PNG.sync.write(image);
+  };
+  const hidden = frame(false), shown = frame(true);
+  const frames = Object.assign([hidden, shown, shown, shown, hidden],
+    { timestampsMs: [0, 100, 250, 400, 500], sourceFrameIndices: [0, 1, 2, 3, 4] });
+  const title = { text: 'Congratulations on winning the guessing hand reward.', confidence: 0.95,
+    bounds: { x: 0.25, y: 0.44, width: 0.5, height: 0.04 } };
+  const win = { text: '+10', confidence: 0.95, bounds: { x: 0.44, y: 0.52, width: 0.12, height: 0.04 } };
+  const recognized = [[], [title, win], [title, win], [title, win], []];
+  const attachments = new Map(), info = { attach: async (name, value) => attachments.set(name, value) };
+  let triggered = 0;
+  const run = (observations = recognized, samples = frames) => capturePredictionResult(
+    { screenSize: { width: 100, height: 100 } }, 'en-signed-in-texas-hall-prediction-result', info, [],
+    async () => { triggered++; return '+10'; },
+    async (_device, _name, _region, action, _info, duration, floor, _after, backend) => {
+      assert.equal(duration, 3500); assert.equal(floor, 10); assert.equal(backend, 'xctest');
+      await action(); return samples;
+    }, async () => observations);
   try {
-    const events = [], attachments = new Map();
-    let triggered = 0, queries = 0;
-    const image = new PNG({ width: 100, height: 100 });
-    image.data.fill(255);
-    const png = PNG.sync.write(image);
-    const device = {
-      screenSize: { width: 100, height: 100 },
-      nodes: async () => {
-        assert.equal(triggered, 0, '短时结果出现后不能再进行整树准备');
-        events.push('tree');
-        return [];
-      },
-      transientMarker: async res => {
-        assert.equal(triggered, 1);
-        assert.equal(res, amount.res);
-        queries++;
-        events.push('amount');
-        return amount;
-      },
-      marker: async () => { throw new Error('不能用整树 marker 查询短时结果'); },
-      nativeScreenshot: async () => {
-        assert.equal(events.at(-1), 'amount', '截图前必须验证实际金额');
-        events.push('screenshot');
-        await delay(100);
-        return png;
-      },
-    };
-    await captureGame(device, `${locale}-signed-in-texas-hall-prediction-result`,
-      { attach: async (name, value) => { events.push(`attach:${name}`); attachments.set(name, value); } },
-      amount.res, undefined, [], async () => {
-        assert.equal(events[0], 'tree');
-        assert.ok(attachments.has(`${locale}-signed-in-texas-hall-prediction-result-native-tree`));
-        triggered++;
-        events.push('trigger');
-        return '+10';
-      });
+    await run();
     assert.equal(triggered, 1);
-    assert.ok(queries >= 4);
-    const shots = events.flatMap((event, i) => event === 'screenshot' ? [i] : []);
-    assert.ok(shots.length >= 2);
-    for (const index of shots) assert.equal(events[index + 1], 'amount', '截图后必须仍有准确金额');
-    assert.ok(attachments.has(`${locale}-signed-in-texas-hall-prediction-result.png`));
-    const evidence = JSON.parse(attachments.get(`${locale}-signed-in-texas-hall-prediction-result-transient-observations`).body);
-    assert.ok(evidence.length >= 3);
-    assert.ok(evidence.every(node => node.text === '+10' && Number.isFinite(Date.parse(node.utc))));
+    assert.ok(attachments.has('en-signed-in-texas-hall-prediction-result.png'));
+    assert.deepEqual(JSON.parse(attachments.get('en-signed-in-texas-hall-prediction-result-video-keyframes').body)
+      .map(item => item.frameIndex), [1, 2, 3]);
+    await assert.rejects(run([[], [title, { ...win, text: '+100' }], [title, win], [title, win], []]),
+      /同次原生录像必须拍到/);
+    await assert.rejects(run([[], [title, { ...win, bounds: { ...win.bounds, y: 0.62 } }],
+      [title, win], [title, win], []]), /同次原生录像必须拍到/);
+    await assert.rejects(run([[], [title, win], [title, win], [title, win], [title, win]]), /原片结束前消失/);
+    await assert.rejects(run(recognized, Object.assign([...frames],
+      { timestampsMs: [0, 100, 150, 200, 500], sourceFrameIndices: frames.sourceFrameIndices })), /250 毫秒/);
+    assert.equal(triggered, 5, '失败诊断也不能在同次运行内重放事件');
   } finally {
     if (previous === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = previous;
