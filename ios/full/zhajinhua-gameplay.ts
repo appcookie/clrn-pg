@@ -115,7 +115,8 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
       };
       await captureNativeTransition(device, 'zhajinhua-flip-cards', animationInfo,
         zhajinhuaCardRegions(await gameNodes(device), [self, ...PLAYER_IDS], device.screenSize)[0],
-        revealCards, [], [], 800, 'videoFrames');
+        revealCards, [], [], 800, 'videoFrames', undefined, undefined,
+        ['zhajinhua-flip-cards-alternate.png']);
     } else {
       const see = await currentSeeButton();
       expect(see).toBeDefined();

@@ -7908,6 +7908,22 @@
       }
     },
     {
+      "path": "zhajinhua/table/zhajinhua-flip-cards/ios/iphone16-ios18.5/en/animation/alternate.png",
+      "sha256": "999ec45810111882e30be42ea3a08938088a769003c934c439694d90d544675f",
+      "source": {
+        "sourceRun": 39703957670,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39703957670",
+        "sourceWorkflowHead": "b0f2dc6edcf96361ce1d7cdad550b54ab42ad47c",
+        "sourceArtifacts": [
+          "ios-zhajinhua-en-animation-16-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "Original native-video middle frame shows the first two real A cards face up while the third remains face down. Reviewed against the same recording start and end and the previously approved edge-on phase; this run failed only because that valid staggered flip phase lacked a spatial anchor."
+    },
+    {
       "path": "zhajinhua/table/zhajinhua-flip-cards/ios/iphone16-ios18.5/en/animation/start.png",
       "sha256": "acc2d27ba8055607d9077e223f1b3832d35e6e974e0a140af706943b806c14dd",
       "source": {
