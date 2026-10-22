@@ -69,20 +69,16 @@ export async function texasHall(context: TexasContext): Promise<void> {
           body: JSON.stringify(loadingLayout), contentType: 'application/json',
         });
         regions = gameLoadingRegions(loadingLayout, device.screenSize);
-      }, 3000,
-        async () => {
-          const endingLayout = await device.layoutNodes();
-          await animationInfo.attach('texas-loading-ending-native-layout', {
-            body: JSON.stringify(endingLayout), contentType: 'application/json',
-          });
-          expect(gameLoadingRegions(endingLayout, device.screenSize),
-            '录屏停止时两层加载图标仍须在同一原生位置').toEqual(regions);
-          loaded = await gameScreenshot(device);
-          await animationInfo.attach('texas-loading-independent-endpoint', {
-            body: loaded, contentType: 'image/png',
-          });
-          await proxy.command('android/auto-rebuy-hold', { hold: false });
-        }, 20, 'xctest');
+        // Capture an independent native endpoint while the request is held;
+        // the original movie below still has to retain Loading through its
+        // final frame. Release immediately after recording stops, before MOV
+        // attachment/remux can push the app past its 10-second HTTP timeout.
+        loaded = await gameScreenshot(device);
+        await animationInfo.attach('texas-loading-independent-endpoint', {
+          body: loaded, contentType: 'image/png',
+        });
+      }, 2000,
+        async () => { await proxy.command('android/auto-rebuy-hold', { hold: false }); }, 20, 'xctest');
       const flatten = (node: NativeLayoutNode): NativeLayoutNode[] => [node, ...node.children.flatMap(flatten)];
       const labels = loadingLayout.flatMap(flatten).filter(node => node.res === 'Loading'
         && node.clazz === 'XCUIElementTypeStaticText');

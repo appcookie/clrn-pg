@@ -46,10 +46,17 @@ export async function captureXCTestRecording(device: Pick<NativeDevice, 'execute
  * Keep the original MOV and remux its video packets without changing frames or rate.
  */
 export async function recordXCTestVideo(device: Pick<NativeDevice, 'execute'>, name: string,
-  trigger: () => unknown, info: Pick<TestInfo, 'attach'>, video: string, durationMs: number, fps: 30 | 60 = 60) {
+  trigger: () => unknown, info: Pick<TestInfo, 'attach'>, video: string, durationMs: number, fps: 30 | 60 = 60,
+  onStopped?: () => Promise<void>) {
   return captureXCTestRecording(device, trigger, durationMs, async ({ bytes, start, end, triggerAt, stoppedAt }) => {
     const original = video.replace(/\.mp4$/, '.mov');
     writeFileSync(original, bytes);
+    // A held network response must be released before attaching and remuxing
+    // the MOV; those operations can exceed the app's request timeout.
+    try { await onStopped?.(); } catch (error) {
+      await info.attach(`${name}-xctest-original`, { path: original, contentType: 'video/quicktime' });
+      throw error;
+    }
     await info.attach(`${name}-xctest-original`, { path: original, contentType: 'video/quicktime' });
     await runMedia('ffmpeg', ['-y', '-v', 'error', '-i', original,
       '-map', '0:v:0', '-c:v', 'copy', '-an', '-movflags', '+faststart', video], { timeout: 60_000 });

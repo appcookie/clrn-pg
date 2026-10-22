@@ -91,7 +91,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     ({ triggerAt, stoppedAt } = await recordXCTestVideo(device, name, trigger, testInfo, video, durationMs,
       // 39616432083 的60fps原片有倒退PTS；只降低此入口的实际采集帧率，
       // 不改应用动画、原始媒体时间戳或真实中途姿态门禁。
-      thirtyFpsRecording ? 30 : 60));
+      thirtyFpsRecording ? 30 : 60, onRecorded));
   } else {
     const processStartedAt = performance.now();
     const processStartedUtc = new Date().toISOString();
@@ -154,7 +154,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
   try {
     // Release a held fixture once native recording has stopped, before expensive
     // decoding. The application must not time out while PNGs are processed.
-    await onRecorded?.();
+    if (backend !== 'xctest') await onRecorded?.();
     mark('probe-start');
     // The fixture HTTP server shares this Node process. Keep it responsive during
     // long native-video decoding instead of blocking it with execFileSync.
