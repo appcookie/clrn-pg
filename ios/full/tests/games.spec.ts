@@ -61,7 +61,7 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
               .includes(scenario.pageLabel));
           const device = await launchApplication({ gameDriver: true,
             enableSystemAnimations: panelAnimation || gameAnimation,
-            microphonePermission: scenario.pageLabel === 'signed_in_texas_panels' });
+            microphonePermission: true });
           // XCTest game recordings repeatedly omit intermediate poses or have
           // backwards timestamps (39563456373, 39563462500, 39555894478).
           // Collect each game action once through the Simulator compositor;

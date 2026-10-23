@@ -83,7 +83,7 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     'texas-holdem-personal-leaderboard-enter',
     'texas-holdem-personal-leaderboard-exit',
     'texas-holdem-report-enter', 'texas-holdem-own-profile-enter',
-    'invite-friends-exit'].includes(name);
+    'invite-friends-exit', 'slot-no-energy-exit'].includes(name);
   const backend = backendOverride ?? (thirtyFpsRecording || ['zhajinhua-drawer-menu-enter', 'zhajinhua-showdown-cards',
     'texas-holdem-raise-bet-enter', 'texas-holdem-voice-enter', 'texas-holdem-voice-exit',
     'texas-holdem-chat-actions-enter', 'texas-holdem-chat-actions-return-enter',

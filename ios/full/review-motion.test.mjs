@@ -81,11 +81,11 @@ test('两种牌谱入场都拒绝只有遮罩的假中间帧，真实侧栏滑�
   }
 });
 
-test('牌谱与个人排行榜录后就绪失败保留UTC诊断且不读取终点；其他动作仍在录屏中验证就绪', async () => {
+test('牌谱进退场与个人排行榜录后就绪失败保留UTC诊断且不读取终点；其他动作仍在录屏中验证就绪', async () => {
   for (const name of ['texas-holdem-game-record-enter', 'zhajinhua-game-record-enter',
     'texas-holdem-personal-leaderboard-enter', 'texas-holdem-personal-leaderboard-exit',
-    'zhajinhua-game-record-exit', 'zhajinhua-settings-enter']) {
-    const deferred = name.endsWith('game-record-enter') || name === 'texas-holdem-personal-leaderboard-enter';
+    'texas-holdem-game-record-exit', 'zhajinhua-game-record-exit', 'zhajinhua-settings-enter']) {
+    const deferred = /game-record-(?:enter|exit)$/.test(name) || name === 'texas-holdem-personal-leaderboard-enter';
     const attachments = new Map();
     let recording = false, nodeCalls = 0, screenshotCalls = 0, taps = 0;
     const failure = new Error('native readiness failed');

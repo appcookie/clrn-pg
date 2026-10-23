@@ -25,7 +25,8 @@ if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS
   test.setTimeout(1_200_000);
   await withIosProxy(async () => {
     const device = await launchApplication();
-    device.nativeVideoBackend = 'xctest';
+    // XCTest 原片在 39886064246 跨过分享面板滑入，只录到背景变暗。
+    device.nativeVideoBackend = 'simctl';
     const copy = { res: 'actionGroupCell', clazz: 'XCUIElementTypeCell', text: /^Copy$/ };
     try {
       await waitForHall(device); await signIn(device);
@@ -43,6 +44,7 @@ if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS
       // The share sheet lives in a remote system container. Activate its actual
       // native element rather than tapping coordinates in the application view.
       const close = await device.driver.find('header.closeButton');
+      device.nativeVideoBackend = 'xctest';
       await captureNativeTransition(device, 'ios-share-sheet-exit', info, { x: 0, y: 0, ...device.screenSize },
         () => device.driver.request('POST', device.driver.path(`/element/${close}/click`), {}),
         [], [], 0, 'videoFrames', undefined, async () => {

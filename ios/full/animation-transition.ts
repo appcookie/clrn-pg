@@ -288,7 +288,9 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   const beforeNodes = preparedStart?.nodes ?? await device.nodes();
   // 旧编排的采样名称仅保留调用兼容；iOS 全部使用视频的空间轨迹校验。
   samplingMethod = 'videoFrames';
-  const deferredReady = /^(?:texas-holdem|zhajinhua)-game-record-enter$/.test(name)
+  // The record exit in 39886064246 spent 72 seconds waiting for readiness
+  // inside the recorder and timed out decoding 2520 full-screen frames.
+  const deferredReady = /^(?:texas-holdem|zhajinhua)-game-record-(?:enter|exit)$/.test(name)
     || /^texas-holdem-(?:own-profile|opponent-profile-[12])-enter$/.test(name)
     // 39579293828在滑入期间查询昵称时9.6秒只录到17帧。与牌谱/资料卡
     // 一样先保留不受查询打断的录屏，再严格确认业务数据和独立终点。
@@ -427,6 +429,17 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     startCompareMasks = [...startCompareMasks, ...texasEffectEndpointMasks(name, beforeNodes, device.screenSize)];
     endCompareMasks = [...endCompareMasks, ...texasEffectEndpointMasks(name, afterNodes, device.screenSize)];
   }
+  if (name === 'texas-holdem-chat-report-enter') {
+    // The reviewed start differs only in the room clock digits behind the
+    // report popup (39886064246). Keep the adjacent room label and popup.
+    const clockDigits = { x: Math.round(device.screenSize.width * 546 / 1178),
+      y: Math.round(device.screenSize.height * 1438 / 2556),
+      width: Math.round(device.screenSize.width * 180 / 1178),
+      height: Math.round(device.screenSize.height * 42 / 2556),
+      reason: 'room clock digits behind report popup' };
+    startCompareMasks.push(clockDigits);
+    endCompareMasks.push(clockDigits);
+  }
   if (/^(texas-holdem|zhajinhua)-game-record-(enter|exit)$/.test(name)) {
     startCompareMasks = [...startCompareMasks, ...reviewEndpointNetworkMasks(beforeNodes, device.screenSize)];
     endCompareMasks = [...endCompareMasks, ...reviewEndpointNetworkMasks(afterNodes, device.screenSize)];
@@ -438,6 +451,13 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
     endCompareMasks = [...endCompareMasks, ...seatGuideBackgroundMasks(afterNodes, device.screenSize),
       ...afterNodes.filter(node => node.res === 'leader-board-room-id')
         .map(node => leaderboardRoomIdentityMask(node, device.screenSize))];
+  }
+  if (name === 'zhajinhua-leaderboard-exit') {
+    // The simulator home indicator changed colour after the sidebar closed
+    // in 39886064246. Exclude only this system chrome from endpoint pixels.
+    endCompareMasks.push({ x: Math.floor(device.screenSize.width * 0.25),
+      y: device.screenSize.height - 60, width: Math.ceil(device.screenSize.width * 0.5),
+      height: 45, reason: 'iOS home indicator colour' });
   }
   if (startCompareMasks.length) await testInfo.attach(`${name}-start-masks`, {
     body: JSON.stringify(startCompareMasks), contentType: 'application/json',

@@ -1,7 +1,7 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { gameConnected, gameGone, gameNodes, gameReady, gameTap } from './game-controls';
+import { gameConnected, gameConnectionState, gameGone, gameNodes, gameReady, gameTap } from './game-controls';
 import { closeGameMask } from './game-pregame';
 import { replay } from './game-replay';
 import { captureNativeTransition } from './animation-transition';
@@ -37,11 +37,17 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
     return () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) });
   };
   await restoreTexas(context);
+  await device.prepareTransientCapture();
   for (const mode of ['pending', 'resolved', 'more'] as const) {
     await proxy.command('texas/ui', { applications: mode });
     await gameTap(device, 'buy-in-application-button');
-    await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'buy-in-application-nickname').length,
-      { timeout: 30_000 }).toBe(mode === 'resolved' ? 3 : 2);
+    await expect.poll(async () => {
+      // A full XCTest source query can outlast the 30s poll. The native
+      // predicate returns all visible rows in one cheap observation.
+      const nodes = await device.inputObservation('buy-in-application-nickname');
+      expect(gameConnectionState(nodes).connecting).toBe(false);
+      return nodes.filter(node => node.res === 'buy-in-application-nickname').length;
+    }, { timeout: 30_000, intervals: [250] }).toBe(mode === 'resolved' ? 3 : 2);
     if (mode === 'pending') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-approved-applications-tab')).toHaveLength(2);
     if (mode === 'resolved') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-application-status')).toHaveLength(3);
     if (mode === 'more') expect((await gameReady(device, 'buy-in-application-list-more')).enabled).toBe(true);

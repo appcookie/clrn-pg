@@ -122,6 +122,8 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const confirm = await device.info({ res: 'confirm-button' });
       /** 通过真实确认按钮关闭能量不足提示。 */
       const pressConfirm = () => device!.input.tap({ x: Number(String(Math.round(confirm.bounds.x + confirm.bounds.width / 2))), y: Number(String(Math.round(confirm.bounds.y + confirm.bounds.height / 2))) });
+      // 39886064246 的合成器录像从提示起点跳到末尾，只留下过近的两帧。
+      device.nativeVideoBackend = 'xctest';
       await captureNativeTransition(device, 'slot-no-energy-exit', testInfo, noEnergyRegion, pressConfirm,
         [], [], 0, 'videoFrames', undefined, async () => {
           await device!.wait({ res: slotNoEnergyImage }, { state: 'gone' });

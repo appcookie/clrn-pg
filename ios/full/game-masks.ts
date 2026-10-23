@@ -25,7 +25,9 @@ export function screenshotMaskNodes(nodes: NativeNode[]): NativeNode[] {
 export function seatGuideMotionBounds(bounds: ScreenshotBounds): ScreenshotBounds {
   const travel = Math.ceil(bounds.width * 11 / 24);
   const x = Math.floor(bounds.x - 1), y = Math.floor(bounds.y - travel - 1);
-  return { x, y, width: Math.ceil(bounds.x + bounds.width + 1) - x,
+  // The arrow glow reaches two pixels beyond the layout box's right edge in
+  // 39886064246; retain that fringe in both motion crops and panel masks.
+  return { x, y, width: Math.ceil(bounds.x + bounds.width + 3) - x,
     height: Math.ceil(bounds.y + bounds.height + travel + 1) - y };
 }
 

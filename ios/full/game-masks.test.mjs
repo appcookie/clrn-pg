@@ -30,7 +30,7 @@ test('real menu geometry preserves every foreground pixel while masking exposed 
 
 test('guide keyframes retain pixels beyond the native layout box throughout travel', () => {
   const bounds = seatGuideMotionBounds({ x: 998, y: 1356, width: 76, height: 63 });
-  assert.deepEqual(bounds, { x: 997, y: 1320, width: 78, height: 135 });
+  assert.deepEqual(bounds, { x: 997, y: 1320, width: 80, height: 135 });
   // Real animation-15 moved image reached the old crop's bottom edge (1419).
   assert.ok(bounds.y + bounds.height > 1419);
 });
