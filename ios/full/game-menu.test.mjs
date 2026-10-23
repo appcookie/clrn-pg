@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { gameMenu } from './game-pregame.ts';
+import { closeThemeSettings, gameMenu } from './game-pregame.ts';
 
 const bounds = x => ({ x, y: 100, width: 20, height: 20 });
 const node = (res, x, text = '') => ({ res, text, bounds: bounds(x), enabled: true, visible: true });
@@ -88,4 +88,20 @@ test('menu navigation checks the live tree when a focused query misses an open d
   assert.equal(themeTaps, 2);
   assert.equal(state, 'panel');
   assert.ok(fullTreeReads >= 1, 'ambiguous absence must be checked against the live tree');
+});
+
+test('theme close retries once only when the live tree still contains the same panel', async () => {
+  const close = node('game-settings-close-button', 10);
+  let open = true, taps = 0;
+  const visible = () => open ? [close, panel] : [];
+  const device = {
+    screenSize: { width: 1178, height: 2556 },
+    nodes: async () => visible(),
+    prepareTransientCapture: async () => {},
+    inputObservation: async names => visible().filter(item => names === item.res),
+    input: { tap: async () => { if (++taps === 2) open = false; } },
+  };
+  await closeThemeSettings(device);
+  assert.equal(taps, 2);
+  assert.equal(open, false);
 });

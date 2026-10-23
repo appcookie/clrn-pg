@@ -56,6 +56,18 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
   await gameReadyCurrent(device, ready);
 }
 
+/** 主题面板关闭后必须用完整原生树确认；定向查询曾漏报仍可见的面板。 */
+export async function closeThemeSettings(device: AndroidDevice): Promise<void> {
+  await gameTapCurrent(device, 'game-settings-close-button');
+  const current = await gameNodes(device);
+  if (!current.some(node => node.res === 'game-settings-card-theme-simple')) return;
+  expect(gameConnectionState(current).connecting, '重试关闭主题面板前不得处于重连').toBe(false);
+  expect(current.some(node => node.res === 'game-settings-close-button' && node.enabled),
+    '主题面板仍在时关闭按钮必须可点击').toBe(true);
+  await gameTapCurrent(device, 'game-settings-close-button');
+  await gameGone(device, 'game-settings-card-theme-simple');
+}
+
 /**
  * 点击真实弹层遮罩的边缘，避免点击其中央内容。
  * @param device - 专用模拟器连接。
@@ -317,19 +329,16 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture)
     await capture(`theme_${theme.replaceAll('-', '_')}`);
   }
   await gameTapCurrent(device, 'game-settings-card-theme-simple');
-  await gameTapCurrent(device, 'game-settings-close-button');
-  await gameGoneCurrent(device, 'game-settings-card-theme-simple');
+  await closeThemeSettings(device);
   for (const background of ['blue', 'purple', 'black']) {
     await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
     await gameTapCurrent(device, `game-settings-background-${background}`);
-    await gameTapCurrent(device, 'game-settings-close-button');
-    await gameGoneCurrent(device, 'game-settings-card-theme-simple');
+    await closeThemeSettings(device);
     await capture(`table_${background}`);
   }
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
   await gameTapCurrent(device, 'game-settings-background-green');
-  await gameTapCurrent(device, 'game-settings-close-button');
-  await gameGoneCurrent(device, 'game-settings-card-theme-simple');
+  await closeThemeSettings(device);
   await gameMenu(device, 'settings', 'game-settings-popup-container');
   let count = 0;
   for (const name of ['sound-effect', 'vibrate', 'player-voice', 'show-card', 'operation-time', 'see-remain-card', 'shake-avatar']) {
