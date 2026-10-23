@@ -17,13 +17,11 @@ test('menu navigation retries the UI tap only after reconnect leaves the drawer 
       : state === 'connecting' ? [connecting] : [panel];
   const device = {
     screenSize: { width: 1178, height: 2556 },
-    nodes: async () => {
-      if (state === 'connecting' && ++connectionReads >= 2) state = 'drawer';
-      return visible();
-    },
+    nodes: async () => visible(),
     prepareTransientCapture: async () => { rich = true; },
     inputObservation: async names => {
       assert.ok(rich, 'focused XCTest observation requires response attributes');
+      if (state === 'connecting' && ++connectionReads >= 2) state = 'drawer';
       const targets = Array.isArray(names) ? names : names ? [names] : [];
       return visible().filter(item => targets.includes(item.res) || item === connecting);
     },
@@ -41,11 +39,11 @@ test('menu navigation retries the UI tap only after reconnect leaves the drawer 
 });
 
 test('menu navigation does not repeat a successful tap', async () => {
-  let state = 'table', themeTaps = 0, rich = false;
+  let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
   const visible = () => state === 'table' ? [menu] : state === 'drawer' ? [theme, drawerExit] : [panel];
   const device = {
     screenSize: { width: 1178, height: 2556 },
-    nodes: async () => visible(),
+    nodes: async () => { fullTreeReads++; return visible(); },
     prepareTransientCapture: async () => { rich = true; },
     inputObservation: async names => {
       assert.ok(rich, 'focused XCTest observation requires response attributes');
@@ -61,4 +59,5 @@ test('menu navigation does not repeat a successful tap', async () => {
   await gameMenu(device, 'theme', panel.res);
   assert.equal(themeTaps, 1);
   assert.equal(state, 'panel');
+  assert.equal(fullTreeReads, 0, 'healthy menu navigation only needs focused native observations');
 });

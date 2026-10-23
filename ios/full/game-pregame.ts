@@ -24,11 +24,13 @@ type Capture = (state: string) => Promise<void>;
  * @param ready - 面板就绪标记。
  */
 export async function gameMenu(device: AndroidDevice, item: string, ready: string): Promise<void> {
-  await tap(device, 'menu-button');
-  await tap(device, `drawer-menu-item-${item}`);
+  // A full accessibility tree costs tens of seconds on a populated table;
+  // the focused query still verifies two live bounds and the connection state.
+  await gameTapCurrent(device, 'menu-button');
+  await gameTapCurrent(device, `drawer-menu-item-${item}`);
   // 39725551167: a room reconnect covered the still-open drawer just after
-  // its Theme tap. A full-tree absence under Connecting is not drawer exit.
-  await gameConnected(device, 2_000);
+  // its Theme tap. Absence under Connecting is not drawer exit.
+  await gameConnectedCurrent(device, 2_000);
   await device.prepareTransientCapture();
   let observed = await device.inputObservation([ready, 'drawer-menu-item-exit']);
   if (gameConnectionState(observed).connecting) {
@@ -302,23 +304,23 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
 export async function captureGameThemes(device: AndroidDevice, capture: Capture): Promise<void> {
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
   for (const theme of ['four-color', 'four-color-two', 'realistic']) {
-    await tap(device, `game-settings-card-theme-${theme}`);
+    await gameTapCurrent(device, `game-settings-card-theme-${theme}`);
     await capture(`theme_${theme.replaceAll('-', '_')}`);
   }
-  await tap(device, 'game-settings-card-theme-simple');
-  await tap(device, 'game-settings-close-button');
-  await gameGone(device, 'game-settings-card-theme-simple');
+  await gameTapCurrent(device, 'game-settings-card-theme-simple');
+  await gameTapCurrent(device, 'game-settings-close-button');
+  await gameGoneCurrent(device, 'game-settings-card-theme-simple');
   for (const background of ['blue', 'purple', 'black']) {
     await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-    await tap(device, `game-settings-background-${background}`);
-    await tap(device, 'game-settings-close-button');
-    await gameGone(device, 'game-settings-card-theme-simple');
+    await gameTapCurrent(device, `game-settings-background-${background}`);
+    await gameTapCurrent(device, 'game-settings-close-button');
+    await gameGoneCurrent(device, 'game-settings-card-theme-simple');
     await capture(`table_${background}`);
   }
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-  await tap(device, 'game-settings-background-green');
-  await tap(device, 'game-settings-close-button');
-  await gameGone(device, 'game-settings-card-theme-simple');
+  await gameTapCurrent(device, 'game-settings-background-green');
+  await gameTapCurrent(device, 'game-settings-close-button');
+  await gameGoneCurrent(device, 'game-settings-card-theme-simple');
   await gameMenu(device, 'settings', 'game-settings-popup-container');
   let count = 0;
   for (const name of ['sound-effect', 'vibrate', 'player-voice', 'show-card', 'operation-time', 'see-remain-card', 'shake-avatar']) {
