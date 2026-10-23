@@ -248,15 +248,15 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(split.status, 0, split.stderr);
     const selectedSplit = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
-    assert.deepEqual(selectedSplit.map(item => item.animationPart), ['opening', 'interactions']);
-    assert.equal(new Set(selectedSplit.map(item => item.shard)).size, 2);
+    assert.deepEqual(selectedSplit.map(item => item.animationPart), ['themes', 'voice_records', 'interactions']);
+    assert.equal(new Set(selectedSplit.map(item => item.shard)).size, 3);
     writeFileSync(output, '');
-    const opening = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-20/opening',
+    const opening = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-20/themes',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(opening.status, 0, opening.stderr);
     const selectedOpening = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
     assert.equal(selectedOpening.length, 1);
-    assert.equal(selectedOpening[0].animationPart, 'opening');
+    assert.equal(selectedOpening[0].animationPart, 'themes');
     writeFileSync(output, '');
     const failures = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9, animation-12,animation-21',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
@@ -265,7 +265,7 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
     assert.deepEqual(selectedFailures.map(item => item.animation), ['animation-9', 'animation-12', 'animation-21']);
     assert.ok(selectedFailures.every(item => item.recordOnly));
     for (const invalidCase of ['animation-9,animation-9', 'animation-0', 'animation-26',
-      'animation-9/opening', 'animation-20/other']) {
+      'animation-9/opening', 'animation-20/other', 'animation-20/opening']) {
       writeFileSync(output, '');
       const bad = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: invalidCase,
         GITHUB_EVENT_NAME: 'workflow_dispatch' });

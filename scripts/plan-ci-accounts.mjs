@@ -13,7 +13,7 @@ if (process.env.CI_ANIMATION_CASE) {
   }
   const selected = process.env.CI_ANIMATION_CASE.split(',').map(value => value.trim());
   if (selected.some(value => !/^animation-(?:[1-9]|1\d|2[0-5])$/.test(value)
-      && !(group === 'pr' && /^animation-20\/(?:opening|interactions)$/.test(value)))
+      && !(group === 'pr' && /^animation-20\/(?:themes|voice_records|interactions)$/.test(value)))
     || new Set(selected).size !== selected.length) throw new Error('录屏分片清单无效或重复');
   const wanted = new Set(selected);
   const matches = (entry, value) => entry.animation === value

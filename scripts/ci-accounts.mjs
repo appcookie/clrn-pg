@@ -39,7 +39,7 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
     if (!['all', 'en'].includes(selectedLocale)) throw new Error('动画门禁固定使用英文');
     const animationJobs = animationInventory.cases.flatMap((entry, index) => {
       const phases = selectedGroup === 'pr' && entry.id === 'animation-20'
-        ? ['opening', 'interactions'] : [''];
+        ? ['themes', 'voice_records', 'interactions'] : [''];
       return phases.map(phase => ({
         group: entry.group, locale: 'en', shard: phase ? `${entry.id}-${phase}` : entry.id,
         animation: entry.id, ...(phase ? { animationPart: phase } : {}),
@@ -47,7 +47,8 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
         filter: `${entry.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${phase ? `_${phase}` : ''}$`, playwrightShard: '',
         label: `${selectedGroup === 'pr' ? 'recording' : 'animation'} / ${entry.id} / ${entry.title}${phase ? ` / ${phase}` : ''}`,
         account: entry.group === 'guest' ? ''
-          : allocateCiAccount(runId, phase === 'interactions' ? animationInventory.cases.length : index, available),
+          : allocateCiAccount(runId, phase === 'voice_records' ? animationInventory.cases.length
+            : phase === 'interactions' ? animationInventory.cases.length + 1 : index, available),
       }));
     });
     return { include: [...(selectedGroup === 'pr' ? iosAccountMatrix(runId, 'guest', 'all').include : []),

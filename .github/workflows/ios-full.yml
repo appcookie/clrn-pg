@@ -22,7 +22,7 @@ on:
         default: compare
         options: [smoke, reference, compare]
       animation_case:
-        description: 手动可填 animation-编号；pr 可填 animation-20/opening 或 interactions 单独重跑
+        description: 手动可填 animation-编号；pr 可填 animation-20/themes、voice_records 或 interactions 单独重跑
         type: string
         default: ''
 permissions:

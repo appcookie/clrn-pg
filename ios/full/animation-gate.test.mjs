@@ -16,13 +16,13 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
   const jobs = matrix.filter(entry => entry.animation);
   assert.equal(source.animations.length, 21);
   assert.equal(animationCases.length, 25);
-  assert.equal(jobs.length, animationCases.length + 1);
+  assert.equal(jobs.length, animationCases.length + 2);
   assert.ok(jobs.every(entry => entry.recordOnly === true), 'PR 中全部 25 组只采集录屏');
   assert.ok(iosAccountMatrix('123', 'animations', 'en', ciAccounts).include.every(entry => !entry.recordOnly),
     '手动诊断保留完整动画断言');
   assert.equal(new Set(jobs.map(entry => entry.animation)).size, animationCases.length);
   assert.deepEqual(jobs.filter(entry => entry.animation === 'animation-20').map(entry => entry.animationPart),
-    ['opening', 'interactions']);
+    ['themes', 'voice_records', 'interactions']);
   for (const row of source.animations) {
     const entry = animationCases.find(item => item.file === row.nativeImplementation.file.replace('ios/full/', '')
       && item.title === row.nativeImplementation.testTitle);
@@ -47,7 +47,7 @@ test('PR 录屏模式只校验真实 MP4，不要求动画关键帧截图', () =
   assert.throws(() => validateAnimationReport(report, entry.id, 'record-only'), /录屏/);
 });
 
-test('第 20 组两个录屏分段各自执行唯一真实用例并提供 MP4', { timeout: 180_000 }, () => {
+test('第 20 组三个录屏分段各自执行唯一真实用例并提供 MP4', { timeout: 180_000 }, () => {
   const jobs = iosAccountMatrix('123', 'pr', 'all', ciAccounts).include
     .filter(entry => entry.animation === 'animation-20');
   const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
@@ -62,7 +62,7 @@ test('第 20 组两个录屏分段各自执行唯一真实用例并提供 MP4', 
           path: '/tmp/recorded.mp4' }] }] }] }] }] };
     assert.equal(validateAnimationReport(single, job.animation, 'record-only', job.animationPart).images.length, 0);
     assert.throws(() => validateAnimationReport(single, job.animation, 'record-only',
-      job.animationPart === 'opening' ? 'interactions' : 'opening'), /唯一指定动画用例/);
+      job.animationPart === 'themes' ? 'interactions' : 'themes'), /唯一指定动画用例/);
   }
 });
 

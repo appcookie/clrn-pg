@@ -17,7 +17,7 @@ export function validateAnimationReport(report, id, mode = 'compare', part = '')
   if (!['compare', 'reference', 'smoke', 'record-only'].includes(mode)) throw new Error(`未知动画验收模式：${mode}`);
   const entry = animationCase(id);
   if (part && (id !== 'animation-20' || mode !== 'record-only'
-    || !['opening', 'interactions'].includes(part))) throw new Error(`未知动画录屏分段：${id}/${part}`);
+    || !['themes', 'voice_records', 'interactions'].includes(part))) throw new Error(`未知动画录屏分段：${id}/${part}`);
   const expected = part ? { ...entry, title: `${entry.title}_${part}` } : entry;
   const specs = [...reportSpecs(report)];
   if (specs.length !== 1 || screenshotTestKey(specs[0]) !== screenshotTestKey(expected)
