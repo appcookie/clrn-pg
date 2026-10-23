@@ -10,6 +10,7 @@ import type { ScreenshotBounds } from './screenshot';
 import { validateRecordedTimeline, type ProbeFrame } from './video-timeline';
 import { recordXCTestVideo } from './xctest-video';
 import { readRecordedFrameFiles } from './video-frame-files';
+import { animationRecordOnly } from './record-only';
 
 export type RecordedFrames = Buffer[] & { timestampsMs?: number[]; sourceFrameIndices?: number[] };
 const runMedia = promisify(execFile);
@@ -146,6 +147,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
       }
       await testInfo.attach(`${name}-native-video`, { path: video, contentType: 'video/mp4' });
     }
+  }
+  if (animationRecordOnly) {
+    // Preserve the original MP4 without probing timestamps or decoding frames.
+    if (backend !== 'xctest') await onRecorded?.();
+    return Object.assign([] as Buffer[], { timestampsMs: [], sourceFrameIndices: [] });
   }
   const processingStartedAt = performance.now();
   const processing: { phase: string; utc: string; elapsedMs: number }[] = [];

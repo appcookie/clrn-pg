@@ -10,8 +10,6 @@ const pages = [
   ['auth', 'login_user_privacy'], ['auth', 'login_language'],
   ['auth', 'login_phone_password'], ['message', 'guest_message'], ['account', 'guest_me'],
 ];
-const phases = name => ['start', 'middle', 'end'].map(phase => `${name}-${phase}.png`);
-
 export function guestScreenshotTests(locale, shard = 'all') {
   if (!['en', 'zh-Hans', 'zh-Hant'].includes(locale)) throw new Error(`未知语言：${locale}`);
   if (!['all', 'pages', 'startup'].includes(shard)) throw new Error(`未知游客分片：${shard}`);
@@ -26,18 +24,8 @@ export function guestScreenshotTests(locale, shard = 'all') {
       images: [`${locale}-launch-staging-notice.png`] },
   ];
   if (locale === 'en') startup.push(
-    { file: 'tests/animation-assets.spec.ts', title: 'published iOS simulator app contains every reviewed animation asset',
-      images: [], json: ['packaged-animation-assets'] },
-    { file: 'tests/animation-transitions.spec.ts', title: 'native launch artwork and staging notice appear on a real app start',
-      images: ['native-launch-artwork-visible.png', ...phases('native-launch-and-staging-notice')],
-      videos: ['native-launch-and-staging-notice-native-video'] },
-    { file: 'tests/animation-transitions.spec.ts', title: 'guest search confirmation animates into and out of the iOS screen',
-      images: [...phases('search-confirmation-enter'), ...phases('search-confirmation-exit')],
-      videos: ['search-confirmation-enter-native-video', 'search-confirmation-exit-native-video'] },
     { file: 'tests/auth.spec.ts', title: 'iOS Staging 登录与找回密码页面视觉回归',
       images: ['login-welcome.png', 'login-username.png', 'forgot-password-method.png', 'forgot-password-email.png'] },
-    { file: 'tests/web-animation-parity.spec.ts', title: 'launch branding independently fades in while real initialization waits',
-      images: phases('launch-branding-fade'), videoPrefixes: ['independent-launch-branding-enter-attempt-'] },
   );
   return shard === 'pages' ? pageTests : shard === 'startup' ? startup : [...pageTests, ...startup];
 }

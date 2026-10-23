@@ -1,6 +1,7 @@
 import { assertVisual } from './device';
 import { baselinePath } from './baseline-path.mjs';
 import { recordScreenSamples } from './video-frames';
+import { animationRecordOnly } from './record-only';
 import { existsSync, readFileSync } from 'node:fs';
 import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
@@ -36,6 +37,10 @@ export { framePaletteDistance } from './animation-transition';
  */
 export async function captureLoopKeyframes(device: AndroidDevice, name: string, testInfo: TestInfo,
   regions: ScreenshotBounds[], maxAttempts = 1, recordedSamples?: NativeFrame[]): Promise<void> {
+  if (animationRecordOnly) {
+    if (!recordedSamples) await recordScreenSamples(device, name, testInfo);
+    return;
+  }
   expect(regions.length).toBeGreaterThan(0);
   if (recordedSamples && maxAttempts !== 1) throw new Error('已有真实录像只能分析一次，不能伪装成多个采样窗口');
   await testInfo.attach(`${name}-regions`, { body: JSON.stringify(regions), contentType: 'application/json' });
@@ -96,6 +101,10 @@ export async function captureMovingKeyframes(device: AndroidDevice, name: string
   compareDistance: (left: Buffer, right: Buffer) => number = frameColorDistance,
   maxAttempts = 1, phaseAnchors: string[] = [], recordedSamples?: NativeFrame[],
   masks: ScreenshotMask[] = []): Promise<void> {
+  if (animationRecordOnly) {
+    if (!recordedSamples) await recordScreenSamples(device, name, testInfo);
+    return;
+  }
   expect(regions.length).toBeGreaterThan(0);
   if (recordedSamples && maxAttempts !== 1) throw new Error('已有真实录像只能分析一次');
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });

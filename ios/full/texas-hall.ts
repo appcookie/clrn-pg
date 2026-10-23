@@ -19,6 +19,7 @@ import { MissingLeaderboardSlideError } from './personal-leaderboard-slide';
 import { capturePanelWithMotionRecaptures } from './recapture-panel';
 import type { NativeLayoutNode } from './native-device';
 import type { TestInfo } from '@playwright/test';
+import { animationRecordOnly } from './record-only';
 
 /**
  * 复用 Web 的大厅牌桌、自动带入、举报、个人收益、猜牌及升级状态。
@@ -57,7 +58,12 @@ export async function texasHall(context: TexasContext): Promise<void> {
     screenBounds(device, { x: 320, y: 430, width: 340, height: 400 }), animationInfo, 'enter', 'videoFrames');
   await gameReady(device, 'auto-rebuy-popup');
   await capture('auto_rebuy');
-  if (animationInfo) {
+  if (animationInfo && animationRecordOnly) {
+    await recordScreenSamples(device, 'texas-loading-spinner', animationInfo,
+      () => gameTapCurrent(device, 'auto-rebuy-switch'));
+    await expect.poll(async () => (await gameReady(device, 'auto-rebuy-switch')).checked,
+      { timeout: 30_000 }).toBe(true);
+  } else if (animationInfo) {
     await proxy.command('texas/ui', {});
     await proxy.command('android/auto-rebuy-hold', { hold: true });
     let switchTap: Promise<void> | undefined;
@@ -177,7 +183,7 @@ export async function texasHall(context: TexasContext): Promise<void> {
       await expect.poll(async () => (await device.transientMarker('personal-leader-board-nickname'))?.text,
         { timeout: 30_000 }).toBe(accountPresentation.nickname);
     });
-  if (animationInfo) {
+  if (animationInfo && !animationRecordOnly) {
     // XCTest sometimes encodes no frames during the 300 ms sidebar slide
     // (39851785925: 0 -> 6.128 s, then only complete-panel frames). A fresh
     // real close/open action is allowed solely for missing video motion. All

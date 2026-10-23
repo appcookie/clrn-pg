@@ -18,6 +18,7 @@ import { gameReady, gameScreenshot } from '../game-controls';
 import { cropMotionRegion, samePixels } from '../motion-regions';
 import { slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
 import { slotBackgroundMasks, slotHeadReference, verifySlotHeadGeometry } from '../slot-background';
+import { animationRecordOnly } from '../record-only';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('all three native slot reels and reward types animate from real spin responses', async ({}, testInfo) => {
@@ -40,7 +41,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         width: Math.floor(banner.bounds.width * 0.4), height: Math.floor(banner.bounds.height * 0.48) };
       const backgroundBannerMasks = [{ ...bannerMotion,
         reason: '仅弹层前/后大厅端点的横幅轮播；同例独立验证横幅运动和两种基准相位' }];
-      const exposedBannerMasks = slotBackgroundMasks(
+      const exposedBannerMasks = animationRecordOnly ? [] : slotBackgroundMasks(
         readFileSync(join(await simulatorAppPath(), slotHeadReference.asset)), bannerMotion);
       await verifyLoopAnimation(device, 'hall-slot-banner', testInfo, [bannerMotion], [], { timeoutMs: 8000 });
       await captureMovingKeyframes(device, 'hall-slot-banner', testInfo, [bannerMotion], 32, undefined, 5);

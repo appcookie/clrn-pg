@@ -22,11 +22,11 @@ test('compare 预检阻断缺图、删审查记录、改图和缺失的动画基
   const review = { ...approved, files };
   const output = join(directory, 'github-output');
   const writeReview = () => writeFileSync(join(root, 'review.json'), JSON.stringify(review));
-  const run = (animations = ['animation-1']) => {
+  const run = (animations = ['animation-1'], recordOnly = false) => {
     writeFileSync(output, '');
     return spawnSync(process.execPath, [command], {
       cwd: directory, encoding: 'utf8', env: { ...process.env, GITHUB_OUTPUT: output,
-        IOS_CI_MATRIX: JSON.stringify({ include: animations.map(animation => ({ group: 'guest', locale: 'en', animation })) }) },
+        IOS_CI_MATRIX: JSON.stringify({ include: animations.map(animation => ({ group: 'guest', locale: 'en', animation, recordOnly })) }) },
     });
   };
   try {
@@ -37,6 +37,8 @@ test('compare 预检阻断缺图、删审查记录、改图和缺失的动画基
     writeFileSync(join(root, 'build-info.json'), JSON.stringify(build));
     writeReview();
     assert.equal(run().status, 0, '完整的测试夹具应通过');
+    assert.equal(run(['animation-2'], true).status, 0,
+      'PR 录屏模式不需要老虎机动画相位基准');
     const removed = review.files.pop();
     rmSync(join(root, removed.path));
     assert.match(run().stderr, /缺图/);

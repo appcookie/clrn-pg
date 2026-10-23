@@ -7,6 +7,8 @@ import { challengeRegion } from './challenge-region';
 import { gameNodes } from './game-controls';
 import { maskScreenshot, type ScreenshotMask } from './screenshot';
 import { motionParts, samePixels } from './motion-regions';
+import { animationRecordOnly } from './record-only';
+import { recordScreenSamples } from './video-frames';
 
 /**
  * 比牌的四个高亮框各自循环闪烁，按各自相位比较，不遮掉其中的玩家内容。
@@ -18,6 +20,16 @@ import { motionParts, samePixels } from './motion-regions';
  */
 export async function captureChallengeAnimation(device: AndroidDevice, name: string, testInfo: TestInfo,
   masks: ScreenshotMask[]): Promise<void> {
+  if (animationRecordOnly) {
+    const original = await device.screenshot();
+    const selectors = (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector');
+    expect(selectors).toHaveLength(4);
+    const regions = selectors.map(({ bounds }) => challengeRegion(bounds, device.screenSize));
+    await testInfo.attach(`${name}-original`, { body: original, contentType: 'image/png' });
+    await assertVisual(maskScreenshot(original, masks), `${name}.png`, testInfo, regions);
+    await recordScreenSamples(device, `${name}-challenge`, testInfo);
+    return;
+  }
   const selectors = (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector');
   expect(selectors).toHaveLength(4);
   // 原片39614473826中，右缘x=231仍随绿框闪烁，而AX的右侧排他边界是231。

@@ -17,6 +17,9 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
   assert.equal(source.animations.length, 21);
   assert.equal(animationCases.length, 25);
   assert.equal(jobs.length, animationCases.length);
+  assert.ok(jobs.every(entry => entry.recordOnly === true), 'PR 中全部 25 组只采集录屏');
+  assert.ok(iosAccountMatrix('123', 'animations', 'en', ciAccounts).include.every(entry => !entry.recordOnly),
+    '手动诊断保留完整动画断言');
   assert.equal(new Set(jobs.map(entry => entry.animation)).size, jobs.length);
   for (const row of source.animations) {
     const entry = animationCases.find(item => item.file === row.nativeImplementation.file.replace('ios/full/', '')
@@ -27,6 +30,19 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
   assert.equal(matrix.filter(entry => !entry.animation).length, 6);
   assert.ok(jobs.every(entry => entry.locale === 'en'));
   assert.throws(() => iosAccountMatrix('123', 'pr'), /独立 iOS 账号/);
+});
+
+test('PR 录屏模式只校验真实 MP4，不要求动画关键帧截图', () => {
+  const entry = animationCases[0];
+  const report = { stats: { expected: 1, unexpected: 0, skipped: 0, flaky: 0 },
+    suites: [{ specs: [{ file: entry.file, title: entry.title, tests: [{
+      expectedStatus: 'passed', status: 'expected', results: [{ status: 'passed', attachments: [
+        { name: 'recorded-native-video', contentType: 'video/mp4', path: '/tmp/recorded.mp4' },
+      ] }],
+    }] }] }] };
+  assert.deepEqual(validateAnimationReport(report, entry.id, 'record-only').images, []);
+  report.suites[0].specs[0].tests[0].results[0].attachments = [];
+  assert.throws(() => validateAnimationReport(report, entry.id, 'record-only'), /录屏/);
 });
 
 test('动画矩阵每片选中唯一指定的真实测试，无跳过或错误的业务组', { timeout: 180_000 }, () => {

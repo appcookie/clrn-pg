@@ -13,6 +13,7 @@ import { frameColorDistance } from '../animation-transition';
 import { setTimeout as delay } from 'node:timers/promises';
 import { stagingCardBounds } from '../staging-card';
 import { brandFadeEvidence, captureBrandFadeWithSamplingRecapture } from '../brand-fade';
+import { animationRecordOnly } from '../record-only';
 
 const locale = process.env.IOS_LOCALE || 'en';
 const group = process.env.IOS_GROUP || 'all';
@@ -92,6 +93,13 @@ if (enabled('guest', 'en')) test('launch branding independently fades in while r
     const device = await launchApplication();
     try {
       await device.wait({ res: 'staging-confirmation-input' });
+      if (animationRecordOnly) {
+        await device.terminate(); await device.home(); await delay(1000);
+        await recordNativeVideoFrames(device, 'independent-launch-branding-enter',
+          { x: 0, y: 0, ...device.screenSize }, () => device.launch(), info, 7000);
+        await device.wait({ res: 'staging-confirmation-input' });
+        return;
+      }
       const captured = await captureBrandFadeWithSamplingRecapture(async attempt => {
         await proxy.command('android/launch-network', { hold: true });
         await device.terminate(); await device.home(); await delay(1000);

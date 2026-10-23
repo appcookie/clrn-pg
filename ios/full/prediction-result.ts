@@ -12,6 +12,8 @@ import type { ScreenshotMask } from './screenshot';
 import type { TexasContext } from './texas-support';
 import { gameSession } from './game-room';
 import { events } from '../../visual/cases/texas-holdem/replayData';
+import { animationRecordOnly } from './record-only';
+import { recordNativeVideoFrames } from './video-frames';
 
 /** A failed acknowledgement must not replay this three-second result again. */
 export async function triggerPredictionResult(context: Pick<TexasContext, 'proxy' | 'room'>): Promise<string> {
@@ -74,6 +76,10 @@ function predictionPanel(lines: RecordedText[], screen: { width: number; height:
 export async function capturePredictionResult(device: NativeDevice, name: string, testInfo: TestInfo,
   backgroundMasks: ScreenshotMask[], trigger: () => Promise<string | void>,
   capture = captureTransientScreenshots, recognize = recognizeRecordedText): Promise<void> {
+  if (animationRecordOnly) {
+    await recordNativeVideoFrames(device, name, { x: 0, y: 0, ...device.screenSize }, trigger, testInfo);
+    return;
+  }
   const locale = /^(en|zh-Hans|zh-Hant)-/.exec(name)?.[1];
   if (!locale) throw new Error('猜牌结果缺少已知语言');
   const { frames, result: expectedText } = await capture(device, name, testInfo, trigger);

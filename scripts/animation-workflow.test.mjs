@@ -5,8 +5,8 @@ import { runInNewContext } from 'node:vm';
 import test from 'node:test';
 
 const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
-const aggregate = workflow.split('\n  animation-gate:\n')[1];
-assert.ok(aggregate, '完整动画必须有独立汇总 job');
+const aggregate = workflow.split('\n  screenshot-video-gate:\n')[1];
+assert.ok(aggregate, '截图与录屏必须有独立汇总 job');
 const name = aggregate.match(/\n    name: \$\{\{\s*(.*?)\s*\}\}/)?.[1];
 const condition = aggregate.match(/\n    if: (.*)/)?.[1];
 const command = aggregate.match(/\n        run: (.*)/)?.[1];
@@ -14,9 +14,9 @@ const command = aggregate.match(/\n        run: (.*)/)?.[1];
 test('手动诊断不能发布与 PR/master 门禁同名的 skipped 检查', () => {
   assert.ok(name, '检查名必须区分手动诊断和正式门禁');
   const evaluate = event => runInNewContext(name, { github: { event_name: event } });
-  assert.equal(evaluate('pull_request'), 'iOS animation gate');
-  assert.equal(evaluate('push'), 'iOS animation gate');
-  assert.equal(evaluate('workflow_dispatch'), 'iOS animation diagnostics');
+  assert.equal(evaluate('pull_request'), 'iOS screenshot and video gate');
+  assert.equal(evaluate('push'), 'iOS screenshot and video gate');
+  assert.equal(evaluate('workflow_dispatch'), 'iOS recording diagnostics');
 });
 
 test('正式汇总在前置失败、取消、跳过后仍执行，不能被默认依赖条件跳过', () => {

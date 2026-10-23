@@ -6,6 +6,7 @@ import { recordScreenSamples } from './video-frames';
 import { captureMovingKeyframes } from './loop-keyframes';
 import { cropNativeFrame } from './motion-regions';
 import { PNG } from 'pngjs';
+import { animationRecordOnly } from './record-only';
 
 /** The native countdown is yellow or green across real runs of the same room.
  * The recording also starts at different real seconds. Compare the sweep and
@@ -42,6 +43,10 @@ export function countdownShapeDistance(left: Buffer, right: Buffer): number {
 export async function capturePlayerCountdown(device: NativeDevice, game: 'texas-holdem' | 'zhajinhua',
   playerId: string, info: TestInfo, refresh: () => Promise<void>): Promise<void> {
   await refresh();
+  if (animationRecordOnly) {
+    await recordScreenSamples(device, `${game === 'texas-holdem' ? 'texas' : game}-operation-countdown`, info);
+    return;
+  }
   let before: ReturnType<typeof playerCountdown> | undefined;
   await expect(async () => {
     before = playerCountdown(await gameNodes(device), playerId, game);

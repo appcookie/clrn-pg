@@ -19,6 +19,7 @@ import { decodeFrame, type FramePixels } from './native-frame';
 import { maskScreenshot, maskCroppedScreenshot, type ScreenshotBounds, type ScreenshotMask } from './screenshot';
 import { attachFrameEvidence } from './frame-evidence';
 import { recordNativeVideoFrames, recordScreenSamples } from './video-frames';
+import { animationRecordOnly } from './record-only';
 import { alignedVideoDistance, localMotionDistance, mirroredThumbnail, videoThumbnail } from './video-motion';
 import { seatGuideBackgroundMasks, leaderboardRoomIdentityMask, networkStatusMask } from './game-masks';
 import { semanticTransitionMinimumFrames, shortAnimationMinimumFrames } from './video-timeline';
@@ -268,6 +269,15 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
   videoRecorder: typeof recordNativeVideoFrames = recordNativeVideoFrames,
   afterRecording?: () => Promise<void>,
   preparedStart?: { nodes: NativeNode[]; completedAt: number }): Promise<void> {
+  if (animationRecordOnly) {
+    await videoRecorder(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
+      await trigger();
+      if (settleMs) await setTimeout(settleMs);
+    }, testInfo, 3500, 1);
+    await afterReady?.();
+    await afterRecording?.();
+    return;
+  }
   /**
    * 截出固定的动画绘制区域。
    * @param bytes - 原生完整屏幕 PNG。
@@ -759,6 +769,10 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
  */
 export async function captureTransientTransition(device: AndroidDevice, name: string, testInfo: TestInfo,
   region: ScreenshotBounds, trigger: () => unknown, settleMs = 2500): Promise<void> {
+  if (animationRecordOnly) {
+    await recordScreenSamples(device, name, testInfo, trigger, settleMs);
+    return;
+  }
   /**
    * 从完整原生截图裁切提示区域。
    * @param bytes - 原生完整屏幕 PNG。
@@ -837,6 +851,10 @@ export function timedPromptEvidence(before: Buffer, frames: Buffer[], layout: Pi
 
 export async function captureTimedPrompt(device: AndroidDevice, name: string, testInfo: TestInfo,
   trigger: () => unknown): Promise<void> {
+  if (animationRecordOnly) {
+    await recordNativeVideoFrames(device, name, { x: 0, y: 0, ...device.screenSize }, trigger, testInfo);
+    return;
+  }
   const nodes = await device.nodes();
   const layout = nativeLevelUpRegions(nodes, device.screenSize, name.startsWith('zhajinhua-') ? 'zhajinhua' : 'texas-holdem');
   const region = layout.panel;

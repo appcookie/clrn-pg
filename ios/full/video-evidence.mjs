@@ -69,6 +69,17 @@ export function exportVideoEvidence(artifactDirectory, outputDirectory, source =
   mkdirSync(output, { recursive: true });
   for (const file of pending) writeFileSync(join(output, file.path), file.bytes);
   writeFileSync(join(output, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  const escape = value => String(value).replaceAll('&', '&amp;').replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;').replaceAll('"', '&quot;');
+  writeFileSync(join(output, 'index.html'), `<!doctype html><html lang="zh"><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>iOS 动画录屏</title>
+<style>body{font:16px system-ui;margin:24px;max-width:1100px}main{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}article{min-width:0}video{width:100%}h2,p{overflow-wrap:anywhere}img{max-width:100%;height:auto}</style>
+<h1>iOS 动画录屏</h1><p>本页供人工观看动画；页面截图由 CI 单独比较。<a href="manifest.json">查看录制来源与校验值</a></p>
+<main>${manifest.videos.map(clip => `<article><h2>${escape(clip.name)}</h2>
+<video controls playsinline preload="metadata" src="${clip.path}"></video>
+<p>${escape(clip.test)} · ${escape(clip.status)} · <a href="${clip.path}">下载 MP4</a></p>
+${clip.keyframes.map(frame => `<a href="${frame.path}"><img loading="lazy" src="${frame.path}" alt="${escape(clip.name)} ${frame.timestampMs} ms"></a>`).join('')}
+</article>`).join('')}</main></html>\n`);
   copyFileSync(join(artifact, 'release/build-info.json'), join(output, 'build-info.json'));
   return manifest;
 }

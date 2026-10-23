@@ -103,7 +103,7 @@ test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或�
   assert.deepEqual(parts.flat().sort(), complete.sort());
 });
 
-test('guest每语言18页独立于启动动画，实际25/20/20项跨两片恰好覆盖一次', { timeout: 180_000 }, async () => {
+test('guest每语言18页独立于动画录屏，实际21/20/20项跨两片恰好覆盖一次', { timeout: 180_000 }, async () => {
   const { guestScreenshotTests, screenshotTestKey } = await import('../ios/full/guest-screenshot-contract.mjs');
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(locale, filter = '') {
@@ -137,12 +137,14 @@ test('guest每语言18页独立于启动动画，实际25/20/20项跨两片恰�
     assert.equal(complete.length, count);
     assert.equal(pages.length, 18);
     assert.ok(pages.every(spec => spec.file === 'tests/parity.spec.ts'));
-    assert.equal(startup.length, count - 18);
+    assert.equal(startup.length, locale === 'en' ? 3 : 2);
     assert.ok(startup.every(spec => spec.file !== 'tests/parity.spec.ts'));
     const keys = specs => specs.map(spec => `${spec.file}:${spec.title}`);
     const combined = keys([...pages, ...startup]);
-    assert.equal(new Set(combined).size, count);
-    assert.deepEqual(combined.sort(), keys(complete).sort());
+    assert.equal(new Set(combined).size, combined.length);
+    assert.ok(combined.every(key => keys(complete).includes(key)));
+    if (locale === 'en') assert.equal(complete.length - combined.length, 4,
+      '四项独立动画或素材检查已移出游客截图门禁');
   }
   const first = iosAccountMatrix('123', 'guest', 'all').include[0];
   assert.equal(first.locale, 'en');

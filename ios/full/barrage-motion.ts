@@ -7,6 +7,7 @@ import { gameScreenshot } from './game-controls';
 import { cropMotionRegion, cropNativeFrame } from './motion-regions';
 import { captureMovingKeyframes, framePaletteDistance } from './loop-keyframes';
 import { recordScreenSamples } from './video-frames';
+import { animationRecordOnly } from './record-only';
 
 type Sample = { capturedAt: number; png: string };
 type Target = { index: number; x: number; y: number; width: number; height: number };
@@ -65,6 +66,10 @@ export async function barrageTargets(before: Buffer, frames: Buffer[], text: Scr
 /** 先录屏再发送一次消息；原生精准观测负责文本语义，原片连通前景负责完整可见与真实左移。 */
 export async function captureBarrageMotion(device: NativeDevice, info: TestInfo, send: () => Promise<void>,
   expectedText: string, record = recordScreenSamples): Promise<void> {
+  if (animationRecordOnly) {
+    await record(device, 'texas-barrage', info, send, 5000);
+    return;
+  }
   const before = await gameScreenshot(device);
   let marker: Awaited<ReturnType<NativeDevice['transientMarker']>> = null;
   const timing: { phase: string; utc: string }[] = [];

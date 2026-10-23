@@ -9,6 +9,7 @@ import { comparePixels } from '../visual.mjs';
 import { toastKeyframes } from './toast-keyframes';
 import { recordedToastPanel } from './toast-panel';
 import { recognizeRecordedText, assertRecordedToastText } from './recorded-text';
+import { animationRecordOnly } from './record-only';
 
 const statisticsHelp: Record<string, string> = {
   en: 'It means actively investing money in the pot',
@@ -21,6 +22,10 @@ export async function captureToast(device: NativeDevice, name: string, testInfo:
   backgroundMasks: ScreenshotMask[], trigger: () => Promise<string | void>,
   record = recordNativeVideoFrames, recognize = recognizeRecordedText,
   locate = recordedToastPanel): Promise<void> {
+  if (animationRecordOnly) {
+    await record(device, name, { x: 0, y: 0, ...device.screenSize }, trigger, testInfo, 3500, 1);
+    return;
+  }
   let expectedText: string | void;
   const frames = await record(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
     expectedText = await trigger();

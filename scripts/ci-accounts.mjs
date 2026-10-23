@@ -39,8 +39,9 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
     if (!['all', 'en'].includes(selectedLocale)) throw new Error('动画门禁固定使用英文');
     const animationJobs = animationInventory.cases.map((entry, index) => ({
       group: entry.group, locale: 'en', shard: entry.id, animation: entry.id,
+      ...(selectedGroup === 'pr' ? { recordOnly: true } : {}),
       filter: `${entry.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, playwrightShard: '',
-      label: `animation / ${entry.id} / ${entry.title}`,
+      label: `${selectedGroup === 'pr' ? 'recording' : 'animation'} / ${entry.id} / ${entry.title}`,
       account: entry.group === 'guest' ? '' : allocateCiAccount(runId, index, available),
     }));
     return { include: [...(selectedGroup === 'pr' ? iosAccountMatrix(runId, 'guest', 'all').include : []),
@@ -90,7 +91,10 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
         const key = `${group}/${locale}`;
         // English startup has seven cases (~35 min); queue it before the shorter
         // Chinese startup shards so max-parallel does not leave it until last.
-        const guestParts = [['pages', guestPages], ['startup', `^(?!.*${guestPages})`]];
+        // PR startup keeps screenshot checks and a viewable launch video;
+        // animation-effect tests are tracked in laiwan_react_native #7056.
+        const guestParts = [['pages', guestPages],
+          ['startup', '(?:launch_branding full screen while initialization waits|launch_staging_notice full screen|iOS Staging 登录与找回密码页面视觉回归)$']];
         const parts = group === 'guest' ? (locale === 'en' ? guestParts.slice().reverse() : guestParts)
           : shards[key] || [['all', '']];
         return parts.map(([shard, filter, playwrightShard = ''], index) => ({ group, locale, shard, filter, playwrightShard,

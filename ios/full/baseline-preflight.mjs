@@ -62,13 +62,13 @@ const missingBaselines = [];
 const missingInventoryCases = [];
 for (const item of matrix.include.filter(item => item.animation)) {
   const entry = animationCase(item.animation);
-  if (!entry.images.length) {
+  if (!item.recordOnly && !entry.images.length) {
     missingInventoryCases.push(entry.id);
     missingBaselines.push(`${entry.id} 缺少完整审查后的动画基准清单：${entry.title}`);
   }
-  for (const image of entry.images) {
+  for (const image of (item.recordOnly ? entry.images.filter(name => name.startsWith('en-')) : entry.images)) {
     const path = baselineRelativePath(image, 'en');
-    if (!paths.has(path)) missingBaselines.push(`动画门禁缺少基准：${path}（${entry.title}）`);
+    if (!paths.has(path)) missingBaselines.push(`${item.recordOnly ? '静态截图' : '动画门禁'}缺少基准：${path}（${entry.title}）`);
   }
 }
 for (const item of matrix.include.filter(item => item.group === 'guest' && !item.animation)) {

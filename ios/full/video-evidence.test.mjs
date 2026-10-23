@@ -35,6 +35,7 @@ test('失败运行导出原始MP4与实际PTS关键帧，保留失败状态和�
     assert.equal(m.videos[0].keyframes[0].frameIndex, 8);
     assert.deepEqual(readFileSync(join(f.output, '001.mp4')), f.bytes);
     assert.deepEqual(readFileSync(join(f.output, '001-1.png')), f.png);
+    assert.match(readFileSync(join(f.output, 'index.html'), 'utf8'), /<video controls playsinline preload="metadata" src="001\.mp4"/);
     assert.match(m.videos[0].sha256, /^[a-f0-9]{64}$/);
     assert.throws(() => exportVideoEvidence(f.artifact, f.output), /覆盖/);
   } finally { rmSync(f.root, { recursive: true, force: true }); }

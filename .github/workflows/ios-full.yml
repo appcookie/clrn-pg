@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       group:
-        description: pr 为游客及全部英文动画；animations 仅完整动画；guest 无需账号
+        description: pr 为三语言游客截图及全部 25 组录屏；animations 为手动动画诊断；guest 无需账号
         type: choice
         default: pr
         options: [pr, animations, all, guest, account, social, rooms, wallet-help, records, texas, zhajinhua, functional, functional-creation, interaction, network]
@@ -49,7 +49,7 @@ jobs:
         run: |
           if [ -z "$CI_IOS_GROUP" ]; then
             export CI_IOS_GROUP=pr
-            echo 'PR 和 master push 执行三语言游客矩阵及全部英文动画；缺账号、缺基准、漏跑或视觉差异均失败。' >> "$GITHUB_STEP_SUMMARY"
+            echo 'PR 和 master push 比较三语言游客及英文牌局静态截图，采集全部 25 组动画录屏；动画效果断言待 React Native #7056。' >> "$GITHUB_STEP_SUMMARY"
           fi
           node scripts/plan-ci-accounts.mjs ios
       - name: 安装基准预检依赖
@@ -105,6 +105,7 @@ jobs:
       IOS_GROUP: ${{ matrix.group }}
       IOS_LOCALE: ${{ matrix.locale }}
       IOS_VISUAL_MODE: ${{ matrix.mode || inputs.mode || 'compare' }}
+      IOS_ANIMATION_RECORD_ONLY: ${{ matrix.recordOnly && '1' || '0' }}
       CLRN_CI_ACCOUNT: ${{ matrix.account }}
       CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
     steps:
@@ -136,7 +137,7 @@ jobs:
         run: |
           udid=$(xcrun simctl create clrn-full com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
           echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
-      - name: 执行原生业务、视觉及动画断言
+      - name: 执行原生业务与静态截图，采集动画录屏
         env:
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
           IOS_FILTER: ${{ matrix.filter }}
@@ -177,9 +178,9 @@ jobs:
             `### 本轮游客截图 · ${manifest.locale} · ${manifest.shard}\n\n` +
             `${manifest.passedTests} 项测试通过，${manifest.screenshots} 张预期原图齐全。\n\n` +
             `[下载截图与录像](${process.env.SCREENSHOTS_URL})，解压后打开 index.html；v1/ 为统一截图目录，manifest.json 记录本轮来源和 SHA-256。\n\n` +
-            `这是本轮实际采集结果，尚未批准为基准。全部英文动画由独立 animation 分片执行并对比已提交基准。\n`);
+            `这是本轮实际采集结果，尚未批准为基准。全部 25 组动画由独立分片录制视频供人工观看；动画效果断言待 React Native #7056。\n`);
           NODE
-      - name: 验收本轮动画执行与截图
+      - name: 校验本轮录屏存在且文件有效
         if: matrix.animation
         env:
           ANIMATION_CASE: ${{ matrix.animation }}
@@ -189,12 +190,21 @@ jobs:
         run: node ios/full/video-evidence.mjs ios/artifacts ios/artifacts/video-evidence
       - name: 发布可回看的视频证据
         if: always() && hashFiles('ios/artifacts/video-evidence/manifest.json') != ''
+        id: videos
         uses: actions/upload-artifact@v4
         with:
           name: ios-video-evidence-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 30
           if-no-files-found: error
           path: ios/artifacts/video-evidence/
+      - name: 录屏观看入口
+        if: matrix.recordOnly && steps.videos.outputs.artifact-url != ''
+        env:
+          VIDEOS_URL: ${{ steps.videos.outputs.artifact-url }}
+          ANIMATION_CASE: ${{ matrix.animation }}
+        run: |
+          echo "### $ANIMATION_CASE 动画录屏" >> "$GITHUB_STEP_SUMMARY"
+          echo "[下载录屏]($VIDEOS_URL)，解压后打开 index.html 直接观看。动画效果由 React Native #7056 后续验证。" >> "$GITHUB_STEP_SUMMARY"
       - name: 保存测试产物
         if: always()
         uses: actions/upload-artifact@v4
@@ -217,15 +227,15 @@ jobs:
       - name: 删除专用模拟器
         if: always() && env.IOS_SIMULATOR_UDID != ''
         run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
-  animation-gate:
+  screenshot-video-gate:
     # GitHub treats skipped checks as successful. Manual diagnostics must never
     # publish the same check context as the required PR/master aggregate.
-    name: ${{ github.event_name == 'workflow_dispatch' && 'iOS animation diagnostics' || 'iOS animation gate' }}
+    name: ${{ github.event_name == 'workflow_dispatch' && 'iOS recording diagnostics' || 'iOS screenshot and video gate' }}
     if: always() && github.event_name != 'workflow_dispatch'
     needs: [plan, proxy-check, native]
     runs-on: ubuntu-latest
     steps:
-      - name: 所有动画分片必须成功；取消、跳过和缺基准均阻断
+      - name: 所有截图与录屏分片必须成功；取消、跳过和缺基准均阻断
         env:
           PLAN: ${{ needs.plan.result }}
           PREFLIGHT: ${{ needs.plan.outputs.preflight }}

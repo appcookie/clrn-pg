@@ -11,6 +11,7 @@ import type { ScreenshotBounds } from './screenshot';
 import { baselinePath } from './baseline-path.mjs';
 import { shortAnimationMinimumFrames } from './video-timeline';
 import { assetKeyframes } from './asset-keyframes';
+import { animationRecordOnly } from './record-only';
 
 type NativeFrame = { capturedAt: number; png: string };
 
@@ -25,6 +26,10 @@ type NativeFrame = { capturedAt: number; png: string };
  */
 export async function captureAssetSequence(device: AndroidDevice, name: string, info: TestInfo,
   region: ScreenshotBounds, trigger: () => Promise<unknown>, flightRegion?: ScreenshotBounds): Promise<void> {
+  if (animationRecordOnly) {
+    await recordScreenSamples(device, name, info, trigger, 5000);
+    return;
+  }
   /**
    * 从完整原生截图中裁出效果范围。
    * @param bytes - 原生截图 PNG。
