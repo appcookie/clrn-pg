@@ -33,6 +33,17 @@ if (enabled('wallet-help', 'en')) test('share link opens and closes the real iOS
       await waitForHall(device); await signIn(device);
       const scenario = iosScenarios('en', 'wallet-help').find(item => item.pageLabel === 'signed_in_share_app');
       expect(scenario).toBeDefined(); await navigateScenario(device, scenario!);
+      if (animationRecordOnly) {
+        // The system activity service can expose its container before its
+        // optional actions load. Keep recording until the native container
+        // appears; action availability and the exit belong to RN #7056.
+        await captureNativeTransition(device, 'ios-share-sheet-enter', info,
+          { x: 0, y: 0, ...device.screenSize }, async () => {
+            await clickNode(device, { res: 'share-button' });
+            await device.wait({ res: 'ActivityListView' }, { timeout: 60_000 });
+          });
+        return;
+      }
       // 系统分享选项实际出现在 XCUITest 树中；不点击 Messages/Mail 等发送入口。
       await captureNativeTransition(device, 'ios-share-sheet-enter', info, { x: 0, y: 0, ...device.screenSize },
         () => clickNode(device, { res: 'share-button' }), [], [], 0, 'videoFrames', undefined, () => device.wait(copy));
