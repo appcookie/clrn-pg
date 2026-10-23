@@ -267,6 +267,8 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       expect(cancel.bounds.width).toBeGreaterThan(0);
       /** 通过抽屉中的取消按钮触发同一组件的退场动画。 */
       const pressCancel = () => device!.input.tap({ x: Number(String(Math.round(cancel.bounds.x + cancel.bounds.width / 2))), y: Number(String(Math.round(cancel.bounds.y + cancel.bounds.height / 2))) });
+      // 39879496187 的合成器原片从完整抽屉直接跳到终点，错过退场中段。
+      device.nativeVideoBackend = 'xctest';
       await captureNativeTransition(device, 'invite-friends-exit', testInfo, region, pressCancel);
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
