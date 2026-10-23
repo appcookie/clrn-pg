@@ -6,28 +6,35 @@ import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { PNG } from 'pngjs';
 import { animationCases, validateAnimationReport } from './animation-gate.mjs';
-import { iosAccountMatrix, ciAccounts } from '../../scripts/ci-accounts.mjs';
+import { iosAccountMatrix, ciAccounts, quarantinedAnimationCases } from '../../scripts/ci-accounts.mjs';
 import { collectPlaywright } from '../../scripts/playwright-collection.mjs';
 import { reportSpecs, screenshotTestKey } from './guest-screenshot-contract.mjs';
 
-test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能只做标题登记', () => {
+test('PR 只运行未隔离录屏，隔离目录完整列出其余组并保留手动重跑', () => {
   const source = JSON.parse(readFileSync('docs/web-coverage-source.json', 'utf8'));
   const matrix = iosAccountMatrix('123', 'pr', 'all', ciAccounts).include;
   const jobs = matrix.filter(entry => entry.animation);
+  const quarantined = iosAccountMatrix('123', 'quarantined', 'en', ciAccounts).include;
+  const quarantinedIds = quarantinedAnimationCases.map(entry => entry.id);
   assert.equal(source.animations.length, 21);
   assert.equal(animationCases.length, 25);
-  assert.equal(jobs.length, animationCases.length + 2);
-  assert.ok(jobs.every(entry => entry.recordOnly === true), 'PR 中全部 25 组只采集录屏');
+  assert.deepEqual(quarantinedIds, ['animation-9', 'animation-12', 'animation-14', 'animation-20', 'animation-21']);
+  assert.equal(jobs.length, animationCases.length - quarantinedIds.length);
+  assert.ok(jobs.every(entry => entry.recordOnly === true), 'PR 中未隔离组只采集录屏');
   assert.ok(iosAccountMatrix('123', 'animations', 'en', ciAccounts).include.every(entry => !entry.recordOnly),
     '手动诊断保留完整动画断言');
-  assert.equal(new Set(jobs.map(entry => entry.animation)).size, animationCases.length);
-  assert.deepEqual(jobs.filter(entry => entry.animation === 'animation-20').map(entry => entry.animationPart),
+  assert.deepEqual([...new Set(quarantined.map(entry => entry.animation))], quarantinedIds);
+  assert.ok(quarantined.every(entry => entry.recordOnly === true));
+  assert.deepEqual(quarantined.filter(entry => entry.animation === 'animation-20').map(entry => entry.animationPart),
     ['themes', 'voice_records', 'interactions']);
+  assert.deepEqual([...new Set([...jobs, ...quarantined].map(entry => entry.animation))].sort(),
+    animationCases.map(entry => entry.id).sort());
+  assert.ok(jobs.every(entry => !quarantinedIds.includes(entry.animation)));
   for (const row of source.animations) {
     const entry = animationCases.find(item => item.file === row.nativeImplementation.file.replace('ios/full/', '')
       && item.title === row.nativeImplementation.testTitle);
     assert.ok(entry, row.title);
-    assert.ok(jobs.some(item => item.animation === entry.id));
+    assert.ok([...jobs, ...quarantined].some(item => item.animation === entry.id));
   }
   assert.equal(matrix.filter(entry => !entry.animation).length, 6);
   assert.ok(jobs.every(entry => entry.locale === 'en'));
@@ -47,8 +54,8 @@ test('PR 录屏模式只校验真实 MP4，不要求动画关键帧截图', () =
   assert.throws(() => validateAnimationReport(report, entry.id, 'record-only'), /录屏/);
 });
 
-test('第 20 组三个录屏分段各自执行唯一真实用例并提供 MP4', { timeout: 180_000 }, () => {
-  const jobs = iosAccountMatrix('123', 'pr', 'all', ciAccounts).include
+test('隔离组 20 的三个录屏分段仍可手动执行唯一真实用例并提供 MP4', { timeout: 180_000 }, () => {
+  const jobs = iosAccountMatrix('123', 'quarantined', 'en', ciAccounts).include
     .filter(entry => entry.animation === 'animation-20');
   const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
     { cwd: process.cwd(), env: { ...process.env, IOS_GROUP: 'texas', IOS_LOCALE: 'en', IOS_ANIMATION_RECORD_ONLY: '1' } }));

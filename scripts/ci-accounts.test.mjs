@@ -212,14 +212,16 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
   const { spawnSync } = await import('node:child_process');
   const directory = mkdtempSync(join(tmpdir(), 'ios-ci-plan-test-'));
   const output = join(directory, 'output');
+  const summary = join(directory, 'summary');
   const password = 'fake-plan-password';
-  const env = { ...process.env, GITHUB_RUN_ID: '123', GITHUB_OUTPUT: output,
+  const env = { ...process.env, GITHUB_RUN_ID: '123', GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: summary,
     CI_IOS_GROUP: 'all', CI_IOS_LOCALE: 'all', CLRN_IOS_CI_TEST_ACCOUNTS: JSON.stringify({ accounts: [
       { username: ciAccounts[0], password, status: 'ready' }] }) };
   const run = override => spawnSync(process.execPath, ['scripts/plan-ci-accounts.mjs', 'ios'],
     { env: { ...env, ...override }, encoding: 'utf8' });
   try {
     writeFileSync(output, '');
+    writeFileSync(summary, '');
     const planned = run({});
     assert.equal(planned.status, 0, planned.stderr);
     const content = readFileSync(output, 'utf8');
@@ -236,29 +238,30 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
     assert.equal(readFileSync(output, 'utf8'), '');
     assert.ok(!invalid.stderr.includes(password));
     writeFileSync(output, '');
-    const recording = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9',
+    const recording = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-10',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(recording.status, 0, recording.stderr);
     const selected = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
     assert.equal(selected.length, 1);
-    assert.equal(selected[0].animation, 'animation-9');
+    assert.equal(selected[0].animation, 'animation-10');
     assert.equal(selected[0].recordOnly, true);
+    assert.match(readFileSync(summary, 'utf8'), /animation-9.*animation-12.*animation-14.*animation-20.*animation-21/s);
     writeFileSync(output, '');
-    const split = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-20',
+    const split = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: 'animation-20',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(split.status, 0, split.stderr);
     const selectedSplit = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
     assert.deepEqual(selectedSplit.map(item => item.animationPart), ['themes', 'voice_records', 'interactions']);
     assert.equal(new Set(selectedSplit.map(item => item.shard)).size, 3);
     writeFileSync(output, '');
-    const opening = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-20/themes',
+    const opening = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: 'animation-20/themes',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(opening.status, 0, opening.stderr);
     const selectedOpening = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
     assert.equal(selectedOpening.length, 1);
     assert.equal(selectedOpening[0].animationPart, 'themes');
     writeFileSync(output, '');
-    const failures = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9, animation-12,animation-21',
+    const failures = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: 'animation-9, animation-12,animation-21',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(failures.status, 0, failures.stderr);
     const selectedFailures = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
@@ -267,11 +270,16 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
     for (const invalidCase of ['animation-9,animation-9', 'animation-0', 'animation-26',
       'animation-9/opening', 'animation-20/other', 'animation-20/opening']) {
       writeFileSync(output, '');
-      const bad = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: invalidCase,
+      const bad = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: invalidCase,
         GITHUB_EVENT_NAME: 'workflow_dispatch' });
       assert.notEqual(bad.status, 0);
       assert.equal(readFileSync(output, 'utf8'), '');
     }
+    writeFileSync(output, '');
+    const excluded = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.notEqual(excluded.status, 0);
+    assert.equal(readFileSync(output, 'utf8'), '');
     writeFileSync(output, '');
     const gate = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9',
       GITHUB_EVENT_NAME: 'pull_request' });

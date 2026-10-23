@@ -30,7 +30,7 @@ IOS_SIMULATOR_UDID=<专用模拟器 UUID> npm run test:ios
 
 ## CI
 
-`ios-simulator.yml` 是无需自定义 Secrets 的基础冒烟工作流。PR、master 推送还会执行 `ios-full.yml` 的静态截图比较和 25 组录屏，其中登录场景需要下文列出的测试账号 Secrets。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
+`ios-simulator.yml` 是无需自定义 Secrets 的基础冒烟工作流。PR、master 推送还会执行 `ios-full.yml` 的静态截图比较和当前未隔离的 20 组录屏；其余 5 组列在 [隔离目录](ios/full/quarantined/README.md)，不计为通过。其中登录场景需要下文列出的测试账号 Secrets。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
 
 扩展页面见 `ios/scenarios.mjs`；更新应用只需修改部署记录，不需要修改业务代码。
 
@@ -45,15 +45,15 @@ npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 
 完整原生测试通过「iOS 完整回归」工作流运行。每个 job 明确一个 `IOS_GROUP`，全量模式拆成三语言、业务组和牌桌分片。代理仅允许 GitHub 托管临时 macOS runner，保存并恢复系统代理；本机默认拒绝更改日常网络。
 
-游客组每种语言拆成两个 job：`pages` 执行 18 个页面，`startup` 执行启动页及认证截图用例。英语 21 项、简中 20 项、繁中 20 项；独立动画用例进入 25 组录屏分片。整体最多并行 5 个 job，每个 job 仍只启动一个模拟器。
+游客组每种语言拆成两个 job：`pages` 执行 18 个页面，`startup` 执行启动页及认证截图用例。英语 21 项、简中 20 项、繁中 20 项；独立动画清单有 25 组，其中 20 组进入当前 PR 录屏分片。整体最多并行 10 个 job，每个 job 仍只启动一个模拟器。
 
 普通功能组的 53 例使用 Playwright 原生分片分成 5 个 job（11 / 11 / 11 / 10 / 10 例），各自分配账号槽位。仅该组开启按测试分片，每个 job 仍以一个 worker 顺序执行；多账号用例按需创建额外的独立模拟器。账号较少时，相同账号的 job 通过账号锁排队。创建、交互和弱网组保持原有独立 job。
 
 游客组不需要凭据。登录组需要仓库 Secret `CLRN_IOS_CI_TEST_ACCOUNTS`（至少一个独立 iOS 测试账号），以及余额准备/创建数据所需的 `TESTING_API_TOKEN`。账号池格式为 `{"accounts":[{"username":"clrnciios001","password":"实际密码","status":"ready"}]}`；只配置确实已创建的账号，禁止借用 Web/Android 并发占用的账号。账号级排队锁保证同一账号不会被多个 job 同时使用。
 
-PR 和 master push 默认以 `compare` 运行三语言游客静态截图，以及 `ios/full/animation-gate-cases.json` 中的全部 25 个英文录屏分片。牌局分片继续比较页面静态截图；每个录屏分片必须执行指定用例并产出有效 MP4。CI 产物里的 `index.html` 可直接播放。动画帧数、相位、轨迹、循环变化与素材播放效果均不在当前 PR 的自动门禁中，后续方案和全部 25 组范围见 [React Native #7056](https://github.com/kevinanew/laiwan_react_native/issues/7056)。汇总检查名为 `iOS screenshot and video gate`，任一分片失败、取消或未运行都会失败。
+PR 和 master push 默认以 `compare` 运行三语言游客静态截图，以及 `ios/full/animation-gate-cases.json` 中未列入 [隔离清单](ios/full/quarantined/README.md)的 20 个英文录屏分片。牌局分片继续比较页面静态截图；每个运行中的录屏分片必须执行指定用例并产出有效 MP4。CI 产物里的 `index.html` 可直接播放。隔离的 5 组不会在 PR 中运行，CI 摘要会逐项列出，不能视为通过。动画帧数、相位、轨迹、循环变化与素材播放效果均不在当前 PR 的自动门禁中，后续方案和全部 25 组范围见 [React Native #7056](https://github.com/kevinanew/laiwan_react_native/issues/7056)。汇总检查名为 `iOS screenshot and video gate`，任一应运行分片失败、取消或未运行都会失败。
 
-手动 `group=animations` 仍可运行旧动画断言作为诊断，不作为 PR 门禁。`group=all` 包括其他业务和功能测试。静态截图基准继续保留审查来源和 SHA-256；缺少静态基准会在分配 macOS runner 前失败。录屏供人工观看，不自动批准新动画基准。
+手动 `group=quarantined` 可只重跑隔离的 5 组，`group=animations` 可运行完整清单的旧动画断言作为诊断，两者都不作为 PR 门禁。`group=all` 包括其他业务和功能测试。静态截图基准继续保留审查来源和 SHA-256；缺少静态基准会在分配 macOS runner 前失败。录屏供人工观看，不自动批准新动画基准。
 
 完整回归的参考图只使用 `ios/snapshots/v1/<module>/<page>/<state>/ios/iphone16-ios18.5/<locale>/<kind>/<sample>.png`，可被 `laiwan_screenshot` 直接读取。已通过的 `smoke` CI 报告也可用 `node ios/full/export-candidates.mjs <新目录> <下载后的 artifact 目录>...` 导出真实候选；工具核对所有测试通过、同一 Release 与每张 PNG，并标记 `unreviewed`。逐图审查后将候选的 `v1/` 放入 `ios/snapshots/v1/`；PR 的 `compare` 会自动运行，缺少基准会在分配 macOS runner 前失败。当前 Staging 提示卡 CTA 被遮挡属于已记录的发布包布局缺陷，保存其真实参考图不代表认可该布局。
 

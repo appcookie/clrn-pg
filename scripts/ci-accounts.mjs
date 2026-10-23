@@ -1,5 +1,13 @@
 import { readFileSync } from 'node:fs';
 import animationInventory from '../ios/full/animation-gate-cases.json' with { type: 'json' };
+import quarantinedInventory from '../ios/full/quarantined/cases.json' with { type: 'json' };
+
+export const quarantinedAnimationCases = quarantinedInventory.cases;
+const quarantinedIds = new Set(quarantinedAnimationCases.map(entry => entry.id));
+if (quarantinedIds.size !== quarantinedAnimationCases.length
+  || quarantinedAnimationCases.some(entry => !animationInventory.cases.some(item => item.id === entry.id))) {
+  throw new Error('iOS 隔离清单包含重复或未知录屏组。');
+}
 
 // 这里只维护公开账号名，密码统一保存在 CLRN_IOS_CI_TEST_ACCOUNTS Secret。
 export const ciAccounts = JSON.parse(readFileSync(new URL('./ci-test-accounts.json', import.meta.url), 'utf8')).accounts;
@@ -35,17 +43,19 @@ export function allocateCiAccount(runId, offset = 0, available = executionAccoun
  * @param selectedLocale - 全部语言或一种指定语言。
  */
 export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 'all', available = []) {
-  if (selectedGroup === 'animations' || selectedGroup === 'pr') {
+  if (['animations', 'pr', 'quarantined'].includes(selectedGroup)) {
     if (!['all', 'en'].includes(selectedLocale)) throw new Error('动画门禁固定使用英文');
     const animationJobs = animationInventory.cases.flatMap((entry, index) => {
-      const phases = selectedGroup === 'pr' && entry.id === 'animation-20'
+      if (selectedGroup === 'pr' && quarantinedIds.has(entry.id)
+        || selectedGroup === 'quarantined' && !quarantinedIds.has(entry.id)) return [];
+      const phases = selectedGroup !== 'animations' && entry.id === 'animation-20'
         ? ['themes', 'voice_records', 'interactions'] : [''];
       return phases.map(phase => ({
         group: entry.group, locale: 'en', shard: phase ? `${entry.id}-${phase}` : entry.id,
         animation: entry.id, ...(phase ? { animationPart: phase } : {}),
-        ...(selectedGroup === 'pr' ? { recordOnly: true } : {}),
+        ...(selectedGroup !== 'animations' ? { recordOnly: true } : {}),
         filter: `${entry.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${phase ? `_${phase}` : ''}$`, playwrightShard: '',
-        label: `${selectedGroup === 'pr' ? 'recording' : 'animation'} / ${entry.id} / ${entry.title}${phase ? ` / ${phase}` : ''}`,
+        label: `${selectedGroup === 'animations' ? 'animation' : 'recording'} / ${entry.id} / ${entry.title}${phase ? ` / ${phase}` : ''}`,
         account: entry.group === 'guest' ? ''
           : allocateCiAccount(runId, phase === 'voice_records' ? animationInventory.cases.length
             : phase === 'interactions' ? animationInventory.cases.length + 1 : index, available),

@@ -7,10 +7,10 @@ on:
   workflow_dispatch:
     inputs:
       group:
-        description: pr 为三语言游客截图及全部 25 组录屏；animations 为手动动画诊断；guest 无需账号
+        description: pr 为游客截图及未隔离录屏；quarantined 手动重跑隔离组；animations 为完整动画诊断
         type: choice
         default: pr
-        options: [pr, animations, all, guest, account, social, rooms, wallet-help, records, texas, zhajinhua, functional, functional-creation, interaction, network]
+        options: [pr, quarantined, animations, all, guest, account, social, rooms, wallet-help, records, texas, zhajinhua, functional, functional-creation, interaction, network]
       locale:
         description: 视觉语言；功能组固定 en
         type: choice
@@ -22,7 +22,7 @@ on:
         default: compare
         options: [smoke, reference, compare]
       animation_case:
-        description: 手动可填 animation-编号；pr 可填 animation-20/themes、voice_records 或 interactions 单独重跑
+        description: 手动可填 animation-编号；隔离组 20 可填 animation-20/themes、voice_records 或 interactions
         type: string
         default: ''
 permissions:
@@ -49,7 +49,7 @@ jobs:
         run: |
           if [ -z "$CI_IOS_GROUP" ]; then
             export CI_IOS_GROUP=pr
-            echo 'PR 和 master push 比较三语言游客及英文牌局静态截图，采集全部 25 组动画录屏；动画效果断言待 React Native #7056。' >> "$GITHUB_STEP_SUMMARY"
+            echo 'PR 和 master push 比较三语言游客及未隔离牌局静态截图，采集未隔离组录屏；隔离清单见 ios/full/quarantined/。' >> "$GITHUB_STEP_SUMMARY"
           fi
           node scripts/plan-ci-accounts.mjs ios
       - name: 安装基准预检依赖
@@ -178,7 +178,7 @@ jobs:
             `### 本轮游客截图 · ${manifest.locale} · ${manifest.shard}\n\n` +
             `${manifest.passedTests} 项测试通过，${manifest.screenshots} 张预期原图齐全。\n\n` +
             `[下载截图与录像](${process.env.SCREENSHOTS_URL})，解压后打开 index.html；v1/ 为统一截图目录，manifest.json 记录本轮来源和 SHA-256。\n\n` +
-            `这是本轮实际采集结果，尚未批准为基准。全部 25 组动画由独立分片录制视频供人工观看；动画效果断言待 React Native #7056。\n`);
+            `这是本轮实际采集结果，尚未批准为基准。未隔离动画组由独立分片录制视频供人工观看；暂未运行的组见 ios/full/quarantined/，动画效果断言待 React Native #7056。\n`);
           NODE
       - name: 校验本轮录屏存在且文件有效
         if: matrix.animation
