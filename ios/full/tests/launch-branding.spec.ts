@@ -48,7 +48,7 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
               release: () => proxy.command('android/launch-network', { hold: false }) });
           // 这是静态品牌页采集：真实 Simulator 在健康请求停住时按需编码，
           // 14 秒内可只有 17 个不同 PTS。仍要求至少 12 帧和后续完整插画校验。
-          }, info, 500, 12);
+          }, info, 500, 12, undefined, 'xctest');
         if (!captured) throw new Error('启动录屏结束后缺少原生截图');
         const capture = captured;
         await info.attach('launch-capture-window', { body: JSON.stringify({ elapsedMs: capture.elapsedMs,
