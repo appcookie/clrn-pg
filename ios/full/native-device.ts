@@ -134,7 +134,14 @@ export class NativeDevice {
     return parseNativeTree(source, this.scale).map(layout);
   }
   async nodes(): Promise<NativeNode[]> {
-    const roots = parseNativeTree(await this.driver.source(), this.scale);
+    const started = Date.now();
+    let source: string;
+    try { source = await this.driver.source(); }
+    finally {
+      if (process.env.CI && Date.now() - started > 5_000)
+        console.log(`IOS > 原生整树查询耗时 ${Date.now() - started}ms`);
+    }
+    const roots = parseNativeTree(source, this.scale);
     const flatten = (node: NativeNode): NativeNode[] => [node, ...node.children.flatMap(flatten)];
     return roots.flatMap(flatten).filter(node => node.visible && node.bounds.width > 0 && node.bounds.height > 0
       && node.bounds.x < this.screenSize.width && node.bounds.y < this.screenSize.height
@@ -173,10 +180,19 @@ export class NativeDevice {
     if (!this.richTransientElements) throw new Error('点击观测必须先配置完整元素属性');
     const names = res === undefined ? [] : Array.isArray(res) ? res : [res];
     const target = names.map(name => `name == ${JSON.stringify(name)} OR `).join('');
-    const elements = await this.driver.request('POST', this.driver.path('/elements'), {
-      using: '-ios predicate string',
-      value: `visible == true AND (${target}label == "Connecting..." OR label CONTAINS[c] "Connection Timeout")`,
-    });
+    const started = Date.now();
+    let elements: { name?: string; label?: string; rect?: Bounds; displayed?: boolean; enabled?: boolean }[];
+    try {
+      elements = await this.driver.request('POST', this.driver.path('/elements'), {
+        using: '-ios predicate string',
+        // XCTest's custom `visible` predicate is expensive on a populated table
+        // and can omit a drawn menu. Check displayed on the few matched results.
+        value: `(${target}label == "Connecting..." OR label CONTAINS[c] "Connection Timeout")`,
+      });
+    } finally {
+      if (process.env.CI && Date.now() - started > 5_000)
+        console.log(`IOS > 原生定向查询耗时 ${Date.now() - started}ms (${names.join(',') || 'connection'})`);
+    }
     return elements.map((element: { name?: string; label?: string; rect?: Bounds;
       displayed?: boolean; enabled?: boolean }) => {
       const { name, label, rect, displayed, enabled } = element;

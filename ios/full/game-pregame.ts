@@ -37,8 +37,17 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
     await gameConnectedCurrent(device, 2_000);
     observed = await device.inputObservation([ready, 'drawer-menu-item-exit']);
   }
-  if (observed.some(node => node.res === 'drawer-menu-item-exit')
-    && !observed.some(node => node.res === ready)) {
+  // XCTest's focused predicate can omit a drawer that remains visible in the
+  // screenshot. Confirm an ambiguous absence against the complete live tree
+  // before deciding that the navigation succeeded.
+  let readyVisible = observed.some(node => node.res === ready);
+  let drawerVisible = observed.some(node => node.res === 'drawer-menu-item-exit');
+  if (!readyVisible && !drawerVisible) {
+    const full = await gameNodes(device);
+    readyVisible = full.some(node => node.res === ready);
+    drawerVisible = full.some(node => node.res === 'drawer-menu-item-exit');
+  }
+  if (drawerVisible && !readyVisible) {
     // The first navigation tap did not change the UI. Retry only this
     // reversible menu action after proving the drawer is still open.
     await gameTapCurrent(device, `drawer-menu-item-${item}`);

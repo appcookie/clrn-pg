@@ -251,13 +251,21 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
     assert.deepEqual(selectedSplit.map(item => item.animationPart), ['opening', 'interactions']);
     assert.equal(new Set(selectedSplit.map(item => item.shard)).size, 2);
     writeFileSync(output, '');
+    const opening = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-20/opening',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(opening.status, 0, opening.stderr);
+    const selectedOpening = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.equal(selectedOpening.length, 1);
+    assert.equal(selectedOpening[0].animationPart, 'opening');
+    writeFileSync(output, '');
     const failures = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9, animation-12,animation-21',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(failures.status, 0, failures.stderr);
     const selectedFailures = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
     assert.deepEqual(selectedFailures.map(item => item.animation), ['animation-9', 'animation-12', 'animation-21']);
     assert.ok(selectedFailures.every(item => item.recordOnly));
-    for (const invalidCase of ['animation-9,animation-9', 'animation-0', 'animation-26']) {
+    for (const invalidCase of ['animation-9,animation-9', 'animation-0', 'animation-26',
+      'animation-9/opening', 'animation-20/other']) {
       writeFileSync(output, '');
       const bad = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: invalidCase,
         GITHUB_EVENT_NAME: 'workflow_dispatch' });

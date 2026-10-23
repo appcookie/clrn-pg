@@ -12,12 +12,15 @@ if (process.env.CI_ANIMATION_CASE) {
     throw new Error('单组录屏仅允许显式手动运行，PR 门禁不能缩减');
   }
   const selected = process.env.CI_ANIMATION_CASE.split(',').map(value => value.trim());
-  if (selected.some(value => !/^animation-(?:[1-9]|1\d|2[0-5])$/.test(value))
+  if (selected.some(value => !/^animation-(?:[1-9]|1\d|2[0-5])$/.test(value)
+      && !(group === 'pr' && /^animation-20\/(?:opening|interactions)$/.test(value)))
     || new Set(selected).size !== selected.length) throw new Error('录屏分片清单无效或重复');
   const wanted = new Set(selected);
-  matrix.include = matrix.include.filter(entry => wanted.has(entry.animation));
-  if (new Set(matrix.include.map(entry => entry.animation)).size !== wanted.size) {
+  const matches = (entry, value) => entry.animation === value
+    || (entry.animationPart && `${entry.animation}/${entry.animationPart}` === value);
+  if (selected.some(value => !matrix.include.some(entry => matches(entry, value)))) {
     throw new Error('指定动画用例不存在');
   }
+  matrix.include = matrix.include.filter(entry => selected.some(value => matches(entry, value)));
 }
 appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify(matrix)}\n`);

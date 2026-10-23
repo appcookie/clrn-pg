@@ -56,6 +56,27 @@ test('短提示预先配置后一次原生查询同时返回可见性、文字�
   await assert.rejects(d.transientMarker('toastText1'), /缺少真实可见性或位置/);
 });
 
+test('即时输入定位先按名称查询，再检查返回元素的 displayed', async () => {
+  let predicate;
+  const d = new NativeDevice({ path: p => p, request: async (_method, path, body) => {
+    if (path === '/appium/settings') return;
+    assert.equal(path, '/elements');
+    predicate = body.value;
+    return [
+      { name: 'drawer-menu-item-exit', label: 'Exit', displayed: false, enabled: true,
+        rect: { x: 10, y: 20, width: 100, height: 30 } },
+      { name: 'game-settings-card-theme-simple', label: 'Simple', displayed: true, enabled: true,
+        rect: { x: 20, y: 30, width: 100, height: 30 } },
+    ];
+  } }, 'unused', async () => {}, async () => {}, 'app');
+  d.scale = { x: 3, y: 3 };
+  await d.prepareTransientCapture();
+  assert.deepEqual((await d.inputObservation(['drawer-menu-item-exit', 'game-settings-card-theme-simple']))
+    .map(item => item.res), ['game-settings-card-theme-simple']);
+  assert.match(predicate, /name == "drawer-menu-item-exit"/);
+  assert.doesNotMatch(predicate, /visible/);
+});
+
 test('短提示复用元素身份但重新读取三项真实属性，失效或隐藏后清空身份', async () => {
   let lookups = 0, label = 'initial', x = 10, displayed = true, failure;
   const attributes = [];

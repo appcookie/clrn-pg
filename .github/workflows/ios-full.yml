@@ -22,7 +22,7 @@ on:
         default: compare
         options: [smoke, reference, compare]
       animation_case:
-        description: 手动 pr 录屏或 animations 诊断可填逗号分隔的 animation-编号；留空运行全部
+        description: 手动可填 animation-编号；pr 可填 animation-20/opening 或 interactions 单独重跑
         type: string
         default: ''
 permissions:

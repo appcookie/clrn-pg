@@ -61,3 +61,31 @@ test('menu navigation does not repeat a successful tap', async () => {
   assert.equal(state, 'panel');
   assert.equal(fullTreeReads, 0, 'healthy menu navigation only needs focused native observations');
 });
+
+test('menu navigation checks the live tree when a focused query misses an open drawer', async () => {
+  let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
+  const visible = () => state === 'table' ? [menu]
+    : state === 'drawer' ? [theme, drawerExit] : [panel];
+  const device = {
+    screenSize: { width: 1178, height: 2556 },
+    nodes: async () => { fullTreeReads++; return visible(); },
+    prepareTransientCapture: async () => { rich = true; },
+    inputObservation: async names => {
+      assert.ok(rich);
+      const targets = Array.isArray(names) ? names : names ? [names] : [];
+      // Reproduce CI: the menu is visibly open, but this predicate omits the
+      // exit marker during the post-tap state check.
+      if (state === 'drawer' && targets.includes(drawerExit.res)) return [];
+      return visible().filter(item => targets.includes(item.res));
+    },
+    input: { tap: async ({ x }) => {
+      if (x === 20) state = 'drawer';
+      else if (x === 50) { themeTaps++; state = themeTaps === 1 ? 'drawer' : 'panel'; }
+      else throw new Error(`unexpected tap ${x}`);
+    } },
+  };
+  await gameMenu(device, 'theme', panel.res);
+  assert.equal(themeTaps, 2);
+  assert.equal(state, 'panel');
+  assert.ok(fullTreeReads >= 1, 'ambiguous absence must be checked against the live tree');
+});
