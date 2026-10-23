@@ -9,6 +9,7 @@ import { animateGamePanel } from './game-panel-animation';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
+import { animationRecordOnly } from './record-only';
 import { seatGuideMotionBounds } from './game-masks';
 import { gameMaskPoint } from './game-mask-point';
 import { nativeReviewPanelBounds, nativeChatPanelBounds } from './animation-region';
@@ -321,11 +322,19 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
  * 两种玩法共用卡牌主题、牌桌背景和开关操作，维持同样的原生验证。
  * @param device - 专用模拟器连接。
  * @param capture - 当前玩法的共享状态截图入口。
+ * @param animationInfo - 德州录屏分段的测试附件入口。
  */
-export async function captureGameThemes(device: AndroidDevice, capture: Capture): Promise<void> {
+export async function captureGameThemes(device: AndroidDevice, capture: Capture,
+  animationInfo?: TestInfo): Promise<void> {
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
   for (const theme of ['four-color', 'four-color-two', 'realistic']) {
-    await gameTapCurrent(device, `game-settings-card-theme-${theme}`);
+    const selectTheme = () => gameTapCurrent(device, `game-settings-card-theme-${theme}`);
+    if (theme === 'four-color' && animationInfo && animationRecordOnly) {
+      // The themes shard compares static screenshots and must also publish a
+      // real native MP4 for the 25-group recording gallery.
+      await captureNativeTransition(device, 'texas-holdem-theme-four-color', animationInfo,
+        { x: 0, y: 0, ...device.screenSize }, selectTheme);
+    } else await selectTheme();
     await capture(`theme_${theme.replaceAll('-', '_')}`);
   }
   await gameTapCurrent(device, 'game-settings-card-theme-simple');

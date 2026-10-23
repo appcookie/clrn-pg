@@ -24,7 +24,7 @@ export async function texasPanels(context: TexasContext,
   const { device, proxy, room, self, capture, animationInfo } = context;
   await restoreTexas(context, {}, 'flop', true);
   if (phase === 'all' || phase === 'opening' || phase === 'themes') {
-    await captureGameThemes(device, capture);
+    await captureGameThemes(device, capture, animationInfo);
     await gameTap(device, 'game-settings-close-button');
     await gameGone(device, 'game-settings-popup-container');
   }
