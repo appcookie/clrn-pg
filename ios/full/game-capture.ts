@@ -166,7 +166,12 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     expect((await gameMarker(device, transientMarker!))?.text,
       `${transientMarker} 必须在截图前后可见`).toBeTruthy();
   };
+  // Some reviewed baselines predate the countdown-text mask and retain a
+  // different real clock value. Exclude only that native-located text from
+  // comparison while keeping the original screenshot in the report.
+  const countdownTextExclusions = masks.filter(mask => mask.reason === 'countdown-text').map(pixelBounds);
   await compareScreenshot(device, name, testInfo, masks, transientMarker ? assertTransient : undefined,
-    transientMarker ? () => gameScreenshot(device) : undefined, [], [...backgroundMasks, ...nextTurnExclusions],
+    transientMarker ? () => gameScreenshot(device) : undefined, [],
+    [...backgroundMasks, ...nextTurnExclusions, ...countdownTextExclusions],
     !transientMarker);
 }
