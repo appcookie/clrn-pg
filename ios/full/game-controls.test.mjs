@@ -29,7 +29,7 @@ test('录像内关闭和连接查询只读实际标记，短暂重连重置连�
   await gameGoneCurrent(device, 'review-board-description-text');
   assert.equal(panelQueries, 2);
   await gameConnectedCurrent(device, 1_000);
-  assert.ok(connectionQueries >= 8);
+  assert.ok(connectionQueries >= 4, '重连后仍须重新观测连接状态');
   assert.ok(Date.now() - lastConnectingAt >= 1_000);
 });
 

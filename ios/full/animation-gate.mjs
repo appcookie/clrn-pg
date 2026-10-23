@@ -13,11 +13,14 @@ export function animationCase(id) {
   return entry;
 }
 
-export function validateAnimationReport(report, id, mode = 'compare') {
+export function validateAnimationReport(report, id, mode = 'compare', part = '') {
   if (!['compare', 'reference', 'smoke', 'record-only'].includes(mode)) throw new Error(`未知动画验收模式：${mode}`);
   const entry = animationCase(id);
+  if (part && (id !== 'animation-20' || mode !== 'record-only'
+    || !['opening', 'interactions'].includes(part))) throw new Error(`未知动画录屏分段：${id}/${part}`);
+  const expected = part ? { ...entry, title: `${entry.title}_${part}` } : entry;
   const specs = [...reportSpecs(report)];
-  if (specs.length !== 1 || screenshotTestKey(specs[0]) !== screenshotTestKey(entry)
+  if (specs.length !== 1 || screenshotTestKey(specs[0]) !== screenshotTestKey(expected)
     || report.stats?.expected !== 1 || report.stats.unexpected !== 0
     || report.stats.flaky !== 0 || report.stats.skipped !== 0) {
     throw new Error(`${id} 必须实际执行唯一指定动画用例且通过，不允许漏跑、跳过或重试`);
@@ -55,7 +58,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   const [file, id] = process.argv.slice(2);
   const report = JSON.parse(readFileSync(file, 'utf8'));
   const mode = process.env.IOS_ANIMATION_RECORD_ONLY === '1' ? 'record-only' : process.env.IOS_VISUAL_MODE || 'compare';
-  const entry = validateAnimationReport(report, id, mode);
+  const entry = validateAnimationReport(report, id, mode, process.env.ANIMATION_PART || '');
   const root = resolve(dirname(file));
   for (const attachment of [...reportSpecs(report)][0].tests[0].results[0].attachments) {
     if (attachment.contentType !== 'video/mp4') continue;

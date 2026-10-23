@@ -37,13 +37,19 @@ export function allocateCiAccount(runId, offset = 0, available = executionAccoun
 export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 'all', available = []) {
   if (selectedGroup === 'animations' || selectedGroup === 'pr') {
     if (!['all', 'en'].includes(selectedLocale)) throw new Error('动画门禁固定使用英文');
-    const animationJobs = animationInventory.cases.map((entry, index) => ({
-      group: entry.group, locale: 'en', shard: entry.id, animation: entry.id,
-      ...(selectedGroup === 'pr' ? { recordOnly: true } : {}),
-      filter: `${entry.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, playwrightShard: '',
-      label: `${selectedGroup === 'pr' ? 'recording' : 'animation'} / ${entry.id} / ${entry.title}`,
-      account: entry.group === 'guest' ? '' : allocateCiAccount(runId, index, available),
-    }));
+    const animationJobs = animationInventory.cases.flatMap((entry, index) => {
+      const phases = selectedGroup === 'pr' && entry.id === 'animation-20'
+        ? ['opening', 'interactions'] : [''];
+      return phases.map(phase => ({
+        group: entry.group, locale: 'en', shard: phase ? `${entry.id}-${phase}` : entry.id,
+        animation: entry.id, ...(phase ? { animationPart: phase } : {}),
+        ...(selectedGroup === 'pr' ? { recordOnly: true } : {}),
+        filter: `${entry.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${phase ? `_${phase}` : ''}$`, playwrightShard: '',
+        label: `${selectedGroup === 'pr' ? 'recording' : 'animation'} / ${entry.id} / ${entry.title}${phase ? ` / ${phase}` : ''}`,
+        account: entry.group === 'guest' ? ''
+          : allocateCiAccount(runId, phase === 'interactions' ? animationInventory.cases.length : index, available),
+      }));
+    });
     return { include: [...(selectedGroup === 'pr' ? iosAccountMatrix(runId, 'guest', 'all').include : []),
       ...animationJobs] };
   }

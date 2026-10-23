@@ -16,6 +16,8 @@ if (process.env.CI_ANIMATION_CASE) {
     || new Set(selected).size !== selected.length) throw new Error('录屏分片清单无效或重复');
   const wanted = new Set(selected);
   matrix.include = matrix.include.filter(entry => wanted.has(entry.animation));
-  if (matrix.include.length !== wanted.size) throw new Error('指定动画用例不存在');
+  if (new Set(matrix.include.map(entry => entry.animation)).size !== wanted.size) {
+    throw new Error('指定动画用例不存在');
+  }
 }
 appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify(matrix)}\n`);

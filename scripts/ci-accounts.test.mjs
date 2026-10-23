@@ -244,6 +244,13 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
     assert.equal(selected[0].animation, 'animation-9');
     assert.equal(selected[0].recordOnly, true);
     writeFileSync(output, '');
+    const split = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-20',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(split.status, 0, split.stderr);
+    const selectedSplit = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.deepEqual(selectedSplit.map(item => item.animationPart), ['opening', 'interactions']);
+    assert.equal(new Set(selectedSplit.map(item => item.shard)).size, 2);
+    writeFileSync(output, '');
     const failures = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9, animation-12,animation-21',
       GITHUB_EVENT_NAME: 'workflow_dispatch' });
     assert.equal(failures.status, 0, failures.stderr);

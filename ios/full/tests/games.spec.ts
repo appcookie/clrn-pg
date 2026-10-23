@@ -33,13 +33,17 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
     .filter(scenario => scenario.viewport.label === 'mobile') : [];
   for (const scenario of scenarios) {
     const parts = locale !== 'en' ? ['all'] as const
+      : scenario.pageLabel === 'signed_in_texas_panels' && process.env.IOS_ANIMATION_RECORD_ONLY === '1'
+        ? ['opening', 'interactions'] as const
       : ['signed_in_texas_game', 'signed_in_zhajinhua_game'].includes(scenario.pageLabel)
         ? ['table', 'effects'] as const
         : ['signed_in_texas_pre_game', 'signed_in_zhajinhua_pre_game'].includes(scenario.pageLabel)
           ? ['first', 'middle', 'second'] as const
             : ['all'] as const;
     for (const part of parts) {
-      const states = part === 'first' ? scenario.snapshotStates!.slice(0, 3)
+      const states = part === 'opening' ? scenario.snapshotStates!.slice(0, 11)
+        : part === 'interactions' ? scenario.snapshotStates!.slice(11)
+        : part === 'first' ? scenario.snapshotStates!.slice(0, 3)
         : part === 'middle' ? scenario.snapshotStates!.slice(3, 7)
         : part === 'second' ? scenario.snapshotStates!.slice(7)
           : part === 'table' ? scenario.pageLabel === 'signed_in_texas_game'
@@ -120,7 +124,7 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
             } else if (suite === 'texas') await runTexasScenario(scenario.pageLabel,
               { device, proxy, room: room!.roomId, self: account!.userId, capture,
               animationInfo: gameAnimation ? testInfo : undefined },
-            part === 'table' || part === 'effects' ? part : 'all');
+            part === 'table' || part === 'effects' || part === 'opening' || part === 'interactions' ? part : 'all');
             else if (scenario.pageLabel.endsWith('_pre_game')) await gamePreGame(device, game, capture,
             panelAnimation ? testInfo : undefined,
             part === 'first' || part === 'middle' || part === 'second' ? part : 'all');

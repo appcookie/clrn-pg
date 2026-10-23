@@ -16,11 +16,13 @@ test('PR 实际调度全部 21 项 Web 动画及其完整原生分片，不能�
   const jobs = matrix.filter(entry => entry.animation);
   assert.equal(source.animations.length, 21);
   assert.equal(animationCases.length, 25);
-  assert.equal(jobs.length, animationCases.length);
+  assert.equal(jobs.length, animationCases.length + 1);
   assert.ok(jobs.every(entry => entry.recordOnly === true), 'PR 中全部 25 组只采集录屏');
   assert.ok(iosAccountMatrix('123', 'animations', 'en', ciAccounts).include.every(entry => !entry.recordOnly),
     '手动诊断保留完整动画断言');
-  assert.equal(new Set(jobs.map(entry => entry.animation)).size, jobs.length);
+  assert.equal(new Set(jobs.map(entry => entry.animation)).size, animationCases.length);
+  assert.deepEqual(jobs.filter(entry => entry.animation === 'animation-20').map(entry => entry.animationPart),
+    ['opening', 'interactions']);
   for (const row of source.animations) {
     const entry = animationCases.find(item => item.file === row.nativeImplementation.file.replace('ios/full/', '')
       && item.title === row.nativeImplementation.testTitle);
@@ -43,6 +45,25 @@ test('PR 录屏模式只校验真实 MP4，不要求动画关键帧截图', () =
   assert.deepEqual(validateAnimationReport(report, entry.id, 'record-only').images, []);
   report.suites[0].specs[0].tests[0].results[0].attachments = [];
   assert.throws(() => validateAnimationReport(report, entry.id, 'record-only'), /录屏/);
+});
+
+test('第 20 组两个录屏分段各自执行唯一真实用例并提供 MP4', { timeout: 180_000 }, () => {
+  const jobs = iosAccountMatrix('123', 'pr', 'all', ciAccounts).include
+    .filter(entry => entry.animation === 'animation-20');
+  const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
+    { cwd: process.cwd(), env: { ...process.env, IOS_GROUP: 'texas', IOS_LOCALE: 'en', IOS_ANIMATION_RECORD_ONLY: '1' } }));
+  const specs = [...reportSpecs(report)];
+  for (const job of jobs) {
+    const matched = specs.filter(spec => new RegExp(job.filter).test(spec.title));
+    assert.equal(matched.length, 1, job.label);
+    const single = { stats: { expected: 1, unexpected: 0, skipped: 0, flaky: 0 },
+      suites: [{ specs: [{ ...matched[0], tests: [{ expectedStatus: 'passed', status: 'expected',
+        results: [{ status: 'passed', attachments: [{ name: 'native-video', contentType: 'video/mp4',
+          path: '/tmp/recorded.mp4' }] }] }] }] }] };
+    assert.equal(validateAnimationReport(single, job.animation, 'record-only', job.animationPart).images.length, 0);
+    assert.throws(() => validateAnimationReport(single, job.animation, 'record-only',
+      job.animationPart === 'opening' ? 'interactions' : 'opening'), /唯一指定动画用例/);
+  }
 });
 
 test('动画矩阵每片选中唯一指定的真实测试，无跳过或错误的业务组', { timeout: 180_000 }, () => {

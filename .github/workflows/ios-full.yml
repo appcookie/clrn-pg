@@ -184,6 +184,7 @@ jobs:
         if: matrix.animation
         env:
           ANIMATION_CASE: ${{ matrix.animation }}
+          ANIMATION_PART: ${{ matrix.animationPart }}
         run: node ios/full/animation-gate.mjs ios/artifacts/full-results/report.json "$ANIMATION_CASE"
       - name: 导出本轮视频与关键帧（含失败运行）
         if: always() && hashFiles('ios/artifacts/full-results/report.json') != '' && hashFiles('ios/artifacts/release/build-info.json') != ''

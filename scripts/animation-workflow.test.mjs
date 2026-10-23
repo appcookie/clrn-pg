@@ -19,6 +19,10 @@ test('手动诊断不能发布与 PR/master 门禁同名的 skipped 检查', () 
   assert.equal(evaluate('workflow_dispatch'), 'iOS recording diagnostics');
 });
 
+test('第 20 组分段身份传入录屏验收', () => {
+  assert.match(workflow, /ANIMATION_PART: \$\{\{ matrix\.animationPart \}\}/);
+});
+
 test('正式汇总在前置失败、取消、跳过后仍执行，不能被默认依赖条件跳过', () => {
   assert.ok(condition);
   assert.match(aggregate, /needs: \[plan, proxy-check, native\]/);

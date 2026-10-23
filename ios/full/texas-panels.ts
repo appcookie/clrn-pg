@@ -17,55 +17,60 @@ import { captureRemainingCards } from './remaining-community-cards';
 /**
  * 复用 Web 的二十一个面板、聊天、带入审核和手牌展示状态。
  * @param context - 当前真实房间、连接与共用顺序截图入口。
+ * @param phase - PR 将长场景拆成可并行重跑的前后两段；手动动画诊断仍运行全部状态。
  */
-export async function texasPanels(context: TexasContext): Promise<void> {
+export async function texasPanels(context: TexasContext,
+  phase: 'all' | 'opening' | 'interactions' = 'all'): Promise<void> {
   const { device, proxy, room, self, capture, animationInfo } = context;
   await restoreTexas(context, {}, 'flop', true);
-  await captureGameThemes(device, capture);
-  await gameTap(device, 'game-settings-close-button');
-  await gameGone(device, 'game-settings-popup-container');
-  // 专用模拟器已在启动前授予麦克风权限；这里只打开界面，不录制或发送音频。
-  // 首次打开完成语音组件初始化；第二次由真实按钮触发同一个入场动画。
-  await gameTap(device, 'texas-holdem-voice-button');
-  await gameReady(device, 'in-game-audio-microphone-button');
-  await gameTap(device, 'in-game-audio-popup-close');
-  await gameGone(device, 'in-game-audio-microphone-button');
-  await animateGamePanel(device, 'texas-holdem', 'voice', 'texas-holdem-voice-button',
-    screenBounds(device, { x: 220, y: 820, width: 280, height: 450 }), animationInfo, 'enter', 'videoFrames');
-  await gameReady(device, 'in-game-audio-microphone-button');
-  await capture('voice');
-  await animateGamePanel(device, 'texas-holdem', 'voice', 'in-game-audio-popup-close',
-    screenBounds(device, { x: 220, y: 820, width: 280, height: 450 }), animationInfo, 'exit', 'videoFrames', [],
-    undefined, ['texas-holdem-voice-exit-open-phase.png']);
-  await gameGone(device, 'in-game-audio-microphone-button');
-  await gameTap(device, 'texas-holdem-leaderboard-button');
-  await gameReady(device, 'public-leader-board-item-round-0', '10');
-  await capture('leaderboard_players');
-  await closeGameMask(device, 'public-leader-board-container');
-  await gameTapCurrent(device, 'game-record-button');
-  await waitReviewCloseButton(device);
-  await waitReviewContent(device);
-  const selectRecordTab = async (mode: 'settlement' | 'record') => {
-    const { bounds } = nativeReviewTab(await gameNodes(device), mode);
-    await device.input.tap({ x: Math.round(bounds.x + bounds.width / 2), y: Math.round(bounds.y + bounds.height / 2) });
-  };
-  await selectRecordTab('settlement');
-  /**
-   * 单局牌谱默认显示第 1 页。直接检查实际页码和总页数，保留完整输入框像素。
-   * 不为静态牌谱截图额外聚焦输入框：这会引入键盘位移及与牌谱无关的光标闪烁。
-   * @param state - 共用牌谱截图状态。
-   */
-  const captureRecord = async (state: string, mode: 'settlement' | 'record') => {
-    await waitReviewContent(device, mode);
-    await capture(state);
-  };
-  await captureRecord('record_settlement', 'settlement');
-  await selectRecordTab('record');
-  await captureRecord('record_actions', 'record');
-  await gameConnected(device);
-  const close = (await waitReviewCloseButton(device))!.bounds;
-  await device.input.tap({ x: Math.round(close.x + close.width / 2), y: Math.round(close.y + close.height / 2) });
-  await waitReviewCloseButton(device, false);
+  if (phase !== 'interactions') {
+    await captureGameThemes(device, capture);
+    await gameTap(device, 'game-settings-close-button');
+    await gameGone(device, 'game-settings-popup-container');
+    // 专用模拟器已在启动前授予麦克风权限；这里只打开界面，不录制或发送音频。
+    // 首次打开完成语音组件初始化；第二次由真实按钮触发同一个入场动画。
+    await gameTap(device, 'texas-holdem-voice-button');
+    await gameReady(device, 'in-game-audio-microphone-button');
+    await gameTap(device, 'in-game-audio-popup-close');
+    await gameGone(device, 'in-game-audio-microphone-button');
+    await animateGamePanel(device, 'texas-holdem', 'voice', 'texas-holdem-voice-button',
+      screenBounds(device, { x: 220, y: 820, width: 280, height: 450 }), animationInfo, 'enter', 'videoFrames');
+    await gameReady(device, 'in-game-audio-microphone-button');
+    await capture('voice');
+    await animateGamePanel(device, 'texas-holdem', 'voice', 'in-game-audio-popup-close',
+      screenBounds(device, { x: 220, y: 820, width: 280, height: 450 }), animationInfo, 'exit', 'videoFrames', [],
+      undefined, ['texas-holdem-voice-exit-open-phase.png']);
+    await gameGone(device, 'in-game-audio-microphone-button');
+    await gameTap(device, 'texas-holdem-leaderboard-button');
+    await gameReady(device, 'public-leader-board-item-round-0', '10');
+    await capture('leaderboard_players');
+    await closeGameMask(device, 'public-leader-board-container');
+    await gameTapCurrent(device, 'game-record-button');
+    await waitReviewCloseButton(device);
+    await waitReviewContent(device);
+    const selectRecordTab = async (mode: 'settlement' | 'record') => {
+      const { bounds } = nativeReviewTab(await gameNodes(device), mode);
+      await device.input.tap({ x: Math.round(bounds.x + bounds.width / 2), y: Math.round(bounds.y + bounds.height / 2) });
+    };
+    await selectRecordTab('settlement');
+    /**
+     * 单局牌谱默认显示第 1 页。直接检查实际页码和总页数，保留完整输入框像素。
+     * 不为静态牌谱截图额外聚焦输入框：这会引入键盘位移及与牌谱无关的光标闪烁。
+     * @param state - 共用牌谱截图状态。
+     */
+    const captureRecord = async (state: string, mode: 'settlement' | 'record') => {
+      await waitReviewContent(device, mode);
+      await capture(state);
+    };
+    await captureRecord('record_settlement', 'settlement');
+    await selectRecordTab('record');
+    await captureRecord('record_actions', 'record');
+    await gameConnected(device);
+    const close = (await waitReviewCloseButton(device))!.bounds;
+    await device.input.tap({ x: Math.round(close.x + close.width / 2), y: Math.round(close.y + close.height / 2) });
+    await waitReviewCloseButton(device, false);
+  }
+  if (phase === 'opening') return;
   if (animationInfo) await captureTransientTransition(device, 'texas-system-prompt', animationInfo,
     screenBounds(device, { x: 90, y: 60, width: 540, height: 190 }),
     () => replay(proxy, 'texas', room, events([{ event: 'check_community_card', player_id: REPLAY_PLAYER_IDS[0] }])));
