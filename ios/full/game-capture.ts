@@ -167,5 +167,6 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
       `${transientMarker} 必须在截图前后可见`).toBeTruthy();
   };
   await compareScreenshot(device, name, testInfo, masks, transientMarker ? assertTransient : undefined,
-    transientMarker ? () => gameScreenshot(device) : undefined, [], [...backgroundMasks, ...nextTurnExclusions]);
+    transientMarker ? () => gameScreenshot(device) : undefined, [], [...backgroundMasks, ...nextTurnExclusions],
+    !transientMarker);
 }

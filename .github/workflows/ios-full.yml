@@ -22,7 +22,7 @@ on:
         default: compare
         options: [smoke, reference, compare]
       animation_case:
-        description: 仅 group=animations 的手动诊断可填 animation-编号；留空运行全部
+        description: 手动 pr 录屏或 animations 诊断可填逗号分隔的 animation-编号；留空运行全部
         type: string
         default: ''
 permissions:
@@ -90,7 +90,7 @@ jobs:
     if: needs.plan.outputs.run_native == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 5
+      max-parallel: 10
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     concurrency:
       group: ios-account-${{ matrix.account || format('{0}-{1}-{2}-{3}', github.run_id, matrix.group, matrix.locale, matrix.shard) }}

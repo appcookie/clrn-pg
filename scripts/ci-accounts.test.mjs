@@ -150,7 +150,7 @@ test('guest每语言18页独立于动画录屏，实际21/20/20项跨两片恰�
   assert.equal(first.locale, 'en');
   assert.equal(first.shard, 'startup');
   const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /max-parallel: 5/);
+  assert.match(workflow, /max-parallel: 10/);
   assert.match(workflow, /github\.run_id, matrix\.group, matrix\.locale, matrix\.shard/);
 });
 test('凭据接受任意非空ready独立iOS子池，拒绝原仓库账号或损坏Secret且不泄露正文', () => {
@@ -235,5 +235,32 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
     assert.notEqual(invalid.status, 0);
     assert.equal(readFileSync(output, 'utf8'), '');
     assert.ok(!invalid.stderr.includes(password));
+    writeFileSync(output, '');
+    const recording = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(recording.status, 0, recording.stderr);
+    const selected = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.equal(selected.length, 1);
+    assert.equal(selected[0].animation, 'animation-9');
+    assert.equal(selected[0].recordOnly, true);
+    writeFileSync(output, '');
+    const failures = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9, animation-12,animation-21',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(failures.status, 0, failures.stderr);
+    const selectedFailures = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.deepEqual(selectedFailures.map(item => item.animation), ['animation-9', 'animation-12', 'animation-21']);
+    assert.ok(selectedFailures.every(item => item.recordOnly));
+    for (const invalidCase of ['animation-9,animation-9', 'animation-0', 'animation-26']) {
+      writeFileSync(output, '');
+      const bad = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: invalidCase,
+        GITHUB_EVENT_NAME: 'workflow_dispatch' });
+      assert.notEqual(bad.status, 0);
+      assert.equal(readFileSync(output, 'utf8'), '');
+    }
+    writeFileSync(output, '');
+    const gate = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9',
+      GITHUB_EVENT_NAME: 'pull_request' });
+    assert.notEqual(gate.status, 0);
+    assert.equal(readFileSync(output, 'utf8'), '');
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });

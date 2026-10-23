@@ -42,12 +42,12 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
     await proxy.command('texas/ui', { applications: mode });
     await gameTap(device, 'buy-in-application-button');
     await expect.poll(async () => {
-      // A full XCTest source query can outlast the 30s poll. The native
-      // predicate returns all visible rows in one cheap observation.
-      const nodes = await device.inputObservation('buy-in-application-nickname');
+      // The filtered XCTest predicate can omit a visible row. Read the full
+      // native tree before accepting the row count for the static screenshot.
+      const nodes = await gameNodes(device);
       expect(gameConnectionState(nodes).connecting).toBe(false);
       return nodes.filter(node => node.res === 'buy-in-application-nickname').length;
-    }, { timeout: 30_000, intervals: [250] }).toBe(mode === 'resolved' ? 3 : 2);
+    }, { timeout: 90_000, intervals: [250] }).toBe(mode === 'resolved' ? 3 : 2);
     if (mode === 'pending') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-approved-applications-tab')).toHaveLength(2);
     if (mode === 'resolved') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-application-status')).toHaveLength(3);
     if (mode === 'more') expect((await gameReady(device, 'buy-in-application-list-more')).enabled).toBe(true);

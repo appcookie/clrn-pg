@@ -169,7 +169,8 @@ export async function assertVisual(bytes: Buffer, name: string, testInfo: TestIn
 }
 export async function compareScreenshot(device: NativeDevice, name: string, testInfo: TestInfo,
   masks: ScreenshotMask[] = [], transientState?: () => Promise<void>, takeScreenshot: () => Promise<Buffer> = () => device.screenshot(),
-  _alternateSnapshots: string[] = [], comparisonExclusions: ScreenshotBounds[] = []) {
+  _alternateSnapshots: string[] = [], comparisonExclusions: ScreenshotBounds[] = [],
+  nativeFallback = false) {
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   await transientState?.();
   let previous = maskScreenshot(await takeScreenshot(), masks);
@@ -186,6 +187,27 @@ export async function compareScreenshot(device: NativeDevice, name: string, test
     expect(match, '页面截图应稳定').toBe(true);
     expect(Date.now() - stableSince).toBeGreaterThanOrEqual(transientState ? 250 : 1500);
   }).toPass({ timeout: 30_000, intervals: [transientState ? 100 : 500] });
+  if (nativeFallback && process.env.IOS_VISUAL_MODE === 'compare') {
+    const reference = readFileSync(baselinePath(`${name}.png`));
+    if (!comparePixels(reference, result, 12, comparisonExclusions).matches) {
+      // XCTest can return a stable but clipped game layer after a recording.
+      // Compare a fresh Simulator capture to the same reviewed baseline. The
+      // only extra exclusion is iPhone 16's hardware Dynamic Island, which
+      // Simulator draws black while XCTest omits it from screenshots.
+      const island = { x: 400, y: 32, width: 379, height: 114 };
+      if (device.screenSize.width === 1178 && device.screenSize.height === 2556) {
+        const exclusions = [...comparisonExclusions, island];
+        const fallbackOriginal = await device.nativeScreenshot();
+        const fallback = maskScreenshot(fallbackOriginal, masks);
+        if (comparePixels(reference, fallback, 12, exclusions).matches) {
+          await testInfo.attach(`${name}-xctest-clipped`, { body: original, contentType: 'image/png' });
+          original = fallbackOriginal;
+          result = fallback;
+          comparisonExclusions = exclusions;
+        }
+      }
+    }
+  }
   if (masks.length) await testInfo.attach(`${name}-original`, { body: original, contentType: 'image/png' });
   await assertVisual(result, name, testInfo, comparisonExclusions);
 }

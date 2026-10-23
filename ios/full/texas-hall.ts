@@ -193,7 +193,7 @@ export async function texasHall(context: TexasContext): Promise<void> {
       await gameTap(device, 'personal-leader-board-close-button');
       await gameGone(device, 'personal-leader-board-close-button');
     }, error => error instanceof MissingLeaderboardSlideError);
-  } else await openPersonalLeaderboard();
+  } else await openPersonalLeaderboard(animationInfo);
   await texasEvents(context, [{ event: 'player_statistics', player_id: self,
     history_buy_in_amount: 1000, played_game_count: 10, settlement_net_amount: 180 }]);
   await expect.poll(async () => {
