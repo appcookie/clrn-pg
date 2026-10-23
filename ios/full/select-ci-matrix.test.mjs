@@ -14,7 +14,8 @@ test('complete baselines keep the full compare matrix', () => {
 });
 
 test('failed preflight only collects missing inventory as reference and never selects the full matrix', () => {
-  const selected = selectCiMatrix(matrix, 'failure', 'animation-14');
+  const selected = selectCiMatrix(matrix, 'failure', 'animation-14',
+    [{ id: 'animation-14', images: [] }, { id: 'animation-20', images: ['reviewed.png'] }]);
   assert.equal(selected.runNative, true);
   assert.equal(selected.diagnostic, true);
   assert.deepEqual(selected.matrix.include.map(item => item.animation), ['animation-14']);

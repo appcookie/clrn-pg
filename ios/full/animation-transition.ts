@@ -336,7 +336,7 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
       // while the recorder's first frame and the actual close tap saw the
       // complete leaderboard. Observe the independent start again immediately
       // before that tap, after recorder warm-up and connection readiness.
-      await testInfo.attach(`${name}-pre-warmup-start`, { body: beforeScreen, contentType: 'image/png' });
+      await testInfo.attach(`${name}-pre-warmup-observation`, { body: beforeScreen, contentType: 'image/png' });
       await gameConnected(device);
       beforeScreen = await gameScreenshot(device);
     }

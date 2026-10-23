@@ -161,7 +161,7 @@ test('个人榜单退场在录屏预热后、点击前刷新独立起点', async
       throw sentinel;
     }), error => error === sentinel);
   assert.deepEqual(events, ['screenshot-1', 'nodes', 'recording-warm', 'nodes', 'screenshot-2', 'tap']);
-  assert.ok(attached.includes('texas-holdem-personal-leaderboard-exit-pre-warmup-start'));
+  assert.ok(attached.includes('texas-holdem-personal-leaderboard-exit-pre-warmup-observation'));
 });
 
 test('语音退场在读取缓慢的原生树前保存独立终点截图', async () => {

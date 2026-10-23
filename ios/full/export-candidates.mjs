@@ -50,6 +50,7 @@ for (const argument of artifactArguments) {
     }
     for (const attachment of result.attachments || []) {
       if (attachment.contentType !== 'image/png' || !attachment.name
+        || attachment.name.endsWith('-pre-warmup-start')
         || !/(\.png|-(start|middle|end))$/.test(attachment.name)) continue;
       const name = attachment.name.endsWith('.png') ? attachment.name : `${attachment.name}.png`;
       if (!/^[A-Za-z0-9][A-Za-z0-9_.-]*\.png$/.test(name) || name.includes('..')) {

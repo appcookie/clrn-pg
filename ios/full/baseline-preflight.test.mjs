@@ -9,7 +9,7 @@ import { PNG } from 'pngjs';
 import { animationCases } from './animation-gate.mjs';
 import { baselineRelativePath } from './baseline-path.mjs';
 
-test('compare 预检阻断缺图、删审查记录、改图和未补齐的动画', () => {
+test('compare 预检阻断缺图、删审查记录、改图和缺失的动画基准', () => {
   const directory = mkdtempSync(join(tmpdir(), 'ios-baseline-preflight-'));
   const root = join(directory, 'ios/snapshots/v1');
   const command = resolve('ios/full/baseline-preflight.mjs');
@@ -58,9 +58,9 @@ test('compare 预检阻断缺图、删审查记录、改图和未补齐的动画
     assert.ok(!incomplete.stderr.includes(baselineRelativePath(animationCases[0].images[0], 'en')),
       '已完整审查的分片不能被误报为缺失');
     assert.equal(readFileSync(output, 'utf8'), '', '图片缺失不能触发 reference 诊断');
-    const reference = run(['animation-1', 'animation-14']);
-    assert.match(reference.stderr, /animation-14 缺少完整审查后的动画基准清单/);
-    assert.equal(readFileSync(output, 'utf8'), 'reference_cases=animation-14\n');
+    const missingAnimation = run(['animation-1', 'animation-14']);
+    assert.match(missingAnimation.stderr, /动画门禁缺少基准/);
+    assert.equal(readFileSync(output, 'utf8'), '', '已有审查清单时缺图不能再次触发 reference 采集');
     writeFileSync(join(root, files[0].path), Buffer.concat([png, Buffer.from('changed')]));
     run(['animation-1', 'animation-14']);
     assert.equal(readFileSync(output, 'utf8'), '', '篡改基准时不能启动 reference 诊断');

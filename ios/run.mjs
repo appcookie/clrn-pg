@@ -38,10 +38,13 @@ const server = spawn(resolve('node_modules/.bin/appium'), ['--address', '127.0.0
 const driver = new WebDriver();
 let failures = 0;
 try {
-  for (let attempt = 0; attempt < 120; attempt++) {
+  // Run 39873172095 spent most of the former 60-second window starting Node
+  // after a cold Simulator boot; the XCUITest driver finished loading only
+  // three seconds before the status poll expired. Allow the server to bind.
+  for (let attempt = 0; attempt < 360; attempt++) {
     if (server.exitCode !== null) throw new Error(`Appium 启动失败：${server.exitCode}`);
     try { await driver.request('GET', '/status'); break; }
-    catch (error) { if (attempt === 119) throw error; await delay(500); }
+    catch (error) { if (attempt === 359) throw error; await delay(500); }
   }
   console.log('启动 XCUITest 会话（首次安装与 WDA 编译最多等待 20 分钟）');
   await driver.start({ platformName: 'iOS', 'appium:automationName': 'XCUITest', 'appium:udid': udid,

@@ -5,11 +5,11 @@ import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import inventory from './animation-gate-cases.json' with { type: 'json' };
 
-export function selectCiMatrix(matrix, preflightOutcome, referenceCases = '') {
+export function selectCiMatrix(matrix, preflightOutcome, referenceCases = '', availableCases = inventory.cases) {
   if (!Array.isArray(matrix?.include) || !matrix.include.length) throw new Error('iOS CI 矩阵为空');
   if (preflightOutcome === 'success') return { matrix, runNative: true, diagnostic: false };
   if (preflightOutcome !== 'failure') throw new Error(`未知基准预检结果：${preflightOutcome}`);
-  const cases = new Map(inventory.cases.map(item => [item.id, item]));
+  const cases = new Map(availableCases.map(item => [item.id, item]));
   const requested = new Set(referenceCases.split(',').filter(Boolean));
   const incomplete = matrix.include.filter(item => item.animation && requested.has(item.animation)
     && cases.get(item.animation)?.images.length === 0);

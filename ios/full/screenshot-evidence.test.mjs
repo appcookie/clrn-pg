@@ -136,7 +136,12 @@ test('候选导出兼容Actions真实根目录、历史嵌套目录和compare无
   try {
     for (const nested of [false, true]) {
       const input = join(directory, `ios-guest-en-startup-${nested}`);
-      artifact(nested ? join(input, 'artifacts') : input, fixture());
+      const report = fixture();
+      report.suites[0].specs[0].tests[0].results[0].attachments.push({
+        name: 'texas-holdem-personal-leaderboard-exit-pre-warmup-start',
+        contentType: 'image/png', body: png.toString('base64'),
+      });
+      artifact(nested ? join(input, 'artifacts') : input, report);
       const output = join(directory, `output-${nested}`);
       const result = spawnSync(process.execPath, ['ios/full/export-candidates.mjs', output, input], { encoding: 'utf8' });
       assert.equal(result.status, 0, result.stderr);

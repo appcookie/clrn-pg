@@ -8980,6 +8980,534 @@
         "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
       },
       "review": "逐图查看通过的英文德州面板真实原生截图：21 个业务状态完整，含退出确认；进入、退出和瞬时动作保留真实中间相位。原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-hall-auto-rebuy/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "890b06cc233172351f538e0310b644adf9c8285173f2719e0f9f8ef6257689cc",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-hall-hall-menu/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "0299c6d014cf60e0c2b3dcd64053be279c045cf2235f2b8dac523ee03f547a55",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-hall-hall-table/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "e2dfa48d56826d135da597587dbe3c4201a5af359e57fa9c8064c5a1e99782b1",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-hall-pair-play-report/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "0e16ccf3acac82221f5e57604d9f2fe752c9432a617edc01c7928b1870e0d6c5",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-hall-personal-leaderboard/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "eba3a2fcfb22ca8c89928aea65fcc94eb4ecc7fd9ced413795244f3283d47f40",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-hall-prediction-result/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "6760ace79b9d632b08d094770762343d0f4229ba2060e4a5a882c14915a71b0d",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/signed-in-texas-hall-prediction/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "850fec2eac506de7107abd42bb7c0af0e992838cc91127e8c14ece4af1cfa44e",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-auto-rebuy-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "9d6a4a1ae3c7f7d09fc9ccf3ff0cb0f99c2c2543a7bdb06eb0e0c9b42c442d0d",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-auto-rebuy-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "c73a5cdf8af6260f1bd3e0895e26a101fe78f96647922d847a3a6a7a1bb581eb",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-auto-rebuy-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "5dea1b736b63ae14f560b330c26552c329c08e240e865c733a68f1aebd8daa4e",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-auto-rebuy-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "5dea1b736b63ae14f560b330c26552c329c08e240e865c733a68f1aebd8daa4e",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-auto-rebuy-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "ff3c5a469368dc8c085dd0c444bf39a42efd943ebfdf29e89a8ec510d8abd0c0",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-auto-rebuy-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "da772695d0a768a955cce5191b93fae5139b6f1cc1b64de3cc2cb6ab6b579c4d",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-holdem-level-up-countdown/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "7a3d9c0bae9edbb1da4fcb2787f955013bcbf9a4828b1834a3200844c4ed9629",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-level-up/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "bd9751c2c03bab97794c9bbbed743cb315584f134cce548a71c8bf6c85d51830",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-level-up/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "57e9b46e7c84d9bd06b5ca4054d1b8bb6445220290a2d28a82fd50f7d75f8805",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-holdem-level-up-visible/ios/iphone16-ios18.5/en/page/default.png",
+      "sha256": "88deb0aefcb00eabaf019a353d08ba2b1dcd31fa58e6154d4f909025e80faa38",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-pair-play-report-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "781ae2ae81b09490809389319aba752bb1dd6885e7ba449e40cc6eb9680ed61e",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-pair-play-report-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "28c33729966cd610b6c610ac18009530e77c6f25a6f9a731c21651265e40a2ed",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-pair-play-report-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "c84e70f88be33ecd511b95e0d07e32e7ad4a7ce910382a315d826ff7a180f849",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-pair-play-report-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "c84e70f88be33ecd511b95e0d07e32e7ad4a7ce910382a315d826ff7a180f849",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-pair-play-report-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "9e800424cb1a0a9edaf34057b7d03013a1f5ab7363e155669cce0332e9ee069f",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-pair-play-report-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "781ae2ae81b09490809389319aba752bb1dd6885e7ba449e40cc6eb9680ed61e",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-personal-leaderboard-enter/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "a9745300c3272c1b6f801e50dc51506733b1ea1a06e68d4b4451902654b6767f",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-personal-leaderboard-enter/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "8cd1fd621dcf44fdcf728017c17569a90b25e11e56c79a74382f3226892903f9",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-personal-leaderboard-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "3dd5eb9e1b95c8c3e69327856240e00232afa169517e694702fbd97a268e93a5",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-personal-leaderboard-exit/ios/iphone16-ios18.5/en/animation/end.png",
+      "sha256": "3dd5eb9e1b95c8c3e69327856240e00232afa169517e694702fbd97a268e93a5",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-personal-leaderboard-exit/ios/iphone16-ios18.5/en/animation/middle.png",
+      "sha256": "e786bc0e6e1d4e09bd767f365cebed954c3650cfb4bdc79fc518e367e6e48bf9",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-personal-leaderboard-exit/ios/iphone16-ios18.5/en/animation/start.png",
+      "sha256": "3ce1415a661d8c1f199935a26f8a426503cb1dcc1f3dc893962524ecd1c4e03b",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-loading-ring-1/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "8cdbe409228a66024cf8c71596d56b1fc2a361916c8c522836beaef35446f043",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-loading-ring-1/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "a66d66b23b7178bdfbfd62bd8f19ee8a1e8feb21ddb7e10cbe39f6137e85800f",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-loading-spade-1/ios/iphone16-ios18.5/en/animation/first.png",
+      "sha256": "3ebb47da6963665af64fadd3f26b669f07a4c410ef1fc5d4d4840f322c9e1ec7",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "texas-holdem/table/texas-loading-spade-1/ios/iphone16-ios18.5/en/animation/moved.png",
+      "sha256": "ddc33ff5b3e28158877820c6a4d36df50ac6c94f2cb14e771416284621705229",
+      "source": {
+        "sourceRun": 39873172115,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39873172115",
+        "sourceWorkflowHead": "ff5897339f1682d354c1a76a213017c1405e2cd8",
+        "sourceArtifacts": [
+          "ios-texas-en-animation-14-1"
+        ],
+        "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+        "releaseTag": "ios-staging-23-1-59ba4f634fa6",
+        "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
+      },
+      "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
