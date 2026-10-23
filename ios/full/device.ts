@@ -101,6 +101,7 @@ export async function launchApplication(options: { isolated?: boolean; gameDrive
       ...(options.microphonePermission ? { 'appium:permissions': JSON.stringify({ [applicationId]: { microphone: 'yes' } }) } : {}),
       // fullReset 会清空模拟器信任库；由 XCUITest 在 reset 后重装本轮临时 CA。
       ...(process.env.IOS_PROXY_CA_CERT ? { 'appium:customSSLCert': readFileSync(process.env.IOS_PROXY_CA_CERT, 'utf8') } : {}),
+      'appium:simulatorStartupTimeout': 300_000,
       'appium:wdaLaunchTimeout': 240_000, 'appium:newCommandTimeout': 1800,
       'appium:wdaLocalPort': 8100 + index, 'appium:mjpegServerPort': 9100 + index };
     const start = async () => {
