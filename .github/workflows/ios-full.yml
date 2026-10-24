@@ -138,6 +138,7 @@ jobs:
           udid=$(xcrun simctl create clrn-full com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
           echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
       - name: 执行原生业务与静态截图，采集动画录屏
+        id: native_test
         env:
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
           IOS_FILTER: ${{ matrix.filter }}
@@ -208,6 +209,7 @@ jobs:
           echo "[下载录屏]($VIDEOS_URL)，解压后打开 index.html 直接观看。动画效果由 React Native #7056 后续验证。" >> "$GITHUB_STEP_SUMMARY"
       - name: 保存测试产物
         if: always()
+        id: test_artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ios-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
@@ -228,6 +230,20 @@ jobs:
       - name: 删除专用模拟器
         if: always() && env.IOS_SIMULATOR_UDID != ''
         run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
+      - name: 将失败原因写入运行摘要
+        if: failure()
+        env:
+          CI_LABEL: ${{ matrix.label }}
+          CI_TEST_STEP: ${{ steps.native_test.outcome }}
+          CI_ARTIFACT_URL: ${{ steps.test_artifacts.outputs.artifact-url }}
+        run: node ios/full/ci-failure-summary.mjs job
+      - name: 保存失败摘要供总门禁汇总
+        if: failure() && hashFiles('ios/artifacts/ci-failure/summary.md') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ci-failure-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
+          retention-days: 30
+          path: ios/artifacts/ci-failure/summary.md
   screenshot-video-gate:
     # GitHub treats skipped checks as successful. Manual diagnostics must never
     # publish the same check context as the required PR/master aggregate.
@@ -236,6 +252,22 @@ jobs:
     needs: [plan, proxy-check, native]
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+      - name: 汇集失败分片的简短摘要
+        if: needs.native.result != 'success'
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ios-ci-failure-*-${{ github.run_attempt }}
+          path: ci-failures
+      - name: 显示失败原因和证据入口
+        if: needs.plan.result != 'success' || needs.plan.outputs.preflight != 'success' || needs.proxy-check.result != 'success' || needs.native.result != 'success'
+        env:
+          CI_PLAN: ${{ needs.plan.result }}
+          CI_PREFLIGHT: ${{ needs.plan.outputs.preflight }}
+          CI_PROXY: ${{ needs.proxy-check.result }}
+          CI_NATIVE: ${{ needs.native.result }}
+        run: node ios/full/ci-failure-summary.mjs gate
       - name: 所有截图与录屏分片必须成功；取消、跳过和缺基准均阻断
         env:
           PLAN: ${{ needs.plan.result }}

@@ -9,7 +9,7 @@ const aggregate = workflow.split('\n  screenshot-video-gate:\n')[1];
 assert.ok(aggregate, '截图与录屏必须有独立汇总 job');
 const name = aggregate.match(/\n    name: \$\{\{\s*(.*?)\s*\}\}/)?.[1];
 const condition = aggregate.match(/\n    if: (.*)/)?.[1];
-const command = aggregate.match(/\n        run: (.*)/)?.[1];
+const command = aggregate.match(/\n      - name: 所有截图与录屏分片必须成功；取消、跳过和缺基准均阻断\n(?:.*\n)*?        run: (.*)/)?.[1];
 
 test('手动诊断不能发布与 PR/master 门禁同名的 skipped 检查', () => {
   assert.ok(name, '检查名必须区分手动诊断和正式门禁');

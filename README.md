@@ -53,6 +53,8 @@ npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 
 PR 和 master push 默认以 `compare` 运行三语言游客静态截图，以及 `ios/full/animation-gate-cases.json` 中未列入 [隔离清单](ios/full/quarantined/README.md)的 20 个英文录屏分片。牌局分片继续比较页面静态截图；每个运行中的录屏分片必须执行指定用例并产出有效 MP4。CI 产物里的 `index.html` 可直接播放。隔离的 5 组不会在 PR 中运行，CI 摘要会逐项列出，不能视为通过。动画帧数、相位、轨迹、循环变化与素材播放效果均不在当前 PR 的自动门禁中，后续方案和全部 25 组范围见 [React Native #7056](https://github.com/kevinanew/laiwan_react_native/issues/7056)。汇总检查名为 `iOS screenshot and video gate`，任一应运行分片失败、取消或未运行都会失败。
 
+完整回归失败时，先打开 Actions 运行首页的「iOS 完整回归失败原因」摘要；其中列出失败分片、具体用例的首条错误和测试证据入口。完整堆栈、截图及录像仍保存在对应分片的产物中。
+
 手动 `group=quarantined` 可只重跑隔离的 5 组，`group=animations` 可运行完整清单的旧动画断言作为诊断，两者都不作为 PR 门禁。`group=all` 包括其他业务和功能测试。静态截图基准继续保留审查来源和 SHA-256；缺少静态基准会在分配 macOS runner 前失败。录屏供人工观看，不自动批准新动画基准。
 
 完整回归的参考图只使用 `ios/snapshots/v1/<module>/<page>/<state>/ios/iphone16-ios18.5/<locale>/<kind>/<sample>.png`，可被 `laiwan_screenshot` 直接读取。已通过的 `smoke` CI 报告也可用 `node ios/full/export-candidates.mjs <新目录> <下载后的 artifact 目录>...` 导出真实候选；工具核对所有测试通过、同一 Release 与每张 PNG，并标记 `unreviewed`。逐图审查后将候选的 `v1/` 放入 `ios/snapshots/v1/`；PR 的 `compare` 会自动运行，缺少基准会在分配 macOS runner 前失败。当前 Staging 提示卡 CTA 被遮挡属于已记录的发布包布局缺陷，保存其真实参考图不代表认可该布局。
