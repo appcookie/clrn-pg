@@ -15,7 +15,7 @@
   "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
   "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9",
   "simulator": "iPhone 16 / iOS 18.5",
-  "review": "原有 77 张真实 PNG 保留原始来源与审查结论。新增图片逐图查看真实动画相位，单独在 files[].source 记录通过的采集运行、工作流提交和产物；所有 PNG 校验原始 SHA-256。动画仅保留英文。",
+  "review": "原有 77 张真实 PNG 保留原始来源与审查结论。新增图片逐图查看真实动画相位，单独在 files[].source 记录通过的采集运行、工作流提交和产物；所有 PNG 校验原始 SHA-256。动画仅保留英文。本次部分更新 6 张英文登录提示静态及搜索动画 PNG；更新图的独立来源在 files[].source，顶层来源仍描述原始基准集合。",
   "knownIssues": [
     {
       "id": "staging-cta-obscured",
@@ -43,7 +43,19 @@
     },
     {
       "path": "hall/hall/guest-game-sign-in-prompt/ios/iphone16-ios18.5/en/page/default.png",
-      "sha256": "d4d64bdf17a1d76a58963317510de88bcb4dab079d84e22bfe95e81c34f61f89"
+      "sha256": "90f4606a0e462ef7262547713f3bcb511de5da139ada69c21626296428f693a7",
+      "source": {
+        "sourceRun": 39625782198,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39625782198",
+        "sourceWorkflowHead": "39fcf037fe2cda7bbb881119d1717ce6f7cb8a6e",
+        "sourceArtifacts": [
+          "ios-guest-en-pages-1"
+        ],
+        "applicationCommit": "5a1ea17c014aa1f705be3fd42aa0fd58c0fa3b41",
+        "releaseTag": "ios-staging-24-1-5a1ea17c014a",
+        "packageSha256": "a6b6ab38c91e4559e8ee6cc0ce3e3d5180886c064d796ac0bd68bd4506e217c1"
+      },
+      "review": "原始 PNG 已逐图检查；来自成功的目标用例，英文标题为 Notice。"
     },
     {
       "path": "account/profile/guest-me/ios/iphone16-ios18.5/en/page/default.png",
@@ -115,7 +127,19 @@
     },
     {
       "path": "hall/search/search-sign-in-prompt/ios/iphone16-ios18.5/en/page/default.png",
-      "sha256": "69f37e78bbbc49c653fa2d3f25e5f27721a3ac1f20887d202312b950cdfb10c5"
+      "sha256": "0262e14842202f067cab9389cb64cdb6dabf6567f1ecda22c872b92457fcd48d",
+      "source": {
+        "sourceRun": 39625782198,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39625782198",
+        "sourceWorkflowHead": "39fcf037fe2cda7bbb881119d1717ce6f7cb8a6e",
+        "sourceArtifacts": [
+          "ios-guest-en-pages-1"
+        ],
+        "applicationCommit": "5a1ea17c014aa1f705be3fd42aa0fd58c0fa3b41",
+        "releaseTag": "ios-staging-24-1-5a1ea17c014a",
+        "packageSha256": "a6b6ab38c91e4559e8ee6cc0ce3e3d5180886c064d796ac0bd68bd4506e217c1"
+      },
+      "review": "原始 PNG 已逐图检查；来自成功的目标用例，英文标题为 Notice。"
     },
     {
       "path": "auth/login/smoke-forgot-password-email/ios/iphone16-ios18.5/en/page/default.png",
@@ -163,11 +187,35 @@
     },
     {
       "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/end.png",
-      "sha256": "da2c39c1ac58fff2f181c2a58decea8f68e55b8561939a24b7b68ad52524bc56"
+      "sha256": "25e048262f87b59b8a43c413e44a25e1ff653174b396c4fd849d43ca6db506a3",
+      "source": {
+        "sourceRun": 39625782198,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39625782198",
+        "sourceWorkflowHead": "39fcf037fe2cda7bbb881119d1717ce6f7cb8a6e",
+        "sourceArtifacts": [
+          "ios-guest-en-startup-1"
+        ],
+        "applicationCommit": "5a1ea17c014aa1f705be3fd42aa0fd58c0fa3b41",
+        "releaseTag": "ios-staging-24-1-5a1ea17c014a",
+        "packageSha256": "a6b6ab38c91e4559e8ee6cc0ce3e3d5180886c064d796ac0bd68bd4506e217c1"
+      },
+      "review": "原始 PNG 已逐图检查；来自成功的目标用例，英文标题为 Notice。"
     },
     {
       "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/middle.png",
-      "sha256": "50818161097c14ec1ff504b2d2972a58e7268d7794021a6f8b099f26eff12384"
+      "sha256": "e281671fd51ba69d1e9ac7ce17c46ee5e4fcf3c43cbbb467cfa190661845dc00",
+      "source": {
+        "sourceRun": 39625782198,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39625782198",
+        "sourceWorkflowHead": "39fcf037fe2cda7bbb881119d1717ce6f7cb8a6e",
+        "sourceArtifacts": [
+          "ios-guest-en-startup-1"
+        ],
+        "applicationCommit": "5a1ea17c014aa1f705be3fd42aa0fd58c0fa3b41",
+        "releaseTag": "ios-staging-24-1-5a1ea17c014a",
+        "packageSha256": "a6b6ab38c91e4559e8ee6cc0ce3e3d5180886c064d796ac0bd68bd4506e217c1"
+      },
+      "review": "原始 PNG 已逐图检查；来自成功的目标用例，英文标题为 Notice。"
     },
     {
       "path": "hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/start.png",
@@ -179,11 +227,35 @@
     },
     {
       "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/en/animation/middle.png",
-      "sha256": "269d8b89e815898e0c8e5339123faf46390691ade61b1e5b2618c09de01472a7"
+      "sha256": "c812660ad536eec7d31f3c29c6ad9532cd3d708b93f631e875770ccc250a5b36",
+      "source": {
+        "sourceRun": 39625782198,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39625782198",
+        "sourceWorkflowHead": "39fcf037fe2cda7bbb881119d1717ce6f7cb8a6e",
+        "sourceArtifacts": [
+          "ios-guest-en-startup-1"
+        ],
+        "applicationCommit": "5a1ea17c014aa1f705be3fd42aa0fd58c0fa3b41",
+        "releaseTag": "ios-staging-24-1-5a1ea17c014a",
+        "packageSha256": "a6b6ab38c91e4559e8ee6cc0ce3e3d5180886c064d796ac0bd68bd4506e217c1"
+      },
+      "review": "原始 PNG 已逐图检查；来自成功的目标用例，英文标题为 Notice。"
     },
     {
       "path": "hall/search/search-confirmation-exit/ios/iphone16-ios18.5/en/animation/start.png",
-      "sha256": "da2c39c1ac58fff2f181c2a58decea8f68e55b8561939a24b7b68ad52524bc56"
+      "sha256": "25e048262f87b59b8a43c413e44a25e1ff653174b396c4fd849d43ca6db506a3",
+      "source": {
+        "sourceRun": 39625782198,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39625782198",
+        "sourceWorkflowHead": "39fcf037fe2cda7bbb881119d1717ce6f7cb8a6e",
+        "sourceArtifacts": [
+          "ios-guest-en-startup-1"
+        ],
+        "applicationCommit": "5a1ea17c014aa1f705be3fd42aa0fd58c0fa3b41",
+        "releaseTag": "ios-staging-24-1-5a1ea17c014a",
+        "packageSha256": "a6b6ab38c91e4559e8ee6cc0ce3e3d5180886c064d796ac0bd68bd4506e217c1"
+      },
+      "review": "原始 PNG 已逐图检查；来自成功的目标用例，英文标题为 Notice。"
     },
     {
       "path": "club/club/guest-club/ios/iphone16-ios18.5/zh-Hans/page/default.png",
