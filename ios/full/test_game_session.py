@@ -28,6 +28,31 @@ def room(game='texas_holdem', room_id=ROOM):
 
 
 class GameSessionTests(unittest.TestCase):
+    def test_statistics_owner_requires_actual_created_room_and_matching_logged_in_self(self):
+        for user_id in (None, ROOM, USER):
+            session = GameSession('texas_holdem')
+            session.response(login())
+            created = room()
+            body = json.loads(created.request.content)
+            body['user_id'] = user_id
+            created.request.content = json.dumps(body).encode()
+            session.response(created)
+            self.assertEqual(session.statistics_owner, (ROOM, USER) if user_id == USER else None)
+        for login_first, method, game, status in ((False, 'POST', 'texas_holdem', 200),
+                (True, 'GET', 'texas_holdem', 200), (True, 'POST', 'zhajinhua', 200),
+                (True, 'POST', 'texas_holdem', 500)):
+            session = GameSession('texas_holdem')
+            if login_first:
+                session.response(login())
+            created = room(game)
+            body = json.loads(created.request.content)
+            body['user_id'] = USER
+            created.request.content = json.dumps(body).encode()
+            created.request.method = method
+            created.response.status_code = status
+            session.response(created)
+            self.assertIsNone(session.statistics_owner)
+
     def test_only_first_created_target_room_is_owned(self):
         session = GameSession('texas_holdem')
         session.response(room())

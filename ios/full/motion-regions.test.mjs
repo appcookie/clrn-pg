@@ -3,8 +3,55 @@ import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { PNG } from 'pngjs';
 const require = createRequire(import.meta.url);
-const { motionParts, samePixels } = require('./motion-regions.ts');
+const { cropMotionRegion, cropMotionRegions, motionParts, samePixels } = require('./motion-regions.ts');
+const { endpointMasksInRegion } = require('./animation-region.ts');
+const { maskScreenshot } = require('./screenshot.ts');
 const regions = [{ x: 0, y: 0, width: 4, height: 4 }, { x: 4, y: 0, width: 4, height: 4 }];
+
+test('端点屏幕遮罩随实际裁图原点转换，只排除背景轮播而不遮掉弹窗像素', () => {
+  const picture = new PNG({ width: 100, height: 100 });
+  picture.data.fill(255);
+  const baseline = PNG.sync.write(picture);
+  picture.data.fill(0, (25 * 100 + 35) * 4, (25 * 100 + 35) * 4 + 3);
+  const changedBanner = PNG.sync.write(picture);
+  const masks = endpointMasksInRegion([{ x: 130, y: 70, width: 10, height: 10, reason: '独立轮播' }],
+    { x: 100, y: 50, width: 100, height: 100 });
+  assert.equal(samePixels(changedBanner, baseline), false, '原始帧仍保留完整画面');
+  assert.equal(samePixels(maskScreenshot(changedBanner, masks), maskScreenshot(baseline, masks)), true);
+  picture.data.fill(0, (80 * 100 + 40) * 4, (80 * 100 + 40) * 4 + 3);
+  assert.equal(samePixels(maskScreenshot(PNG.sync.write(picture), masks), maskScreenshot(baseline, masks)), false);
+});
+
+test('录屏裁图优化保持原始 RGBA 与旧路径 PNG 字节完全一致，不缩放或重绘', () => {
+  const picture = new PNG({ width: 101, height: 87 });
+  for (let i = 0; i < picture.data.length; i++) picture.data[i] = (i * 31 + Math.floor(i / 11)) % 256;
+  const bytes = PNG.sync.write(picture);
+  for (const region of [{ x: 3, y: 7, width: 33, height: 45 }, { x: 0, y: 0, width: 101, height: 87 }]) {
+    assert.deepEqual(cropMotionRegion(bytes, region), motionParts(bytes, [region]).regions[0]);
+  }
+  const reels = [3, 36, 69].map(x => ({ x, y: 7, width: 30, height: 70 }));
+  assert.deepEqual(cropMotionRegions(bytes, reels), motionParts(bytes, reels).regions);
+  assert.throws(() => cropMotionRegions(bytes, [reels[0], reels[0]]), /不能重叠/);
+  for (const region of [{ x: -1, y: 0, width: 5, height: 5 }, { x: 0, y: 0, width: 102, height: 87 },
+    { x: 0, y: 0, width: 0, height: 1 }, { x: 0.5, y: 0, width: 2, height: 2 }]) {
+    assert.throws(() => cropMotionRegion(bytes, region), /超出实际截图/);
+  }
+});
+test('遮罩后裁图只解码一次且与原整屏重编码路径完全一致，仍拒绝过大遮罩', () => {
+  const picture = new PNG({ width: 101, height: 87 });
+  for (let i = 0; i < picture.data.length; i++) picture.data[i] = (i * 17 + Math.floor(i / 19)) % 256;
+  const bytes = PNG.sync.write(picture);
+  const region = { x: 3, y: 7, width: 33, height: 45 };
+  const masks = [
+    { x: 1.5, y: 8.2, width: 10.3, height: 9.1, reason: 'partial intersection' },
+    { x: 80, y: 70, width: 4, height: 4, reason: 'outside crop' },
+    { x: 0, y: 0, width: 101, height: 87, reason: 'unverified', unverifiedLayout: true },
+  ];
+  assert.deepEqual(cropMotionRegion(bytes, region, masks), cropMotionRegion(maskScreenshot(bytes, masks), region));
+  const oversized = [{ x: 40, y: 50, width: 50, height: 30, reason: 'outside crop but too large' }];
+  assert.throws(() => cropMotionRegion(bytes, region, oversized), /12%/);
+  assert.deepEqual(PNG.sync.read(bytes).data, picture.data, '原始帧不能被修改');
+});
 
 /**
  * 构造两个独立动画区域和一个静态下半屏，用明显色差验证没有漏比较的像素。

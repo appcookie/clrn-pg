@@ -52,6 +52,26 @@ test('functional五片账号槽位独立稳定，少量账号只复用已配置�
   assert.match(workflow, /args\+=\(--shard "\$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1\)/);
 });
 
+test('拼三张英文首中尾和牌局两片覆盖真实收集的全部用例，新增中组账号不碰旧槽位', () => {
+  const entries = iosAccountMatrix('123', 'zhajinhua', 'en', ciAccounts).include;
+  const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
+    { cwd: process.cwd(), env: { ...process.env, IOS_GROUP: 'zhajinhua', IOS_LOCALE: 'en' } }));
+  const titles = [];
+  const visit = suite => {
+    for (const spec of suite.specs || []) {
+      assert.equal(spec.tests[0].expectedStatus, 'passed');
+      titles.push(spec.title);
+    }
+    for (const child of suite.suites || []) visit(child);
+  };
+  report.suites.forEach(visit);
+  assert.equal(titles.length, 5);
+  for (const title of titles) assert.equal(entries.filter(entry => new RegExp(entry.filter).test(title)).length, 1, title);
+  assert.equal(entries.find(entry => entry.shard === 'pregame-middle').account, allocateCiAccount('123', 43));
+  assert.deepEqual(entries.filter(entry => entry.shard !== 'pregame-middle').map(entry => entry.account),
+    [23, 32, 33, 34].map(offset => allocateCiAccount('123', offset)));
+});
+
 test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或重复', { timeout: 120_000 }, () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(shard) {
@@ -83,7 +103,8 @@ test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或�
   assert.deepEqual(parts.flat().sort(), complete.sort());
 });
 
-test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰好覆盖一次', { timeout: 180_000 }, () => {
+test('guest每语言18页独立于动画录屏，实际21/20/20项跨两片恰好覆盖一次', { timeout: 180_000 }, async () => {
+  const { guestScreenshotTests, screenshotTestKey } = await import('../ios/full/guest-screenshot-contract.mjs');
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(locale, filter = '') {
     const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts',
@@ -102,28 +123,34 @@ test('guest每语言18页独立于启动动画，实际25/21/20项跨两片恰�
     for (const suite of report.suites) visit(suite);
     return specs;
   }
-  for (const [locale, count] of [['en', 25], ['zh-Hans', 21], ['zh-Hant', 20]]) {
+  for (const [locale, count] of [['en', 25], ['zh-Hans', 20], ['zh-Hant', 20]]) {
     const entries = iosAccountMatrix('123', 'guest', locale).include;
     assert.deepEqual(entries.map(entry => entry.shard).sort(), ['pages', 'startup']);
     assert.ok(entries.every(entry => entry.account === '' && entry.playwrightShard === ''));
     const complete = collect(locale);
     const pages = collect(locale, entries.find(entry => entry.shard === 'pages').filter);
     const startup = collect(locale, entries.find(entry => entry.shard === 'startup').filter);
+    for (const [shard, specs] of [['pages', pages], ['startup', startup]]) {
+      assert.deepEqual(specs.map(screenshotTestKey).sort(),
+        guestScreenshotTests(locale, shard).map(screenshotTestKey).sort(), `${locale}/${shard} 截图验收清单`);
+    }
     assert.equal(complete.length, count);
     assert.equal(pages.length, 18);
     assert.ok(pages.every(spec => spec.file === 'tests/parity.spec.ts'));
-    assert.equal(startup.length, count - 18);
+    assert.equal(startup.length, locale === 'en' ? 3 : 2);
     assert.ok(startup.every(spec => spec.file !== 'tests/parity.spec.ts'));
     const keys = specs => specs.map(spec => `${spec.file}:${spec.title}`);
     const combined = keys([...pages, ...startup]);
-    assert.equal(new Set(combined).size, count);
-    assert.deepEqual(combined.sort(), keys(complete).sort());
+    assert.equal(new Set(combined).size, combined.length);
+    assert.ok(combined.every(key => keys(complete).includes(key)));
+    if (locale === 'en') assert.equal(complete.length - combined.length, 4,
+      '四项独立动画或素材检查已移出游客截图门禁');
   }
   const first = iosAccountMatrix('123', 'guest', 'all').include[0];
   assert.equal(first.locale, 'en');
   assert.equal(first.shard, 'startup');
   const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /max-parallel: 5/);
+  assert.match(workflow, /max-parallel: 10/);
   assert.match(workflow, /github\.run_id, matrix\.group, matrix\.locale, matrix\.shard/);
 });
 test('凭据接受任意非空ready独立iOS子池，拒绝原仓库账号或损坏Secret且不泄露正文', () => {
@@ -185,14 +212,16 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
   const { spawnSync } = await import('node:child_process');
   const directory = mkdtempSync(join(tmpdir(), 'ios-ci-plan-test-'));
   const output = join(directory, 'output');
+  const summary = join(directory, 'summary');
   const password = 'fake-plan-password';
-  const env = { ...process.env, GITHUB_RUN_ID: '123', GITHUB_OUTPUT: output,
+  const env = { ...process.env, GITHUB_RUN_ID: '123', GITHUB_OUTPUT: output, GITHUB_STEP_SUMMARY: summary,
     CI_IOS_GROUP: 'all', CI_IOS_LOCALE: 'all', CLRN_IOS_CI_TEST_ACCOUNTS: JSON.stringify({ accounts: [
       { username: ciAccounts[0], password, status: 'ready' }] }) };
   const run = override => spawnSync(process.execPath, ['scripts/plan-ci-accounts.mjs', 'ios'],
     { env: { ...env, ...override }, encoding: 'utf8' });
   try {
     writeFileSync(output, '');
+    writeFileSync(summary, '');
     const planned = run({});
     assert.equal(planned.status, 0, planned.stderr);
     const content = readFileSync(output, 'utf8');
@@ -208,5 +237,53 @@ test('plan从Secret仅导出公开username，guest无Secret仍可调度', async 
     assert.notEqual(invalid.status, 0);
     assert.equal(readFileSync(output, 'utf8'), '');
     assert.ok(!invalid.stderr.includes(password));
+    writeFileSync(output, '');
+    const recording = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-10',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(recording.status, 0, recording.stderr);
+    const selected = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.equal(selected.length, 1);
+    assert.equal(selected[0].animation, 'animation-10');
+    assert.equal(selected[0].recordOnly, true);
+    assert.match(readFileSync(summary, 'utf8'), /animation-9.*animation-12.*animation-14.*animation-20.*animation-21/s);
+    writeFileSync(output, '');
+    const split = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: 'animation-20',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(split.status, 0, split.stderr);
+    const selectedSplit = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.deepEqual(selectedSplit.map(item => item.animationPart), ['themes', 'voice_records', 'interactions']);
+    assert.equal(new Set(selectedSplit.map(item => item.shard)).size, 3);
+    writeFileSync(output, '');
+    const opening = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: 'animation-20/themes',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(opening.status, 0, opening.stderr);
+    const selectedOpening = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.equal(selectedOpening.length, 1);
+    assert.equal(selectedOpening[0].animationPart, 'themes');
+    writeFileSync(output, '');
+    const failures = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: 'animation-9, animation-12,animation-21',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.equal(failures.status, 0, failures.stderr);
+    const selectedFailures = JSON.parse(readFileSync(output, 'utf8').slice('matrix='.length)).include;
+    assert.deepEqual(selectedFailures.map(item => item.animation), ['animation-9', 'animation-12', 'animation-21']);
+    assert.ok(selectedFailures.every(item => item.recordOnly));
+    for (const invalidCase of ['animation-9,animation-9', 'animation-0', 'animation-26',
+      'animation-9/opening', 'animation-20/other', 'animation-20/opening']) {
+      writeFileSync(output, '');
+      const bad = run({ CI_IOS_GROUP: 'quarantined', CI_ANIMATION_CASE: invalidCase,
+        GITHUB_EVENT_NAME: 'workflow_dispatch' });
+      assert.notEqual(bad.status, 0);
+      assert.equal(readFileSync(output, 'utf8'), '');
+    }
+    writeFileSync(output, '');
+    const excluded = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9',
+      GITHUB_EVENT_NAME: 'workflow_dispatch' });
+    assert.notEqual(excluded.status, 0);
+    assert.equal(readFileSync(output, 'utf8'), '');
+    writeFileSync(output, '');
+    const gate = run({ CI_IOS_GROUP: 'pr', CI_ANIMATION_CASE: 'animation-9',
+      GITHUB_EVENT_NAME: 'pull_request' });
+    assert.notEqual(gate.status, 0);
+    assert.equal(readFileSync(output, 'utf8'), '');
   } finally { rmSync(directory, { recursive: true, force: true }); }
 });

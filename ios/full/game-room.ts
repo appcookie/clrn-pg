@@ -22,11 +22,11 @@ export async function gameSession(proxy: Mitmproxy): Promise<{ account: Account 
  * @param game - 本轮玩法。
  * @param onCreated - 新房间登记回调。
  * @param optionalFeatures - 与 Web 一致，从真实建房表单启用升盲。
- * @param observerConnection - 大厅或非房主展示也必须建立当前私人房的真实观察者连接。
+ * @param view - 大厅或非房主展示建立当前私人房的真实观察者连接，并校验对应桌面名称。
  */
 export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
   game: 'texas-holdem' | 'zhajinhua', onCreated: (room: RoomSession) => void, optionalFeatures = false,
-  observerConnection = false): Promise<RoomSession> {
+  view: 'private' | 'hall' | 'guest' = 'private'): Promise<RoomSession> {
   const { account } = await gameSession(proxy);
   if (!account || account.username !== process.env.VISUAL_USERNAME) throw new Error('建房必须使用本轮真实登录的测试账号。');
   const api = await request.newContext();
@@ -39,7 +39,7 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
   await reveal(device, { res: 'select-game-category-text' });
   await tap(device, `game-type-button-${game === 'texas-holdem' ? 'texas_react_native' : game}`);
   await device.wait({ res: 'room-name-input' });
-  await device.fill({ res: 'room-name-input' }, 'TestRoom');
+  await device.fill({ res: 'room-name-input' }, 'TestRoom', { replaceBySelection: true });
   await dismissKeyboard(device);
   if (optionalFeatures) {
     await tap(device, 'advanced-options-button');
@@ -52,14 +52,19 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
     expect(room, '真实建房接口必须返回本轮新建的房间').not.toBeNull();
   }).toPass({ timeout: 60_000, intervals: [500] });
   onCreated(room!);
-  if (observerConnection) {
+  if (view !== 'private') {
     const observerApi = await request.newContext();
     try { await enterTexasRoom({ request: observerApi }, room!); }
     finally { await observerApi.dispose(); }
   }
-  await gameReady(device, 'run-game-view');
+  // XCUITest marks the non-accessible outer game view hidden even while its
+  // native menu and room label are visible. Require those actual controls.
   await gameGone(device, 'game-splash-screen-bg');
   await gameReady(device, 'menu-button');
+  const hallNames: Record<string, string> = { en: 'Hall', 'zh-Hans': '大厅', 'zh-Hant': '大廳' };
+  const roomName = view === 'hall' ? hallNames[process.env.IOS_LOCALE || 'en'] : 'TestRoom';
+  if (!roomName) throw new Error('缺少当前语言的大厅牌桌名称断言。');
+  await gameReady(device, game === 'texas-holdem' ? 'texas-holdem-room-name-text' : 'zhajinhua-text-room-name', roomName);
   if (game === 'zhajinhua') {
     // 菜单比真实初始桌况更早挂载；完整九个座位就绪后才能发送牌局回放。
     await expect.poll(async () => (await gameNodes(device)).filter(node => /^zhajinhua-seat-[1-9]$/.test(node.res || '')).length,

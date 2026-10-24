@@ -1902,7 +1902,7 @@
       }
     },
     {
-      "title": "zh-Hans mobile guest search prompt fades in",
+      "title": "en mobile guest search prompt fades in",
       "path": "visual/animations/search-prompt.spec.ts",
       "line": 27,
       "projects": [
@@ -1912,10 +1912,10 @@
       "browserOnly": false,
       "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
       "nativeImplementation": {
-        "file": "ios/full/tests/web-animation-parity.spec.ts",
-        "testTitle": "zh-Hans mobile guest search prompt fades in and reopens on iOS",
-        "locale": "zh-Hans",
-        "platformChanges": "中文文案、真实入退场关键帧、关闭后再次打开",
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "testTitle": "guest search confirmation animates into and out of the iOS screen",
+        "locale": "en",
+        "platformChanges": "复用英文搜索入退场关键帧，验证英文文案、关闭后再次打开；动画仅保留英文",
         "validation": "collected-and-typechecked; native-execution-pending"
       }
     },

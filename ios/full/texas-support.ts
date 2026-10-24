@@ -1,8 +1,9 @@
 import { expect, type TestInfo } from '@playwright/test';
+import { stableNativeObservation } from './native-stability';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { Mitmproxy } from '../../e2e/helpers/mitmproxy-client';
 import { events, restoreTable, type Street, type TableOptions } from '../../visual/cases/texas-holdem/replayData';
-import { gameGone, gameNodes, gameReady, gameTap, type NativeNode } from './game-controls';
+import { gameGone, gameNodes, gameReady, gameTap } from './game-controls';
 import { gameCardNames, replay } from './game-replay';
 import type { ScreenshotMask } from './screenshot';
 import { gameMenu } from './game-pregame';
@@ -42,15 +43,12 @@ export async function texasEvents(context: TexasContext, queue: Record<string, u
  * @param text - 三种语言共用的准确文字模式。
  */
 export async function gameTapText(device: AndroidDevice, text: RegExp): Promise<void> {
-  let previous: NativeNode['bounds'] | undefined;
-  let selected: NativeNode | undefined;
-  await expect(async () => {
-    selected = (await gameNodes(device)).filter(node => text.test(node.text || '')).at(-1);
-    expect(selected, `${text} 应可见`).toBeDefined();
-    const before = previous;
-    previous = selected!.bounds;
-    expect(previous).toEqual(before);
-  }).toPass({ timeout: 30_000, intervals: [250] });
+  const selected = await stableNativeObservation(
+    async () => (await gameNodes(device)).filter(node => text.test(node.text || '')).at(-1),
+    (before, current) => {
+      expect(current, `${text} 应可见`).toBeDefined();
+      expect(current!.bounds).toEqual(before?.bounds);
+    }, { timeout: 30_000, interval: 250 });
   const { x, y, width, height } = selected!.bounds;
   await device.input.tap({ x: Number(String(Math.round(x + width / 2))), y: Number(String(Math.round(y + height / 2))) });
 }

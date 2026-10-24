@@ -16,6 +16,8 @@ from ui_states import UIStates
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'e2e' / 'mitmproxy'))
 from response_overrides import VisualNetwork, is_staging, prepare_profiles, patch_profiles, patch_version  # noqa: E402
 
+from replay_control import replay_readiness, replay_error  # noqa: E402
+
 CONTROL_HOST = 'test-mitmproxy.invalid'
 
 
@@ -46,6 +48,7 @@ class TexasVisualProxy:
             respond(flow, {'error': 'Forbidden'}, 403)
             return
         path = urlsplit(flow.request.path).path
+        body = None
         try:
             if flow.request.method == 'POST':
                 body = json.loads(flow.request.content)
@@ -57,6 +60,9 @@ class TexasVisualProxy:
                     self.ui.release()
                 elif self.scenario == 'visual-stable' and path == '/texas/view':
                     self.view.configure(body.get('mode'))
+                elif self.scenario == 'visual-stable' and path == '/texas/replay-ready':
+                    respond(flow, replay_readiness(self.texas, 'texas_holdem', body.get('roomId')))
+                    return
                 elif self.scenario == 'visual-stable' and path == '/texas/replay':
                     self.texas.publish(body.get('roomId'), body.get('data'))
                 elif self.scenario == 'visual-stable' and path == '/texas/records':
@@ -75,13 +81,15 @@ class TexasVisualProxy:
                     raise ValueError('Unknown command')
             elif flow.request.method != 'GET' or path != '/status':
                 raise ValueError('Unknown command')
-        except (ValueError, KeyError, TypeError, AttributeError):
-            respond(flow, {'error': 'Invalid replay command'}, 400)
+        except (ValueError, KeyError, TypeError, AttributeError) as error:
+            respond(flow, replay_error(error, self.texas, 'texas_holdem', body), 400)
             return
         respond(flow, {
             'scenario': self.scenario, 'interceptedRequests': 0,
             'proxiedRequests': self.proxied_requests, 'stabilizedRequests': self.stabilized_requests,
             'replayedMessages': self.texas.replayed_messages,
+            'selfStatistics': {'authorized': self.texas.self_statistics_authorized(),
+                               'responses': self.texas.self_statistics_responses},
         })
 
     def websocket_message(self, flow):

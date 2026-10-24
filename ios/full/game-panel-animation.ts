@@ -1,4 +1,3 @@
-import { screenBounds } from './screen-geometry';
 import type { TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameConnected, gameReady, gameTap } from './game-controls';
@@ -24,13 +23,40 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
   samplingMethod: 'motionFrames' | 'launchFrames' | 'videoFrames' = game === 'zhajinhua'
     ? 'videoFrames' : 'motionFrames',
   masks: ScreenshotMask[] = [], afterReady?: () => Promise<void>,
-  videoPhaseAnchors: string[] = []): Promise<void> {
+  videoPhaseAnchors: string[] = [],
+  capture: typeof captureNativeTransition = captureNativeTransition): Promise<void> {
   if (!testInfo) { await gameTap(device, button); return; }
-  await gameConnected(device);
-  const { bounds } = await gameReady(device, button);
-  /** 通过 XCUITest 点击真实牌桌控件，Simulator 同时录制每一帧。 */
-  const press = () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) });
-  await captureNativeTransition(device, `${game}-${name}-${phase}`, testInfo, region, press,
+  const guardedEntrance = game === 'texas-holdem' && phase === 'enter'
+    && /^(?:own-profile|opponent-profile-[12]|auto-rebuy)$/.test(name);
+  let press: () => Promise<void>;
+  if (guardedEntrance) {
+    // Runs 39560079179 and 39695625593 reconnected during recorder warm-up,
+    // after the old pre-recording readiness checks. Observe twice immediately
+    // before the one real tap; no query interrupts the ensuing animation.
+    press = async () => {
+      const timing: { preparationStartedUtc: string; tapRequestedUtc?: string;
+        point?: { x: number; y: number }; completedUtc?: string } = {
+        preparationStartedUtc: new Date().toISOString(),
+      };
+      try {
+        await gameTap(device, button, false, point => {
+          timing.tapRequestedUtc = new Date().toISOString();
+          timing.point = point;
+        });
+      } finally {
+        timing.completedUtc = new Date().toISOString();
+        await testInfo.attach(`${game}-${name}-${phase}-tap-timing`, {
+          body: JSON.stringify(timing), contentType: 'application/json',
+        });
+      }
+    };
+  } else {
+    await gameConnected(device);
+    const { bounds } = await gameReady(device, button);
+    press = () => device.input.tap({ x: Math.round(bounds.x + bounds.width / 2),
+      y: Math.round(bounds.y + bounds.height / 2) });
+  }
+  await capture(device, `${game}-${name}-${phase}`, testInfo, region, press,
     masks, [], 0, samplingMethod, undefined, afterReady, videoPhaseAnchors);
 }
 
@@ -45,6 +71,5 @@ export async function captureTimedLevelUp(device: AndroidDevice, game: 'texas-ho
   button: string, testInfo: TestInfo): Promise<void> {
   const { bounds } = await gameReady(device, button);
   await captureTimedPrompt(device, `${game}-level-up`, testInfo,
-    screenBounds(device, { x: 0, y: 20, width: 620, height: 230 }),
     () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) }));
 }

@@ -29,10 +29,11 @@ test('Web91流程260状态逐个对应实际注册的三语言原生测试，lev
       locale==='en'?['signed_in_texas_hall/level_up']:[]);
   }
 });
-test('Web21动画精确标题都有实际注册的原生执行入口及平台差异',()=>{
+test('Web21动画精确标题都有实际注册的英文原生执行入口及平台差异',()=>{
   assert.equal(source.animations.length,21); const byLocale=new Map();
   for(const row of source.animations){
     const target=row.nativeImplementation; assert.ok(target, row.title);
+    assert.equal(target.locale,'en',`${row.title}: 动画仅保留英文`);
     if(!byLocale.has(target.locale))byLocale.set(target.locale,collect(target.locale));
     const found=byLocale.get(target.locale).find(spec=>spec.title===target.testTitle&&spec.file.endsWith(target.file.replace('ios/full/','')));
     assert.ok(found,`${row.title}: 缺少真实注册 ${target.testTitle}`); assert.equal(found.tests[0].expectedStatus,'passed');

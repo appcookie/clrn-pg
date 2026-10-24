@@ -1,0 +1,49 @@
+{
+  "run": "39623573016",
+  "applicationCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+  "purpose": "失败运行的原片裁图，仅用于抽帧回归，不是视觉基准",
+  "crop": {
+    "x": 0,
+    "y": 0,
+    "width": 1178,
+    "height": 350
+  },
+  "panel": {
+    "x": 84,
+    "y": 0,
+    "width": 1028,
+    "height": 315
+  },
+  "files": [
+    {
+      "file": "frame-0.png",
+      "frameIndex": 0,
+      "timestampMs": 0,
+      "sha256": "3647fd624d53b2dcce78f7956d48de0a33558309e83c9e4026d7cf35dc1fcb01"
+    },
+    {
+      "file": "frame-134.png",
+      "frameIndex": 134,
+      "timestampMs": 55280,
+      "sha256": "4fc1f6ce8b34c37583d128ca69c875061d39b294593a25a956b4e1ca4ae4df0f"
+    },
+    {
+      "file": "frame-136.png",
+      "frameIndex": 136,
+      "timestampMs": 55330,
+      "sha256": "beb1d1d7e3a34ed31d4a59b4d890b4863383c2f5e0bc3de060b43e380d2b9623"
+    },
+    {
+      "file": "frame-138.png",
+      "frameIndex": 138,
+      "timestampMs": 55898.333,
+      "sha256": "e88e9966fd31822e063d7867c7935829b5d92b64f7784c4168e4ad39a3970336"
+    },
+    {
+      "file": "frame-304.png",
+      "frameIndex": 304,
+      "timestampMs": 136691.667,
+      "sha256": "7a1f0d9a8a4ad357b79981a318fb60d41ee7f7178ada1ddb2955a8fec4a240ed"
+    }
+  ]
+}

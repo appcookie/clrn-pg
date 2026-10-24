@@ -51,6 +51,7 @@ export function baselineRelativePath(filename, locale) {
   // 这些后缀来自录制的真实相位；带 signed-in-/guest- 的 Web 页面状态仍是静态页。
   const animation = videoArtwork || (!!phase && !/^(signed-in|guest)-/.test(pageState));
   const kind = raw.startsWith('asset-') ? 'asset' : animation ? 'animation' : 'page';
+  if (kind === 'animation' && locale !== 'en') throw new Error(`动画截图只允许英文：${filename}`);
   const sample = videoArtwork ? 'visible' : animation ? phase[1] : 'default';
   const state = videoArtwork ? pageState
     : animation ? pageState.slice(0, -phase[0].length) : pageState;

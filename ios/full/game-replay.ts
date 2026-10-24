@@ -13,9 +13,25 @@ import { gameNodes, gameNodesWithin, gameSemanticText } from './game-controls';
  */
 export async function replay(proxy: Mitmproxy, game: 'texas' | 'zhajinhua', roomId: string, data: unknown): Promise<void> {
   expect((await gameSession(proxy)).room?.roomId, '回放只能发送到本轮新建的私人房').toBe(roomId);
-  await expect(async () => {
-    await proxy.command(`${game}/replay`, { roomId, data });
-  }).toPass({ timeout: 30_000, intervals: [500] });
+  // Read-only preparation may observe a reconnect, but a mutation is never
+  // repeated. A channel counts only after the server acknowledged its subscribe.
+  const deadline = Date.now() + 30_000;
+  for (;;) {
+    const state = await proxy.command<{ ready: boolean; confirmedSubscriptions: number;
+      liveConnections: number; pendingSubscriptions: number }>(`${game}/replay-ready`, { roomId });
+    expect(typeof state.ready, '代理必须返回真实订阅就绪状态').toBe('boolean');
+    for (const count of [state.confirmedSubscriptions, state.liveConnections, state.pendingSubscriptions]) {
+      expect(Number.isSafeInteger(count) && count >= 0, '代理订阅计数必须有效').toBe(true);
+    }
+    expect(state.ready, '就绪状态必须对应活跃且已获服务端确认的房间订阅')
+      .toBe(state.confirmedSubscriptions > 0 && state.liveConnections > 0);
+    if (state.ready) break;
+    expect(Date.now(), '发送前等待本轮房间真实订阅超时，未发送任何事件').toBeLessThan(deadline);
+    await new Promise(resolve => setTimeout(resolve, 250));
+  }
+  // Publication precedes the HTTP acknowledgement. A lost/failed response
+  // cannot prove nothing was injected, so never repeat this mutation.
+  await proxy.command(`${game}/replay`, { roomId, data });
 }
 
 /**
@@ -28,12 +44,22 @@ export async function replay(proxy: Mitmproxy, game: 'texas' | 'zhajinhua', room
  * @param options - 可限定前景区域，或仅验证已取得牌名的明牌。
  */
 export async function gameCardNames(device: AndroidDevice, container: string, marker: string, expected: string[],
-  options: { scope?: string; namedOnly?: boolean } = {}): Promise<void> {
+  options: { scope?: string; namedOnly?: boolean; inspectFirst?: (nodes: Awaited<ReturnType<typeof gameNodes>>) => Promise<void> } = {}): Promise<void> {
+  let inspected = false;
   await expect.poll(async () => {
+    const started = performance.now();
     const nodes = await gameNodes(device);
-    return (options.scope ? gameNodesWithin(nodes, options.scope) : nodes).filter(node => node.res === container)
+    if (!inspected && options.inspectFirst) {
+      inspected = true;
+      await options.inspectFirst(nodes);
+    }
+    const names = (options.scope ? gameNodesWithin(nodes, options.scope) : nodes).filter(node => node.res === container)
       .map(node => gameSemanticText(node, marker) || '')
       .filter(text => !options.namedOnly || text !== '').sort();
+    console.log(`IOS > 牌面观测 ${container}：${JSON.stringify({ names, elapsedMs: Math.round(performance.now() - started) })}`);
+    return names;
   },
-  { timeout: 30_000, intervals: [250] }).toEqual([...expected].sort());
+  // 39577732340 的河牌恢复在30秒内只暴露四个可见容器，失败后的原生树
+  // 和截图均有完整五张牌；沿用普通控件的45秒只读就绪预算，不重发牌局。
+  { timeout: 45_000, intervals: [250] }).toEqual([...expected].sort());
 }

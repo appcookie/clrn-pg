@@ -1,0 +1,12 @@
+{
+  "asset": "assets/src/board_game_react_native/slot-machine/page/view/image/img_panel_bg_head@3x.png",
+  "sha256": "8da2d824c57534202328db6f4df5dc3a4742344a281c53c5e473c192eb80de61",
+  "width": 1083,
+  "height": 1190,
+  "bounds": { "x": 44, "y": 594, "width": 1084, "height": 1191 },
+  "releaseTag": "ios-staging-6-1-36142b647703",
+  "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9",
+  "referenceRun": 39473020417,
+  "nativeGeometryRun": 39478135552,
+  "review": "原始发布包头部PNG与已审查弹窗终点一致；只排除透明孔洞及2像素合成边缘内的独立大厅横幅；实心前景逐像素比较，轮廓由素材SHA及原生几何共同校验。"
+}

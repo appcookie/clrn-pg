@@ -1,0 +1,15 @@
+{
+  "sourceRun": 39812229826,
+  "sourceWorkflowHead": "4a46b0194419e440547805408700454952792ea8",
+  "sourceVideoSha256": "2fecace7e80c87443a6c1c12e3306b9f0e64f38da4de6ac92c38a500ed8bbbcf",
+  "sourceArtifact": "ios-texas-en-animation-14-1",
+  "capture": "texas-holdem-auto-rebuy-exit",
+  "croppedRegion": { "x": 73, "y": 929, "width": 1032, "height": 698 },
+  "frames": [
+    { "file": "start.png", "role": "independent-before", "sha256": "da772695d0a768a955cce5191b93fae5139b6f1cc1b64de3cc2cb6ab6b579c4d" },
+    { "file": "clean-15.png", "index": 15, "ptsMs": 6953.333, "sha256": "5daeac0315b8f35ba7fbcd99e8baec1ffd28ee5f64e4b2cddfc7dcab0322c587" },
+    { "file": "clean-20.png", "index": 20, "ptsMs": 7060, "sha256": "bc5fee411ab9b004079f00245c7d34d3d6f522ee70bd92db55aea193bfc63b83" },
+    { "file": "reconnect-24.png", "index": 24, "ptsMs": 9953.333, "sha256": "8339ecd0ec3ea973920bd9703f0b711237a173419a0bd76724a4c4504fcc7c63" },
+    { "file": "end.png", "role": "independent-after", "sha256": "aea1a4905be410f0ef4cfbe734d1291f5dda6d482ae5696c70d9c3b38336d003" }
+  ]
+}

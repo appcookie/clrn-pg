@@ -78,7 +78,12 @@ class IosVisualProxy:
                     and not flow.request.host.endswith('.api.staging.laiwan.shafayouxi.com'))):
             return
         if self.game:
+            previous_statistics_owner = self.game_session.statistics_owner
             self.game_session.response(flow)
+            if (self.game_session.game_type == 'texas_holdem'
+                    and self.game_session.statistics_owner
+                    and self.game_session.statistics_owner != previous_statistics_owner):
+                self.game.texas.arm_statistics(*self.game_session.statistics_owner)
             self.game.response(flow)
         try:
             body = flow.response.json()
@@ -97,7 +102,11 @@ class IosVisualProxy:
                 self.records.user_id = self.presentation.user_id
             self.records.response(flow)
 
+    def websocket_start(self, flow):
+        self.transport.websocket_start(flow)
+
     def websocket_message(self, flow):
+        self.transport.websocket_message(flow)
         if self.slot and flow.websocket:
             message = flow.websocket.messages[-1]
             if message.from_client and message.is_text and not message.injected:
@@ -154,6 +163,7 @@ class IosVisualProxy:
             self.game.websocket_message(flow)
 
     def websocket_end(self, flow):
+        self.transport.websocket_end(flow)
         if self.game:
             self.game.websocket_end(flow)
 
@@ -336,11 +346,22 @@ class IosVisualProxy:
             return
         if flow.request.method == 'CONNECT':
             return
+        # 39580516924 的真实重连在 Node 夹具查询中等待约10秒后触发应用超时。
+        # 这些端点没有 Web 夹具，直接透传；上面的启动暂缓、节点排除和故障
+        # 注入仍先执行。录像像素分析不能阻塞健康检查或 WebSocket 握手。
+        if is_staging(flow.request.host) and path in {
+                '/node/v1/status', '/public/v12/metadata/servers',
+                '/public/v13/metadata/servers', '/v2/centrifugo/connection/websocket'}:
+            return
         payload = json.dumps({'url': flow.request.pretty_url}).encode()
         request = urllib.request.Request(os.environ['IOS_FIXTURE_URL'], data=payload,
             headers={'Content-Type': 'application/json',
                      'Authorization': os.environ['IOS_FIXTURE_TOKEN']})
-        result = await asyncio.to_thread(self.fixture_response, request)
+        self.transport.fixture_started(flow)
+        try:
+            result = await asyncio.to_thread(self.fixture_response, request)
+        finally:
+            self.transport.fixture_finished(flow)
         if result is None:
             return
         if result.get('aborted'):

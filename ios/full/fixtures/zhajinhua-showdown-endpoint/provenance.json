@@ -1,0 +1,13 @@
+{
+  "sourceRun": 39601716322,
+  "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39601716322",
+  "sourceWorkflowHead": "d40637889d84a8023845d45390d08a40c7f53158",
+  "sourceArtifact": "ios-zhajinhua-en-animation-16-1",
+  "applicationCommit": "29286f3e9949c28939854b44a1bc6192c1a813f0",
+  "releaseTag": "ios-staging-22-1-29286f3e9949",
+  "originalNativeTreeSha256": "aa9498b5e1b1547fe9a9653c45596f5421b4f1e42e008f8ca4e3208370dab15d",
+  "nativeStateSha256": "939540d8c437685e5c171071610e48356079764bec84f47fdc1dd30965b6ffe7",
+  "selection": "失败后的原始脱敏树中两名摊牌玩家的完整子树；不改写字段，不作为截图基准。原始失败截图已人工确认双方三牌及获胜皇冠均可见。",
+  "winner": "9f67ee06-a77f-4aef-b8bb-aaa0dfdfd712",
+  "loser": "00000000-0000-4000-8000-000000000001"
+}

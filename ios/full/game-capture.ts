@@ -6,11 +6,16 @@ import { compareScreenshot } from './device';
 import { gameNodes, gameReady, gameMarker, gameScreenshot } from './game-controls';
 import { expect } from '@playwright/test';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
-import { foregroundPanels, visibleMasks, networkStatusMask, countdownMask } from './game-masks';
+import { foregroundPanels, visibleMasks, networkStatusMask, countdownMask, screenshotMaskNodes, seatGuideMotionBounds, leaderboardRoomIdentityMask } from './game-masks';
 import { captureToast } from './game-transient';
 import { captureChallengeAnimation } from './game-animation';
 import { verifyLoopAnimation } from './loop-animation';
 import { captureMovingKeyframes } from './loop-keyframes';
+import { stableNativeObservation } from './native-stability';
+import { playerCountdownNodes } from './game-countdown';
+import { modalBackgroundMasks } from './modal-background-masks';
+import { texasRaiseClockMasks } from './texas-raise-masks';
+import { capturePredictionResult } from './prediction-result';
 
 /**
  * 使原生控件边界及绘制余量落到实际截图的整数像素。
@@ -30,30 +35,64 @@ function pixelBounds(bounds: ScreenshotBounds): ScreenshotBounds {
  * @param transientMarker - 仅用于会自动消失的提示，截图前后都必须实际存在。
  * @param expectedAlertMarker - 错误分支已断言内容后，允许截图的特定业务弹窗按钮。
  * @param inputMasks - 已根据真实输入框位移校准的光标区域。
- * @param triggerToast - 仅浮层提示可在准备背景遮罩后触发，不改变底层页面布局。
+ * @param triggerToast - 短时提示或猜牌中奖结果，在背景遮罩准备后仅触发一次。
  */
 export async function captureGame(device: AndroidDevice, name: string, testInfo: TestInfo, transientMarker?: string,
-  expectedAlertMarker?: string, inputMasks: ScreenshotMask[] = [], triggerToast?: () => Promise<string | void>): Promise<void> {
-  if (triggerToast && transientMarker !== 'toastText1') throw new Error('提前准备遮罩仅用于不改变布局的短时文字提示。');
+  expectedAlertMarker?: string, inputMasks: ScreenshotMask[] = [], triggerToast?: () => Promise<string | void>,
+  predictionCapture: typeof capturePredictionResult = capturePredictionResult): Promise<void> {
+  const preparedPrediction = transientMarker === 'bet-next-hand-result-amount'
+    && /^(?:en|zh-Hans|zh-Hant)-signed-in-texas-hall-prediction-result$/.test(name);
+  if (triggerToast && transientMarker !== 'toastText1' && !preparedPrediction) {
+    throw new Error('提前准备遮罩仅用于短时文字提示或已指定的猜牌中奖结果。');
+  }
   if (expectedAlertMarker) await gameReady(device, expectedAlertMarker);
   let nodes = await gameNodes(device);
   if ((!transientMarker || transientMarker === 'level-up-title') && foregroundPanels(nodes, device.screenSize).length) {
-    let previous = '';
-    await expect(async () => {
-      nodes = await gameNodes(device);
-      const current = JSON.stringify(foregroundPanels(nodes, device.screenSize).map(node => node.bounds));
-      const before = previous;
-      previous = current;
-      expect(current, '前景面板边界须完成转场后再裁剪背景遮罩').toBe(before);
-    }).toPass({ timeout: 30_000, intervals: [300] });
+    // 记录同一轮实际观测的标识和边界，区分动画位移与无障碍可见性变化；
+    // 仅保留固定控件标识，不输出文本、输入值或完整原始属性。
+    const observedPanels = (snapshot: typeof nodes) => foregroundPanels(snapshot, device.screenSize)
+      .map(node => ({ marker: /^(?:texas-holdem-player-action-|texas-holdem-shortcut-raise-button-|zhajinhua-shortcut-raise-)/
+        .test(node.res || '') ? node.res : '[container]', bounds: node.bounds, visible: node.visible }));
+    const observations = [{ utc: new Date().toISOString(), panels: observedPanels(nodes) }];
+    try {
+      nodes = await stableNativeObservation(async () => {
+        const current = await gameNodes(device);
+        observations.push({ utc: new Date().toISOString(), panels: observedPanels(current) });
+        return current;
+      }, (before, current) => {
+        expect(foregroundPanels(current, device.screenSize).map(node => node.bounds),
+          '前景面板边界须完成转场后再裁剪背景遮罩')
+          .toEqual(foregroundPanels(before, device.screenSize).map(node => node.bounds));
+      }, { initial: nodes, timeout: 30_000, interval: 300 });
+    } finally {
+      await testInfo.attach(`${name}-foreground-observations`, {
+        body: JSON.stringify(observations), contentType: 'application/json',
+      });
+    }
   }
   if (expectedAlertMarker) expect(nodes.some(node => node.res === expectedAlertMarker), '目标业务提示必须可见').toBe(true);
   expect(nodes.some(node => node.res === 'XCUIElementTypeAlert' || (!expectedAlertMarker && node.res === 'common-alert-message')),
     '截图前不能存在意外错误提示').toBe(false);
-  const masks: ScreenshotMask[] = [...inputMasks];
+  const backgroundMasks = [...modalBackgroundMasks(nodes, device.screenSize),
+    ...(/-signed-in-texas-game-raise$/.test(name) ? texasRaiseClockMasks(nodes, device.screenSize) : [])];
+  // 39695657156: the real next-turn event removes our operation buttons but
+  // may highlight Player1 while the completed quick raise is photographed.
+  // Exclude only that unrelated, native-located opponent turn from baseline
+  // comparison; keep the original unmasked PNG and all own raise/hand pixels.
+  const nextTurn = name.endsWith('-signed-in-zhajinhua-game-quick-raise')
+    ? nodes.find(node => /^zhajinhua-player-container-.*-operating$/.test(node.res || '')) : undefined;
+  const nextTurnExclusions = nextTurn ? [{
+    x: Math.max(0, nextTurn.bounds.x - 50), y: Math.max(0, nextTurn.bounds.y - 26),
+    width: Math.min(device.screenSize.width, nextTurn.bounds.x + nextTurn.bounds.width + 90)
+      - Math.max(0, nextTurn.bounds.x - 50),
+    height: Math.min(device.screenSize.height, nextTurn.bounds.y + nextTurn.bounds.height + 53)
+      - Math.max(0, nextTurn.bounds.y - 26),
+  }] : [];
+  const masks: ScreenshotMask[] = [...inputMasks, ...backgroundMasks];
   const panels = foregroundPanels(nodes, device.screenSize);
   await testInfo.attach(`${name}-native-tree`, { body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json' });
-  for (const node of nodes) {
+  const countdownNodes = playerCountdownNodes(nodes, name.includes('-zhajinhua-') ? 'zhajinhua' : 'texas-holdem');
+  for (const node of new Set([...screenshotMaskNodes(nodes), ...countdownNodes])) {
     /**
      * 只排除仍可见的动态内容，保留覆盖其上的真实弹窗。
      * @param mask - 当前动态控件的范围。
@@ -65,9 +104,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     }
     if (/^seat-guide-\d+$/.test(node.res || '')) {
       // 根据实际箭头宽度留出一轮上下移动范围，不使用 Android 固定像素补偿。
-      const travel = Math.ceil(node.bounds.width * 11 / 24);
-      add({ x: node.bounds.x - 1, y: node.bounds.y - travel - 1,
-        width: node.bounds.width + 2, height: node.bounds.height + travel * 2 + 2,
+      add({ ...seatGuideMotionBounds(node.bounds),
         reason: `${node.res} 完整箭头动画范围` });
       continue;
     }
@@ -79,9 +116,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
       continue;
     }
     if (node.res === 'leader-board-room-id') {
-      // UUID 使用比例字体且每轮不同；按居中的固定文本槽遮罩，不能随字符宽度改变边缘。
-      expect(node.text).toMatch(/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i);
-      add({ ...node.bounds, x: Math.round(node.bounds.x + node.bounds.width / 2 - device.screenSize.width * 220 / 720), width: Math.round(device.screenSize.width * 440 / 720), reason: node.res });
+      add(leaderboardRoomIdentityMask(node, device.screenSize));
       continue;
     }
     if (node.res === 'view-community-cards-countdown') {
@@ -108,8 +143,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     await verifyLoopAnimation(device, name, testInfo, guides.map(pixelBounds), masks);
   }
   if (/-signed-in-(?:texas|zhajinhua)-game-opponent-turn$/.test(name)) {
-    const marker = name.includes('-zhajinhua-') ? 'zhajinhua-active-countdown' : 'texas-holdem-active-countdown';
-    const countdown = nodes.filter(node => node.res === marker);
+    const countdown = countdownNodes;
     expect(countdown, '对手行动时必须出现原生倒计时').toHaveLength(1);
     const regions = countdown.map(node => pixelBounds({ x: node.bounds.x - 2, y: node.bounds.y - 2,
       width: node.bounds.width + 4, height: node.bounds.height + 4 }));
@@ -117,8 +151,14 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     if (name.startsWith('en-')) await captureMovingKeyframes(device, `${name}-countdown`, testInfo, regions);
   }
   if (triggerToast) {
-    const expectedText = await triggerToast();
-    await captureToast(device, name, testInfo, masks, expectedText || undefined);
+    if (preparedPrediction) {
+      await predictionCapture(device, name, testInfo, masks, triggerToast);
+      return;
+    }
+    await device.prepareTransientCapture();
+    await device.withImmediateAnimationInput(async () => {
+      await captureToast(device, name, testInfo, masks, triggerToast);
+    });
     return;
   }
   /** 不允许把提示消失后的稳定页面当成提示截图。 */
@@ -126,6 +166,12 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     expect((await gameMarker(device, transientMarker!))?.text,
       `${transientMarker} 必须在截图前后可见`).toBeTruthy();
   };
+  // Some reviewed baselines predate the countdown-text mask and retain a
+  // different real clock value. Exclude only that native-located text from
+  // comparison while keeping the original screenshot in the report.
+  const countdownTextExclusions = masks.filter(mask => mask.reason === 'countdown-text').map(pixelBounds);
   await compareScreenshot(device, name, testInfo, masks, transientMarker ? assertTransient : undefined,
-    transientMarker ? () => gameScreenshot(device) : undefined);
+    transientMarker ? () => gameScreenshot(device) : undefined, [],
+    [...backgroundMasks, ...nextTurnExclusions, ...countdownTextExclusions],
+    !transientMarker);
 }

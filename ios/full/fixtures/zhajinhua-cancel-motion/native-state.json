@@ -1,0 +1,213 @@
+{
+  "before": {
+    "res": "zhajinhua-cancel-challenge-choosing",
+    "clazz": "XCUIElementTypeOther",
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1178,
+      "height": 2556
+    },
+    "enabled": true,
+    "checked": false,
+    "visible": true,
+    "children": [
+      {
+        "res": "challenge_player_selector",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 29,
+          "y": 1326,
+          "width": 202,
+          "height": 294
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "00000000-0000-4000-8000-000000000001"
+      },
+      {
+        "res": "challenge_player_selector",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 29,
+          "y": 951,
+          "width": 202,
+          "height": 294
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "00000000-0000-4000-8000-000000000002"
+      },
+      {
+        "res": "challenge_player_selector",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 29,
+          "y": 573,
+          "width": 202,
+          "height": 294
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "00000000-0000-4000-8000-000000000003"
+      },
+      {
+        "res": "challenge_player_selector",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 281,
+          "y": 273,
+          "width": 202,
+          "height": 294
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "00000000-0000-4000-8000-000000000004"
+      }
+    ]
+  },
+  "after": {
+    "res": "zhajinhua-cancel-challenge-choosing",
+    "clazz": "XCUIElementTypeOther",
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1178,
+      "height": 2556
+    },
+    "enabled": false,
+    "checked": false,
+    "visible": true,
+    "children": [
+      {
+        "res": "zhajinhua-shortcut-raise-first",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 206,
+          "y": 1626,
+          "width": 136,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "40, Raise"
+      },
+      {
+        "res": "zhajinhua-shortcut-raise-second",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 416,
+          "y": 1626,
+          "width": 136,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "100, Raise"
+      },
+      {
+        "res": "zhajinhua-shortcut-raise-third",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 626,
+          "y": 1626,
+          "width": 136,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "160, Raise"
+      },
+      {
+        "res": "zhajinhua-shortcut-raise-fourth",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 836,
+          "y": 1626,
+          "width": 136,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "200, Raise"
+      },
+      {
+        "res": "zhajinhua-operation-button-battle",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 491,
+          "y": 1815,
+          "width": 199,
+          "height": 204
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "40, Battle"
+      },
+      {
+        "res": "zhajinhua-operation-button-fold",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 173,
+          "y": 1965,
+          "width": 199,
+          "height": 204
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "Fold"
+      },
+      {
+        "res": "zhajinhua-operation-button-call",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 806,
+          "y": 1965,
+          "width": 199,
+          "height": 204
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "20, Call"
+      },
+      {
+        "res": "zhajinhua-operation-accurate-bet-button",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 962,
+          "y": 2172,
+          "width": 216,
+          "height": 219
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false
+      },
+      {
+        "res": "zhajinhua-delay-operation-button",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 62,
+          "y": 2262,
+          "width": 226,
+          "height": 99
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "2, +30s"
+      }
+    ]
+  }
+}

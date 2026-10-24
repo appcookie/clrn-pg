@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { request } from 'node:http';
+import { mkdtemp, writeFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { withMitmproxy } from '../../e2e/helpers/mitmproxy-session';
 import { NetworkObserver } from './network-observer';
@@ -33,11 +36,34 @@ test('真实mitmdump控制协议支持精确覆写、计数、鉴权和内存观
 });
 
 /** iOS 客户端公共请求经过与真实任务相同的 Python -> Node 夹具桥，不依赖 Android 平台字段。 */
-test('iOS游客启动请求可命中metadata、health、country和hall共享夹具', async () => {
+test('iOS原生桥透传本地上游健康与metadata，业务共享夹具继续生效', async () => {
   const { createServer } = await import('node:http');
   const { visualNetworkRouter } = await import('./network-routes');
   const route = await visualNetworkRouter();
   const token = 'offline-ios-fixture-token';
+  let upstreamRequests = 0;
+  const upstream = createServer((request, response) => {
+    upstreamRequests++;
+    const url = new URL(request.url!, 'http://local-upstream');
+    const failed = url.searchParams.has('failed');
+    response.writeHead(failed ? 503 : 200, { 'Content-Type': 'application/json', 'X-Real-Upstream': 'yes' });
+    response.end(JSON.stringify(url.pathname === '/node/v1/status'
+      ? { server_load: failed ? 'unavailable' : 'normal', backend_delay: 37 }
+      : { ok: true, result: { servers: { '64.kr-seoul.api.staging.laiwan.shafayouxi.com': '192.0.2.1' } } }));
+  });
+  await new Promise<void>(resolve => upstream.listen(0, '127.0.0.1', resolve));
+  const upstreamAddress = upstream.address();
+  assert.ok(upstreamAddress && typeof upstreamAddress !== 'string');
+  // Start the actual listener in upstream mode from its first instruction.
+  // A test-only executable wrapper leaves production process arguments intact.
+  const directory = await mkdtemp(path.join(tmpdir(), 'ios-upstream-test-'));
+  const executable = path.join(directory, 'mitmdump');
+  const previousExecutable = process.env.MITMDUMP_PATH;
+  const realExecutable = previousExecutable || process.env.E2E_MITMDUMP_PATH
+    || fileURLToPath(new URL('../../e2e/.venv/bin/mitmdump', import.meta.url));
+  const quote = (value: string) => "'" + value.replaceAll("'", "'\"'\"'") + "'";
+  await writeFile(executable, `#!/bin/sh\nexec ${quote(realExecutable)} --mode ${quote(`upstream:http://127.0.0.1:${upstreamAddress.port}`)} "$@"\n`, { mode: 0o700 });
+  process.env.MITMDUMP_PATH = executable;
   const server = createServer(async (request, response) => {
     if (request.headers.authorization !== token) { response.writeHead(403).end(); return; }
     let body = '';
@@ -50,7 +76,8 @@ test('iOS游客启动请求可命中metadata、health、country和hall共享夹�
   assert.ok(address && typeof address !== 'string');
   try {
     await withMitmproxy(async proxy => {
-      for (const path of ['/public/v13/metadata/servers?platform=ios', '/node/v1/status',
+      for (const path of ['/public/v13/metadata/servers?platform=ios', '/public/v13/metadata/servers?failed',
+        '/node/v1/status', '/node/v1/status?failed',
         '/public/v10/profile/country?platform=ios', '/public/v1/hall_matching/available.json',
         '/public/v1/hall_matching/texas_holdem/halls', '/public/v1/hall_matching/zhajinhua/halls']) {
         const body = await new Promise<any>((resolve, reject) => {
@@ -58,23 +85,38 @@ test('iOS游客启动请求可命中metadata、health、country和hall共享夹�
             path: `http://64.kr-seoul.api.staging.laiwan.shafayouxi.com${path}`,
             headers: { Host: '64.kr-seoul.api.staging.laiwan.shafayouxi.com',
               'User-Agent': 'laiwan/2.0 CFNetwork iPhone iOS 18.5', 'X-Platform': 'ios' } }, response => {
-            if (response.statusCode !== 200) { reject(new Error('iOS fixture did not match')); response.resume(); return; }
+            try {
+              assert.equal(response.statusCode, path.includes('failed') ? 503 : 200);
+              if (path.includes('/metadata/') || path.startsWith('/node/')) assert.equal(response.headers['x-real-upstream'], 'yes');
+            } catch (error) { response.resume(); reject(error); return; }
             let text = ''; response.on('data', chunk => { text += chunk; });
             response.once('end', () => { try { resolve(JSON.parse(text)); } catch (error) { reject(error); } });
           });
           req.once('error', reject); req.end();
         });
-        if (path === '/node/v1/status') assert.equal(body.server_load, 'normal');
-        else assert.equal(body.ok, true);
+        if (path.startsWith('/node/v1/status')) {
+          assert.equal(body.server_load, path.includes('failed') ? 'unavailable' : 'normal');
+          assert.equal(body.backend_delay, 37);
+        } else assert.equal(body.ok, true);
+        if (path.includes('/metadata/')) assert.equal(body.result.servers['64.kr-seoul.api.staging.laiwan.shafayouxi.com'], '192.0.2.1');
         if (path.startsWith('/public/v10/profile/country')) assert.equal(body.result.countryPhoneCode, '86');
       }
       const transport = await proxy.command<{ responses: { path: string; status: number; count: number }[];
-        tlsFailures: unknown[] }>('native/transport');
+        tlsFailures: unknown[]; httpEvents: { path: string; status: number; mocked: boolean; elapsedMs: number; source: string }[] }>('native/transport');
       assert.ok(transport.responses.some(item => item.path === '/node/v1/status' && item.status === 200));
       assert.ok(transport.responses.some(item => item.path === '/public/v13/metadata/servers' && item.status === 200));
       assert.deepEqual(transport.tlsFailures, []);
+      assert.equal(upstreamRequests, 4, 'only health/metadata reach local upstream; business routes remain fixtures');
+      assert.ok(transport.responses.some(item => item.path === '/node/v1/status' && item.status === 503));
+      assert.ok(transport.httpEvents.every(item => !item.mocked && item.source === 'upstream' && item.elapsedMs >= 0));
     }, { addonPath: fileURLToPath(new URL('./proxy-addon.py', import.meta.url)),
-      environment: { ...process.env, IOS_FUNCTIONAL: 'false', IOS_FIXTURE_TOKEN: token,
+      environment: { ...process.env, IOS_FUNCTIONAL: 'false', IOS_GAME: 'zhajinhua', IOS_FIXTURE_TOKEN: token,
         IOS_FIXTURE_URL: `http://127.0.0.1:${address.port}/` } });
-  } finally { await new Promise<void>(resolve => server.close(() => resolve())); }
+  } finally {
+    if (previousExecutable === undefined) delete process.env.MITMDUMP_PATH;
+    else process.env.MITMDUMP_PATH = previousExecutable;
+    await Promise.all([new Promise<void>(resolve => server.close(() => resolve())),
+      new Promise<void>(resolve => upstream.close(() => resolve()))]);
+    await rm(directory, { recursive: true, force: true });
+  }
 });

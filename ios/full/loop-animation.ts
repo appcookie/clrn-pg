@@ -4,6 +4,7 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { gameScreenshot } from './game-controls';
 import { motionParts, samePixels } from './motion-regions';
+import { animationRecordOnly } from './record-only';
 
 /**
  * 只把目标区域的真实像素变化算作动画；每个独立区域都须出现可见变化。
@@ -27,6 +28,7 @@ export function changedMotionRegions(first: Buffer[], current: Buffer[]): boolea
 export async function verifyLoopAnimation(device: AndroidDevice, name: string, testInfo: TestInfo,
   regions: ScreenshotBounds[], masks: ScreenshotMask[],
   options: { takeScreenshot?: () => Promise<Buffer>; timeoutMs?: number } = {}): Promise<void> {
+  if (animationRecordOnly) return;
   expect(regions.length, '须找到至少一个可见的原生动画区域').toBeGreaterThan(0);
   // 与已有遮罩采用同一坐标；保留整张原图，以便审查目标和周边像素。
   await testInfo.attach(`${name}-motion-regions`, {

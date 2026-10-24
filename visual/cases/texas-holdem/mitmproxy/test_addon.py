@@ -24,6 +24,28 @@ class TexasAddonTests(unittest.TestCase):
         self.addon.request(request)
         return request
 
+    def test_readiness_is_authenticated_read_only_and_errors_are_redacted(self):
+        replay = self.addon.texas
+        before = (replay.room_id, replay.replayed_messages)
+        request = flow('http://test-mitmproxy.invalid/texas/replay-ready', 'POST',
+                       json.dumps({'roomId': ROOM}).encode(), 'test-token')
+        self.addon.control(request)
+        self.assertEqual(request.response.status_code, 200)
+        self.assertFalse(request.response.json()['ready'])
+        self.assertEqual((replay.room_id, replay.replayed_messages), before)
+        unauthorized = flow('http://test-mitmproxy.invalid/texas/replay-ready', 'POST',
+                            json.dumps({'roomId': ROOM}).encode())
+        self.addon.control(unauthorized)
+        self.assertEqual(unauthorized.response.status_code, 403)
+        rejected = flow('http://test-mitmproxy.invalid/texas/replay', 'POST',
+                        json.dumps({'roomId': ROOM, 'data': {'private': 'secret'}}).encode(), 'test-token')
+        self.addon.control(rejected)
+        self.assertEqual(rejected.response.status_code, 400)
+        self.assertEqual(rejected.response.json()['errorCode'], 'room_not_subscribed')
+        self.assertEqual(rejected.response.json()['confirmedSubscriptions'], 0)
+        for value in (ROOM, 'test-token', 'secret'):
+            self.assertNotIn(value, rejected.response.text)
+
     def test_read_fixtures_do_not_hide_mutations_or_other_users(self):
         player = PLAYER_IDS[0]
         for path in (f'/v10/profile/{player}', f'/v10/wallet/{player}/currency/coin',
@@ -55,6 +77,54 @@ class TexasAddonTests(unittest.TestCase):
             self.assertIsNone(self.request(path, method, []).response)
         for method in ('GET', 'PUT', 'OPTIONS'):
             self.assertIsNone(self.request(path, method, {'black_user_id': PLAYER_IDS[0]}).response)
+
+    def test_only_created_room_self_statistics_get_is_stable(self):
+        path = f'/v1/texas_statistics/player/{SELF}/rounds/100'
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.arm_created_room(ROOM, SELF)
+        for rounds in (100, 1000):
+            current = f'/v1/texas_statistics/player/{SELF}/rounds/{rounds}'
+            self.assertEqual(self.request(current).response.json()['result']['total_hands'], rounds)
+            for method in ('PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS'):
+                self.assertIsNone(self.request(current, method).response)
+            self.assertIsNone(self.request(current, host='production.example.com').response)
+        for current in (f'/v10/profile/{SELF}', f'/v10/wallet/{SELF}/currency/coin',
+                        f'/v1/texas_statistics/player/{OTHER}/rounds/100',
+                        f'/v1/texas_statistics/player/{SELF}/rounds/10', path + '/extra'):
+            self.assertIsNone(self.request(current).response)
+        self.addon.texas.created_room_id = OTHER
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.release()
+        self.assertIsNone(self.request(path).response)
+
+    def test_private_statistics_authorization_never_arms_rpc_or_other_reads(self):
+        path = f'/v1/texas_statistics/player/{SELF}/rounds/100'
+        self.assertIsNone(self.addon.view.mode)
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.arm_statistics(ROOM, SELF)
+        self.assertIsNone(self.addon.texas.created_room_id)
+        self.assertEqual(self.request(path).response.json()['result']['total_hands'], 100)
+        status = flow('http://test-mitmproxy.invalid/status', 'GET', b'', 'test-token')
+        self.addon.request(status)
+        self.assertEqual(status.response.json()['selfStatistics'], {'authorized': True, 'responses': 1})
+        for identity in (ROOM, SELF, 'test-token'):
+            self.assertNotIn(identity, status.response.text)
+        for method in ('POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'):
+            self.assertIsNone(self.request(path, method).response)
+        for current in (f'/v10/profile/{SELF}', f'/v10/wallet/{SELF}/currency/coin',
+                        f'/v1/texas_statistics/player/{OTHER}/rounds/100', path + '/extra'):
+            self.assertIsNone(self.request(current).response)
+        self.addon.texas.self_id = OTHER
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.self_id = SELF
+        self.addon.texas.room_id = OTHER
+        self.assertIsNone(self.request(path).response)
+        self.addon.texas.room_id = ROOM
+        self.addon.texas.release()
+        self.addon.texas.room_id, self.addon.texas.self_id = ROOM, SELF
+        self.assertIsNone(self.request(path).response)
+        self.assertEqual(self.addon.texas.self_statistics_responses, 0)
+
 
     def test_production_hosts_and_disabled_scenarios_always_pass_through(self):
         paths = ('/public/v13/metadata/servers', '/node/v1/status',

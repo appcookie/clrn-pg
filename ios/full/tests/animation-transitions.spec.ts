@@ -15,7 +15,8 @@ import { verifyLoopAnimation } from '../loop-animation';
 import { gameScreenshot } from '../game-controls';
 import { gameReady } from '../game-controls';
 import { waitAbsent } from '../native-state';
-import { captureMovingKeyframes, framePaletteDistance } from '../loop-keyframes';
+import { captureMovingKeyframes } from '../loop-keyframes';
+import { matchingSpinnerRegion } from '../animation-region';
 
 if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('native launch artwork and staging notice appear on a real app start', async ({}, testInfo) => {
@@ -57,6 +58,7 @@ if (!(!['all', 'account'].includes(process.env.IOS_GROUP || 'all')
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
       await tap(device, 'settings-tab');
@@ -70,10 +72,14 @@ if (!(!['all', 'account'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'native-stack-enter', testInfo, region, enter,
         [], [], 0, 'videoFrames');
       await gameReady(device, 'account-security-items-list');
+      const exitNodes = await device.nodes();
       /** 系统返回调用当前导航栈的水平出栈动画。 */
-      const exit = () => device!.input.press('Back');
+      const exit = () => device!.input.press('Back', exitNodes);
       await captureNativeTransition(device, 'native-stack-exit', testInfo, region, exit);
       await gameReady(device, 'account-security');
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -86,6 +92,7 @@ if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       const entrance = await device.info({ res: 'hall-search-button' });
       /** 通过 XCUITest 触发按钮，使 Simulator 同时录制屏幕。 */
@@ -94,12 +101,24 @@ if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'search-confirmation-enter', testInfo, region,
         pressSearch, [], [], 0, 'videoFrames', undefined, undefined,
         ['search-confirmation-enter-middle-alt.png']);
+      await device.wait({ res: 'pop-up-message-text', text: 'Please sign in to use search' });
       const cancel = await device.info({ res: 'cancel-button' });
       expect(cancel.bounds.width).toBeGreaterThan(0);
-      /** 点击真实取消按钮，不直接卸载弹窗。 */
-      const pressCancel = () => device!.input.tap({ x: Number(String(Math.round(cancel.bounds.x + cancel.bounds.width / 2))), y: Number(String(Math.round(cancel.bounds.y + cancel.bounds.height / 2))) });
+      /** 通过原生元素触发取消按钮，避免录屏期间坐标点击被忽略。 */
+      const pressCancel = async () => {
+        const element = await device!.driver.find('cancel-button');
+        await device!.driver.request('POST', device!.driver.path(`/element/${element}/click`), {});
+      };
       await captureNativeTransition(device, 'search-confirmation-exit', testInfo, region,
         pressCancel, [], [], 0, 'videoFrames');
+      await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
+      await pressSearch();
+      await device.wait({ res: 'pop-up-message-text', text: 'Please sign in to use search' });
+      await tap(device, 'cancel-button');
+      await device.wait({ res: 'pop-up-message-text' }, { state: 'gone' });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -120,11 +139,12 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const masks = await screenshotMasks(device, hall!);
       await tap(device, 'match-game-item-texas_holdem-tourists');
       await device.wait({ res: 'game-matching-loading-view' });
-      const countdown = await device.info({ res: 'game-matching-countdown-text' });
-      const cancel = await device.info({ res: 'quick-start-room-cancel' });
-      const spinner = { x: Math.round(cancel.bounds.x + cancel.bounds.width / 2 - device.screenSize.width * 60 / 720),
-        y: Math.round(cancel.bounds.y - device.screenSize.height * 178 / 1280),
-        width: Math.round(device.screenSize.width * 120 / 720), height: Math.round(device.screenSize.height * 140 / 1280) };
+      const nodes = await device.nodes();
+      const countdown = nodes.find(node => node.res === 'game-matching-countdown-text')!;
+      const spinner = matchingSpinnerRegion(nodes, device.screenSize);
+      await testInfo.attach('hall-matching-spinner-native-region', {
+        body: JSON.stringify(spinner), contentType: 'application/json',
+      });
       masks.push({ ...countdown.bounds, x: countdown.bounds.x - 4, width: countdown.bounds.width + 8,
         reason: '匹配计时数字' }, { ...spinner, reason: '匹配图标旋转范围' });
       /** 保留原生匹配窗口实际绘制的每一帧。 */
@@ -132,10 +152,13 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await verifyLoopAnimation(device, 'en-hall-matching', testInfo, [spinner], masks,
         { takeScreenshot: capture, timeoutMs: 4_000 });
       await captureMovingKeyframes(device, 'hall-matching-spinner', testInfo,
-        [spinner], 2, framePaletteDistance);
+        [spinner], 2);
       await compareScreenshot(device, 'en-hall-matching', testInfo, masks, undefined, capture);
       await tap(device, 'quick-start-room-cancel');
       await waitAbsent(device, { res: 'game-matching-loading-view' });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   }, false, true);
 });
@@ -158,16 +181,21 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const pressMore = () => device!.input.tap({ x: Number(String(Math.round(more.bounds.x + more.bounds.width / 2))), y: Number(String(Math.round(more.bounds.y + more.bounds.height / 2))) });
       const region = screenBounds(device, { x: 446, y: 170, width: 250, height: 250 });
       await captureNativeTransition(device, 'club-more-enter', testInfo, region, pressMore, [], [], 800);
-      await device.wait({ res: 'club-more-popup' });
+      await device.wait({ res: 'popup-content-container' });
+      await device.wait({ res: 'popup-backdrop', text: /Create Club, Search Club, Scan/ });
       /** 点击菜单外的真实遮罩关闭弹层。 */
       const pressBackdrop = () => device!.input.tap(screenPoint(device!, 300, 300));
       await captureNativeTransition(device, 'club-more-exit', testInfo, region, pressBackdrop, [], [], 800);
+      await device.wait({ res: 'popup-content-container' }, { state: 'gone' });
       const roomsTab = await device.info({ res: 'club_tab_room' });
       /** 从我的俱乐部切换到牌局空态。 */
       const pressRoomsTab = () => device!.input.tap({ x: Number(String(Math.round(roomsTab.bounds.x + roomsTab.bounds.width / 2))), y: Number(String(Math.round(roomsTab.bounds.y + roomsTab.bounds.height / 2))) });
       await captureNativeTransition(device, 'club-rooms-empty-enter', testInfo,
         screenBounds(device, { x: 100, y: 420, width: 520, height: 200 }), pressRoomsTab);
-      await device.wait({ res: 'club-rooms-empty-view' });
+      await device.wait({ res: 'club-rooms-empty-title' });
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -180,6 +208,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
     let device: AndroidDevice | undefined;
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+      device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
       const detail = androidScenarios('en', 'rooms').find(scenario => scenario.pageLabel === 'signed_in_private_room_detail');
@@ -191,10 +220,20 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       const region = screenBounds(device, { x: 0, y: 632, width: 720, height: 648 });
       await captureNativeTransition(device, 'game-picker-enter', testInfo, region, pressCreate);
       await device.wait({ res: 'select-game-category-text' });
-      /** 使用选玩法抽屉的真实 Android 返回处理关闭它。 */
-      const pressBack = () => device!.input.press('Back');
-      await captureNativeTransition(device, 'game-picker-exit', testInfo, region, pressBack,
-        [], [], 0, 'videoFrames');
+      // iOS's navigation Back gesture leaves this modal open. Dismiss through
+      // its real backdrop, above the handle rather than inside the drawer.
+      const backdrop = await device.info({ clazz: 'XCUIElementTypeButton', text: 'Bottom sheet backdrop' });
+      const handle = await device.info({ text: 'Bottom sheet handle' });
+      const top = Math.max(0, backdrop.bounds.y);
+      expect(handle.bounds.y, '抽屉上方必须有可点击遮罩').toBeGreaterThan(top);
+      const dismiss = { x: backdrop.bounds.x + backdrop.bounds.width / 2, y: (top + handle.bounds.y) / 2 };
+      const pressBackdrop = () => device!.input.tap(dismiss);
+      await captureNativeTransition(device, 'game-picker-exit', testInfo, region, pressBackdrop,
+        [], [], 0, 'videoFrames', undefined,
+        () => device!.wait({ res: 'select-game-category-text' }, { state: 'gone' }));
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   });
 });
@@ -228,7 +267,12 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       expect(cancel.bounds.width).toBeGreaterThan(0);
       /** 通过抽屉中的取消按钮触发同一组件的退场动画。 */
       const pressCancel = () => device!.input.tap({ x: Number(String(Math.round(cancel.bounds.x + cancel.bounds.width / 2))), y: Number(String(Math.round(cancel.bounds.y + cancel.bounds.height / 2))) });
+      // 39879496187 的合成器原片从完整抽屉直接跳到终点，错过退场中段。
+      device.nativeVideoBackend = 'xctest';
       await captureNativeTransition(device, 'invite-friends-exit', testInfo, region, pressCancel);
+    } catch (error) {
+      if (device) await captureFailure(device, testInfo);
+      throw error;
     } finally { await device?.close(); }
   }, false, false, false, false, true);
 });

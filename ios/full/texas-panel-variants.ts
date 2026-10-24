@@ -1,11 +1,13 @@
 import { screenBounds } from './screen-geometry';
 import { expect } from '@playwright/test';
 import { REPLAY_PLAYER_IDS } from '../../visual/cases/texas-holdem/replayData';
-import { gameConnected, gameGone, gameNodes, gameReady, gameTap } from './game-controls';
+import { gameConnected, gameConnectionState, gameGone, gameNodes, gameReady, gameTap } from './game-controls';
 import { closeGameMask } from './game-pregame';
 import { replay } from './game-replay';
 import { captureNativeTransition } from './animation-transition';
 import { enableGameSetting, restoreTexas, texasEvents, type TexasContext } from './texas-support';
+import { safeNativeTree } from './diagnostics';
+import { stableNativeObservation } from './native-stability';
 
 /**
  * 复用 Web 的申请分页、音频历史、弹幕开关及三种 RPC 错误状态。
@@ -14,10 +16,9 @@ import { enableGameSetting, restoreTexas, texasEvents, type TexasContext } from 
 export async function texasPanelVariants(context: TexasContext): Promise<void> {
   const { device, proxy, room, self, capture, animationInfo } = context;
   const alertRegion = screenBounds(device, { x: 80, y: 525, width: 560, height: 265 });
-  const alertMasks = [
-    screenBounds(device, { x: 270, y: 720, width: 180, height: 28, reason: '错误弹窗下方的牌局倒计时独立跳秒' }),
-    screenBounds(device, { x: 80, y: 690, width: 55, height: 100, reason: '弹窗左侧的玩家倒计时独立跳秒' }),
-  ];
+  // Keep every popup pixel. Background clocks are excluded only from the
+  // unobstructed endpoint using their actual native bounds.
+  const alertMasks: import('./screenshot').ScreenshotMask[] = [];
   const tableBackMasks = [
     screenBounds(device, { x: 260, y: 225, width: 50, height: 55, reason: '弹窗背后的对手背牌会随牌桌回放异步显隐' }),
     screenBounds(device, { x: 16, y: 550, width: 54, height: 70, reason: '弹窗背后的对手背牌会随牌桌回放异步显隐' }),
@@ -36,18 +37,39 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
     return () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) });
   };
   await restoreTexas(context);
+  await device.prepareTransientCapture();
   for (const mode of ['pending', 'resolved', 'more'] as const) {
     await proxy.command('texas/ui', { applications: mode });
     await gameTap(device, 'buy-in-application-button');
-    await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'buy-in-application-nickname').length,
-      { timeout: 30_000 }).toBe(mode === 'resolved' ? 3 : 2);
+    await expect.poll(async () => {
+      // The filtered XCTest predicate can omit a visible row. Read the full
+      // native tree before accepting the row count for the static screenshot.
+      const nodes = await gameNodes(device);
+      expect(gameConnectionState(nodes).connecting).toBe(false);
+      return nodes.filter(node => node.res === 'buy-in-application-nickname').length;
+    }, { timeout: 90_000, intervals: [250] }).toBe(mode === 'resolved' ? 3 : 2);
     if (mode === 'pending') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-approved-applications-tab')).toHaveLength(2);
     if (mode === 'resolved') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-application-status')).toHaveLength(3);
     if (mode === 'more') expect((await gameReady(device, 'buy-in-application-list-more')).enabled).toBe(true);
     await capture(`applications_${mode}`, [tableBackMasks[0], ...ownTurnMasks]);
     await closeGameMask(device, 'buy-in-application-list');
+    // The list can become inaccessible during zoomOut before its touch mask
+    // unmounts. Require the actual blocker to disappear before the next tap.
+    await stableNativeObservation(() => device.transientMarker('screen-mask-touch-to-close'), (before, current) => {
+      expect(before, '申请面板关闭后触摸遮罩必须释放').toBeNull();
+      expect(current, '申请面板关闭后触摸遮罩必须持续消失').toBeNull();
+    }, { timeout: 45_000, interval: 250 });
   }
-  await enableGameSetting(device, 'player-voice');
+  await gameConnected(device, 2_000);
+  const attachSettingsTree = async (phase: 'before' | 'after') => {
+    if (!animationInfo) return;
+    await device.nodes().then(nodes => animationInfo.attach(`settings-menu-${phase}-native-tree`, {
+      body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json',
+    })).catch(() => {});
+  };
+  await attachSettingsTree('before');
+  try { await enableGameSetting(device, 'player-voice'); }
+  finally { await attachSettingsTree('after'); }
   await replay(proxy, 'texas', room, { stream: 'room_message', payload: { action: 'audio', content: {
     from_user_id: REPLAY_PLAYER_IDS[0], from_user_nickname: 'Player1', duration: 3, codec: 'mp3', content: '',
   } } });
@@ -57,9 +79,7 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
   await capture('chat_audio_history', tableBackMasks);
   await gameTap(device, 'in-game-chat-barrage-switch');
   await capture('chat_barrage_off', tableBackMasks);
-  const chat = (await gameReady(device, 'in-game-chat-mask')).bounds;
-  await device.input.tap({ x: Number(String(chat.x + 8)), y: Number(String(chat.y + 80)) });
-  await gameGone(device, 'in-game-chat-container');
+  await closeGameMask(device, 'in-game-chat-content-container', 'in-game-chat-mask');
   await proxy.command('texas/ui', { rpcError: 'retry' });
   await gameConnected(device);
   if (animationInfo) await captureNativeTransition(device, 'texas-alert-retry-enter', animationInfo,

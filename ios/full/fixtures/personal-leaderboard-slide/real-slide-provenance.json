@@ -1,0 +1,12 @@
+{
+  "runId": 39799182630,
+  "sourceCommit": "f625984d116f941a30d262d3b50557ff02b17741",
+  "appCommit": "59ba4f634fa61894600751aebd454b5b15e6ba14",
+  "sourceMedia": "video-texas-holdem-personal-leaderboard-enter-1792682344804/capture.mp4",
+  "sourceMediaSha256": "25f23429fe45e4100e1055673e0d67abee6e5039729085f28891efef2bbda060",
+  "frameIndex": 13,
+  "ptsSeconds": 6.046667,
+  "crop": { "x": 0, "y": 0, "width": 930, "height": 2556 },
+  "sha256": "77a0030dd7f172b48db7edbf56203aa676daf66c2aba8c9da9185b3a16066cd4",
+  "purpose": "Real intermediate sidebar frame: the full-height edge and close button translate together despite the edge shadow."
+}
