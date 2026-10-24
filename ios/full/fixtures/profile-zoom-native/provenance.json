@@ -1,0 +1,42 @@
+{
+  "purpose": "仅用于校验算法的真实原片回归样本，不是已批准的视觉基准。",
+  "sourceRun": 39573701603,
+  "sourceWorkflowHead": "f3668ed64a7313928f965a8f5cd7b09fa28d8ef7",
+  "sourceArtifact": 12335210016,
+  "applicationCommit": "2e076e22d84ad64e0335d12f492363fe3ca5be21",
+  "sourceVideo": "texas-holdem-own-profile-enter-native-video-78d6fceaca047f949e39d91d956992024251c962.mp4",
+  "sourceVideoSha256": "c3522e9349fe6245aa716e7804e9d64224fbbd6088d7f3361ef8dfaa3503b87a",
+  "frameIndex": 70,
+  "framePtsMs": 31633.333,
+  "region": {
+    "x": 67,
+    "y": 689,
+    "width": 1044,
+    "height": 1178
+  },
+  "layout": {
+    "panel": {
+      "x": 4,
+      "y": 4,
+      "width": 1036,
+      "height": 1170
+    },
+    "close": {
+      "x": 973,
+      "y": 49,
+      "width": 37,
+      "height": 36
+    }
+  },
+  "files": {
+    "before": {
+      "sha256": "3dc0417ee5c6065bb43cf7b82099e0a029a345fadda31ccbf3725795f25b451e"
+    },
+    "middle": {
+      "sha256": "86b2e91d0f5b023fe2d014bffad979e982f9a6bc598105b17fe23ee91fc80db0"
+    },
+    "after": {
+      "sha256": "97e16e7375b4d157b3e03792dca43d89fa4352b8fc5ce5a959d3c308de2f11f7"
+    }
+  }
+}

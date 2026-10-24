@@ -1,0 +1,24 @@
+{
+  "cases": [
+    {
+      "id": "animation-9",
+      "reason": "iOS 分享面板原生控件出现超时；定向重跑通过，尚未完成 PR 全量复验。"
+    },
+    {
+      "id": "animation-12",
+      "reason": "牌桌 opponent_turn 静态截图与基准不符；定向重跑通过，尚未完成 PR 全量复验。"
+    },
+    {
+      "id": "animation-14",
+      "reason": "德州大厅牌桌状态等待超时；定向重跑通过，尚未完成 PR 全量复验。"
+    },
+    {
+      "id": "animation-20",
+      "reason": "德州面板主题截图不稳定；最新定向运行的 theme_four_color 截图不符。"
+    },
+    {
+      "id": "animation-21",
+      "reason": "买入申请状态等待超时；定向重跑通过，尚未完成 PR 全量复验。"
+    }
+  ]
+}

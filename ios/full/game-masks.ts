@@ -1,6 +1,60 @@
 import type { NativeNode } from './game-controls';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
+/** iOS hides background accessibility elements while a modal is open even when
+ * their pixels remain visible. Recover only native-located seat guides and the
+ * room clock for masking, never for interaction/readiness. Keep their current-tree
+ * identity for panel clipping.
+ */
+export function screenshotMaskNodes(nodes: NativeNode[]): NativeNode[] {
+  const result = new Set(nodes);
+  const visited = new Set<NativeNode>();
+  const visit = (node: NativeNode) => {
+    if (visited.has(node)) return;
+    visited.add(node);
+    if ((/^seat-guide-\d+$/.test(node.res || '')
+      || (node.res === 'countdown-text' && /^\d{2}:\d{2}:\d{2}$/.test(node.text || '')))
+      && node.bounds.width > 0 && node.bounds.height > 0) result.add(node);
+    node.children?.forEach(visit);
+  };
+  nodes.forEach(visit);
+  return [...result];
+}
+
+/** Include the entire vertical arrow travel, not just its layout rectangle. */
+export function seatGuideMotionBounds(bounds: ScreenshotBounds): ScreenshotBounds {
+  const travel = Math.ceil(bounds.width * 11 / 24);
+  const x = Math.floor(bounds.x - 1), y = Math.floor(bounds.y - travel - 1);
+  // The arrow glow reaches two pixels beyond the layout box's right edge in
+  // 39886064246; retain that fringe in both motion crops and panel masks.
+  return { x, y, width: Math.ceil(bounds.x + bounds.width + 3) - x,
+    height: Math.ceil(bounds.y + bounds.height + travel + 1) - y };
+}
+
+/** Background arrows have their own full-motion baselines. Exclude their phase
+ * from panel endpoints while retaining every foreground panel pixel.
+ */
+export function seatGuideBackgroundMasks(nodes: NativeNode[],
+  screen: { width: number; height: number }): ScreenshotMask[] {
+  const panels = foregroundPanels(nodes, screen);
+  return screenshotMaskNodes(nodes).filter(node => /^seat-guide-\d+$/.test(node.res || ''))
+    .flatMap(node => visibleMasks({ ...seatGuideMotionBounds(node.bounds),
+      reason: `${node.res} 独立箭头动画；前景内容仍比较` }, node, panels));
+}
+
+/** 排行榜底部展示本轮真实房间 UUID；固定文本槽避免字符宽度改变比较区域。 */
+export function leaderboardRoomIdentityMask(node: NativeNode,
+  screen: { width: number; height: number }): ScreenshotMask {
+  if (node.res !== 'leader-board-room-id'
+    || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(node.text || '')
+    || node.bounds.height <= 0 || node.bounds.height > screen.height * 60 / 2556) {
+    throw new Error('排行榜房间标识必须是当前原生树中的单行 UUID。');
+  }
+  return { ...node.bounds,
+    x: Math.round(node.bounds.x + node.bounds.width / 2 - screen.width * 220 / 720),
+    width: Math.round(screen.width * 440 / 720), reason: 'leader-board-room-id' };
+}
+
 /**
  * 根据前景就绪标记找到实际内容容器；Fabric 可能把背景与弹层压平成兄弟节点。
  * @param nodes - 保留父子关系的可见节点。
@@ -8,7 +62,7 @@ import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 export function foregroundPanels(nodes: NativeNode[], screen: { width: number; height: number }): NativeNode[] {
   const markers = new Set(['drawer-menu-item-exit', 'card-rank-list', 'game-settings-close-button',
     'buy-in-title', 'renew-popup-close-button', 'public-leader-board-container', 'review-board-close-button',
-    'review-board-description-text', 'in-game-chat-animated-view', 'buy-in-application-list',
+    'review-board-description-text', 'in-game-chat-animated-view', 'in-game-chat-content-container', 'buy-in-application-list',
     'player-profile-popup-close', 'report-field-input', 'accurate-bet-popup-container', 'raise-bet-popup',
     'in-game-audio-microphone-button', 'report-popup-title', 'BlockPlayerConfirmPopup:title', 'buy-in-review-close-button',
     'view-community-close-button', 'raise-blind-detail', 'auto-rebuy-popup', 'report-pair-play-close-button',

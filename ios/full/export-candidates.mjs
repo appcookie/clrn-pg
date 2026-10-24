@@ -33,8 +33,9 @@ function* results(suite) {
 
 for (const argument of artifactArguments) {
   const artifact = resolve(argument);
-  const report = JSON.parse(readFileSync(join(artifact, 'artifacts/full-results/report.json'), 'utf8'));
-  const build = JSON.parse(readFileSync(join(artifact, 'artifacts/release/build-info.json'), 'utf8'));
+  const root = existsSync(join(artifact, 'full-results/report.json')) ? artifact : join(artifact, 'artifacts');
+  const report = JSON.parse(readFileSync(join(root, 'full-results/report.json'), 'utf8'));
+  const build = JSON.parse(readFileSync(join(root, 'release/build-info.json'), 'utf8'));
   const identity = `${build.applicationCommit}:${build.package?.sha256}`;
   if (!buildIdentity) buildIdentity = { identity, build };
   if (identity !== buildIdentity.identity) throw new Error(`不同发布包的截图不能混合：${artifact}`);
@@ -48,8 +49,10 @@ for (const argument of artifactArguments) {
       throw new Error(`报告含未通过测试：${artifact}`);
     }
     for (const attachment of result.attachments || []) {
-      if (attachment.contentType !== 'image/png' || !attachment.name?.endsWith('.png')) continue;
-      const name = attachment.name;
+      if (attachment.contentType !== 'image/png' || !attachment.name
+        || attachment.name.endsWith('-pre-warmup-start')
+        || !/(\.png|-(start|middle|end))$/.test(attachment.name)) continue;
+      const name = attachment.name.endsWith('.png') ? attachment.name : `${attachment.name}.png`;
       if (!/^[A-Za-z0-9][A-Za-z0-9_.-]*\.png$/.test(name) || name.includes('..')) {
         throw new Error(`截图文件名无效：${name}`);
       }

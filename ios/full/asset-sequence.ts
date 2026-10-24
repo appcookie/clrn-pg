@@ -6,9 +6,12 @@ import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { frameColorDistance, framePaletteDistance } from './animation-transition';
 import { gameScreenshot } from './game-controls';
-import { motionParts, samePixels } from './motion-regions';
+import { cropNativeFrame, samePixels } from './motion-regions';
 import type { ScreenshotBounds } from './screenshot';
 import { baselinePath } from './baseline-path.mjs';
+import { shortAnimationMinimumFrames } from './video-timeline';
+import { assetKeyframes } from './asset-keyframes';
+import { animationRecordOnly } from './record-only';
 
 type NativeFrame = { capturedAt: number; png: string };
 
@@ -23,27 +26,27 @@ type NativeFrame = { capturedAt: number; png: string };
  */
 export async function captureAssetSequence(device: AndroidDevice, name: string, info: TestInfo,
   region: ScreenshotBounds, trigger: () => Promise<unknown>, flightRegion?: ScreenshotBounds): Promise<void> {
+  if (animationRecordOnly) {
+    await recordScreenSamples(device, name, info, trigger, 5000);
+    return;
+  }
   /**
    * 从完整原生截图中裁出效果范围。
    * @param bytes - 原生截图 PNG。
    */
-  const crop = (bytes: Buffer) => motionParts(bytes, [region]).regions[0];
+  const crop = (bytes: Buffer) => cropNativeFrame(bytes, region);
   const beforeScreen = await gameScreenshot(device);
-  const before = crop(beforeScreen);
-  const screens = (await recordScreenSamples(device, name, info, trigger)).map(frame => Buffer.from(frame.png, 'base64'));
-  const timeline = screens.map(crop);
+  const before = await crop(beforeScreen);
+  // XCTest 在静止区间输出稀疏帧；真实 puchi 录像在 2.5 秒窗口仅得到 19 帧。
+  // 短表情保留 5 秒观察窗口、至少 10 个原始采样及独立出现、变化、恢复断言。
+  const screens = (await recordScreenSamples(device, name, info, trigger, 5000, undefined, shortAnimationMinimumFrames)).map(frame => Buffer.from(frame.png, 'base64'));
+  const timeline: Buffer[] = [];
+  for (const screen of screens) timeline.push(await crop(screen));
   expect(timeline.length).toBeGreaterThanOrEqual(10);
   expect(frameColorDistance(before, timeline[0]), `${name} 必须在采样开始后播放`).toBeLessThan(10);
-  const visible = timeline.map((frame, index) => ({ frame, index, distance: frameColorDistance(before, frame) }))
-    .filter(item => item.distance > 2);
-  expect(visible.length, `${name} 必须在屏幕上实际出现`).toBeGreaterThanOrEqual(2);
-  const peak = visible.reduce((best, item) => item.distance > best.distance ? item : best);
-  const changed = visible.reduce((best, item) => frameColorDistance(peak.frame, item.frame)
-    > frameColorDistance(peak.frame, best.frame) ? item : best);
-  // 小尺寸表情的口型只占裁切区一角，平均色差仍须明确大于静止噪声。
-  expect(frameColorDistance(peak.frame, changed.frame), `${name} 播放帧必须实际变化`).toBeGreaterThan(1);
+  const { visible, peak, changed, distances } = assetKeyframes(timeline);
   await info.attach(`${name}-timeline`, { body: JSON.stringify({ peak: peak.index, changed: changed.index,
-    distances: timeline.map(frame => frameColorDistance(before, frame)) }), contentType: 'application/json' });
+    background: 0, minimumForegroundFraction: 0.5, distances }), contentType: 'application/json' });
   for (const [phase, frame] of [['start', before], ['peak', peak.frame], ['changed', changed.frame]] as const) {
     const file = `${name}-${phase}.png`;
     await info.attach(file, { body: frame, contentType: 'image/png' });
@@ -61,15 +64,16 @@ export async function captureAssetSequence(device: AndroidDevice, name: string, 
     }
   }
   await setTimeout(2500);
-  expect(samePixels(before, crop(await gameScreenshot(device))), `${name} 须播放结束并恢复画面`).toBe(true);
+  expect(samePixels(before, await crop(await gameScreenshot(device))), `${name} 须播放结束并恢复画面`).toBe(true);
   if (flightRegion) {
     /**
      * 裁切道具经过的中途路线，独立锁定飞行轨迹。
      * @param bytes - 原生完整屏幕 PNG。
      */
-    const flight = (bytes: Buffer) => motionParts(bytes, [flightRegion]).regions[0];
-    const flightStart = flight(beforeScreen);
-    const flightFrames = screens.map(flight);
+    const flight = (bytes: Buffer) => cropNativeFrame(bytes, flightRegion);
+    const flightStart = await flight(beforeScreen);
+    const flightFrames: Buffer[] = [];
+    for (const screen of screens) flightFrames.push(await flight(screen));
     const moving = flightFrames.map((frame, index) => ({ frame, index,
       distance: frameColorDistance(flightStart, frame) })).filter(item => item.distance > 1);
     expect(moving.length, `${name} 道具必须飞过目标路线`).toBeGreaterThanOrEqual(2);

@@ -1,0 +1,896 @@
+{
+  "before": {
+    "res": "zhajinhua-player-container-00000000-0000-4000-8000-000000000001-operating",
+    "clazz": "XCUIElementTypeOther",
+    "bounds": {
+      "x": 50,
+      "y": 1326,
+      "width": 160,
+      "height": 291
+    },
+    "enabled": true,
+    "checked": false,
+    "visible": true,
+    "children": [
+      {
+        "res": "player_nickname",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 17,
+          "y": 1326,
+          "width": 226,
+          "height": 66
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "Player1",
+        "children": [
+          {
+            "res": "Player1",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 17,
+              "y": 1326,
+              "width": 226,
+              "height": 66
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "text": "Player1",
+            "children": []
+          }
+        ]
+      },
+      {
+        "res": "960",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 98,
+          "y": 1566,
+          "width": 67,
+          "height": 51
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "960",
+        "children": [
+          {
+            "res": "960",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 98,
+              "y": 1566,
+              "width": 67,
+              "height": 51
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "text": "960",
+            "children": []
+          }
+        ]
+      },
+      {
+        "res": "player_stack_text",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 98,
+          "y": 1566,
+          "width": 163,
+          "height": 354
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "00000000-0000-4000-8000-000000000001 960",
+        "children": [
+          {
+            "res": "00000000-0000-4000-8000-000000000001 960",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 98,
+              "y": 1566,
+              "width": 163,
+              "height": 354
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "text": "00000000-0000-4000-8000-000000000001 960",
+            "children": []
+          }
+        ]
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 50,
+          "y": 1389,
+          "width": 160,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": [
+          {
+            "res": "zhajinhua-active-countdown",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 47,
+              "y": 1386,
+              "width": 166,
+              "height": 168
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": -141,
+                  "y": 1197,
+                  "width": 543,
+                  "height": 543
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": [
+                  {
+                    "clazz": "XCUIElementTypeOther",
+                    "bounds": {
+                      "x": -141,
+                      "y": 1197,
+                      "width": 543,
+                      "height": 543
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": [
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 128,
+                          "y": 1197,
+                          "width": 274,
+                          "height": 447
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": [
+                          {
+                            "clazz": "XCUIElementTypeOther",
+                            "bounds": {
+                              "x": 128,
+                              "y": 1197,
+                              "width": 274,
+                              "height": 447
+                            },
+                            "enabled": true,
+                            "checked": false,
+                            "visible": false,
+                            "children": []
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "res": "77",
+                "clazz": "XCUIElementTypeStaticText",
+                "bounds": {
+                  "x": 50,
+                  "y": 1416,
+                  "width": 160,
+                  "height": 105
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "text": "77",
+                "children": [
+                  {
+                    "res": "77",
+                    "clazz": "XCUIElementTypeStaticText",
+                    "bounds": {
+                      "x": 50,
+                      "y": 1416,
+                      "width": 160,
+                      "height": 105
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "text": "77",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 50,
+              "y": 1389,
+              "width": 160,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "res": "avatar_image",
+                "clazz": "XCUIElementTypeImage",
+                "bounds": {
+                  "x": 50,
+                  "y": 1389,
+                  "width": 160,
+                  "height": 162
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "res": "player_avatar_mask",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 50,
+          "y": 1389,
+          "width": 160,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": []
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 50,
+          "y": 1566,
+          "width": 160,
+          "height": 54
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": []
+      }
+    ]
+  },
+  "after": {
+    "res": "zhajinhua-player-container-00000000-0000-4000-8000-000000000001-operating",
+    "clazz": "XCUIElementTypeOther",
+    "bounds": {
+      "x": 50,
+      "y": 1326,
+      "width": 160,
+      "height": 291
+    },
+    "enabled": true,
+    "checked": false,
+    "visible": true,
+    "children": [
+      {
+        "res": "player_nickname",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 17,
+          "y": 1326,
+          "width": 226,
+          "height": 66
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "Player1",
+        "children": [
+          {
+            "res": "Player1",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 17,
+              "y": 1326,
+              "width": 226,
+              "height": 66
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "text": "Player1",
+            "children": []
+          }
+        ]
+      },
+      {
+        "res": "Pair",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 50,
+          "y": 1566,
+          "width": 160,
+          "height": 54
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "Pair",
+        "children": [
+          {
+            "res": "Pair",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 50,
+              "y": 1566,
+              "width": 160,
+              "height": 54
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "text": "Pair",
+            "children": []
+          }
+        ]
+      },
+      {
+        "res": "960",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 98,
+          "y": 1566,
+          "width": 67,
+          "height": 51
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "text": "960",
+        "children": [
+          {
+            "res": "960",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 98,
+              "y": 1566,
+              "width": 67,
+              "height": 51
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "text": "960",
+            "children": []
+          }
+        ]
+      },
+      {
+        "res": "player_stack_text",
+        "clazz": "XCUIElementTypeStaticText",
+        "bounds": {
+          "x": 98,
+          "y": 1566,
+          "width": 163,
+          "height": 354
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "text": "00000000-0000-4000-8000-000000000001 960",
+        "children": [
+          {
+            "res": "00000000-0000-4000-8000-000000000001 960",
+            "clazz": "XCUIElementTypeStaticText",
+            "bounds": {
+              "x": 98,
+              "y": 1566,
+              "width": 163,
+              "height": 354
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "text": "00000000-0000-4000-8000-000000000001 960",
+            "children": []
+          }
+        ]
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 2,
+          "y": 1374,
+          "width": 127,
+          "height": 201
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": [
+          {
+            "res": "sprite-image-clipper",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 8,
+              "y": 1392,
+              "width": 115,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": -1211,
+                  "y": 1392,
+                  "width": 1445,
+                  "height": 648
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": [
+                  {
+                    "res": "sprite-image-view",
+                    "clazz": "XCUIElementTypeImage",
+                    "bounds": {
+                      "x": -1211,
+                      "y": 1392,
+                      "width": 1445,
+                      "height": 648
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "res": "sprite-image-container",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 11,
+              "y": 1392,
+              "width": 109,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": []
+          },
+          {
+            "res": "sprite-image-content",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 11,
+              "y": 1392,
+              "width": 109,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": []
+          },
+          {
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 11,
+              "y": 1392,
+              "width": 109,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "children": []
+          }
+        ]
+      },
+      {
+        "res": "player_cards_container",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 2,
+          "y": 1374,
+          "width": 280,
+          "height": 210
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": []
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 50,
+          "y": 1389,
+          "width": 160,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": [
+          {
+            "res": "zhajinhua-active-countdown",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 47,
+              "y": 1386,
+              "width": 166,
+              "height": 168
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": -141,
+                  "y": 1197,
+                  "width": 543,
+                  "height": 543
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": [
+                  {
+                    "clazz": "XCUIElementTypeOther",
+                    "bounds": {
+                      "x": -141,
+                      "y": 1197,
+                      "width": 543,
+                      "height": 543
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": [
+                      {
+                        "clazz": "XCUIElementTypeOther",
+                        "bounds": {
+                          "x": 128,
+                          "y": 1197,
+                          "width": 4,
+                          "height": 273
+                        },
+                        "enabled": true,
+                        "checked": false,
+                        "visible": false,
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "res": "0",
+                "clazz": "XCUIElementTypeStaticText",
+                "bounds": {
+                  "x": 50,
+                  "y": 1416,
+                  "width": 160,
+                  "height": 105
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "text": "0",
+                "children": [
+                  {
+                    "res": "0",
+                    "clazz": "XCUIElementTypeStaticText",
+                    "bounds": {
+                      "x": 50,
+                      "y": 1416,
+                      "width": 160,
+                      "height": 105
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "text": "0",
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 50,
+              "y": 1389,
+              "width": 160,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "res": "avatar_image",
+                "clazz": "XCUIElementTypeImage",
+                "bounds": {
+                  "x": 50,
+                  "y": 1389,
+                  "width": 160,
+                  "height": 162
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "res": "player_avatar_mask",
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 50,
+          "y": 1389,
+          "width": 160,
+          "height": 162
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": []
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 80,
+          "y": 1374,
+          "width": 130,
+          "height": 201
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": [
+          {
+            "res": "sprite-image-clipper",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 89,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": -132,
+                  "y": 1068,
+                  "width": 1427,
+                  "height": 651
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": [
+                  {
+                    "res": "sprite-image-view",
+                    "clazz": "XCUIElementTypeImage",
+                    "bounds": {
+                      "x": -132,
+                      "y": 1068,
+                      "width": 1427,
+                      "height": 651
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "res": "sprite-image-container",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 89,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": []
+          },
+          {
+            "res": "sprite-image-content",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 89,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": []
+          },
+          {
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 89,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "children": []
+          }
+        ]
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 161,
+          "y": 1374,
+          "width": 130,
+          "height": 201
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": true,
+        "children": [
+          {
+            "res": "sprite-image-clipper",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 170,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": [
+              {
+                "clazz": "XCUIElementTypeOther",
+                "bounds": {
+                  "x": -1053,
+                  "y": 909,
+                  "width": 1446,
+                  "height": 648
+                },
+                "enabled": true,
+                "checked": false,
+                "visible": false,
+                "children": [
+                  {
+                    "res": "sprite-image-view",
+                    "clazz": "XCUIElementTypeImage",
+                    "bounds": {
+                      "x": -1053,
+                      "y": 909,
+                      "width": 1446,
+                      "height": 648
+                    },
+                    "enabled": true,
+                    "checked": false,
+                    "visible": false,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "res": "sprite-image-container",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 170,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": []
+          },
+          {
+            "res": "sprite-image-content",
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 170,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": false,
+            "children": []
+          },
+          {
+            "clazz": "XCUIElementTypeOther",
+            "bounds": {
+              "x": 170,
+              "y": 1392,
+              "width": 112,
+              "height": 162
+            },
+            "enabled": true,
+            "checked": false,
+            "visible": true,
+            "children": []
+          }
+        ]
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 50,
+          "y": 1566,
+          "width": 160,
+          "height": 54
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": []
+      },
+      {
+        "clazz": "XCUIElementTypeOther",
+        "bounds": {
+          "x": 50,
+          "y": 1566,
+          "width": 160,
+          "height": 54
+        },
+        "enabled": true,
+        "checked": false,
+        "visible": false,
+        "children": []
+      }
+    ]
+  }
+}

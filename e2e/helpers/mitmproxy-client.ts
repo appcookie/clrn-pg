@@ -1,6 +1,29 @@
 import { request } from 'node:http';
 
 const CONTROL_HOST = 'test-mitmproxy.invalid';
+const REPLAY_ERROR_CODES = new Set(['invalid_replay', 'room_mismatch', 'room_not_created',
+  'room_not_subscribed', 'unknown_command', 'invalid_readiness', 'invalid_command']);
+
+/**
+ * Only fixed diagnostics from the authenticated proxy may reach CI logs.
+ * @param data - Untrusted HTTP error body, never logged verbatim.
+ */
+function controlFailureDiagnostics(data: string): string {
+  try {
+    const value = JSON.parse(data);
+    if (!value || !REPLAY_ERROR_CODES.has(value.errorCode)) return '';
+    const safe: Record<string, string | number> = { errorCode: value.errorCode };
+    if (typeof value.sampledAtUtc === 'string'
+      && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}(?:Z|\+00:00)$/.test(value.sampledAtUtc)) {
+      safe.sampledAtUtc = value.sampledAtUtc;
+    }
+    for (const key of ['liveConnections', 'confirmedSubscriptions', 'pendingSubscriptions']) {
+      if (Number.isSafeInteger(value[key]) && value[key] >= 0 && value[key] <= 10_000) safe[key] = value[key];
+    }
+    return ` ${JSON.stringify(safe)}`;
+  } catch { return ''; }
+}
+
 export type FaultScenario = 'hall-timeout' | 'login-failure' | 'club-failure';
 type ProxyScenario = FaultScenario | 'visual-stable';
 export type ProxyStatus = {
@@ -49,7 +72,7 @@ export class Mitmproxy {
         response.on('error', reject);
         response.on('end', () => {
           if (response.statusCode !== 200) {
-            reject(new Error(`mitmproxy 控制请求失败：HTTP ${response.statusCode}`));
+            reject(new Error(`mitmproxy 控制请求失败：HTTP ${response.statusCode}${controlFailureDiagnostics(data)}`));
             return;
           }
           try {

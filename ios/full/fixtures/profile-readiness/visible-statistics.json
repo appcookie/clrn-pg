@@ -1,0 +1,53 @@
+{
+  "sourceRun": "39543731649",
+  "sourceAttachment": "failure-accessibility",
+  "sourceSha256": "48cd8e56519f36fe7e5576a80252ec0b5651b9aad5c76afc63827b0867267890",
+  "selection": "Three original nodes; only children removed. No identity fields selected.",
+  "screen": {
+    "width": 1178,
+    "height": 2556
+  },
+  "nodes": [
+    {
+      "res": "PlayerStatisticComponent_List",
+      "clazz": "XCUIElementTypeOther",
+      "bounds": {
+        "x": 116,
+        "y": 1191,
+        "width": 946,
+        "height": 639
+      },
+      "enabled": true,
+      "checked": false,
+      "visible": true
+    },
+    {
+      "res": "PlayerStatisticComponent_Item_0",
+      "clazz": "XCUIElementTypeOther",
+      "bounds": {
+        "x": 116,
+        "y": 1191,
+        "width": 475,
+        "height": 120
+      },
+      "enabled": true,
+      "checked": false,
+      "visible": true,
+      "text": "Total Hands, 100"
+    },
+    {
+      "res": "player-profile-balance",
+      "clazz": "XCUIElementTypeStaticText",
+      "bounds": {
+        "x": 401,
+        "y": 888,
+        "width": 97,
+        "height": 54
+      },
+      "enabled": true,
+      "checked": false,
+      "visible": true,
+      "text": "10000"
+    }
+  ]
+}

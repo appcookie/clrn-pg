@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { prepareTestAccountCoins, readTestingApiToken } from './prepare-test-account.mjs';
+import { prepareTestAccountCoins, readTestingApiToken, transportFailureCode } from './prepare-test-account.mjs';
 
 const userId = '11111111-2222-4333-8444-555555555555';
 const account = { username: 'parallel01', password: 'private-password', userId };
@@ -9,6 +9,13 @@ const session = { user_id: userId, username: account.username,
   api_token: { token_type: 'Bearer', access_token: 'private-session-token' } };
 const prepared = { wallet_id: userId, currency_name: 'coin', balance: '10000' };
 const wallet = { currencies: [{ code: 'coin', balance: '10000' }] };
+
+test('网络诊断仅公开已知错误代码，保留原因且不泄露请求凭据', () => {
+  assert.equal(transportFailureCode({ cause: { code: 'ECONNRESET', message: token } }), 'ECONNRESET');
+  assert.equal(transportFailureCode({ cause: { code: token, message: account.password } }), 'TRANSPORT_ERROR');
+  assert.equal(transportFailureCode({ cause: { message: 'unexpected redirect' } }), 'REDIRECT_REFUSED');
+  assert.equal(transportFailureCode({ name: 'TimeoutError' }), 'REQUEST_TIMEOUT');
+});
 
 /**
  * 只替换网络边界，记录真实准备逻辑的全部请求。

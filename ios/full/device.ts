@@ -59,7 +59,7 @@ async function releaseServer() {
   await Promise.race([done, delay(15_000)]);
   clearTimeout(force);
 }
-export async function launchApplication(options: { isolated?: boolean; gameDriver?: boolean; enableSystemAnimations?: boolean } = {}): Promise<NativeDevice> {
+export async function launchApplication(options: { isolated?: boolean; gameDriver?: boolean; enableSystemAnimations?: boolean; microphonePermission?: boolean } = {}): Promise<NativeDevice> {
   if (process.platform !== 'darwin') throw new Error('原生测试需要 macOS Simulator。');
   const parent = process.env.IOS_SIMULATOR_UDID || '';
   if (!/^[\da-f-]{36}$/i.test(parent)) throw new Error('必须指定 IOS_SIMULATOR_UDID。');
@@ -97,8 +97,11 @@ export async function launchApplication(options: { isolated?: boolean; gameDrive
       'appium:bundleId': applicationId, 'appium:fullReset': true, 'appium:language': 'en', 'appium:locale': 'en_US',
       'appium:maxTypingFrequency': 8, 'appium:autoAcceptAlerts': false, 'appium:isHeadless': true, 'appium:waitForIdleTimeout': 0,
       'appium:appTimeZone': 'UTC',
+      // 在安装后、首次启动前授权，避免运行中变更 TCC 权限终止当前牌桌进程。
+      ...(options.microphonePermission ? { 'appium:permissions': JSON.stringify({ [applicationId]: { microphone: 'yes' } }) } : {}),
       // fullReset 会清空模拟器信任库；由 XCUITest 在 reset 后重装本轮临时 CA。
       ...(process.env.IOS_PROXY_CA_CERT ? { 'appium:customSSLCert': readFileSync(process.env.IOS_PROXY_CA_CERT, 'utf8') } : {}),
+      'appium:simulatorStartupTimeout': 300_000,
       'appium:wdaLaunchTimeout': 240_000, 'appium:newCommandTimeout': 1800,
       'appium:wdaLocalPort': 8100 + index, 'appium:mjpegServerPort': 9100 + index };
     const start = async () => {
@@ -122,6 +125,26 @@ export async function waitForHall(device: NativeDevice) {
   await device.fill({ res: 'staging-confirmation-input' }, 'CONFIRM');
   await device.hideKeyboard();
   await device.tap({ res: 'confirm-button' });
+  // Run 39817619684 returned from the first native tap with the staging
+  // dialog and keyboard still visible. Only retry the reversible confirmation
+  // when its original input and enabled button are still mounted.
+  await delay(500);
+  const settled = await device.nodes();
+  if (!settled.some(node => node.res === 'settings-tab')
+    && settled.some(node => node.res === 'staging-dialog-wrapper')) {
+    const input = settled.find(node => node.res === 'staging-confirmation-input');
+    const confirm = settled.find(node => node.res === 'confirm-button');
+    if (input && confirm?.enabled) {
+      await device.hideKeyboard();
+      const current = await device.nodes();
+      if (current.some(node => node.res === 'staging-dialog-wrapper')
+        && current.some(node => node.res === 'staging-confirmation-input')
+        && current.some(node => node.res === 'confirm-button' && node.enabled)
+        && !current.some(node => node.clazz === 'XCUIElementTypeKeyboard')) {
+        await device.tap({ res: 'confirm-button' });
+      }
+    }
+  }
   await device.wait({ res: 'settings-tab' }, { timeout: 120_000 });
 }
 /** smoke 只采集，reference 生成独立 iOS 基准，compare 缺失基准或变化必须失败。 */
@@ -147,7 +170,8 @@ export async function assertVisual(bytes: Buffer, name: string, testInfo: TestIn
 }
 export async function compareScreenshot(device: NativeDevice, name: string, testInfo: TestInfo,
   masks: ScreenshotMask[] = [], transientState?: () => Promise<void>, takeScreenshot: () => Promise<Buffer> = () => device.screenshot(),
-  _alternateSnapshots: string[] = [], comparisonExclusions: ScreenshotBounds[] = []) {
+  _alternateSnapshots: string[] = [], comparisonExclusions: ScreenshotBounds[] = [],
+  nativeFallback = false) {
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   await transientState?.();
   let previous = maskScreenshot(await takeScreenshot(), masks);
@@ -164,6 +188,27 @@ export async function compareScreenshot(device: NativeDevice, name: string, test
     expect(match, '页面截图应稳定').toBe(true);
     expect(Date.now() - stableSince).toBeGreaterThanOrEqual(transientState ? 250 : 1500);
   }).toPass({ timeout: 30_000, intervals: [transientState ? 100 : 500] });
+  if (nativeFallback && process.env.IOS_VISUAL_MODE === 'compare') {
+    const reference = readFileSync(baselinePath(`${name}.png`));
+    if (!comparePixels(reference, result, 12, comparisonExclusions).matches) {
+      // XCTest can return a stable but clipped game layer after a recording.
+      // Compare a fresh Simulator capture to the same reviewed baseline. The
+      // only extra exclusion is iPhone 16's hardware Dynamic Island, which
+      // Simulator draws black while XCTest omits it from screenshots.
+      const island = { x: 400, y: 32, width: 379, height: 114 };
+      if (device.screenSize.width === 1178 && device.screenSize.height === 2556) {
+        const exclusions = [...comparisonExclusions, island];
+        const fallbackOriginal = await device.nativeScreenshot();
+        const fallback = maskScreenshot(fallbackOriginal, masks);
+        if (comparePixels(reference, fallback, 12, exclusions).matches) {
+          await testInfo.attach(`${name}-xctest-clipped`, { body: original, contentType: 'image/png' });
+          original = fallbackOriginal;
+          result = fallback;
+          comparisonExclusions = exclusions;
+        }
+      }
+    }
+  }
   if (masks.length) await testInfo.attach(`${name}-original`, { body: original, contentType: 'image/png' });
   await assertVisual(result, name, testInfo, comparisonExclusions);
 }

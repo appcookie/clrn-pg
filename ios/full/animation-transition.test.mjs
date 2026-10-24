@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { PNG } from 'pngjs';
 import { readFileSync } from 'node:fs';
-import { assertReviewedVideoMiddle, frameColorDistance, middleCandidates, reviewedLauncherStart } from './animation-transition.ts';
+import { assertReviewedVideoMiddle, frameColorDistance, middleCandidates, reviewedLauncherStart,
+  reviewedVideoMiddleEvidence, transitionEvidence } from './animation-transition.ts';
 
 function picture(top) {
   const png = new PNG({ width: 120, height: 180 });
@@ -14,6 +15,21 @@ function picture(top) {
   return PNG.sync.write(png);
 }
 const before = picture(180), middle = picture(100), after = picture(30);
+
+test('单次解码与原始逐对比较得到完全一致的距离、帧序号和候选结果', () => {
+  const frames = Array.from({ length: 16 }, (_, i) => picture(180 - i * 10));
+  for (const method of ['videoFrames', 'motionFrames', 'launchFrames']) {
+    const total = frameColorDistance(before, after), minimum = method === 'videoFrames' ? Math.min(7, total * .2) : 1;
+    const previous = frames.map((frame, index) => ({ frame, index,
+      progress: frameColorDistance(before, frame) / total, remaining: frameColorDistance(after, frame) / total }));
+    const expected = previous.filter(item => item.progress > .02 && item.remaining > .02
+      && frameColorDistance(before, item.frame) > minimum && frameColorDistance(after, item.frame) > minimum);
+    const actual = transitionEvidence(before, after, frames, method);
+    assert.equal(actual.total, total);
+    assert.deepEqual(actual.progress, previous.map(item => item.progress));
+    assert.deepEqual(actual.candidates, expected);
+  }
+});
 
 test('滑入轨迹必须包含区别于起点和终点的真实中途画面', () => {
   assert.equal(middleCandidates(before, after, [before, before, after], 'videoFrames').length, 0);
@@ -28,6 +44,19 @@ test('纯色闪屏即使改变像素也不能冒充已审查的局部滑入', ()
   const flash = PNG.sync.write(png);
   assert.throws(() => assertReviewedVideoMiddle(before, after,
     middleCandidates(before, after, [before, flash, after], 'videoFrames'), [middle]), /动画中途帧/);
+});
+
+test('接近起止点的采样必须失败并明确原因，不能用 Infinity 或自动重试掩盖缺失相位', () => {
+  const valid = middleCandidates(before, after, [before, middle, after], 'videoFrames')[0];
+  for (const [field, reason] of [['progress', 'too-close-to-start'], ['remaining', 'too-close-to-end']]) {
+    const candidate = { ...valid, [field]: 0.01 };
+    const evidence = reviewedVideoMiddleEvidence(before, after, [candidate], [middle]);
+    assert.ok(evidence.matches[0].rejected.includes(reason));
+    assert.equal(evidence.matches[0].distance, 0);
+    assert.throws(() => assertReviewedVideoMiddle(before, after, [candidate], [middle]), new RegExp(reason));
+  }
+  const evidence = reviewedVideoMiddleEvidence(before, after, [valid], [middle]);
+  assert.deepEqual(evidence.matches[0].rejected, []);
 });
 
 test('不同分辨率动画不能通过缩放后忽略尺寸变化', () => {
@@ -106,9 +135,96 @@ test('异步面板就绪发生在录像停止前，检查帧与终点截图发�
         events.push('stable-tail');
         events.push('record-stop');
         return [before, middle, after];
-      });
+      }, async () => { events.push('static-layout-check'); });
     assert.deepEqual(events, ['start-screenshot', 'record-start', 'trigger', 'ready', 'stable-tail',
-      'record-stop', 'inspect', 'end-screenshot']);
+      'record-stop', 'static-layout-check', 'inspect', 'end-screenshot']);
+  } finally {
+    if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
+    else process.env.IOS_VISUAL_MODE = previousMode;
+  }
+});
+
+test('个人榜单退场在录屏预热后、点击前刷新独立起点', async () => {
+  const { captureNativeTransition } = await import('./animation-transition.ts');
+  const events = [], attached = [];
+  const sentinel = new Error('stop after trigger');
+  let screenshots = 0;
+  const device = { screenSize: { width: 120, height: 180 },
+    nativeScreenshot: async () => { events.push(`screenshot-${++screenshots}`); return before; },
+    nodes: async () => { events.push('nodes'); return []; } };
+  await assert.rejects(captureNativeTransition(device, 'texas-holdem-personal-leaderboard-exit',
+    { attach: async name => attached.push(name) }, { x: 0, y: 0, width: 120, height: 180 },
+    () => { events.push('tap'); }, [], [], 0, 'videoFrames', undefined, undefined,
+    [], [], [], [], [], async (_device, _name, _region, action) => {
+      events.push('recording-warm');
+      await action();
+      throw sentinel;
+    }), error => error === sentinel);
+  assert.deepEqual(events, ['screenshot-1', 'nodes', 'recording-warm', 'nodes', 'screenshot-2', 'tap']);
+  assert.ok(attached.includes('texas-holdem-personal-leaderboard-exit-pre-warmup-observation'));
+});
+
+test('语音退场在读取缓慢的原生树前保存独立终点截图', async () => {
+  const { captureNativeTransition } = await import('./animation-transition.ts');
+  const previousMode = process.env.IOS_VISUAL_MODE;
+  process.env.IOS_VISUAL_MODE = 'smoke';
+  const events = [];
+  let screenshots = 0, trees = 0;
+  const bounds = (x, y, width, height) => ({ x, y, width, height });
+  const panel = [
+    { clazz: 'XCUIElementTypeOther', bounds: bounds(0, 1, 120, 179), visible: true },
+    ...['in-game-audio-top-tips', 'in-game-audio-microphone-button', 'in-game-audio-bottom-tips']
+      .map((res, index) => ({ res, bounds: bounds(35, 25 + index * 55, 50, 20), visible: true })),
+  ];
+  const device = { screenSize: { width: 120, height: 180 },
+    nodes: async () => { events.push(trees ? 'end-tree' : 'start-tree'); return trees++ ? [] : panel; },
+    nativeScreenshot: async () => {
+      events.push(screenshots ? 'end-screenshot' : 'start-screenshot');
+      return screenshots++ ? after : before;
+    } };
+  const info = { attach: async () => {}, snapshotPath: () => { throw new Error('smoke不能读取基准'); } };
+  try {
+    await captureNativeTransition(device, 'texas-holdem-voice-exit', info,
+      bounds(0, 1, 120, 179), () => { events.push('trigger'); }, [], [], 0, 'videoFrames',
+      undefined, undefined, [], [], [], [], [],
+      async (_device, _name, _region, trigger, _info, _duration, _minimum, onRecorded) => {
+        await trigger();
+        events.push('record-stop');
+        await onRecorded();
+        return [before, middle, after];
+      });
+    assert.deepEqual(events, ['start-screenshot', 'start-tree', 'trigger', 'record-stop',
+      'end-screenshot', 'end-tree']);
+  } finally {
+    if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
+    else process.env.IOS_VISUAL_MODE = previousMode;
+  }
+});
+
+
+test('稀疏转场仍必须保留真实中途过程，首尾硬切失败', async () => {
+  const { captureNativeTransition } = await import('./animation-transition.ts');
+  const { validateRecordedTimeline } = await import('./video-timeline.ts');
+  const previousMode = process.env.IOS_VISUAL_MODE;
+  process.env.IOS_VISUAL_MODE = 'smoke';
+  const info = { attach: async () => {} };
+  const run = async frames => {
+    let screenshots = 0;
+    const device = { nodes: async () => [], screenSize: { width: 120, height: 180 },
+      nativeScreenshot: async () => screenshots++ ? after : before };
+    return captureNativeTransition(device, 'short-native-slide', info,
+      { x: 0, y: 0, width: 120, height: 180 }, () => {}, [], [], 0, 'videoFrames',
+      undefined, undefined, [], [], [], [], [], async (_device, _name, _region, trigger, _info, _duration, minimum) => {
+        validateRecordedTimeline(frames.map((_, index) => ({ pts_time: String(index / 30) })), 3500, minimum);
+        await trigger(); return frames;
+      });
+  };
+  try {
+    await run([before, ...Array(12).fill(middle), after]);
+    await assert.rejects(run([...Array(7).fill(before), ...Array(7).fill(after)]), /真实动画帧/);
+    await assert.rejects(run(Array(14).fill(after)), /首帧/);
+    await run([before, middle, after]);
+    await assert.rejects(run([before, after]), /真实候选帧/);
   } finally {
     if (previousMode === undefined) delete process.env.IOS_VISUAL_MODE;
     else process.env.IOS_VISUAL_MODE = previousMode;

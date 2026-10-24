@@ -99,6 +99,7 @@ class VisualNetwork:
                 or path != '/node/v1/status' or flow.request.method not in ('GET', 'OPTIONS')):
             return False
         preflight = flow.request.method == 'OPTIONS'
+        flow.metadata['visual_node_excluded'] = True
         flow.response = http.Response.make(204 if preflight else 503,
             b'' if preflight else b'{"server_load":"unavailable"}', {
                 'Content-Type': 'application/json',

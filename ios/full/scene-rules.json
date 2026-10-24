@@ -118,7 +118,7 @@
       "module": "help",
       "id": "share",
       "title": "分享与邀请好友",
-      "pattern": "^(signed-in-share-app|share-link|invite-friends)(-|$)"
+      "pattern": "^(signed-in-share-app|share-link|ios-share-sheet|invite-friends)(-|$)"
     },
     {
       "module": "help",

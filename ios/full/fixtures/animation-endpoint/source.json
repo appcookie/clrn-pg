@@ -1,0 +1,12 @@
+{
+  "purpose": "Failed-run diagnostic fixture only; not a reviewed visual baseline.",
+  "sourceRun": 39596704174,
+  "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39596704174",
+  "sourceWorkflowHead": "c4763023a35371554efc4508c39a408a881ae4ac",
+  "attachment": "texas-flop-cards-end",
+  "sha256": "1d18b1bc37b78cdf037ef9882661aceceb203e388a9a62af4709bc0df3619895",
+  "width": 405,
+  "height": 200,
+  "pixelsOverExistingChannelTolerance12": 2,
+  "maximumChannelDifference": 13
+}

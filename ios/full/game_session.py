@@ -16,6 +16,7 @@ class GameSession:
         self.game_type = game_type
         self.account = None
         self.room = None
+        self.statistics_owner = None
 
     def response(self, flow):
         if not flow.response or flow.response.status_code != 200:
@@ -45,6 +46,10 @@ class GameSession:
                     url = urlsplit(flow.request.pretty_url)
                     self.room = {'roomId': data['room_id'], 'apiOrigin': f'{url.scheme}://{url.netloc}',
                         'authorization': self.account['authorization']}
+                    # This extra authorization is narrower than cleanup
+                    # ownership: require the actual creation request's user.
+                    if request.get('user_id') == self.account['userId']:
+                        self.statistics_owner = (data['room_id'], self.account['userId'])
         except (ValueError, TypeError, AttributeError):
             return
 

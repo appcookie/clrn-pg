@@ -13,6 +13,10 @@ test('共享场景使用 laiwan_screenshot 的 v1 路径，语言和设备不进
 });
 
 test('原始录像相位不伪装成时间戳，重复的登录入口归于同一状态', () => {
+  for (const direction of ['enter', 'exit']) for (const phase of ['start', 'middle', 'end']) {
+    assert.equal(baselineRelativePath(`ios-share-sheet-${direction}-${phase}.png`, 'en'),
+      `help/share/ios-share-sheet-${direction}/ios/iphone16-ios18.5/en/animation/${phase}.png`);
+  }
   assert.equal(baselineRelativePath('search-confirmation-enter-middle.png', 'en'),
     'hall/search/search-confirmation-enter/ios/iphone16-ios18.5/en/animation/middle.png');
   assert.equal(baselineRelativePath('native-launch-artwork-visible.png', 'en'),
@@ -35,6 +39,16 @@ test('基准文件名和运行语言不允许越界或冲突', () => {
     'wallet/signed-in-mall/signed-in-mall/ios/iphone16-ios18.5/en/page/default.png');
   assert.equal(baselineRelativePath('en-signed-in-game-record.png', 'en'),
     'game-record/signed-in-game-record/signed-in-game-record/ios/iphone16-ios18.5/en/page/default.png');
+});
+
+test('动画基准只接受英文，中文普通页面仍按实际语言归档', () => {
+  for (const locale of ['zh-Hans', 'zh-Hant']) {
+    for (const filename of ['search-confirmation-enter-middle.png', `${locale}-search-confirmation-exit-end.png`,
+      'native-launch-artwork-visible.png', 'hall-matching-spinner-first.png']) {
+      assert.throws(() => baselineRelativePath(filename, locale), /动画截图只允许英文/);
+    }
+    assert.ok(baselineRelativePath(`${locale}-hall.png`, locale).endsWith(`/${locale}/page/default.png`));
+  }
 });
 
 test('三语言全部共享页面与声明的后续状态都有稳定模块路径', () => {
