@@ -162,9 +162,19 @@ export async function assertVisual(bytes: Buffer, name: string, testInfo: TestIn
     writeFileSync(baseline!, bytes);
     writeFileSync(resolve(baselineRoot, 'build-info.json'), JSON.stringify(readVerifiedBuild(), null, 2));
   } else if (mode === 'compare') {
-    if (!existsSync(baseline!)) throw new Error(`缺少已审查基准：${baseline}`);
-    const comparison = comparePixels(readFileSync(baseline!), bytes, 12, comparisonExclusions);
-    if (!comparison.matches && comparison.diff) await testInfo.attach(`${filename}-diff`, { body: comparison.diff, contentType: 'image/png' });
+    if (!existsSync(baseline!)) {
+      await testInfo.attach(`${filename}-actual`, { body: bytes, contentType: 'image/png' });
+      throw new Error(`缺少已审查基准：${baseline}`);
+    }
+    const expected = readFileSync(baseline!);
+    const comparison = comparePixels(expected, bytes, 12, comparisonExclusions);
+    if (!comparison.matches) {
+      // Attach the exact inputs used above, so historical reports remain
+      // reviewable even after the repository baseline changes.
+      await testInfo.attach(`${filename}-expected`, { body: expected, contentType: 'image/png' });
+      await testInfo.attach(`${filename}-actual`, { body: bytes, contentType: 'image/png' });
+      if (comparison.diff) await testInfo.attach(`${filename}-diff`, { body: comparison.diff, contentType: 'image/png' });
+    }
     expect(comparison.matches, `${filename} 变化比例 ${comparison.changedRatio}`).toBe(true);
   }
 }
