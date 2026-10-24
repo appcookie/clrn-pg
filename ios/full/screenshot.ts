@@ -72,21 +72,55 @@ export function maskScreenshot(bytes: Buffer, masks: ScreenshotMask[]): Buffer {
   masks = masks.filter(mask => !mask.unverifiedLayout);
   if (!masks.length) return bytes;
   const picture = PNG.sync.read(bytes);
-  let area = 0;
-  for (const mask of masks) {
-    const left = Math.max(0, Math.floor(mask.x));
-    const top = Math.max(0, Math.floor(mask.y));
+  applyScreenshotMasks(picture, masks);
+  return PNG.sync.write(picture);
+}
+
+/** Apply the same screen-coordinate masks to decoded pixels before cropping.
+ * The 12% limit always uses the original full screenshot, including off-crop masks.
+ */
+export function applyScreenshotMasks(picture: Pick<PNG, 'width' | 'height' | 'data'>, masks: ScreenshotMask[]): void {
+  const rectangles = clippedMasks(picture, masks);
+  assertMaskArea(picture, rectangles);
+  paintMasks(picture, rectangles);
+}
+
+/** 对局部基准使用全屏原图核验12%面积门槛，再平移同一批实际遮罩；不改变遮罩内容。
+ * 39618764089 的160×162倒计时占409×449裁图的14.1%，但占1178×2556全屏不到1%。
+ */
+export function maskCroppedScreenshot(bytes: Buffer, fullScreen: Buffer, masks: ScreenshotMask[], region: ScreenshotBounds): Buffer {
+  const screen = PNG.sync.read(fullScreen), picture = PNG.sync.read(bytes);
+  if (![region.x, region.y, region.width, region.height].every(Number.isInteger)
+    || region.x < 0 || region.y < 0 || region.x + region.width > screen.width || region.y + region.height > screen.height
+    || picture.width !== region.width || picture.height !== region.height) throw new Error('局部遮罩必须使用原始全屏内的真实裁图范围');
+  const rectangles = clippedMasks(screen, masks);
+  assertMaskArea(screen, rectangles);
+  paintMasks(picture, clippedMasks(picture, rectangles.map(mask => ({ ...mask,
+    x: mask.x - region.x, y: mask.y - region.y }))));
+  return PNG.sync.write(picture);
+}
+
+function clippedMasks(picture: { width: number; height: number }, masks: ScreenshotMask[]): ScreenshotMask[] {
+  return masks.filter(mask => !mask.unverifiedLayout).map(mask => {
+    const x = Math.max(0, Math.floor(mask.x)), y = Math.max(0, Math.floor(mask.y));
     const right = Math.min(picture.width, Math.ceil(mask.x + mask.width));
     const bottom = Math.min(picture.height, Math.ceil(mask.y + mask.height));
-    area += Math.max(0, right - left) * Math.max(0, bottom - top);
-    for (let y = top; y < bottom; y++) for (let x = left; x < right; x++) {
+    return { ...mask, x, y, width: Math.max(0, right - x), height: Math.max(0, bottom - y) };
+  });
+}
+
+function assertMaskArea(picture: { width: number; height: number }, masks: ScreenshotBounds[]) {
+  const area = masks.reduce((sum, mask) => sum + mask.width * mask.height, 0);
+  if (area > picture.width * picture.height * 0.12) throw new Error('动态遮罩超过截图面积的 12%，需要重新检查覆盖范围。');
+}
+
+function paintMasks(picture: Pick<PNG, 'width' | 'height' | 'data'>, masks: ScreenshotBounds[]) {
+  for (const mask of masks) for (let y = mask.y; y < mask.y + mask.height; y++)
+    for (let x = mask.x; x < mask.x + mask.width; x++) {
       const offset = (y * picture.width + x) * 4;
       picture.data[offset] = 230;
       picture.data[offset + 1] = 210;
       picture.data[offset + 2] = 235;
       picture.data[offset + 3] = 255;
     }
-  }
-  if (area > picture.width * picture.height * 0.12) throw new Error('动态遮罩超过截图面积的 12%，需要重新检查覆盖范围。');
-  return PNG.sync.write(picture);
 }

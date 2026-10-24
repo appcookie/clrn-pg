@@ -1,0 +1,222 @@
+{
+  "purpose": "Original recording regression crops, not baseline candidates; AX state is a field-preserving projection of the failed observations.",
+  "run": "39539839466",
+  "sourceSHA": "2bd4e471efd538938b452701b280cdf650ae111b",
+  "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
+  "video": "zhajinhua-operation-buttons-native-video-f74ca35f8f07c8d09429d62b0229425e154cab61.mp4",
+  "frames": {
+    "start": 0,
+    "middle": 121,
+    "end": 209
+  },
+  "controls": [
+    {
+      "marker": "zhajinhua-shortcut-raise-first",
+      "bounds": {
+        "x": 206,
+        "y": 1626,
+        "width": 136,
+        "height": 162
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-shortcut-raise-first-start.png",
+          "sha256": "e758a4b401653089642dda2d2e1e3af6070c7f1792f98f00df02d68c6b9c4b81"
+        },
+        "middle": {
+          "file": "zhajinhua-shortcut-raise-first-middle.png",
+          "sha256": "d32645a56bb4aa93d2f6b16defa7c48a0a9be38640691b53db5497b1bbad4cba"
+        },
+        "end": {
+          "file": "zhajinhua-shortcut-raise-first-end.png",
+          "sha256": "0a6c1a12a658de30cd06a543d09c8e2328a3d663ab07118e653e7eb51553657c"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-shortcut-raise-second",
+      "bounds": {
+        "x": 416,
+        "y": 1626,
+        "width": 136,
+        "height": 162
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-shortcut-raise-second-start.png",
+          "sha256": "18b39007b9f9100357031cd392521f32852b3c64a1f91e8d469989f9e23b9f25"
+        },
+        "middle": {
+          "file": "zhajinhua-shortcut-raise-second-middle.png",
+          "sha256": "d02e243f29d8edc39d60e984d5df03f35e999d3662b42e35e99603384e0a9345"
+        },
+        "end": {
+          "file": "zhajinhua-shortcut-raise-second-end.png",
+          "sha256": "c4d486ef42788c3dc023244956b8b1d4b6b6af90df544cb7f4edd45e38a39b06"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-shortcut-raise-third",
+      "bounds": {
+        "x": 626,
+        "y": 1626,
+        "width": 136,
+        "height": 162
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-shortcut-raise-third-start.png",
+          "sha256": "55a67c2ca1d0f99c36e12e9be93966ff9053e70f39a343475388a6312ac9a00d"
+        },
+        "middle": {
+          "file": "zhajinhua-shortcut-raise-third-middle.png",
+          "sha256": "865ed59f6410210973b343bf297099e9ac4ac02879cab0ce1753180d14cb6213"
+        },
+        "end": {
+          "file": "zhajinhua-shortcut-raise-third-end.png",
+          "sha256": "9b969d8cc4dcc88927c254af6d9901186ec56ff40f1dbd5fe41df23575936e38"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-shortcut-raise-fourth",
+      "bounds": {
+        "x": 836,
+        "y": 1626,
+        "width": 136,
+        "height": 162
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-shortcut-raise-fourth-start.png",
+          "sha256": "2bebea2a1fef084a5fa6f17c424151f1de0a90d48116c622bb0f33e095e1d1c8"
+        },
+        "middle": {
+          "file": "zhajinhua-shortcut-raise-fourth-middle.png",
+          "sha256": "c493b4b41f87987aab7d2b45aac2e983fa45fef3d859b9d52cb5a38eefe37187"
+        },
+        "end": {
+          "file": "zhajinhua-shortcut-raise-fourth-end.png",
+          "sha256": "18481f53f8d5250217e717dc1702c5da112c0ce09cd75cd00bd67380ed46fe84"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-operation-button-battle",
+      "bounds": {
+        "x": 491,
+        "y": 1815,
+        "width": 199,
+        "height": 204
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-operation-button-battle-start.png",
+          "sha256": "e43c17620dc676f745917fca7c4fa713c7f7fb7e655fa69637d3aa9034d5a4cc"
+        },
+        "middle": {
+          "file": "zhajinhua-operation-button-battle-middle.png",
+          "sha256": "e992d3f7d7b927b7521b44fb05b73b3fe64504e05c240497a01bae8315836fc8"
+        },
+        "end": {
+          "file": "zhajinhua-operation-button-battle-end.png",
+          "sha256": "dbf4bcbe63575fb80b0ab8fb6c198d5278252b0b6592ede8cc58fe539e4498cb"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-operation-button-fold",
+      "bounds": {
+        "x": 173,
+        "y": 1965,
+        "width": 199,
+        "height": 204
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-operation-button-fold-start.png",
+          "sha256": "539657ad446647cda1c04bcfabde4d21bccab0050533abe95781dc0c35ed69f8"
+        },
+        "middle": {
+          "file": "zhajinhua-operation-button-fold-middle.png",
+          "sha256": "45ea0de4c2ecfa831cdb13ac83fe97d8d5a37332f364c6cb54154be25a71d5ea"
+        },
+        "end": {
+          "file": "zhajinhua-operation-button-fold-end.png",
+          "sha256": "143fa7dc81fcb9ea09608a3107ade8d34061b98f03492337718dd66235e7794e"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-operation-button-call",
+      "bounds": {
+        "x": 806,
+        "y": 1965,
+        "width": 199,
+        "height": 204
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-operation-button-call-start.png",
+          "sha256": "98e9ca539ce38ede8310d9b857c61c68b7de7a85649341fd78e06118926bfecb"
+        },
+        "middle": {
+          "file": "zhajinhua-operation-button-call-middle.png",
+          "sha256": "e7be954d480c65f8dca3fa17f6ecd17146ca8f8292b97f1f5c45e051a3f2eb26"
+        },
+        "end": {
+          "file": "zhajinhua-operation-button-call-end.png",
+          "sha256": "f46c68879eca3419532b730ed4c004f3a858efb8f923ccbfc5ee4b58a6c05d9b"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-operation-accurate-bet-button",
+      "bounds": {
+        "x": 962,
+        "y": 2172,
+        "width": 216,
+        "height": 219
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-operation-accurate-bet-button-start.png",
+          "sha256": "31eb4b86ba690fcac3264c8eac30f0e93bd12e89d96533ba8ba59300619b2c9f"
+        },
+        "middle": {
+          "file": "zhajinhua-operation-accurate-bet-button-middle.png",
+          "sha256": "2ca6d559db3d010c4cf4e83532e2433bc599f4d1eb37e2118be49bdd88e06a36"
+        },
+        "end": {
+          "file": "zhajinhua-operation-accurate-bet-button-end.png",
+          "sha256": "e3082f6068da9b9f5f9171a7f4d45dce1336b432ba8866754af0052b65266365"
+        }
+      }
+    },
+    {
+      "marker": "zhajinhua-delay-operation-button",
+      "bounds": {
+        "x": 62,
+        "y": 2262,
+        "width": 226,
+        "height": 99
+      },
+      "images": {
+        "start": {
+          "file": "zhajinhua-delay-operation-button-start.png",
+          "sha256": "003af35ed99c637f0b8b81a13947e97d9cc14d1fda3abc78012fcdef39ce6dae"
+        },
+        "middle": {
+          "file": "zhajinhua-delay-operation-button-middle.png",
+          "sha256": "bbbfa5d29ccaad46b47297363e7d3651543706f252b8d9199f6374fb09266fdf"
+        },
+        "end": {
+          "file": "zhajinhua-delay-operation-button-end.png",
+          "sha256": "2dc60ebca757c94083f1b6b65611d52d85444dffece3c717c281bcde6f04eb4a"
+        }
+      }
+    }
+  ],
+  "videoSHA256": "8db6039d8ac2994d55e6e9d15a6dc31569ac1dfff45935002c30732ec8c8abd8"
+}

@@ -1,9 +1,21 @@
+// 依据原生可见性、连接状态和两次稳定布局执行牌桌操作，每次业务动作只触发一次。
 import { expect } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
+import { setTimeout as delay } from 'node:timers/promises';
 
-export type NativeNode = { res?: string; text?: string; enabled?: boolean; checked?: boolean;
+export type NativeNode = { res?: string; text?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
+
+/** Match the explicit timeout predicate already used by accurate-bet guards.
+ * Other business alerts can have intentional confirmation-button scenarios.
+ */
+export function gameConnectionState(nodes: NativeNode[]): { connecting: boolean } {
+  if (nodes.some(node => node.visible !== false && /Connection Timeout/i.test(node.text || ''))) {
+    throw new Error('出现 Connection Timeout；不能继续点击或等待重试掩盖连接错误');
+  }
+  return { connecting: nodes.some(node => /Connecting\.\.\./.test(node.text || '')) };
+}
 
 /** XCUITest 截图保留原始像素，错误不能变成空帧。 */
 export async function gameScreenshot(device: AndroidDevice): Promise<Buffer> {
@@ -87,6 +99,22 @@ export async function gameReady(device: AndroidDevice, res: string, text?: strin
   return found!;
 }
 
+/** 等待录像后的真实控件；优先查询目标，predicate 漏报时读取完整原生树。 */
+export async function gameReadyCurrent(device: AndroidDevice, res: string, text?: string): Promise<NativeNode> {
+  await device.prepareTransientCapture();
+  let found: NativeNode | undefined;
+  await expect(async () => {
+    const observation = await device.inputObservation(res);
+    const { connecting } = gameConnectionState(observation);
+    const nodes = observation.some(node => node.res === res) || connecting
+      ? observation : await gameNodes(device);
+    found = !connecting ? nodes.find(node => node.res === res &&
+      (text === undefined || node.text === text)) as NativeNode | undefined : undefined;
+    expect(found, `${res} 应可见且连接正常`).toBeDefined();
+  }).toPass({ timeout: 90_000, intervals: [250] });
+  return found!;
+}
+
 /**
  * 等待游戏弹层完全移出屏幕。
  * @param device - 专用模拟器连接。
@@ -102,36 +130,115 @@ export async function gameGone(device: AndroidDevice, res: string): Promise<void
  * @param stableMs - 指定入口需要额外连续无重连遮罩的时间。
  */
 export async function gameConnected(device: AndroidDevice, stableMs = 0): Promise<void> {
-  const initial = await gameNodes(device);
-  if (!stableMs && !initial.some(node => /Connecting\.\.\./.test(node.text || ''))) return;
-  let availableSince = 0;
+  await connectedObservation(device, stableMs);
+}
+
+/** 录制期间只读取实际连接提示；仍须持续就绪，超时错误直接失败。 */
+export async function gameConnectedCurrent(device: AndroidDevice, stableMs = 0): Promise<void> {
+  await device.prepareTransientCapture();
+  await connectedObservation(device, stableMs, () => device.inputObservation());
+}
+
+/** 录制期间等待真实面板标记消失；完整独立终点仍由转场采集器检查。 */
+export async function gameGoneCurrent(device: AndroidDevice, res: string): Promise<void> {
+  await device.prepareTransientCapture();
   await expect.poll(async () => {
-    const connecting = (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || ''));
+    const nodes = await device.inputObservation(res);
+    const { connecting } = gameConnectionState(nodes);
+    // 连接遮罩会使仍挂载的侧栏不可见；重连中的缺失不是关闭证据。
+    return connecting || nodes.some(node => node.res === res);
+  }, { timeout: 45_000, intervals: [250] }).toBe(false);
+}
+
+/** Return the same complete tree that established connection readiness. */
+async function connectedObservation(device: AndroidDevice, stableMs = 0,
+  observe = () => gameNodes(device)): Promise<{
+  nodes: NativeNode[]; recovered: boolean;
+}> {
+  const initial = await observe();
+  if (!gameConnectionState(initial).connecting && !stableMs) return { nodes: initial, recovered: false };
+  let availableSince = 0;
+  let nodes = initial;
+  await expect.poll(async () => {
+    nodes = await observe();
+    const { connecting } = gameConnectionState(nodes);
     if (connecting) availableSince = 0;
     else if (!availableSince) availableSince = Date.now();
     return !connecting && Date.now() - availableSince >= Math.max(1_000, stableMs);
   }, { timeout: 120_000, intervals: [250] }).toBe(true);
+  return { nodes, recovered: true };
 }
 
 /**
- * 根据两次一致的真实布局点击控件，使用 adb 输入避免驱动等待循环动画空闲。
+ * 根据两次一致的真实布局执行一次原生点击。
  * @param device - 专用模拟器连接。
  * @param res - 与 Web 共用的 testID。
  * @param nativeInput - 短时提示使用现有驱动点击，避免启动 shell 输入进程耗尽显示时间。
+ * @param pointForTarget - 在最新稳定目标内选择落点；遮罩使用避开面板的边缘。
  */
-export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false): Promise<void> {
+export async function gameTap(device: AndroidDevice, res: string, _nativeInput = false,
+  onTap?: (point: Readonly<{ x: number; y: number }>) => void,
+  observe = () => gameNodes(device),
+  pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number }): Promise<void> {
   console.log(`IOS > 游戏点击 ${res}`);
-  await gameConnected(device);
-  let previous: ScreenshotBounds | undefined;
+  let previous: NativeNode | undefined;
+  let stabilityStarted = false;
+  let deadline = Date.now() + 45_000;
   let node: NativeNode;
-  await expect(async () => {
-    node = await gameReady(device, res);
-    const before = previous;
-    previous = node.bounds;
-    expect(node.enabled).not.toBe(false);
-    expect(previous).toEqual(before);
-  }).toPass({ timeout: 45_000, intervals: [200] });
-  const { x, y, width, height } = node!.bounds;
-  const point = { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
+  for (;;) {
+    // Do not put the independent 120s connection recovery inside a 45s target poll.
+    // Every recovered connection starts a new pair of actual target observations.
+    const observation = await connectedObservation(device, 0, observe);
+    if (observation.recovered) {
+      previous = undefined;
+      stabilityStarted = false;
+      deadline = Date.now() + 45_000;
+    }
+    const candidates = observation.nodes.filter(candidate => candidate.res === res && candidate.visible !== false);
+    if (candidates.length > 1) throw new Error(`${res} 必须是唯一可见目标`);
+    const current = candidates[0];
+    if (current && !stabilityStarted) {
+      stabilityStarted = true;
+      deadline = Date.now() + 45_000;
+    }
+    if (current && previous) {
+      try {
+        expect(previous.enabled, '第一次观测目标必须可点击').toBe(true);
+        expect(current.enabled, '第二次观测目标必须可点击').toBe(true);
+        expect(current.bounds).toEqual(previous.bounds);
+        node = current;
+        break;
+      } catch (error) {
+        if (Date.now() >= deadline) throw error;
+      }
+    } else if (!current) {
+      if (Date.now() >= deadline) throw new Error(`${res} 应可见`);
+    }
+    // A vanished target cannot contribute a sample to the later stable pair.
+    previous = current;
+    await delay(current ? 200 : 250);
+  }
+  const { x, y, width, height } = node.bounds;
+  const point = pointForTarget?.(node.bounds)
+    ?? { x: Math.round(x + width / 2), y: Math.round(y + height / 2) };
+  if (![point.x, point.y].every(Number.isFinite) || point.x < x || point.y < y
+    || point.x >= x + width || point.y >= y + height) throw new Error('点击位置必须位于当前真实目标内');
+  onTap?.({ ...point });
   await device.input.tap(point);
+  console.log(`IOS > 游戏已点击 ${res}`);
+}
+
+/** 聊天、牌谱入口和关闭遮罩使用同一次轻量原生观测；保留两样本、重连恢复和错误即失败规则。 */
+export async function gameTapCurrent(device: AndroidDevice, res: string,
+  pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number },
+  onTap?: (point: Readonly<{ x: number; y: number }>) => void): Promise<void> {
+  await device.prepareTransientCapture();
+  await gameTap(device, res, false, onTap, async () => {
+    const observation = await device.inputObservation(res);
+    // 39614829016 的牌谱按钮在真实 XML 和截图中可见，但 predicate 查询持续为空。
+    // 只有目标缺失且没有连接遮挡时，改读本轮完整原生树；不复用旧坐标或补造节点。
+    if (observation.some(node => node.res === res) || gameConnectionState(observation).connecting)
+      return observation;
+    return gameNodes(device);
+  }, pointForTarget);
 }

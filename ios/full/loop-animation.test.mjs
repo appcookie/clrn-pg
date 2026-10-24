@@ -5,7 +5,37 @@ const require = createRequire(import.meta.url);
 const { PNG } = require('pngjs');
 const { motionParts } = require('./motion-regions.ts');
 const { changedMotionRegions } = require('./loop-animation.ts');
-const { framePaletteDistance } = require('./loop-keyframes.ts');
+const { framePaletteDistance, captureLoopKeyframes } = require('./loop-keyframes.ts');
+
+test('原生骨架共享三像素边界时保留两个完整图，各自冻结仍会失败', async () => {
+  const regions = [{ x: 0, y: 0, width: 20, height: 13 }, { x: 0, y: 10, width: 20, height: 13 }];
+  const samples = freezeSecond => Array.from({ length: 10 }, (_, index) => {
+    const picture = new PNG({ width: 20, height: 23 });
+    for (let y = 0; y < 23; y++) for (let x = 0; x < 20; x++) {
+      const value = y >= 10 && y < 13 ? 255 : y >= 13 && freezeSecond ? 50 : index % 2 ? 90 : 50;
+      picture.data.set([value, value, value, 255], (y * 20 + x) * 4);
+    }
+    return { capturedAt: index * 40, png: PNG.sync.write(picture).toString('base64') };
+  });
+  const saved = process.env.IOS_VISUAL_MODE;
+  process.env.IOS_VISUAL_MODE = 'smoke';
+  const images = [];
+  const info = { attach: async (name, data) => {
+    if (name.endsWith('.png')) images.push(PNG.sync.read(data.body));
+  } };
+  try {
+    await captureLoopKeyframes({}, 'club-list-skeleton', info, regions, 1, samples(false));
+    assert.equal(images.length, 4);
+    assert.ok(images.every(image => image.width === 20 && image.height === 13));
+    await assert.rejects(captureLoopKeyframes({}, 'club-list-skeleton', info, regions, 1, samples(true)), /第 2 个占位控件必须脉动/);
+    await assert.rejects(captureLoopKeyframes({}, 'club-list-skeleton', info,
+      [regions[0], { ...regions[1], y: 9 }], 1, samples(false)), /不能重叠/);
+    await assert.rejects(captureLoopKeyframes({}, 'club-list-skeleton', info,
+      [regions[0], regions[0]], 1, samples(false)), /不能重叠/);
+  } finally {
+    if (saved === undefined) delete process.env.IOS_VISUAL_MODE; else process.env.IOS_VISUAL_MODE = saved;
+  }
+});
 
 /**
  * 构造两个动画区和一个非动画区的真实 PNG 像素分区。

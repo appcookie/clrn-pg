@@ -1,5 +1,6 @@
 // XCUITest 原生设备适配：所有公开几何量使用截图像素，统一转换到 iOS point。
-import { execFileSync } from 'node:child_process';
+import { execFile, execFileSync } from 'node:child_process';
+import { promisify } from 'node:util';
 import { setTimeout as delay } from 'node:timers/promises';
 import { XMLParser } from 'fast-xml-parser';
 import { PNG } from 'pngjs';
@@ -11,7 +12,17 @@ export type NativeSelector = { res?: string | RegExp; text?: string | RegExp; cl
 export type NativeNode = { res?: string; text?: string; value?: string; clazz: string; secure: boolean;
   enabled: boolean; checked: boolean; visible: boolean; focused?: boolean; bounds: Bounds;
   attributes: Record<string, string>; children: NativeNode[] };
+export type NativeLayoutNode = Pick<NativeNode, 'res' | 'clazz' | 'bounds'> & { children: NativeLayoutNode[] };
 export class ElementNotFound extends Error { code = 'no such element'; }
+const runNative = promisify(execFile);
+
+/** Keep the fixture HTTP service responsive while Simulator captures the screen. */
+export async function captureSimulatorScreenshot(udid: string, size: { width: number; height: number },
+  run = runNative): Promise<Buffer> {
+  const { stdout } = await run('xcrun', ['simctl', 'io', udid, 'screenshot', '--type=png', '--mask=ignored', '-'],
+    { encoding: 'buffer', maxBuffer: 32 * 1024 * 1024, timeout: 30_000 });
+  return normalizeNativeScreenshot(stdout, size);
+}
 /** simctl 保留奇数边长，WDA/录像可能去掉末列；只裁这一像素，不缩放内容。 */
 export function normalizeNativeScreenshot(bytes: Buffer, size: { width: number; height: number }): Buffer {
   const source = PNG.sync.read(bytes);
@@ -76,19 +87,33 @@ export function keyboardDismissTarget(nodes: NativeNode[]): NativeNode | undefin
   const done = descendants(keyboard).find(node => node.visible && node.enabled
     && node.clazz === 'XCUIElementTypeButton' && /^(Done|完成|完畢)$/.test(node.text || ''));
   if (done) return done;
-  const interactive = new Set(nodes.filter(node => /Button|Link|Cell|TextField|TextView|Keyboard/.test(node.clazz)).flatMap(descendants));
+  const interactive = new Set(nodes.filter(node => /Button|Link|Cell|TextField|TextView|Keyboard|StatusBar/.test(node.clazz)).flatMap(descendants));
   return nodes.find(node => node.visible && node.enabled && node.clazz === 'XCUIElementTypeStaticText'
-    && !interactive.has(node) && node.bounds.y + node.bounds.height < keyboard.bounds.y);
+    // The native sign-in navigation bar exposes an empty StaticText before
+    // the form heading. Tapping that placeholder cannot dismiss the keyboard.
+    && !!node.text?.trim() && !interactive.has(node) && node.bounds.y >= 0
+    && node.bounds.y + node.bounds.height < keyboard.bounds.y);
 }
 
 export class NativeDevice {
   screenSize = { width: 0, height: 0 };
+  nativeVideoBackend: 'simctl' | 'xctest' = 'simctl';
   private scale = { x: 1, y: 1 };
   private timeout = 30_000;
   private lastInput: string | undefined;
+  private richTransientElements = false;
   constructor(public driver: WebDriver, public udid: string, private onClose: () => Promise<void>,
     private onReset: () => Promise<void>, public applicationId: string) {}
   async initialize() {
+    // XCUITest 12.19.1 的 GET settings 只返回驱动已登记的值，不包含
+    // WDA 的 animationCoolOffTimeout 默认值。建立会话时显式设置其文档
+    // 默认 2 秒并读回；短提示才能保存/恢复真实值，不能在采样时猜默认值。
+    await this.driver.request('POST', this.driver.path('/appium/settings'), {
+      settings: { animationCoolOffTimeout: 2 },
+    });
+    const settings = await this.driver.request('GET', this.driver.path('/appium/settings'));
+    if (settings.animationCoolOffTimeout !== 2) throw new Error('原生会话未确认动画冷却设置');
+    this.richTransientElements = false;
     const image = PNG.sync.read(await this.screenshot());
     const window = await this.driver.request('GET', this.driver.path('/window/rect'));
     this.screenSize = { width: image.width, height: image.height };
@@ -96,8 +121,27 @@ export class NativeDevice {
     if (![this.scale.x, this.scale.y].every(value => Number.isFinite(value) && value > 0)) throw new Error('iOS point/pixel 比例无效。');
   }
   setDefaultTimeout(timeout: number) { this.timeout = timeout; }
+  /** Geometry only, never readiness/visibility evidence. Loading requests time
+   * out after 10s; omit expensive XCTest visibility computation for the two
+   * conditionally mounted loading images and prove their pixels in the video.
+   * https://appium.github.io/appium-xcuitest-driver/latest/execute-methods/#mobile-source
+   */
+  async layoutNodes(): Promise<NativeLayoutNode[]> {
+    const source = await this.execute('mobile: source', { format: 'xml', excludedAttributes: 'visible,accessible' });
+    const layout = (node: NativeNode): NativeLayoutNode => ({
+      res: node.res, clazz: node.clazz, bounds: node.bounds, children: node.children.map(layout),
+    });
+    return parseNativeTree(source, this.scale).map(layout);
+  }
   async nodes(): Promise<NativeNode[]> {
-    const roots = parseNativeTree(await this.driver.source(), this.scale);
+    const started = Date.now();
+    let source: string;
+    try { source = await this.driver.source(); }
+    finally {
+      if (process.env.CI && Date.now() - started > 5_000)
+        console.log(`IOS > 原生整树查询耗时 ${Date.now() - started}ms`);
+    }
+    const roots = parseNativeTree(source, this.scale);
     const flatten = (node: NativeNode): NativeNode[] => [node, ...node.children.flatMap(flatten)];
     return roots.flatMap(flatten).filter(node => node.visible && node.bounds.width > 0 && node.bounds.height > 0
       && node.bounds.x < this.screenSize.width && node.bounds.y < this.screenSize.height
@@ -122,6 +166,109 @@ export class NativeDevice {
   async marker(res: string): Promise<NativeNode | null> {
     return (await this.nodes()).find(node => node.res === res) || null;
   }
+  /** 在短提示触发前配置同一次元素查询返回可见性、文字和位置，避免往返耗尽提示时长。 */
+  async prepareTransientCapture(): Promise<void> {
+    if (this.richTransientElements) return;
+    // https://appium.github.io/appium-xcuitest-driver/latest/settings/#elementresponseattributes
+    await this.driver.request('POST', this.driver.path('/appium/settings'), { settings: {
+      shouldUseCompactResponses: false, elementResponseAttributes: 'name,label,rect,displayed,enabled', screenshotQuality: 0,
+    } });
+    this.richTransientElements = true;
+  }
+  /** 同一次原生查询取得点击目标和连接提示，避免整树计算期间的旧连接状态被用于点击。 */
+  async inputObservation(res?: string | string[]): Promise<Pick<NativeNode, 'res' | 'text' | 'enabled' | 'visible' | 'bounds'>[]> {
+    if (!this.richTransientElements) throw new Error('点击观测必须先配置完整元素属性');
+    const names = res === undefined ? [] : Array.isArray(res) ? res : [res];
+    const target = names.map(name => `name == ${JSON.stringify(name)} OR `).join('');
+    const started = Date.now();
+    let elements: { name?: string; label?: string; rect?: Bounds; displayed?: boolean; enabled?: boolean }[];
+    try {
+      elements = await this.driver.request('POST', this.driver.path('/elements'), {
+        using: '-ios predicate string',
+        // XCTest's custom `visible` predicate is expensive on a populated table
+        // and can omit a drawn menu. Check displayed on the few matched results.
+        value: `(${target}label == "Connecting..." OR label CONTAINS[c] "Connection Timeout")`,
+      });
+    } finally {
+      if (process.env.CI && Date.now() - started > 5_000)
+        console.log(`IOS > 原生定向查询耗时 ${Date.now() - started}ms (${names.join(',') || 'connection'})`);
+    }
+    return elements.map((element: { name?: string; label?: string; rect?: Bounds;
+      displayed?: boolean; enabled?: boolean }) => {
+      const { name, label, rect, displayed, enabled } = element;
+      if (typeof name !== 'string' || typeof displayed !== 'boolean' || typeof enabled !== 'boolean'
+        || !rect || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
+        throw new Error('点击观测缺少真实名称、可见性、可用状态或位置');
+      }
+      const left = Math.floor(rect.x * this.scale.x), top = Math.floor(rect.y * this.scale.y);
+      return { res: name, text: typeof label === 'string' ? label : undefined, enabled, visible: displayed,
+        bounds: { x: left, y: top, width: Math.ceil((rect.x + rect.width) * this.scale.x) - left,
+          height: Math.ceil((rect.y + rect.height) * this.scale.y) - top } };
+    }).filter((node: Pick<NativeNode, 'visible' | 'bounds'>) => node.visible && node.bounds.width > 0 && node.bounds.height > 0);
+  }
+  /** 只关闭驱动点击后的动画冷却等待；应用动画不变，成功或失败后都恢复原设置。 */
+  async withImmediateAnimationInput<T>(task: () => Promise<T>): Promise<T> {
+    const settings = await this.driver.request('GET', this.driver.path('/appium/settings'));
+    const previous = settings.animationCoolOffTimeout;
+    if (!Number.isFinite(previous) || previous < 0) throw new Error('无法读取真实动画冷却设置');
+    await this.driver.request('POST', this.driver.path('/appium/settings'), {
+      settings: { animationCoolOffTimeout: 0 },
+    });
+    try { return await task(); }
+    finally {
+      await this.driver.request('POST', this.driver.path('/appium/settings'), {
+        settings: { animationCoolOffTimeout: previous },
+      });
+    }
+  }
+  /** Read one short-lived native label without computing visibility for every
+   * node on a populated poker table. A missing/stale element is absence; driver
+   * failures still fail the test. All geometry remains native screenshot pixels.
+   */
+  async transientMarker(res: string): Promise<Pick<NativeNode, 'res' | 'text' | 'bounds'> | null> {
+    return this.transientMarkerReader(res)();
+  }
+  /** 在一次提示窗口内复用原生元素身份，后续仍重新读取实际可见性、边界和文字。
+   * 失效或隐藏即返回缺失并清空身份；不把旧属性当作当前观测。
+   */
+  transientMarkerReader(res: string): () => Promise<Pick<NativeNode, 'res' | 'text' | 'bounds'> | null> {
+    let cachedId: string | undefined;
+    return async () => {
+      const reused = Boolean(cachedId);
+      const elements = cachedId ? [{ 'element-6066-11e4-a52e-4f735466cecf': cachedId }]
+        : await this.driver.request('POST', this.driver.path('/elements'),
+          { using: 'accessibility id', value: res });
+      if (elements.length === 0) return null;
+      if (elements.length !== 1) throw new Error(`短时提示标记不唯一：${res}`);
+      const id = elements[0]['element-6066-11e4-a52e-4f735466cecf'];
+      if (!id) throw new Error(`短时提示缺少原生控件 ID：${res}`);
+      try {
+        const [displayed, rect, text] = this.richTransientElements && !reused
+          ? [elements[0].displayed, elements[0].rect, elements[0].label]
+          : await Promise.all([
+            this.driver.request('GET', this.driver.path(`/element/${id}/displayed`)),
+            this.driver.request('GET', this.driver.path(`/element/${id}/rect`)),
+            this.driver.request('GET', this.driver.path(`/element/${id}/attribute/label`)),
+          ]);
+        if (typeof displayed !== 'boolean' || !rect
+          || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
+          throw new Error(`短时提示缺少真实可见性或位置属性：${res}`);
+        }
+        if (displayed !== true || rect.width <= 0 || rect.height <= 0) { cachedId = undefined; return null; }
+        cachedId = id;
+        return { res, text: typeof text === 'string' ? text : undefined, bounds: {
+          x: Math.round(rect.x * this.scale.x), y: Math.round(rect.y * this.scale.y),
+          width: Math.round(rect.width * this.scale.x), height: Math.round(rect.height * this.scale.y),
+        } };
+      } catch (error) {
+        if (['stale element reference', 'no such element'].includes((error as { code?: string }).code || '')) {
+          cachedId = undefined;
+          return null;
+        }
+        throw error;
+      }
+    };
+  }
   async wait(selector: NativeSelector, options: { timeout?: number; state?: 'gone' | 'visible' } = {}) {
     const deadline = Date.now() + (options.timeout ?? this.timeout);
     do {
@@ -137,7 +284,7 @@ export class NativeDevice {
     if (!node.enabled) throw new Error(`原生控件被禁用：${node.res || node.text}`);
     await this.input.tap({ x: node.bounds.x + node.bounds.width / 2, y: node.bounds.y + node.bounds.height / 2 });
   }
-  async fill(selector: NativeSelector, text: string) {
+  async fill(selector: NativeSelector, text: string, options: { replaceBySelection?: boolean } = {}) {
     const node = await this.info(selector);
     let element = node.res ? await this.driver.find(node.res) : undefined;
     if (!element) throw new Error('输入必须有可追踪的原生 accessibility identifier。');
@@ -148,32 +295,49 @@ export class NativeDevice {
       element = nested['element-6066-11e4-a52e-4f735466cecf'];
     }
     this.lastInput = element;
-    await this.driver.request('POST', this.driver.path(`/element/${element}/clear`), {});
+    // Focus the actual input before replacing its controlled React Native value.
+    await this.driver.request('POST', this.driver.path(`/element/${element}/click`), {});
+    if (options.replaceBySelection) {
+      // Use WDA's own select-content gesture, then replace the selection with
+      // the first character. The clear path leaves the default name in this room field.
+      // https://github.com/appium/WebDriverAgent/blob/master/WebDriverAgentLib/Categories/XCUIElement%2BFBTyping.m
+      await this.execute('mobile: tapWithNumberOfTaps', { elementId: element, numberOfTaps: 3, numberOfTouches: 1 });
+    } else await this.driver.request('POST', this.driver.path(`/element/${element}/clear`), {});
+    await delay(150);
     for (const character of text) {
       await this.driver.request('POST', this.driver.path(`/element/${element}/value`), { text: character });
       await delay(150);
     }
+    // Do not include either expected or actual input values in diagnostics.
+    const secure = node.secure || node.children.some(child => child.secure);
+    if (!secure) {
+      const actual = await this.driver.request('GET', this.driver.path(`/element/${element}/attribute/value`));
+      if (actual !== text) throw new Error('原生输入未完整替换，拒绝提交表单。');
+    }
   }
   screenshot() { return this.driver.screenshot(); }
   async nativeScreenshot(): Promise<Buffer> {
-    return normalizeNativeScreenshot(execFileSync('xcrun', ['simctl', 'io', this.udid, 'screenshot', '--type=png', '--mask=ignored', '-'],
-      { maxBuffer: 32 * 1024 * 1024, timeout: 30_000, stdio: ['ignore', 'pipe', 'ignore'] }), this.screenSize);
+    return captureSimulatorScreenshot(this.udid, this.screenSize);
   }
   async execute(script: string, args: Record<string, unknown> = {}) {
     return this.driver.request('POST', this.driver.path('/execute/sync'), { script, args: [args] });
   }
   async hideKeyboard() {
     if (!(await this.nodes()).some(node => node.clazz === 'XCUIElementTypeKeyboard')) return;
-    let dismissalFailure: unknown;
     try {
       await this.execute('mobile: hideKeyboard');
-      // 驱动可能返回成功却没有收起键盘；先核对真实控件树，再决定是否使用安全点击。
-      await this.wait({ clazz: 'XCUIElementTypeKeyboard' }, { state: 'gone', timeout: 1000 });
+      // XCUITest can return success while an input still owns the keyboard.
+      // Check the visible tree before accepting the command as completed.
+      await this.wait({ clazz: 'XCUIElementTypeKeyboard' }, { state: 'gone', timeout: 1500 });
       return;
-    } catch (error) { dismissalFailure = error; }
-    const target = keyboardDismissTarget(await this.nodes());
-    if (!target) throw dismissalFailure;
-    await this.input.tap({ x: target.bounds.x + target.bounds.width / 2, y: target.bounds.y + target.bounds.height / 2 });
+    } catch (error) {
+      const nodes = await this.nodes();
+      // The tree may have changed while the command returned an error.
+      if (!nodes.some(node => node.clazz === 'XCUIElementTypeKeyboard')) return;
+      const target = keyboardDismissTarget(nodes);
+      if (!target) throw error;
+      await this.input.tap({ x: target.bounds.x + target.bounds.width / 2, y: target.bounds.y + target.bounds.height / 2 });
+    }
     await this.wait({ clazz: 'XCUIElementTypeKeyboard' }, { state: 'gone' });
   }
   async alertText(): Promise<string | null> {

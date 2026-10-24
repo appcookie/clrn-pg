@@ -1,4 +1,13 @@
 import { readFileSync } from 'node:fs';
+import animationInventory from '../ios/full/animation-gate-cases.json' with { type: 'json' };
+import quarantinedInventory from '../ios/full/quarantined/cases.json' with { type: 'json' };
+
+export const quarantinedAnimationCases = quarantinedInventory.cases;
+const quarantinedIds = new Set(quarantinedAnimationCases.map(entry => entry.id));
+if (quarantinedIds.size !== quarantinedAnimationCases.length
+  || quarantinedAnimationCases.some(entry => !animationInventory.cases.some(item => item.id === entry.id))) {
+  throw new Error('iOS 隔离清单包含重复或未知录屏组。');
+}
 
 // 这里只维护公开账号名，密码统一保存在 CLRN_IOS_CI_TEST_ACCOUNTS Secret。
 export const ciAccounts = JSON.parse(readFileSync(new URL('./ci-test-accounts.json', import.meta.url), 'utf8')).accounts;
@@ -34,6 +43,27 @@ export function allocateCiAccount(runId, offset = 0, available = executionAccoun
  * @param selectedLocale - 全部语言或一种指定语言。
  */
 export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 'all', available = []) {
+  if (['animations', 'pr', 'quarantined'].includes(selectedGroup)) {
+    if (!['all', 'en'].includes(selectedLocale)) throw new Error('动画门禁固定使用英文');
+    const animationJobs = animationInventory.cases.flatMap((entry, index) => {
+      if (selectedGroup === 'pr' && quarantinedIds.has(entry.id)
+        || selectedGroup === 'quarantined' && !quarantinedIds.has(entry.id)) return [];
+      const phases = selectedGroup !== 'animations' && entry.id === 'animation-20'
+        ? ['themes', 'voice_records', 'interactions'] : [''];
+      return phases.map(phase => ({
+        group: entry.group, locale: 'en', shard: phase ? `${entry.id}-${phase}` : entry.id,
+        animation: entry.id, ...(phase ? { animationPart: phase } : {}),
+        ...(selectedGroup !== 'animations' ? { recordOnly: true } : {}),
+        filter: `${entry.title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}${phase ? `_${phase}` : ''}$`, playwrightShard: '',
+        label: `${selectedGroup === 'animations' ? 'animation' : 'recording'} / ${entry.id} / ${entry.title}${phase ? ` / ${phase}` : ''}`,
+        account: entry.group === 'guest' ? ''
+          : allocateCiAccount(runId, phase === 'voice_records' ? animationInventory.cases.length
+            : phase === 'interactions' ? animationInventory.cases.length + 1 : index, available),
+      }));
+    });
+    return { include: [...(selectedGroup === 'pr' ? iosAccountMatrix(runId, 'guest', 'all').include : []),
+      ...animationJobs] };
+  }
   // 保留业务组的固定槽位，德州、拼三张的全部语言优先进入矩阵。
   const functionalGroups = ['functional', 'functional-creation', 'interaction', 'network'];
   const groups = ['guest', 'account', 'social', 'rooms', 'wallet-help', 'records', 'texas', 'zhajinhua', ...functionalGroups];
@@ -62,6 +92,7 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
       ['pregame-second', 'signed_in_zhajinhua_pre_game_second$'],
       ['game-table', 'signed_in_zhajinhua_game_table$'],
       ['game-effects', 'signed_in_zhajinhua_game_effects$'],
+      ['pregame-middle', 'signed_in_zhajinhua_pre_game_middle$'],
     ],
   };
   const shardOffsets = {
@@ -77,13 +108,18 @@ export function iosAccountMatrix(runId, selectedGroup = 'all', selectedLocale = 
         const key = `${group}/${locale}`;
         // English startup has seven cases (~35 min); queue it before the shorter
         // Chinese startup shards so max-parallel does not leave it until last.
-        const guestParts = [['pages', guestPages], ['startup', `^(?!.*${guestPages})`]];
+        // PR startup keeps screenshot checks and a viewable launch video;
+        // animation-effect tests are tracked in laiwan_react_native #7056.
+        const guestParts = [['pages', guestPages],
+          ['startup', '(?:launch_branding full screen while initialization waits|launch_staging_notice full screen|iOS Staging 登录与找回密码页面视觉回归)$']];
         const parts = group === 'guest' ? (locale === 'en' ? guestParts.slice().reverse() : guestParts)
           : shards[key] || [['all', '']];
         return parts.map(([shard, filter, playwrightShard = ''], index) => ({ group, locale, shard, filter, playwrightShard,
           label: `${group} / ${locale}${shard === 'all' ? '' : ` / ${shard}`}`,
           // 原 functional 槽位 35 留给第一片；新片使用 39–42，保留其余组槽位。
-          account: group === 'guest' ? '' : allocateCiAccount(runId, group === 'functional' && index > 0
+          // 新拼三张中组使用43，保留其余功能组及旧分片的独立账号槽位。
+          account: group === 'guest' ? '' : allocateCiAccount(runId, group === 'zhajinhua' && shard === 'pregame-middle'
+            ? 43 : group === 'functional' && index > 0
             ? 38 + index : functionalGroups.includes(group)
             ? 35 + functionalGroups.indexOf(group) : index === 0
               ? groups.indexOf(group) * 3 + locales.indexOf(locale) : shardOffsets[key] + index - 1, available) }));

@@ -1,12 +1,18 @@
+// 采集两种牌桌开局面板；录像内使用即时就绪查询，完整终点和动画门禁保持独立。
 import { screenBounds } from './screen-geometry';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
-import { gameTap as tap, gameConnected, gameReady, gameGone, gameNodes } from './game-controls';
+import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameConnectionState, gameReady, gameReadyCurrent,
+  gameGone, gameGoneCurrent, gameNodes } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
+import { animationRecordOnly } from './record-only';
+import { seatGuideMotionBounds } from './game-masks';
+import { gameMaskPoint } from './game-mask-point';
+import { nativeReviewPanelBounds, nativeChatPanelBounds } from './animation-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 
@@ -19,10 +25,48 @@ type Capture = (state: string) => Promise<void>;
  * @param ready - 面板就绪标记。
  */
 export async function gameMenu(device: AndroidDevice, item: string, ready: string): Promise<void> {
-  await tap(device, 'menu-button');
-  await tap(device, `drawer-menu-item-${item}`);
-  await gameGone(device, 'drawer-menu-item-exit');
-  await gameReady(device, ready);
+  // A full accessibility tree costs tens of seconds on a populated table;
+  // the focused query still verifies two live bounds and the connection state.
+  await gameTapCurrent(device, 'menu-button');
+  await gameTapCurrent(device, `drawer-menu-item-${item}`);
+  // 39725551167: a room reconnect covered the still-open drawer just after
+  // its Theme tap. Absence under Connecting is not drawer exit.
+  await gameConnectedCurrent(device, 2_000);
+  await device.prepareTransientCapture();
+  let observed = await device.inputObservation([ready, 'drawer-menu-item-exit']);
+  if (gameConnectionState(observed).connecting) {
+    await gameConnectedCurrent(device, 2_000);
+    observed = await device.inputObservation([ready, 'drawer-menu-item-exit']);
+  }
+  // XCTest's focused predicate can omit a drawer that remains visible in the
+  // screenshot. Confirm an ambiguous absence against the complete live tree
+  // before deciding that the navigation succeeded.
+  let readyVisible = observed.some(node => node.res === ready);
+  let drawerVisible = observed.some(node => node.res === 'drawer-menu-item-exit');
+  if (!readyVisible && !drawerVisible) {
+    const full = await gameNodes(device);
+    readyVisible = full.some(node => node.res === ready);
+    drawerVisible = full.some(node => node.res === 'drawer-menu-item-exit');
+  }
+  if (drawerVisible && !readyVisible) {
+    // The first navigation tap did not change the UI. Retry only this
+    // reversible menu action after proving the drawer is still open.
+    await gameTapCurrent(device, `drawer-menu-item-${item}`);
+  }
+  await gameGoneCurrent(device, 'drawer-menu-item-exit');
+  await gameReadyCurrent(device, ready);
+}
+
+/** 主题面板关闭后必须用完整原生树确认；定向查询曾漏报仍可见的面板。 */
+export async function closeThemeSettings(device: AndroidDevice): Promise<void> {
+  await gameTapCurrent(device, 'game-settings-close-button');
+  const current = await gameNodes(device);
+  if (!current.some(node => node.res === 'game-settings-card-theme-simple')) return;
+  expect(gameConnectionState(current).connecting, '重试关闭主题面板前不得处于重连').toBe(false);
+  expect(current.some(node => node.res === 'game-settings-close-button' && node.enabled),
+    '主题面板仍在时关闭按钮必须可点击').toBe(true);
+  await gameTapCurrent(device, 'game-settings-close-button');
+  await gameGone(device, 'game-settings-card-theme-simple');
 }
 
 /**
@@ -30,27 +74,35 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
  * @param device - 专用模拟器连接。
  * @param marker - 当前面板标记。
  */
-async function gameMaskClosePoint(device: AndroidDevice, marker: string): Promise<{ x: number; y: number }> {
-  const { bounds } = await gameReady(device, 'screen-mask-touch-to-close');
-  const panel = (await gameReady(device, marker)).bounds;
-  const points = [
-    { x: bounds.x + bounds.width - 8, y: bounds.y + Math.min(80, bounds.height / 2) },
-    { x: bounds.x + 8, y: bounds.y + Math.min(80, bounds.height / 2) },
-    { x: bounds.x + bounds.width - 8, y: bounds.y + bounds.height - 32 },
-  ];
-  const point = points.find(item => item.x < panel.x || item.x > panel.x + panel.width
-    || item.y < panel.y || item.y > panel.y + panel.height);
-  expect(point, '遮罩上应有未被当前面板覆盖的区域').toBeDefined();
-  return point!;
+async function gameMaskClosePoint(device: AndroidDevice, marker: string,
+  maskMarker = 'screen-mask-touch-to-close'): Promise<{ x: number; y: number }> {
+  const { bounds } = await gameReady(device, maskMarker);
+  const panel = marker === 'in-game-chat-content-container'
+    ? nativeChatPanelBounds(await device.nodes(), device.screenSize) : (await gameReady(device, marker)).bounds;
+  return gameMaskPoint(bounds, panel, device.screenSize);
 }
 
 /** 点击已定位的遮罩空白处，并等待当前面板关闭。
  * @param device - 专用模拟器连接。
  * @param marker - 当前面板标记。
  */
-export async function closeGameMask(device: AndroidDevice, marker: string): Promise<void> {
-  const point = await gameMaskClosePoint(device, marker);
+export async function closeGameMask(device: AndroidDevice, marker: string,
+  maskMarker = 'screen-mask-touch-to-close'): Promise<void> {
+  const point = await gameMaskClosePoint(device, marker, maskMarker);
   await device.input.tap({ x: Number(String(Math.round(point!.x))), y: Number(String(Math.round(point!.y))) });
+  // Run 39808962563 returned from a real mask tap with the hall drawer still
+  // mounted. Confirm the same mask and panel persist before one more tap;
+  // do not mistake a Connecting overlay or a delayed 300 ms exit for success.
+  if ((await gameNodes(device)).some(node => node.res === marker)) {
+    await setTimeout(1_000);
+    const settled = await gameNodes(device);
+    if (settled.some(node => node.res === marker)) {
+      expect(settled.some(node => node.res === maskMarker && node.visible !== false),
+        '重试关闭前，原遮罩必须仍可见').toBe(true);
+      expect(gameConnectionState(settled).connecting, '重试关闭前，牌桌不能处于重连遮挡').toBe(false);
+      await device.input.tap({ x: Math.round(point.x), y: Math.round(point.y) });
+    }
+  }
   await gameGone(device, marker);
 }
 
@@ -104,12 +156,12 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   if (phase !== 'second') {
     if (phase !== 'middle') {
       await capture('waiting_table');
-      if (game === 'zhajinhua' && animationInfo) {
+      if (animationInfo) {
         const arrows = (await gameNodes(device)).filter(node => node.res?.startsWith('seat-guide-')
           && node.bounds.width > 0 && node.bounds.height > 0);
         expect(arrows, '九个空座箭头必须分别可见').toHaveLength(9);
-        await captureMovingKeyframes(device, 'zhajinhua-seat-guides', animationInfo,
-          arrows.map(node => node.bounds));
+        await captureMovingKeyframes(device, `${game}-seat-guides`, animationInfo,
+          arrows.map(node => seatGuideMotionBounds(node.bounds)));
       }
       await animateGamePanel(device, game, 'drawer-menu', 'menu-button',
         screenBounds(device, { x: 120, y: 300, width: 180, height: 500 }), animationInfo, 'enter',
@@ -147,11 +199,14 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
           });
         await gameGone(device, 'game-rule-popup');
       }
+      // 拼三张首组在规则出入场后结束；主题、设置、买入及续费由独立中组
+      // 完整执行，避免13次原片处理累计超过单例90分钟预算。
+      if (phase === 'first') return;
     }
     for (const [state, ready, close] of [
       ['theme', 'game-settings-card-theme-simple', 'game-settings-close-button'],
       ['settings', 'game-settings-popup-container', 'game-settings-close-button'],
-      ['buy_in', 'texas-holdem-buy-in-popup-visible-marker', 'buy-in-close-button'],
+      ['buy_in', 'buy-in-title', 'buy-in-close-button'],
       ['renew', 'renew-popup-close-button', 'renew-popup-close-button'],
     ]) {
       // 重连遮罩会短暂盖住菜单按钮；等真实牌桌恢复后再点击下一项。
@@ -198,7 +253,7 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
       await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
         { timeout: 45_000 }).toBe(false);
     }
-    if (phase === 'first' || phase === 'middle') return;
+    if (phase === 'middle') return;
   }
   await animateGamePanel(device, game, 'leaderboard',
     game === 'texas-holdem' ? 'texas-holdem-leaderboard-button' : 'zhajinhua-learder-borard-button',
@@ -208,56 +263,47 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await capture('leaderboard');
   await closeAnimatedGameMask(device, game, 'leaderboard', 'public-leader-board-container',
     screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
-  for (let attempt = 0; attempt < 3; attempt++) {
-    try {
-      await animateGamePanel(device, game, 'game-record', 'game-record-button',
-        screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), animationInfo, 'enter', 'videoFrames', [],
-        async () => { await gameReady(device, 'review-board-description-text'); });
-      break;
-    } catch (error) {
-      // 短侧滑偶尔整段落在录屏的两帧之间；只在缺少合格中途帧时关闭真实侧栏并重采。
-      if (attempt === 2 || !String(error).includes('动画中途帧的实际画面须接近已审查轨迹')) throw error;
-      const retryMask = (await gameReady(device, 'screen-mask-touch-to-close')).bounds;
-      await device.input.tap({ x: Number(String(Math.round(retryMask.x + 8))), y: Number(String(Math.round(retryMask.y + 80))) });
-      await gameGone(device, 'screen-mask-touch-to-close');
-      await setTimeout(1_000);
-      await gameConnected(device, 2_000);
-    }
-  }
+  await animateGamePanel(device, game, 'game-record', 'game-record-button',
+    screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), animationInfo, 'enter', 'videoFrames', [],
+    async () => { await gameReady(device, 'review-board-description-text'); });
   await gameReady(device, 'review-board-description-text');
   await capture('game_record');
   // 战绩从右侧展开；说明文字只占面板中间，不能用其边界判断遮罩位置。
-  const reviewMask = (await gameReady(device, 'screen-mask-touch-to-close')).bounds;
-  /** 点击侧栏外的遮罩，触发真实侧滑退出。 */
-  const closeRecord = () => device.input.tap({ x: Number(String(Math.round(reviewMask.x + 8))), y: Number(String(Math.round(reviewMask.y + 80))) });
+  await gameReady(device, 'screen-mask-touch-to-close');
+  const reviewPanel = nativeReviewPanelBounds(await device.nodes(), device.screenSize);
+  /** 确认后台房间连接稳定，再点击侧栏外遮罩触发一次真实侧滑退出。 */
+  const closeRecord = async () => {
+    await gameConnectedCurrent(device, 2_000);
+    // 录屏预热与连接等待后重新观测遮罩，不能沿用数十秒前的点击条件。
+    await gameTapCurrent(device, 'screen-mask-touch-to-close', mask =>
+      gameMaskPoint(mask, reviewPanel, device.screenSize));
+  };
   if (animationInfo) await captureNativeTransition(device, `${game}-game-record-exit`, animationInfo,
     screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), closeRecord, [], [], 0,
-    game === 'zhajinhua' ? 'videoFrames' : 'motionFrames');
+    game === 'zhajinhua' ? 'videoFrames' : 'motionFrames', undefined, async () => {
+      // 39574774993 的原片末帧仍在重连，解码后截图已恢复；必须在同一次
+      // 录屏内等到真实终态，不能丢弃末帧或把 Connecting 遮罩排除比较。
+      // 39587639168的整树查询把退场录成74秒/1806帧，解码超过3分钟。
+      // 同次原生元素查询只观察目标与连接提示，保留关闭和持续就绪条件。
+      await gameGoneCurrent(device, 'review-board-description-text');
+      await gameConnectedCurrent(device, 2_000);
+    });
   else await closeRecord();
   await gameGone(device, 'review-board-description-text');
   await animateGamePanel(device, game, 'chat', `${game}-chat-button`,
     screenBounds(device, { x: 110, y: 860, width: 140, height: 310 }), animationInfo, 'enter', 'videoFrames');
-  await gameReady(device, 'in-game-chat-container');
+  // 长时间原片分析后房间可能正在独立重连；39572958229 的聊天仍挂载，
+  // 但 Connecting 遮罩使全部聊天控件不可见。先等待连接恢复再验证静态面板。
+  await gameConnected(device, 2_000);
+  await gameReady(device, 'in-game-chat-content-container');
   await capture('chat');
-  const chat = (await gameReady(device, 'in-game-chat-mask')).bounds;
+  const chatPoint = await gameMaskClosePoint(device, 'in-game-chat-content-container', 'in-game-chat-mask');
   /** 点击聊天抽屉外的真实遮罩。 */
-  const closeChat = () => device.input.tap({ x: Number(String(Math.round(chat.x + 8))), y: Number(String(Math.round(chat.y + 80))) });
-  if (animationInfo) {
-    for (let attempt = 0; attempt < 3; attempt++) {
-      try {
-        await captureNativeTransition(device, `${game}-chat-exit`, animationInfo,
-          screenBounds(device, { x: 110, y: 760, width: 140, height: 500 }), closeChat, [], [], 0, 'videoFrames');
-        break;
-      } catch (error) {
-        // 模拟器录屏偶尔在 300ms 退场期间重复上一帧；只对缺失中途采样重新触发真实抽屉。
-        if (attempt === 2 || !String(error).includes('必须采到起点和终点之间的真实动画帧')) throw error;
-        await gameGone(device, 'in-game-chat-container');
-        await tap(device, `${game}-chat-button`);
-        await gameReady(device, 'in-game-chat-container');
-      }
-    }
-  } else await closeChat();
-  await gameGone(device, 'in-game-chat-container');
+  const closeChat = () => device.input.tap(chatPoint);
+  if (animationInfo) await captureNativeTransition(device, `${game}-chat-exit`, animationInfo,
+    screenBounds(device, { x: 110, y: 760, width: 140, height: 500 }), closeChat, [], [], 0, 'videoFrames');
+  else await closeChat();
+  await gameGone(device, 'in-game-chat-content-container');
   // 聊天抽屉退场后房间偶尔独立重连；下一段动画的起点必须是无遮挡的真实牌桌。
   await gameConnected(device, 2_000);
   await animateGamePanel(device, game, 'buy-in-applications', 'buy-in-application-button',
@@ -276,35 +322,46 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
  * 两种玩法共用卡牌主题、牌桌背景和开关操作，维持同样的原生验证。
  * @param device - 专用模拟器连接。
  * @param capture - 当前玩法的共享状态截图入口。
+ * @param animationInfo - 德州录屏分段的测试附件入口。
  */
-export async function captureGameThemes(device: AndroidDevice, capture: Capture): Promise<void> {
+export async function captureGameThemes(device: AndroidDevice, capture: Capture,
+  animationInfo?: TestInfo): Promise<void> {
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
   for (const theme of ['four-color', 'four-color-two', 'realistic']) {
-    await tap(device, `game-settings-card-theme-${theme}`);
+    const selectTheme = () => gameTapCurrent(device, `game-settings-card-theme-${theme}`);
+    if (theme === 'four-color' && animationInfo && animationRecordOnly) {
+      // The themes shard compares static screenshots and must also publish a
+      // real native MP4 for the 25-group recording gallery.
+      await captureNativeTransition(device, 'texas-holdem-theme-four-color', animationInfo,
+        { x: 0, y: 0, ...device.screenSize }, selectTheme);
+    } else await selectTheme();
     await capture(`theme_${theme.replaceAll('-', '_')}`);
   }
-  await tap(device, 'game-settings-card-theme-simple');
-  await tap(device, 'game-settings-close-button');
-  await gameGone(device, 'game-settings-card-theme-simple');
+  await gameTapCurrent(device, 'game-settings-card-theme-simple');
+  await closeThemeSettings(device);
   for (const background of ['blue', 'purple', 'black']) {
     await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-    await tap(device, `game-settings-background-${background}`);
-    await tap(device, 'game-settings-close-button');
-    await gameGone(device, 'game-settings-card-theme-simple');
+    await gameTapCurrent(device, `game-settings-background-${background}`);
+    await closeThemeSettings(device);
     await capture(`table_${background}`);
   }
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-  await tap(device, 'game-settings-background-green');
-  await tap(device, 'game-settings-close-button');
-  await gameGone(device, 'game-settings-card-theme-simple');
+  await gameTapCurrent(device, 'game-settings-background-green');
+  await closeThemeSettings(device);
   await gameMenu(device, 'settings', 'game-settings-popup-container');
   let count = 0;
   for (const name of ['sound-effect', 'vibrate', 'player-voice', 'show-card', 'operation-time', 'see-remain-card', 'shake-avatar']) {
     const selector = { res: `game-settings-switch-${name}` };
-    if (!(await gameNodes(device)).some(node => node.res === selector.res)) continue;
-    if (!(await gameReady(device, selector.res)).checked) await tap(device, selector.res);
-    await expect.poll(async () => (await gameReady(device, selector.res)).checked,
-      { timeout: 30_000 }).toBe(true);
+    const current = (await gameNodes(device)).find(node => node.res === selector.res);
+    if (!current) continue;
+    // The checked query can take longer than its poll timeout after a valid tap.
+    // The final native screenshot compares each visible switch position.
+    if (!current.checked) {
+      await tap(device, selector.res, false, undefined, undefined, bounds => ({
+        x: Math.round(bounds.x + bounds.height / 2),
+        y: Math.round(bounds.y + bounds.height / 2),
+      }));
+    }
     count++;
   }
   expect(count).toBeGreaterThanOrEqual(4);

@@ -1,12 +1,12 @@
+import { texasRaiseControls, texasRaiseRegion } from './texas-raise-region';
 import { screenPoint } from './screen-geometry';
 import { screenBounds } from './screen-geometry';
-import { readFileSync } from 'node:fs';
-import { baselinePath } from './baseline-path.mjs';
 import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { Mitmproxy } from '../../e2e/helpers/mitmproxy-client';
+import { initialCoinBalance } from '../../scripts/prepare-test-account.mjs';
 import { events, REPLAY_PLAYER_IDS, restoreTable, type Street } from '../../visual/cases/texas-holdem/replayData';
-import { flattenNodes, gameConnected, gameReady, gameGone, gameTap, gameNodes, gameScreenshot,
+import { flattenNodes, gameConnected, gameReady, gameGone, gameTap, gameNodes,
   gameSemanticText } from './game-controls';
 import { replay, gameCardNames } from './game-replay';
 import { closeAnimatedGameMask, closeGameMask } from './game-pregame';
@@ -16,8 +16,11 @@ import { captureNativeTransition, captureTransientTransition } from './animation
 import { animateGamePanel } from './game-panel-animation';
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureAssetSequence } from './asset-sequence';
-import { motionParts, samePixels } from './motion-regions';
-import { maskScreenshot } from './screenshot';
+import { nativeOwnCardRegion, nativeCommunityCardRegion } from './texas-card-region';
+import { playerCountdown } from './game-countdown';
+import { capturePlayerCountdown } from './game-countdown-capture';
+import { stableNativeObservation } from './native-stability';
+import { waitForProfileReadiness } from './profile-readiness';
 
 /**
  * 复用网页的德州消息夹具，覆盖各街、操作、摊牌、结算和玩家资料。
@@ -40,6 +43,18 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
   /** 在发送时生成全压事件的时间戳。 */
   const allIn = () => events([{ event: 'all_in', player_id: REPLAY_PLAYER_IDS[0], amount: 960, stack: 0 },
     { event: 'all_in_show_hole_card', players: [{ player_id: REPLAY_PLAYER_IDS[0], hole_card: ['kh', 'ks'] }] }]);
+  /** 明牌会覆盖全压标签；从当前可见玩家的子树确认动作和清零筹码，并确认明牌容器。 */
+  const allInReady = async () => {
+    await expect.poll(async () => {
+      const player = (await gameNodes(device))
+        .find(node => node.res === `texas-holdem-player-container-${REPLAY_PLAYER_IDS[0]}`);
+      return player ? {
+        allIn: flattenNodes(player).some(node => node.res === 'texas-holdem-player-action-all_in'),
+        stack: gameSemanticText(player, 'text-holdem-opponent-balance-text'),
+      } : null;
+    }, { timeout: 45_000 }).toEqual({ allIn: true, stack: '0' });
+    await gameReady(device, 'texas-holdem-player-hole-cards');
+  };
   /** 在发送时生成摊牌事件的时间戳。 */
   const showdown = () => events([{ event: 'showdown', players: [
     { player_id: self, hole_card: ['as', 'ad'], best_cards: ['as', 'ad', 'ah', 'kd', 'qs'],
@@ -65,33 +80,40 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       river: screenBounds(device, { x: 492, y: 603, width: 78, height: 117 }),
     };
     if (animationInfo && !opponent) {
-      /** 起手牌先建立背面牌位，再下发手牌；整批状态与手牌同帧渲染会跳过翻牌中间帧。 */
-      const publish = async () => {
+      // hand_card 是恢复快照，只在座位状态提交时读取；单独延后发送不会翻牌。
+      // 先恢复两张背面牌，确认真实牌位后，再用实时 deal_hole_card 消息触发翻牌。
+      if (street === 'preflop') {
         const state = restoreTable(self, street, opponent);
-        if (street !== 'preflop') { await send(state); return; }
-        const hand = state.queue.find(item => item.event === 'hand_card');
-        if (!hand) throw new Error('起手牌回放缺少 hand_card 事件。');
-        await send({ ...state, queue: state.queue.filter(item => item !== hand) });
-        await new Promise(resolve => setTimeout(resolve, 400));
-        await send(events([hand]));
-      };
+        await send({ ...state, queue: state.queue.map(item => item.event === 'hand_card'
+          ? { ...item, hole_card: ['back', 'back'] } : item) });
+        await expect(async () => {
+          const current = nativeOwnCardRegion(await gameNodes(device), self, device.screenSize);
+          expect(current.cards).toEqual(['back', 'back']);
+          regions.preflop = current.bounds;
+        }).toPass({ timeout: 30_000, intervals: [250] });
+      } else {
+        const previousCount = { flop: 0, turn: 3, river: 4 }[street];
+        await gameCardNames(device, 'community_card', 'community_card_name_text',
+          ['ah', 'kd', '7c', '2s', 'qs'].map((card, index) => index < previousCount ? card : 'back'));
+        regions[street] = nativeCommunityCardRegion(await gameNodes(device), street, device.screenSize);
+      }
+      const publish = () => street === 'preflop'
+        ? send(events([{ event: 'deal_hole_card', player_id: self, hole_card: ['as', 'ad'] }]))
+        // game_status restores public cards with show(); only start_street calls
+        // deal() and the actual 300 ms CardFlip transition in the pinned app.
+        : send(events([{ event: 'start_street', street,
+          community_card: ['ah', 'kd', '7c', '2s', 'qs'].slice(0, { flop: 3, turn: 4, river: 5 }[street]) }]));
       /** 四种翻牌动作均可能短于原生截图间隔，改用持续录屏。 */
-      for (let attempt = 0; attempt < 2; attempt++) {
-        try {
-          await captureNativeTransition(device, `texas-${street}-cards`, animationInfo, regions[street], publish,
-            [], [], 0, 'videoFrames', undefined, undefined,
-            street === 'preflop' ? ['texas-preflop-cards-backed.png', 'texas-preflop-cards-turning.png'] : []);
-          break;
-        } catch (error) {
-          if (attempt || street === 'preflop' || !/必须采到起点和终点之间的真实动画帧|动画中途帧的实际画面须接近已审查轨迹/
-            .test(String(error))) throw error;
-          const previous = { flop: 'preflop', turn: 'flop', river: 'turn' } as const;
-          await send(restoreTable(self, previous[street]));
-          const count = { preflop: 0, flop: 3, turn: 4 }[previous[street]];
-          await gameCardNames(device, 'community_card', 'community_card_name_text',
-            ['ah', 'kd', '7c', '2s', 'qs'].map((card, index) => index < count ? card : 'back'));
-          await new Promise(resolve => setTimeout(resolve, 400));
-        }
+      await captureNativeTransition(device, `texas-${street}-cards`, animationInfo, regions[street], publish,
+        [], [], 0, 'videoFrames', undefined, undefined,
+        street === 'preflop' ? ['texas-preflop-cards-backed.png', 'texas-preflop-cards-turning.png'] : []);
+      if (street === 'preflop') {
+        expect(nativeOwnCardRegion(await gameNodes(device), self, device.screenSize).cards.sort(),
+          '实时发牌完成后必须显示指定的两张本人手牌').toEqual(['ad', 'as']);
+      } else {
+        // Restore pots/actions for the separate static scenario only after the
+        // real flip recording and all its motion assertions have passed.
+        await send(restoreTable(self, street, opponent));
       }
     } else await send(restoreTable(self, street, opponent));
     const count = { preflop: 0, flop: 3, turn: 4, river: 5 }[street];
@@ -105,9 +127,10 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     for (const street of ['preflop', 'flop', 'turn', 'river'] as const) {
       await restore(street);
       if (street === 'preflop' && animationInfo) {
-        const timer = (await gameNodes(device)).find(node => node.res === 'texas-holdem-active-countdown');
-        expect(timer, '德州本人操作倒计时必须可见').toBeDefined();
-        await captureMovingKeyframes(device, 'texas-operation-countdown', animationInfo, [timer!.bounds]);
+        // Flip analysis can outlast the restored clock. Start a fresh real
+        // countdown before its independent recording, not during that recording.
+        await capturePlayerCountdown(device, 'texas-holdem', self, animationInfo, () =>
+          send(events([{ event: 'operating_time_changed', player_id: self, remain_operating_seconds: 120 }])));
       }
       await capture(street);
     }
@@ -116,35 +139,33 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     await gameReady(device, 'raise-bet-popup');
     await capture('raise');
     if (animationInfo) {
-      const slider = (await gameReady(device, 'raise-bet-slider')).bounds;
-      const thumb = (await gameReady(device, 'sliderThumb')).bounds;
-      const popup = (await gameReady(device, 'raise-bet-popup')).bounds;
-      const initialRaise = (await gameReady(device, 'raise-bet-display-text')).text;
+      const nodes = await device.nodes();
+      const controls = texasRaiseControls(nodes);
+      const slider = controls.slider.bounds, thumb = controls.thumb.bounds;
+      const popup = texasRaiseRegion(nodes, device.screenSize);
+      const initialRaise = controls.value.text;
       await captureNativeTransition(device, 'texas-raise-slider', animationInfo,
         popup,
         () => device.input.swipe({ x1: thumb.x + thumb.width / 2, y1: thumb.y + thumb.height / 2,
           x2: slider.x + slider.width / 2, y2: slider.y + slider.height * 0.4, duration: 450 }),
-        [screenBounds(device, { x: 285, y: 725, width: 160, height: 35,
-          reason: '加注滑块后面的牌局倒计时独立跳秒' })], [], 0, 'videoFrames',
-        undefined, undefined, [], ['texas-raise-slider-end-500.png', 'texas-raise-slider-end-492.png'],
-        [screenBounds(device, { x: 120, y: 250, width: 160, height: 105,
-          reason: '终点加注数字由拖动采样量化；完整标签保留在报告，数值另用原生文本断言' })]);
-      expect((await gameReady(device, 'raise-bet-display-text')).text,
-        '真实拖动必须改变加注数值').not.toBe(initialRaise);
+        [], [], 0, 'videoFrames',
+        undefined, undefined, [], ['texas-raise-slider-end-500.png', 'texas-raise-slider-end-492.png']);
+      const finalRaise = texasRaiseControls(await device.nodes()).value.text;
+      expect(finalRaise, '真实拖动必须产生有效加注数字').toMatch(/^\d+$/);
+      expect(Number(finalRaise), '向上拖动必须提高实际加注数值').toBeGreaterThan(Number(initialRaise));
+      expect(Number(finalRaise), '加注不能超过本轮真实夹具的1000筹码').toBeLessThanOrEqual(1000);
+      expect(Number(finalRaise) % 2, '本轮加注步长必须仍为2').toBe(0);
     }
     // 原生录屏确认取消按钮直接移除面板，没有可供回归的退场过渡帧。
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await gameConnected(device);
-      await gameTap(device, 'raise-bet-cancel-button');
-      try {
-        await expect.poll(async () => (await gameNodes(device)).some(node => node.res === 'raise-bet-popup'),
-          { timeout: 10_000, intervals: [250] }).toBe(false);
-        break;
-      } catch (error) {
-        if (attempt === 2) throw error;
-      }
-    }
-    await gameGone(device, 'raise-bet-popup');
+    await gameTap(device, 'raise-bet-cancel-button');
+    // Full-table visibility queries can outlive a 10s poll budget. The first
+    // cancel in run 39530806154 removed the popup; retrying then searched for
+    // an already-removed button. Observe the actual target twice, once per
+    // completed native query, without repeating the action.
+    await stableNativeObservation(() => device.transientMarker('raise-bet-popup'), (previous, current) => {
+      expect(previous, '取消后加注面板必须已移除').toBeNull();
+      expect(current, '取消后加注面板必须持续消失').toBeNull();
+    }, { timeout: 45_000, interval: 250 });
     await animateGamePanel(device, 'texas-holdem', 'accurate-bet', 'texas-holdem-operation-accurate-bet-button',
       screenBounds(device, { x: 120, y: 360, width: 480, height: 330 }), animationInfo, 'enter', 'videoFrames');
     await gameReady(device, 'accurate-bet-popup-container');
@@ -156,7 +177,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     await restore('river', true);
     if (animationInfo) {
       await send(events([{ event: 'switch_player', player_id: REPLAY_PLAYER_IDS[0],
-        valid_bets: { call: { amount: 20 } } }]));
+        remain_operating_seconds: 120, valid_bets: { call: { amount: 20 } } }]));
       await gameGone(device, 'texas-holdem-operation-button-raise');
       await expect.poll(async () => (await gameNodes(device))
         .some(node => node.res?.startsWith('texas-holdem-auto-button-')), { timeout: 30_000 }).toBe(true);
@@ -164,13 +185,14 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       await new Promise(resolve => setTimeout(resolve, 1000));
       await captureNativeTransition(device, 'texas-operation-buttons', animationInfo,
         screenBounds(device, { x: 100, y: 865, width: 500, height: 150 }), () => send(events([{ event: 'switch_player',
-          player_id: self, valid_bets: { fold: {}, call: { amount: 20 },
+          player_id: self, remain_operating_seconds: 120, valid_bets: { fold: {}, call: { amount: 20 },
             raise: { minimum: 40, maximum: 1000 }, all_in: { amount: 1000 } },
         }])), [], [], 400);
       await gameReady(device, 'texas-holdem-operation-button-raise');
       await restore('river', true);
     }
-    await send(events([{ event: 'switch_player', player_id: REPLAY_PLAYER_IDS[0], valid_bets: { call: { amount: 20 } } }]));
+    await send(events([{ event: 'switch_player', player_id: REPLAY_PLAYER_IDS[0],
+      remain_operating_seconds: 120, valid_bets: { call: { amount: 20 } } }]));
     await gameGone(device, 'texas-holdem-operation-button-raise');
     await capture('opponent_turn');
     if (animationInfo) {
@@ -179,16 +201,17 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       for (const action of ['call', 'raise', 'check', 'fold'] as const) {
         await restore('river', true);
         await send(events([{ event: 'switch_player', player_id: actionPlayer,
-          remain_operating_seconds: 12 }]));
+          remain_operating_seconds: 120 }]));
         /** 从本轮指定玩家读取实际可见动作，忽略其他座位仍保留的操作标记。 */
         const playerAction = async () => {
           const player = (await gameNodes(device)).find(node => node.res?.startsWith(`texas-holdem-player-container-${actionPlayer}`));
           return player && flattenNodes(player).some(node => node.res === `texas-holdem-player-action-${action}`);
         };
         await expect.poll(playerAction, { timeout: 30_000 }).toBe(false);
-        await gameReady(device, 'texas-holdem-active-countdown');
+        playerCountdown(await gameNodes(device), actionPlayer, 'texas-holdem');
         await captureNativeTransition(device, `texas-player-action-${action}`, animationInfo,
-          // 动作标签右侧不与玩家头像倒计时重叠，可完整观察标签而无需遮罩。
+          // 此处仅传占位范围；animationRegion 根据实际玩家和动作节点
+          // 解析完整目标，不能再把动作裁成旧 Android 坐标下的窄条。
           screenBounds(device, { x: 132, y: 465, width: 63, height: 130 }),
           () => send(events([{ event: action, player_id: actionPlayer, amount: 40, stack: 920 }])),
           [], [], 0, 'videoFrames');
@@ -196,20 +219,20 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
       }
       await restore('river', true);
       await send(events([{ event: 'switch_player', player_id: REPLAY_PLAYER_IDS[0],
-        valid_bets: { call: { amount: 20 } } }]));
+        remain_operating_seconds: 120, valid_bets: { call: { amount: 20 } } }]));
       // 上一轮弃牌的标签退场和座位切换会继续绘制一小段时间；
       // 等它们结束后再取全压特效的第一帧，确保第一帧是稳定的起点。
       await new Promise(resolve => setTimeout(resolve, 1200));
     }
     if (animationInfo) await captureNativeTransition(device, 'texas-all-in-fire', animationInfo,
       screenBounds(device, { x: 0, y: 650, width: 250, height: 225 }), () => send(allIn()),
-      [screenBounds(device, { x: 65, y: 695, width: 70, height: 90, reason: '全压特效旁的对手操作秒数独立跳秒' })], [], 1600);
+      [], [], 1600);
     else await send(allIn());
-    await gameReady(device, 'texas-holdem-player-action-all_in');
+    await allInReady();
     await capture('all_in');
     if (animationInfo) await captureNativeTransition(device, 'texas-showdown', animationInfo,
       screenBounds(device, { x: 0, y: 580, width: 600, height: 600 }), () => send(showdown()),
-      [screenBounds(device, { x: 334, y: 720, width: 110, height: 47, reason: '摊牌旁的房间计时独立跳秒' })], [], 1600,
+      [], [], 1600,
       'videoFrames', undefined, async () => {
         // 房间重连提示偶尔在录屏结束后盖住牌面，等稳定牌桌再校验终点。
         await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
@@ -230,7 +253,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     // 新房间重建已审查结算画面，再独立验证道具、表情和玩家资料。
     await restore('river', true);
     await send(allIn());
-    await gameReady(device, 'texas-holdem-player-action-all_in');
+    await allInReady();
     await new Promise(resolve => setTimeout(resolve, 1600));
     await send(showdown());
     await new Promise(resolve => setTimeout(resolve, 1600));
@@ -258,10 +281,6 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     }
   }
   let opponentProfileCount = 0;
-  const profileNetworkMask = [screenBounds(device, { x: 635, y: 145, width: 85, height: 65,
-    reason: '玩家资料后面的实时网络延迟独立变化' })];
-  const ownProfileMasks = [...profileNetworkMask,
-    screenBounds(device, { x: 226, y: 338, width: 115, height: 30, reason: '本人资料 ID 随测试账号池轮转' })];
   /**
    * 打开玩家资料，等待统计数据实际完成加载。
    * @param player - 共享夹具玩家或本人 ID。
@@ -271,27 +290,44 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
     expect(node).toBeDefined();
     const name = player === self ? 'own-profile' : `opponent-profile-${++opponentProfileCount}`;
     const region = screenBounds(device, { x: 180, y: 90, width: 520, height: 500 });
-    const masks = player === self ? ownProfileMasks : profileNetworkMask;
-    await animateGamePanel(device, 'texas-holdem', name,
-      node!.res!, region, animationInfo, 'enter', 'videoFrames', masks,
-      async () => {
-        await gameReady(device, 'PlayerStatisticComponent_Item_Value_0');
-        if (!animationInfo || process.env.IOS_VISUAL_MODE !== 'compare') return;
-        const expected = readFileSync(baselinePath(`texas-holdem-${name}-enter-end.png`));
-        // 统计值节点可能先于下方加载圈出现；等整个已审查面板真正绘制完成。
-        await expect.poll(async () => {
-          const actual = motionParts(maskScreenshot(await gameScreenshot(device), masks), [region]).regions[0];
-          return samePixels(actual, expected);
-        }, { timeout: 45_000, intervals: [300] }).toBe(true);
+    const statisticsStatus = async () => (await proxy.command<{
+      selfStatistics: { authorized: boolean; responses: number };
+    }>('status')).selfStatistics;
+    if (player === self) {
+      const status = await statisticsStatus();
+      await animationInfo?.attach('texas-self-statistics-before-profile', {
+        body: JSON.stringify(status), contentType: 'application/json',
       });
-    await gameReady(device, 'player-profile-popup-close');
-    await gameReady(device, 'PlayerStatisticComponent_Item_Value_0');
+      expect(status.authorized, '本人只读统计夹具必须绑定本轮真实新建房间及当前self').toBe(true);
+    }
+    await animateGamePanel(device, 'texas-holdem', name,
+      node!.res!, region, animationInfo, 'enter', 'videoFrames', [],
+      async () => {
+        // Run 39543731649 rendered the fixture's real 100, but direct lookup
+        // still returned no statistics row during recording. Its subsequent
+        // complete tree contains the exact visible row. Observe that full
+        // native tree only after the uninterrupted entrance recording.
+        try {
+          await waitForProfileReadiness(device, player === self ? initialCoinBalance : '12345');
+          if (player === self) expect((await statisticsStatus()).responses,
+            '本人统计必须实际经过本轮只读GET夹具').toBeGreaterThan(0);
+        } finally {
+          if (player === self) await animationInfo?.attach('texas-self-statistics-after-profile', {
+            body: JSON.stringify(await statisticsStatus()), contentType: 'application/json',
+          });
+        }
+        // captureNativeTransition still independently compares the complete
+        // native endpoint (including every statistic) with the original video.
+      });
+    // The captured endpoint already has the complete visible popup. A second
+    // XCTest query can stall for 90s despite that recorded evidence.
+    await gameReady(device, 'PlayerStatisticComponent_Item_Value_0', '100');
   };
   await profile(self);
   await capture('own_profile');
   await animateGamePanel(device, 'texas-holdem', 'own-profile', 'player-profile-popup-close',
     screenBounds(device, { x: 180, y: 90, width: 520, height: 500 }), animationInfo,
-    'exit', 'videoFrames', ownProfileMasks,
+    'exit', 'videoFrames', [],
     async () => { await gameGone(device, 'player-profile-popup-close'); });
   await gameGone(device, 'player-profile-popup-close');
   await profile(REPLAY_PLAYER_IDS[0]);
@@ -315,7 +351,7 @@ export async function texasGameplay(device: AndroidDevice, proxy: Mitmproxy, roo
   await capture('block');
   await animateGamePanel(device, 'texas-holdem', 'opponent-profile-2', 'player-profile-popup-close',
     screenBounds(device, { x: 180, y: 90, width: 520, height: 500 }), animationInfo,
-    'exit', 'videoFrames', profileNetworkMask,
+    'exit', 'videoFrames', [],
     async () => { await gameGone(device, 'player-profile-popup-close'); });
   expect((await proxy.command<{ replayedMessages: number }>('status')).replayedMessages).toBeGreaterThan(0);
 }

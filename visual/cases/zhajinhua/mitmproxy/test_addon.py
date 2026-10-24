@@ -28,6 +28,29 @@ class ZhajinhuaAddonTests(unittest.TestCase):
         self.addon.request(request)
         return request
 
+    def test_readiness_is_authenticated_read_only_and_errors_are_redacted(self):
+        self.addon.created_room_id = ROOM
+        replay = self.addon.replay
+        before = (replay.room_id, replay.replayed_messages)
+        request = flow('http://test-mitmproxy.invalid/zhajinhua/replay-ready', 'POST',
+                       json.dumps({'roomId': ROOM}).encode(), 'test-token')
+        self.addon.control(request)
+        self.assertEqual(request.response.status_code, 200)
+        self.assertFalse(request.response.json()['ready'])
+        self.assertEqual((replay.room_id, replay.replayed_messages), before)
+        unauthorized = flow('http://test-mitmproxy.invalid/zhajinhua/replay-ready', 'POST',
+                            json.dumps({'roomId': ROOM}).encode())
+        self.addon.control(unauthorized)
+        self.assertEqual(unauthorized.response.status_code, 403)
+        rejected = flow('http://test-mitmproxy.invalid/zhajinhua/replay', 'POST',
+                        json.dumps({'roomId': ROOM, 'data': {'private': 'secret'}}).encode(), 'test-token')
+        self.addon.control(rejected)
+        self.assertEqual(rejected.response.status_code, 400)
+        self.assertEqual(rejected.response.json()['errorCode'], 'room_not_subscribed')
+        self.assertEqual(rejected.response.json()['confirmedSubscriptions'], 0)
+        for value in (ROOM, 'test-token', 'secret'):
+            self.assertNotIn(value, rejected.response.text)
+
     def test_only_successful_zhajinhua_creation_owns_replay(self):
         for kwargs in ({'game_type': 'texas_react_native'}, {'ok': False}, {'room': '123456'},
                        {'host': 'production.example.com'}, {'method': 'PUT'}):

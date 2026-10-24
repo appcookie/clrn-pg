@@ -1,0 +1,101 @@
+{
+  "runId": 39563456373,
+  "sourceCommit": "7245c143a55d38b37397ce82c05e136c95e9547c",
+  "appCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+  "sourceMedia": "texas-holdem-personal-leaderboard-enter-xctest-original-dbfb0aa4f6e4a6e44a52871191456072f5e310ab.mov",
+  "sourceMediaSha256": "b1d211419534d231900801f9a00513c73c57db312e119d39889ec6c9c840cd04",
+  "screen": {
+    "width": 1178,
+    "height": 2556
+  },
+  "region": {
+    "x": 0,
+    "y": 0,
+    "width": 930,
+    "height": 2556
+  },
+  "nodes": [
+    {
+      "clazz": "XCUIElementTypeOther",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 930,
+        "height": 2556
+      },
+      "visible": true,
+      "enabled": true,
+      "children": []
+    },
+    {
+      "res": "personal-leader-board-close-button",
+      "clazz": "XCUIElementTypeOther",
+      "bounds": {
+        "x": 767,
+        "y": 2334,
+        "width": 103,
+        "height": 105
+      },
+      "visible": true,
+      "enabled": true,
+      "children": []
+    },
+    {
+      "res": "personal-leader-board-nickname",
+      "clazz": "XCUIElementTypeStaticText",
+      "bounds": {
+        "x": 392,
+        "y": 633,
+        "width": 145,
+        "height": 54
+      },
+      "visible": true,
+      "enabled": true,
+      "children": []
+    },
+    {
+      "res": "personal-leader-board-round",
+      "clazz": "XCUIElementTypeStaticText",
+      "bounds": {
+        "x": 0,
+        "y": 804,
+        "width": 930,
+        "height": 63
+      },
+      "visible": true,
+      "enabled": true,
+      "children": []
+    },
+    {
+      "res": "personal-leader-board-profit",
+      "clazz": "XCUIElementTypeStaticText",
+      "bounds": {
+        "x": 0,
+        "y": 894,
+        "width": 930,
+        "height": 63
+      },
+      "visible": true,
+      "enabled": true,
+      "children": []
+    }
+  ],
+  "files": {
+    "before": {
+      "frameIndex": 0,
+      "ptsSeconds": 0,
+      "sha256": "453e4ecc8f2800da098a7cf9169dade09c85d578490b79fbbad9234b4880fa9d"
+    },
+    "loading": {
+      "frameIndex": 2,
+      "ptsSeconds": 4.73,
+      "sha256": "5ea8074befbdfe5abd2c8f11af78b4e8969f0d45fb939e07d6813b61a405e41a"
+    },
+    "after": {
+      "frameIndex": 8,
+      "ptsSeconds": 9.181667,
+      "sha256": "93f68a0407367007ba23fb6106bc829856665abc2b584f1d6ce79e5ee0f4163e"
+    }
+  },
+  "purpose": "Real original-frame crops: negative evidence only. First visible sidebar is already full size; text loading is not slide motion. Synthetic translations in tests are algorithm examples, not native positives."
+}

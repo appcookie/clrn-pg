@@ -1,0 +1,34 @@
+{
+  "purpose": "Regression-only rejected XCTest sampling. No true horizontal spread was captured, and these images must never enter baseline inventory.",
+  "run": 39555899245,
+  "sourceCommit": "6d634ba36ff8ffe2b2a3526f5b2e16448f6a155c",
+  "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+  "artifact": 12328946579,
+  "sourceVideo": "zhajinhua-showdown-cards-native-video-f497ebe3d82157b3f0f4a4e5c985140caa113ebe.mp4",
+  "sourceVideoSha256": "b1c64f1e0b87d037f32ef2d43e2d19aef23f8232e7bdf9f2b0d1efdc61f2d730",
+  "region": {
+    "x": 0,
+    "y": 1370,
+    "width": 295,
+    "height": 254
+  },
+  "nativeGeometryNote": "Before: earlier opponent-turn native tree, same player and geometry, not exact capture beforeNodes. After: later failure tree, not exact capture afterNodes. Original trees remain in diagnostic artifact. Native visibility values are preserved.",
+  "nativeStateSha256": "fcd9dd16598f4b0fa2c20578079f93eb2c08b7df11bbc52365ff7d9c5a37acf0",
+  "frames": {
+    "first": {
+      "frameIndex": 0,
+      "file": "first.png",
+      "sha256": "8a5499ff60524447cec7a427320205ee334a17535331439c8b177d80ae274bf3"
+    },
+    "sprite-loading": {
+      "frameIndex": 45,
+      "file": "sprite-loading.png",
+      "sha256": "592391bc86c298bd7ddaad37e6b87b8e15107371f561244908731fc63d18893d"
+    },
+    "end": {
+      "frameIndex": 174,
+      "file": "end.png",
+      "sha256": "47db4ed7e6b63cf0246b618440eb1d7d70c9040f5188b288052dd1f5f050a350"
+    }
+  }
+}

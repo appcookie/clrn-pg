@@ -1,66 +1,66 @@
+// 短提示先开始原生录像，再单次触发；停止后从原片关键帧验证文字和像素。
 import { assertVisual } from './device';
 import { expect, type TestInfo } from '@playwright/test';
-import type { NativeDevice as AndroidDevice } from './native-device';
-import { setTimeout } from 'node:timers/promises';
-import type { NativeNode } from './game-controls';
+import type { NativeDevice } from './native-device';
 import { subtractPanel } from './game-masks';
-import { samePixels } from './motion-regions';
 import { maskScreenshot, type ScreenshotMask } from './screenshot';
+import { recordNativeVideoFrames } from './video-frames';
+import { comparePixels } from '../visual.mjs';
+import { toastKeyframes } from './toast-keyframes';
+import { recordedToastPanel } from './toast-panel';
+import { recognizeRecordedText, assertRecordedToastText } from './recorded-text';
+import { animationRecordOnly } from './record-only';
 
-type Frame = { before: NativeNode; after: NativeNode; panel: NativeNode; capturedAt: number; png: string };
+const statisticsHelp: Record<string, string> = {
+  en: 'It means actively investing money in the pot',
+  'zh-Hans': '表示主动投钱到底池',
+  'zh-Hant': '表示主動投錢到底池',
+};
 
-/**
- * 在设备上连续采集短时提示，先检查节点与真实位图，再编码传回；不延长提示或改变动画。
- * @param device - 固定原生驱动连接。
- * @param name - 共用场景的截图名。
- * @param testInfo - 当前测试报告。
- * @param backgroundMasks - 提示出现前准备的背景动态区域。
- * @param expectedText - 操作分支应出现的语义文字。
- */
-export async function captureToast(device: AndroidDevice, name: string, testInfo: TestInfo,
-  backgroundMasks: ScreenshotMask[], expectedText?: string): Promise<void> {
-  const frames: Frame[] = [];
-  const deadline = Date.now() + 4000;
-  while (Date.now() < deadline) {
-    const before = await device.marker('toastText1');
-    if (!before?.text) {
-      if (frames.length) break;
-      await setTimeout(40);
-      continue;
-    }
-    const png = await device.nativeScreenshot();
-    const after = await device.marker('toastText1');
-    if (!after?.text) break;
-    const panel = (await device.marker('toast-container')) || before;
-    frames.push({ before, after, panel, capturedAt: Date.now(), png: png.toString('base64') });
+/** 保留完整录像，即使后续语义、关键帧或基准验证失败也能回看本次动作。 */
+export async function captureToast(device: NativeDevice, name: string, testInfo: TestInfo,
+  backgroundMasks: ScreenshotMask[], trigger: () => Promise<string | void>,
+  record = recordNativeVideoFrames, recognize = recognizeRecordedText,
+  locate = recordedToastPanel): Promise<void> {
+  if (animationRecordOnly) {
+    await record(device, name, { x: 0, y: 0, ...device.screenSize }, trigger, testInfo, 3500, 1);
+    return;
   }
-  await testInfo.attach(`${name}-frames`, {
-    body: JSON.stringify(frames.map(({ png: _png, ...metadata }) => metadata)), contentType: 'application/json',
+  let expectedText: string | void;
+  const frames = await record(device, name, { x: 0, y: 0, ...device.screenSize }, async () => {
+    expectedText = await trigger();
+  }, testInfo, 3500, 10, undefined, 'xctest');
+  if (!expectedText! && name.endsWith('-statistics-help')) {
+    expectedText = statisticsHelp[Object.keys(statisticsHelp).find(locale => name.startsWith(`${locale}-`)) ?? ''];
+  }
+  expect(expectedText!, '短提示必须有明确的可见文案预期').toBeTruthy();
+  const { bounds: panel, frameIndices, panels } = await locate(frames);
+  const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, panel));
+  const indices = await toastKeyframes(frames, panel, masks, frameIndices);
+  const observations = await recognize(indices.map(index => frames[index]));
+  const padding = Math.ceil(device.screenSize.width / 100);
+  const textPanels = indices.map(index => {
+    const bounds = panels[frameIndices.indexOf(index)];
+    // 保护区含动画路径与阴影；文字必须位于本张实际白色横幅内部，
+    // 不能把路径中的状态栏或横幅下方网络延迟的同名数字当成提示。
+    return { x: bounds.x + padding, y: bounds.y + padding,
+      width: bounds.width - padding * 2, height: bounds.height - padding * 2 };
   });
-  expect(frames.length, '提示可见时必须采集至少两帧真实屏幕').toBeGreaterThanOrEqual(2);
-  let reference: Buffer | undefined;
-  let stableSince = 0;
-  let stable: Buffer | undefined;
-  for (const [index, frame] of frames.entries()) {
-    expect(frame.before.text, '截图前提示必须可见').toBeTruthy();
-    expect(frame.after.text, '截图后提示文字必须保持一致').toBe(frame.before.text);
-    if (expectedText) expect(frame.before.text).toContain(expectedText);
-    expect(frame.panel, '提示面板不能被背景遮罩覆盖').toBeTruthy();
-    const masks = backgroundMasks.flatMap(mask => subtractPanel(mask, frame.panel.bounds));
-    const original = Buffer.from(frame.png, 'base64');
-    const current = maskScreenshot(original, masks);
-    await testInfo.attach(`${name}-frame-${index}-original`, { body: original, contentType: 'image/png' });
-    await testInfo.attach(`${name}-frame-${index}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
-    if (JSON.stringify(frame.before.bounds) !== JSON.stringify(frame.after.bounds)) {
-      reference = undefined;
-      continue;
-    }
-    if (!reference || !samePixels(current, reference)) {
-      reference = current;
-      stableSince = frame.capturedAt;
-    } else if (frame.capturedAt - stableSince >= 250) stable = current;
+  await testInfo.attach(`${name}-toast-observation`, {
+    body: JSON.stringify({ source: 'recorded-keyframe-ocr', expectedText: expectedText!, panel, textPanels, observations }),
+    contentType: 'application/json',
+  });
+  expect(observations).toHaveLength(3);
+  observations.forEach((lines, index) => assertRecordedToastText(lines, expectedText!, textPanels[index], device.screenSize));
+  const keyframes = [];
+  for (const [order, index] of indices.entries()) {
+    const attachment = `${name}-verified-keyframe-${order + 1}`;
+    await testInfo.attach(attachment, { body: frames[index], contentType: 'image/png' });
+    keyframes.push({ attachment, timestampMs: frames.timestampsMs![index], frameIndex: frames.sourceFrameIndices?.[index] ?? index });
   }
-  expect(stable, '提示存在期间全部未遮罩像素必须连续稳定至少 250 毫秒').toBeDefined();
-  await testInfo.attach(name, { body: stable!, contentType: 'image/png' });
-  await assertVisual(stable!, `${name}.png`, testInfo);
+  await testInfo.attach(`${name}-video-keyframes`, { body: JSON.stringify(keyframes), contentType: 'application/json' });
+  await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
+  const representative = maskScreenshot(frames[indices[1]], masks);
+  for (const index of indices) expect(comparePixels(maskScreenshot(frames[index], masks), representative).matches).toBe(true);
+  await assertVisual(representative, `${name}.png`, testInfo);
 }

@@ -1,0 +1,51 @@
+{
+  "purpose": "真实牌谱端点33ms/40ms网络状态差异回归；不是新的动画基准",
+  "sources": [
+    {
+      "file": "baseline-ping.png",
+      "run": "39553909322",
+      "originalFile": "ios/snapshots/v1/texas-holdem/table/texas-records-enter/ios/iphone16-ios18.5/en/animation/start.png",
+      "originalSha256": "f04148a2999d4a0c53530b11bedc761ffb038f7780ece475f90010b2b0e32a47",
+      "cropInOriginal": {
+        "x": 738,
+        "y": 132,
+        "width": 192,
+        "height": 210
+      },
+      "cropOnScreen": {
+        "x": 986,
+        "y": 132,
+        "width": 192,
+        "height": 210
+      },
+      "sourceCommit": "e9bd74d5c12008d3535f426a72ee68824e46a16e",
+      "applicationCommit": "b99077e07427f469838aeb34811975cda4fe2487",
+      "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39553909322",
+      "artifactName": "ios-texas-en-animation-19-1",
+      "sha256": "8c559506516ed506e57e060d9e39237e7460553623730da4ee22556a83eeeb68"
+    },
+    {
+      "file": "current-ping.png",
+      "run": "39566245056",
+      "originalFile": "full-results/report.json#attachment:texas-holdem-game-record-enter-start",
+      "originalSha256": "ededc09e9910986b2c759f39c89a0a828ffa4818778eada9e8e0d967c63afc1f",
+      "cropInOriginal": {
+        "x": 738,
+        "y": 132,
+        "width": 192,
+        "height": 210
+      },
+      "cropOnScreen": {
+        "x": 986,
+        "y": 132,
+        "width": 192,
+        "height": 210
+      },
+      "sourceCommit": "0fd6326b7d69306959680052cd6d8f876a7d5c87",
+      "applicationCommit": "114d3ae16e85f71356daf43de1f74269c493c174",
+      "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/39566245056",
+      "artifactName": "ios-texas-en-animation-19-1",
+      "sha256": "04265ce217fb274df7897a509b2b228aabb78bf639e4d84c804bae1a7f5a87e4"
+    }
+  ]
+}

@@ -1,8 +1,9 @@
+import { recentNativeCrashes } from './native-crash';
 import type { NativeDevice } from './native-device';
 import type { TestInfo } from '@playwright/test';
 import { PNG } from 'pngjs';
 
-type DiagnosticNode = { res?: string; clazz?: string; bounds?: unknown; enabled?: boolean; checked?: boolean;
+type DiagnosticNode = { res?: string; clazz?: string; bounds?: unknown; enabled?: boolean; checked?: boolean; visible?: boolean;
   secure?: boolean; text?: string; children?: DiagnosticNode[] };
 
 /** nodes() 同时返回父节点及其子节点；先建立整个对象图的敏感上下文，再处理每个根。 */
@@ -11,7 +12,8 @@ function sensitiveNodes(nodes: DiagnosticNode[]) {
   const containers = new Set<DiagnosticNode>();
   const visit = (node: DiagnosticNode, inherited = false): boolean => {
     const secret = inherited || !!node.secure || /TextField|TextView|Keyboard/.test(node.clazz || '')
-      || /password|username|email|phone|confirmation-input|token/i.test(node.res || '');
+      || (node.res !== 'in-game-audio-microphone-button'
+        && /password|username|email|phone|confirmation-input|token/i.test(node.res || ''));
     if (secret) secrets.add(node);
     const descendants = (node.children || []).map(child => visit(child, secret));
     if (secret || descendants.some(Boolean)) containers.add(node);
@@ -26,7 +28,7 @@ export function safeNativeTree(nodes: DiagnosticNode[]): unknown[] {
   const { secrets, containers } = sensitiveNodes(nodes);
   const redact = (node: DiagnosticNode): unknown => ({
     res: containers.has(node) ? '[redacted]' : node.res, clazz: node.clazz, bounds: node.bounds,
-    enabled: node.enabled, checked: node.checked,
+    enabled: node.enabled, checked: node.checked, visible: node.visible,
     text: secrets.has(node) || containers.has(node) ? '[redacted]' : node.text,
     children: node.children?.map(redact),
   });
@@ -56,7 +58,13 @@ export function safeFailureScreenshot(bytes: Buffer, nodes: DiagnosticNode[]): B
 /** 先获得脱敏所需树；树不可读时不退回输出原始屏幕。 */
 export async function captureFailure(device: NativeDevice, testInfo: TestInfo): Promise<void> {
   const nodes = await device.nodes().catch(() => undefined);
-  if (!nodes) return;
+  if (!nodes) {
+    if (!device.applicationId) return;
+    const crashes = await recentNativeCrashes(device.applicationId).catch(error => ({ diagnosticError: String(error) }));
+    await testInfo.attach('native-app-crash-summary', { body: JSON.stringify(crashes),
+      contentType: 'application/json' }).catch(() => {});
+    return;
+  }
   await testInfo.attach('failure-accessibility', { body: JSON.stringify(safeNativeTree(nodes)), contentType: 'application/json' }).catch(() => {});
   await device.nativeScreenshot().then(body => testInfo.attach('failure-screen-redacted', {
     body: safeFailureScreenshot(body, nodes), contentType: 'image/png',

@@ -21,7 +21,10 @@ export async function visualNetworkRouter(options: { realPrivateRoom?: boolean; 
     route: async (matcher: Matcher, handler: Handler) => { routes.push({ matcher, handler }); },
     /** 原生端通过 country 接口设置国家区号，无浏览器存储初始化。 */
     addInitScript: async () => {},
-  } as unknown as BrowserContext, options);
+  // The native bridge already uses VisualNetwork in mitmproxy. Registering the
+  // browser-only status/metadata mocks here would replace real upstream health
+  // with a fabricated healthy node and its IP with 127.0.0.1.
+  } as unknown as BrowserContext, { ...options, useMitmproxy: true });
   return async (url: string) => {
     const selected = [...routes].reverse().find(({ matcher }) => {
       if (typeof matcher === 'function') return matcher(new URL(url));

@@ -711,7 +711,7 @@ Navigation and visual state overlap; full functional assertion parity is NOT est
 - **hall matching spinner modal enter and exit** — `visual/animations/application.spec.ts:63`。Projects=mobile, desktop。Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.
 - **staging notice fades and scales in on launch** — `visual/animations/dialogs.spec.ts:9`。Projects=mobile, desktop。Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.
 - **share link confirmation dialog enter and exit** — `visual/animations/dialogs.spec.ts:35`。Projects=mobile, desktop。Web-only .web.js dialog; Android uses OS share sheet.
-- **zh-Hans mobile guest search prompt fades in** — `visual/animations/search-prompt.spec.ts:27`。Projects=mobile。Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.
+- **en mobile guest search prompt fades in** — `visual/animations/search-prompt.spec.ts:27`。Projects=mobile。Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.
 - **club list placeholders pulse while details are pending** — `visual/animations/skeleton.spec.ts:5`。Projects=mobile, desktop。Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.
 - **slot reels and all three reward animations** — `visual/animations/slot.spec.ts:6`。Projects=mobile, desktop。Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.
 - **slot panel and no-energy dialog enter and exit** — `visual/animations/slotPopups.spec.ts:7`。Projects=mobile, desktop。Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.
@@ -1545,8 +1545,10 @@ TypeScript 类型检查和 lint 均通过。
 
 ## 原生视觉与动画映射补全（执行仍待验证）
 
+动画清单共有 25 组。当前 PR 自动门禁比较未隔离组的静态截图，并为其中 20 组保留可观看的原始 MP4；其余 5 组在 [隔离目录](../ios/full/quarantined/README.md)逐项列出，暂不运行，也不能视为通过。下文关于中间帧、相位、轨迹及循环变化的描述是后续验证目标，现阶段不在 CI 中断言；实施方案见 [React Native #7056](https://github.com/kevinanew/laiwan_react_native/issues/7056)。
+
 共享清单提供 89 个流程/258 个状态，两个独立启动测试补齐 `launch_staging_notice` 与 `launch_branding`，得到 Web mobile 的 **91 个流程、260 个状态/语言**。`ios/full/web-visual-map.ts` 将每个源状态关联到实际注册的测试；契约对三语言分别核对精确状态集合及 Playwright 收集结果。英文 `signed_in_texas_hall/level_up` 由原生升级提示的出现、倒计时、消失关键帧替代同名静态图，因此英文是 **259 个静态状态 + 1 个动画状态**，不能称为 260 张静态图。其他语言保留该静态状态。
 
-`docs/web-coverage-source.json` 中 21 个 Web 动画标题均列出原生测试、语言和平台差异，收集契约拒绝缺失入口或预期跳过。新增 `web-animation-parity.spec.ts` 补齐简体中文游客搜索文案及开关/重开动画、大厅匹配面板入场、品牌固定位置像素的渐进淡入，以及实际 iOS 系统分享面板进退场。已有匹配旋转循环仍独立比较。分享测试检查 Copy 和系统分享目标选项并取消，不触发对外发送；Web 复制链接确认框是浏览器专属，不在 iOS 伪造该对话框。
+`docs/web-coverage-source.json` 中 21 个 Web 动画标题均列出原生测试、语言和平台差异，收集契约拒绝缺失入口或预期跳过。所有原生动画仅采集英文；游客搜索复用 `animation-transitions.spec.ts` 的英文入退场基准，并检查英文文案及关闭后重开，不再单独录制中文动画。`web-animation-parity.spec.ts` 保留大厅匹配面板入场、品牌固定位置像素的渐进淡入，以及实际 iOS 系统分享面板进退场。已有匹配旋转循环仍独立比较。分享测试检查 Copy 和系统分享目标选项并取消，不触发对外发送；Web 复制链接确认框是浏览器专属，不在 iOS 伪造该对话框。
 
-原生动画保留 MP4、真实编码时戳、起点/终点及中间帧。品牌淡入采用同一位置像素的透明混合拟合，要求两个逐渐变清晰的中间相位，拒绝静止终态、突然跳变或全屏闪光；不把 DOM/CSS opacity 或浏览器虚拟时钟强加给 UIKit。**以上补充目前只通过 TypeScript、纯算法测试和实际测试收集，尚无新增四例的模拟器运行结果。** 若 Release 缺少原生品牌标识或系统分享入口，用例会明确失败，不会跳过或退回仅检查文件存在。
+原生动画保留 MP4、真实编码时戳、起点/终点及中间帧。品牌淡入采用同一位置像素的透明混合拟合，要求两个逐渐变清晰的中间相位，拒绝静止终态、突然跳变或全屏闪光；不把 DOM/CSS opacity 或浏览器虚拟时钟强加给 UIKit。**以上补充目前只通过 TypeScript、纯算法测试和实际测试收集，登录业务组的模拟器执行结果仍需分别验证。** 若 Release 缺少原生品牌标识或系统分享入口，用例会明确失败，不会跳过或退回仅检查文件存在。

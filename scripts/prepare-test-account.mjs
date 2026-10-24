@@ -3,6 +3,18 @@ import { randomUUID } from 'node:crypto';
 const stagingOrigin = 'https://api.shafayouxi.org';
 export const initialCoinBalance = '10000';
 
+/** Only emit known transport codes, never an exception message containing request secrets. */
+export function transportFailureCode(error) {
+  const code = error?.cause?.code || error?.code;
+  const allowed = new Set(['ENOTFOUND', 'EAI_AGAIN', 'ECONNRESET', 'ECONNREFUSED',
+    'ETIMEDOUT', 'UND_ERR_CONNECT_TIMEOUT', 'UND_ERR_SOCKET', 'CERT_HAS_EXPIRED',
+    'UNABLE_TO_VERIFY_LEAF_SIGNATURE', 'UNABLE_TO_GET_ISSUER_CERT_LOCALLY',
+    'DEPTH_ZERO_SELF_SIGNED_CERT', 'ERR_TLS_CERT_ALTNAME_INVALID']);
+  if (allowed.has(code)) return code;
+  if (error?.name === 'TimeoutError' || error?.name === 'AbortError') return 'REQUEST_TIMEOUT';
+  if (error?.cause?.message === 'unexpected redirect') return 'REDIRECT_REFUSED';
+  return 'TRANSPORT_ERROR';
+}
 /**
  * 从环境或本机 staging 部署文件读取测试令牌，持续集成禁止回退到文件。
  * @param environment - 当前进程的环境配置。
@@ -29,8 +41,8 @@ async function requestJson(path, method, body, headers, stage) {
       method, headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify(body), redirect: 'error', signal: AbortSignal.timeout(15_000),
     });
-  } catch {
-    throw new Error(`${stage}请求失败`);
+  } catch (error) {
+    throw new Error(`${stage}请求失败（${transportFailureCode(error)}）`);
   }
   if (!response.ok) throw new Error(`${stage}失败（HTTP ${response.status}）`);
   let result;

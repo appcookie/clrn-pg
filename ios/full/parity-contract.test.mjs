@@ -37,6 +37,12 @@ test('iOS面板裁切采用实际容器位置，含safe area偏移；退出采�
   const enter = animationRegion('texas-holdem-settings-enter',[],[node],device,fallback);
   assert.deepEqual(enter.bounds, {x:136,y:616,width:908,height:1208});
   assert.deepEqual(animationRegion('texas-holdem-settings-exit',[node],[],device,fallback),enter);
+  // Native failure report: the club menu starts at y=207, above the old
+  // Android-derived crop. Its iOS identifier is the presented popup container.
+  const menu = { res: 'popup-content-container', bounds: { x: 767, y: 207, width: 376, height: 375 } };
+  const club = animationRegion('club-more-enter', [], [menu], device, fallback);
+  assert.deepEqual(club.bounds, { x: 763, y: 203, width: 384, height: 383 });
+  assert.deepEqual(animationRegion('club-more-exit', [menu], [], device, fallback), club);
 });
 
 test('尚未校准的Android比例遮罩不能遮掉iOS真实像素', async () => {
