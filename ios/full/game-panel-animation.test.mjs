@@ -185,6 +185,38 @@ test('profile退场、其他入口和其他玩法仍保留原采样前准备顺�
   }
 });
 
+test('菜单面板入场在录屏预热后重新确认目标位置并只点击一次', async () => {
+  let recording = false, prepared = false, reads = 0;
+  const taps = [], attachments = new Map();
+  const item = { res: 'drawer-menu-item-settings', visible: true, enabled: true,
+    bounds: { x: 40, y: 20, width: 30, height: 40 } };
+  const prewarmupBounds = { ...item.bounds, x: 10 };
+  const device = {
+    screenSize: screen,
+    nodes: async () => { throw new Error('菜单入口不应沿用录屏预热前的整树'); },
+    prepareTransientCapture: async () => { prepared = true; },
+    inputObservation: async () => {
+      assert.equal(recording, true, '目标查询必须发生在录屏期间');
+      assert.equal(prepared, true, '查询前必须准备原生属性');
+      reads++;
+      return [item];
+    },
+    input: { tap: async point => { taps.push(point); } },
+  };
+  await animateGamePanel(device, 'zhajinhua', 'settings', item.res, prewarmupBounds,
+    { attach: async (name, attachment) => attachments.set(name, attachment) },
+    'enter', 'videoFrames', [], undefined, [],
+    async (_device, _name, _info, _region, trigger) => {
+      recording = true;
+      await trigger();
+      recording = false;
+    });
+  assert.ok(reads >= 2, '点击前必须取得两份稳定的当前观测');
+  assert.deepEqual(taps, [{ x: 55, y: 40 }], '只能点击录屏期间确认的真实中心');
+  const timing = JSON.parse(attachments.get('zhajinhua-settings-enter-tap-timing').body);
+  assert.deepEqual(timing.point, taps[0]);
+});
+
 const node = (res, x, y, width, height, text) => ({
   res,
   text,
