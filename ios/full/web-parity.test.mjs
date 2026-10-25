@@ -14,9 +14,9 @@ function collect(locale) {
   const specs=[]; const visit = suite => { specs.push(...(suite.specs || [])); for(const child of suite.suites || [])visit(child); };
   report.suites.forEach(visit); return specs;
 }
-test('Web91流程260状态逐个对应实际注册的三语言原生测试，level_up明确采用动画替代', () => {
+test('Web92流程261状态逐个对应实际注册的三语言原生测试，level_up明确采用动画替代', () => {
   const expected = source.visualMobileFlows.flatMap(row => row.snapshotStates.map(state => `${row.pageLabel}/${state}`)).sort();
-  assert.equal(source.visualMobileFlows.length,91); assert.equal(expected.length,260);
+  assert.equal(source.visualMobileFlows.length,92); assert.equal(expected.length,261);
   for(const locale of ['en','zh-Hans','zh-Hant']) {
     const mapping=webVisualMapping(locale), specs=collect(locale);
     assert.deepEqual(mapping.map(row=>`${row.pageLabel}/${row.state}`).sort(),expected);

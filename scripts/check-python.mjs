@@ -2,7 +2,7 @@
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 const python = resolve('e2e/.venv/bin/python');
-for (const directory of ['ios/full', 'e2e/mitmproxy', 'visual/cases/texas-holdem/mitmproxy',
+for (const directory of ['ios/full', 'e2e/mitmproxy', 'visual/cases/club/mitmproxy', 'visual/cases/texas-holdem/mitmproxy',
   'visual/cases/zhajinhua/mitmproxy', 'visual/cases/game-record/mitmproxy']) {
   const result = spawnSync(python, ['-m', 'unittest', 'discover', '-s', directory, '-p', 'test_*.py'], { stdio: 'inherit' });
   if (result.error) throw result.error;

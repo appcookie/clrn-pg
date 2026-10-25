@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceRepository": "https://github.com/kevinanew/clrn",
-  "sourceCommit": "3974319d1c72a964dad3d2c8d5862fbd255cc03b",
+  "sourceCommit": "b9c1b4719d39666c308c6d95fc8c52a41ddf430f",
   "androidComparisonCommit": "36112e1aadba49a83c4b36005363bfe24f94d0db",
   "summary": {
     "functionalCaseDirectories": 42,
@@ -11,10 +11,10 @@
     "animationsMatrixTests": 41,
     "interactionsDistinctTests": 8,
     "interactionsMatrixTests": 16,
-    "visualMobileFlowsPerLocale": 91,
-    "visualMobileStatesPerLocale": 260,
-    "visualAllLocaleViewportFlows": 402,
-    "visualAllLocaleViewportStates": 1416,
+    "visualMobileFlowsPerLocale": 92,
+    "visualMobileStatesPerLocale": 261,
+    "visualAllLocaleViewportFlows": 408,
+    "visualAllLocaleViewportStates": 1422,
     "functionalCreationDistinctTests": 7,
     "functionalExistingDistinctTests": 53
   },
@@ -3080,6 +3080,21 @@
       "visualReadySelector": "[data-testid=\"club-rooms-empty-view\"]",
       "browserOnly": false,
       "androidOverlap": "Shared mobile visual flow; game/record suites adapted separately.",
+      "snapshotStates": [
+        "default"
+      ]
+    },
+    {
+      "pageLabel": "signed_in_club_rooms_populated",
+      "group": "club",
+      "signIn": true,
+      "tabTestId": "club-tab",
+      "navClickTestIds": [
+        "club_tab_room"
+      ],
+      "visualReadySelector": "[data-testid=\"club-rooms-list\"]",
+      "browserOnly": false,
+      "androidOverlap": "原生端经 mitmproxy 提供两条固定牌局并采集独立截图。",
       "snapshotStates": [
         "default"
       ]
