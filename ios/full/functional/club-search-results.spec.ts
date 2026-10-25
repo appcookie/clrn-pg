@@ -3,6 +3,7 @@ import { expect, test } from '@playwright/test';
 import { nativeTest } from './shared/register';
 import { success } from './shared/api';
 import { waitForClubReady } from '../guest-club-ready';
+import { compareScreenshot } from '../device';
 
 type ClubSearchStatus = { active: boolean; searchRequests: number; detailsRequests: number };
 
@@ -30,5 +31,5 @@ nativeTest('functional', 'CLUB-007/1 俱乐部搜索命中固定结果并显示�
   expect(status.searchRequests, '原生界面应发出一次搜索请求').toBe(1);
   expect(status.detailsRequests, '原生界面应读取一次命中俱乐部资料').toBe(1);
   await ui.device.hideKeyboard();
-  await test.info().attach('俱乐部搜索命中结果', { body: await ui.device.screenshot(), contentType: 'image/png' });
+  await compareScreenshot(ui.device, 'en-signed-in-club-search-result', test.info());
 }, '3ac209aa87c5eb802e90c8e06a413cfd2c740522:e2e/cases/club-007-search-mocked-result/test.spec.ts:1');
