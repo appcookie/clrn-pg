@@ -15,6 +15,7 @@ from game_session import GameSession
 from launch_network import LaunchNetwork
 from network_observer import NetworkObserver
 from transport_diagnostics import TransportDiagnostics
+from club_search_fixture import ClubSearchFixture
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'e2e/mitmproxy'))
 from network_faults import NetworkFaults
 from response_overrides import is_staging
@@ -27,6 +28,7 @@ class IosVisualProxy:
         self.transport = TransportDiagnostics()
         self.functional = os.environ.get('IOS_FUNCTIONAL') == 'true'
         self.faults = NetworkFaults()
+        self.club_search_fixture = ClubSearchFixture()
         self.presentation = AccountPresentation()
         self.records = None
         self.game = None
@@ -181,6 +183,23 @@ class IosVisualProxy:
         self.observer.done()
 
     async def request(self, flow):
+        path = urlsplit(flow.request.path).path
+        if flow.request.host == 'test-mitmproxy.invalid' and path == '/ios/club-search':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, '无权访问'.encode())
+                return
+            if flow.request.method == 'POST':
+                try:
+                    self.club_search_fixture.configure(json.loads(flow.request.content)['active'])
+                except (ValueError, KeyError, TypeError):
+                    flow.response = http.Response.make(400, '俱乐部搜索配置无效'.encode())
+                    return
+            elif flow.request.method != 'GET':
+                flow.response = http.Response.make(405, '请求方法不受支持'.encode())
+                return
+            flow.response = http.Response.make(200, json.dumps(self.club_search_fixture.status()).encode(),
+                                               {'Content-Type': 'application/json'})
+            return
         if flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/native/transport':
             if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
                 flow.response = http.Response.make(403, b'Forbidden')
@@ -194,6 +213,11 @@ class IosVisualProxy:
         if is_staging(flow.request.host):
             self.observer.request(flow)
         try:
+            club_search_response = self.club_search_fixture.response_for(flow.request)
+            if club_search_response is not None:
+                flow.response = http.Response.make(200, json.dumps(club_search_response).encode(),
+                                                   {'Content-Type': 'application/json'})
+                return
             if is_staging(flow.request.host) and self.observer.override(flow):
                 return
             if self.functional:

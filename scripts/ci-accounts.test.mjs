@@ -72,7 +72,7 @@ test('拼三张英文首中尾和牌局两片覆盖真实收集的全部用例�
     [23, 32, 33, 34].map(offset => allocateCiAccount('123', offset)));
 });
 
-test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或重复', { timeout: 120_000 }, () => {
+test('真实 Playwright 收集的 54 例恰好落入五个均衡分片且无跳过或重复', { timeout: 120_000 }, () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(shard) {
     const args = ['--config', 'ios/full/playwright.config.ts',
@@ -97,9 +97,9 @@ test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或�
   }
   const complete = collect();
   const parts = iosAccountMatrix('123', 'functional', 'en', ciAccounts).include.map(entry => collect(entry.playwrightShard));
-  assert.equal(complete.length, 53);
-  assert.deepEqual(parts.map(part => part.length).sort((a, b) => a - b), [10, 10, 11, 11, 11]);
-  assert.equal(new Set(parts.flat()).size, 53);
+  assert.equal(complete.length, 54);
+  assert.deepEqual(parts.map(part => part.length).sort((a, b) => a - b), [10, 11, 11, 11, 11]);
+  assert.equal(new Set(parts.flat()).size, 54);
   assert.deepEqual(parts.flat().sort(), complete.sort());
 });
 

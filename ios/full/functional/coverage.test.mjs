@@ -20,7 +20,7 @@ function collect(group) {
   }
   return specs;
 }
-test('精确覆盖 Web 60 功能标题，53普通/7创建分组互斥', () => {
+test('覆盖 Web 60 个来源用例及新增搜索命中用例，54 个普通用例与 7 个创建用例互斥', () => {
   const variants = new Map();
   const expected = source.functional.map(entry => {
     const variant = (variants.get(entry.caseId) || 0) + 1; variants.set(entry.caseId, variant);
@@ -28,8 +28,11 @@ test('精确覆盖 Web 60 功能标题，53普通/7创建分组互斥', () => {
   });
   assert.equal(expected.length, 60); assert.equal(new Set(expected.map(e => e.title)).size, 60);
   const existing = collect('functional'); const creation = collect('functional-creation');
-  assert.equal(existing.length, 53); assert.equal(creation.length, 7);
-  assert.deepEqual(existing.map(e => e.title).sort(), expected.filter(e => !e.createsData).map(e => e.title).sort());
+  assert.equal(existing.length, 54); assert.equal(creation.length, 7);
+  assert.deepEqual(existing.map(e => e.title).sort(), [
+    ...expected.filter(e => !e.createsData).map(e => e.title),
+    'CLUB-007/1 俱乐部搜索命中固定结果并显示原生卡片',
+  ].sort());
   assert.deepEqual(creation.map(e => e.title).sort(), expected.filter(e => e.createsData).map(e => e.title).sort());
 });
 test('8个交互和3个弱网实际注册且无伪通过状态', () => {
