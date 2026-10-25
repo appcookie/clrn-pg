@@ -15,7 +15,7 @@
   "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
   "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9",
   "simulator": "iPhone 16 / iOS 18.5",
-  "review": "原有 77 张真实 PNG 保留原始来源与审查结论。新增图片逐图查看真实动画相位，单独在 files[].source 记录通过的采集运行、工作流提交和产物；所有 PNG 校验原始 SHA-256。动画仅保留英文。本次部分更新 6 张英文登录提示静态及搜索动画 PNG；更新图的独立来源在 files[].source，顶层来源仍描述原始基准集合。",
+  "review": "原有 77 张真实 PNG 保留原始来源与审查结论。新增图片逐图查看真实动画相位，单独在 files[].source 记录通过的采集运行、工作流提交和产物；所有 PNG 校验原始 SHA-256。动画仅保留英文。先前部分更新 6 张英文登录提示静态及搜索动画 PNG；更新图的独立来源在 files[].source，顶层来源仍描述原始基准集合。本次针对构建 36 的用户协议页面，仅更新经逐图审查的 en、zh-Hans、zh-Hant 三张原图；每张独立记录运行与产物，保留其余图片的原始来源。",
   "knownIssues": [
     {
       "id": "staging-cta-obscured",
@@ -111,7 +111,19 @@
     },
     {
       "path": "auth/login/login-user-agreement/ios/iphone16-ios18.5/en/page/default.png",
-      "sha256": "f88edb84d37d5a8f3e68783e3a60f0ead2d84ce9dfc05b6d5d613845b323633b"
+      "sha256": "32c339cabaa5048f8990135f0bd1294aa2c09f886a2346a790d4ba646c5c3ae4",
+      "source": {
+        "sourceRun": 40115569013,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/40115569013",
+        "sourceWorkflowHead": "907ad18f6a0817cc0cb76830d0a463452427093a",
+        "sourceArtifacts": [
+          "ios-current-screenshots-en-pages-1"
+        ],
+        "applicationCommit": "c3ff78c66c7aedd586a66c9b09e8849497565365",
+        "releaseTag": "ios-staging-36-1-c3ff78c66c7a",
+        "packageSha256": "f15b44cbbcbfc6325df5513b0ca1822db4c35ebe2113ca7aaa8d5c4d85489407"
+      },
+      "review": "逐图核对构建 36 原图：新增 User Agreement 标题，正文仍为既有 Privacy Policy 文案，字号、颜色与排版改变；标题与正文语义不一致是发布包现状，参考图不表示认可该文案。"
     },
     {
       "path": "auth/login/login-user-privacy/ios/iphone16-ios18.5/en/page/default.png",
@@ -319,7 +331,19 @@
     },
     {
       "path": "auth/login/login-user-agreement/ios/iphone16-ios18.5/zh-Hans/page/default.png",
-      "sha256": "40c00c60aa9e0aeb8e359e08abff7e6a18a4c3dd2bd97943b6107ac6f6892bed"
+      "sha256": "323dcd28aa3dc54aed72df689245e67192297a6eee770b4c194fe824afe937f2",
+      "source": {
+        "sourceRun": 40115569013,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/40115569013",
+        "sourceWorkflowHead": "907ad18f6a0817cc0cb76830d0a463452427093a",
+        "sourceArtifacts": [
+          "ios-current-screenshots-zh-Hans-pages-1"
+        ],
+        "applicationCommit": "c3ff78c66c7aedd586a66c9b09e8849497565365",
+        "releaseTag": "ios-staging-36-1-c3ff78c66c7a",
+        "packageSha256": "f15b44cbbcbfc6325df5513b0ca1822db4c35ebe2113ca7aaa8d5c4d85489407"
+      },
+      "review": "逐图核对构建 36 原图：新增“用户协议”标题，正文仍为既有隐私政策文案，字号、颜色与排版改变；标题与正文语义不一致是发布包现状，参考图不表示认可该文案。"
     },
     {
       "path": "auth/login/login-user-privacy/ios/iphone16-ios18.5/zh-Hans/page/default.png",
@@ -399,7 +423,19 @@
     },
     {
       "path": "auth/login/login-user-agreement/ios/iphone16-ios18.5/zh-Hant/page/default.png",
-      "sha256": "5e74884df6f5b960192893d36fbf3c3fc393f326776222c6d7e462b452e821ef"
+      "sha256": "5342075f600447b4314bb55535995db1a2f1e89b570bb666d56864c96ba6b102",
+      "source": {
+        "sourceRun": 40115569013,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/40115569013",
+        "sourceWorkflowHead": "907ad18f6a0817cc0cb76830d0a463452427093a",
+        "sourceArtifacts": [
+          "ios-current-screenshots-zh-Hant-pages-1"
+        ],
+        "applicationCommit": "c3ff78c66c7aedd586a66c9b09e8849497565365",
+        "releaseTag": "ios-staging-36-1-c3ff78c66c7a",
+        "packageSha256": "f15b44cbbcbfc6325df5513b0ca1822db4c35ebe2113ca7aaa8d5c4d85489407"
+      },
+      "review": "逐图核对构建 36 原图：新增“用戶協議”标题，正文仍为既有隐私政策文案，字号、颜色与排版改变；标题与正文语义不一致是发布包现状，参考图不表示认可该文案。"
     },
     {
       "path": "auth/login/login-user-privacy/ios/iphone16-ios18.5/zh-Hant/page/default.png",
