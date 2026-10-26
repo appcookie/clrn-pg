@@ -74,23 +74,34 @@ export class NativeCase {
   }
   async guest(): Promise<void> { await this.device.reset(); await this.hall(); await this.tap('hall-tab'); this.session = undefined; }
   async signIn(account: Credentials = credentials()): Promise<Session> {
+    let stage = '打开登录表单';
     try {
       await this.loginForm();
+      stage = '填写用户名';
       await this.fill('username-input', account.username);
+      stage = '收起用户名键盘';
       await this.device.hideKeyboard();
+      stage = '填写密码';
       await this.fill('password-input', account.password);
+      stage = '收起密码键盘';
       await this.device.hideKeyboard();
+      stage = '提交登录并等待响应';
       const response = await this.network.waitForResponse({ method: 'POST', path: '/public/v10/user/login/username/password' }, () => this.tap('sign-in-button'));
+      stage = '校验登录响应';
       success(response as ApiResponse);
+      stage = '等待大厅登录态';
       await this.visible('hall-auth-state-signed-in');
+      stage = '读取原生会话';
       const sessions = await this.network.sessions();
       const session = sessions.find((s: any) => s.key === response.session && s.username === account.username);
       if (!session?.userId || !session.authorization) throw new Error('原生真实登录后未观测到完整会话');
       this.session = { ...session, username: account.username } as Session;
+      stage = '核对账户接口';
       expect(await accountStatus(this.session)).toBe(200);
+      stage = '关闭登录后提示';
       await this.dismissNotices();
       return this.session;
-    } catch { await this.device.terminate().catch(() => {}); throw new Error('原生真实登录/会话核验失败；凭据及表单内容未写入诊断'); }
+    } catch { await this.device.terminate().catch(() => {}); throw new Error(`原生真实登录/会话核验失败，阶段：${stage}；凭据及表单内容未写入诊断`); }
   }
   async dismissNotices(): Promise<void> {
     // 只关闭识别出的救济金和隐私提示，未知业务错误保留并使案例失败。

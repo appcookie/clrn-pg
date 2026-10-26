@@ -8,6 +8,16 @@ const group = process.env.CI_IOS_GROUP || 'pr';
 // 游客任务不读取账号 Secret，也不执行账号准备。
 const accounts = group === 'guest' ? [] : availableCiAccounts(process.env.CLRN_IOS_CI_TEST_ACCOUNTS);
 const matrix = iosAccountMatrix(process.env.GITHUB_RUN_ID, group, process.env.CI_IOS_LOCALE || 'all', accounts);
+const requestedFunctionalCase = process.env.CI_FUNCTIONAL_CASE || 'all';
+if (requestedFunctionalCase !== 'all') {
+  if (process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' || group !== 'functional'
+    || requestedFunctionalCase !== 'club-search-results' || matrix.include.length !== 5) {
+    throw new Error('定向功能用例仅允许手动运行英文俱乐部搜索功能组，不能缩减 PR 门禁。');
+  }
+  matrix.include = [{ ...matrix.include[0], shard: 'club-search-results',
+    filter: 'CLUB-007/1 俱乐部搜索命中固定结果并显示原生卡片$', playwrightShard: '',
+    label: 'functional / en / 俱乐部搜索命中结果' }];
+}
 if (process.env.CI_ANIMATION_CASE) {
   if (process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' || !['pr', 'animations', 'quarantined'].includes(group)) {
     throw new Error('单组录屏仅允许显式手动运行，PR 门禁不能缩减');
