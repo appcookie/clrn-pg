@@ -132,10 +132,15 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     // 其余四位玩家的十二张暗牌没有牌名；与 Web 相同，只校验已翻开的三张牌。
     await gameCardNames(device, 'player_card', 'player_card_name_text', ['as', 'ad', 'ac'], { namedOnly: true });
     await expect.poll(async () => Boolean(await currentSeeButton()), { timeout: 30_000 }).toBe(false);
-    // 看牌后的本人操作按钮会随回合时钟出现；先切到对手回合再采集已审查的静态牌面。
+    // 看牌后的本人操作按钮会随回合时钟出现；对手完成跟注后再采集已审查的静态牌面。
     await send(events([{ event: 'switch_player', player_id: PLAYER_IDS[0],
       valid_bets: validBets(false) }]));
     await gameGone(device, 'zhajinhua-operation-button-call');
+    await send(events([{ event: 'call', player_id: PLAYER_IDS[0], amount: 10, stack: 960 }]));
+    await gameGone(device, `zhajinhua-player-container-${PLAYER_IDS[0]}-operating`);
+    await expect.poll(async () => gameSemanticText((await gameNodes(device))
+      .find(node => node.res === `zhajinhua-player-container-${PLAYER_IDS[0]}`), 'player_action_text'),
+    { timeout: 30_000 }).toBe('Call');
     await capture('seen_cards', [screenBounds(device, { x: 260, y: 1075, width: 35, height: 40,
       reason: '看牌后玩家头像下的独立操作秒数仍在跳动' })]);
     const raise = events([{ event: 'raise', player_id: self, amount: 40, stack: 960 },
