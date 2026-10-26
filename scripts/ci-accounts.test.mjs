@@ -52,6 +52,35 @@ test('functional五片账号槽位独立稳定，少量账号只复用已配置�
   assert.match(workflow, /args\+=\(--shard "\$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1\)/);
 });
 
+test('手动俱乐部搜索采图只调度一个用例，PR 事件不能缩减功能组', async () => {
+  const { mkdtempSync, readFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { spawnSync } = await import('node:child_process');
+  const directory = mkdtempSync(join(tmpdir(), 'ios-club-search-plan-'));
+  try {
+    const output = join(directory, 'matrix');
+    const environment = { ...process.env, GITHUB_OUTPUT: output, GITHUB_RUN_ID: '123',
+      GITHUB_EVENT_NAME: 'workflow_dispatch', CI_IOS_GROUP: 'functional', CI_IOS_LOCALE: 'en',
+      CI_FUNCTIONAL_CASE: 'club-search-results', CI_ANIMATION_CASE: '',
+      CLRN_IOS_CI_TEST_ACCOUNTS: JSON.stringify({ accounts: [
+        { username: ciAccounts[0], password: 'fake-password', status: 'ready' },
+      ] }) };
+    const run = overrides => spawnSync(process.execPath, ['scripts/plan-ci-accounts.mjs', 'ios'],
+      { cwd: process.cwd(), env: { ...environment, ...overrides }, encoding: 'utf8' });
+    assert.equal(run({}).status, 0);
+    const matrix = JSON.parse(readFileSync(output, 'utf8').split('\n').find(line => line.startsWith('matrix=')).slice(7));
+    assert.equal(matrix.include.length, 1);
+    assert.equal(matrix.include[0].group, 'functional');
+    assert.equal(matrix.include[0].locale, 'en');
+    assert.equal(matrix.include[0].playwrightShard, '');
+    assert.match(matrix.include[0].filter, /CLUB-007\/1/);
+    assert.notEqual(run({ GITHUB_EVENT_NAME: 'pull_request' }).status, 0);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
 test('拼三张英文首中尾和牌局两片覆盖真实收集的全部用例，新增中组账号不碰旧槽位', () => {
   const entries = iosAccountMatrix('123', 'zhajinhua', 'en', ciAccounts).include;
   const report = JSON.parse(collectPlaywright(['--config', 'ios/full/playwright.config.ts', '--list', '--reporter=json'],
@@ -72,7 +101,7 @@ test('拼三张英文首中尾和牌局两片覆盖真实收集的全部用例�
     [23, 32, 33, 34].map(offset => allocateCiAccount('123', offset)));
 });
 
-test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或重复', { timeout: 120_000 }, () => {
+test('真实 Playwright 收集的 54 例恰好落入五个均衡分片且无跳过或重复', { timeout: 120_000 }, () => {
   const root = fileURLToPath(new URL('../', import.meta.url));
   function collect(shard) {
     const args = ['--config', 'ios/full/playwright.config.ts',
@@ -97,9 +126,9 @@ test('真实Playwright收集的53例恰好落入五个均衡分片且无skip或�
   }
   const complete = collect();
   const parts = iosAccountMatrix('123', 'functional', 'en', ciAccounts).include.map(entry => collect(entry.playwrightShard));
-  assert.equal(complete.length, 53);
-  assert.deepEqual(parts.map(part => part.length).sort((a, b) => a - b), [10, 10, 11, 11, 11]);
-  assert.equal(new Set(parts.flat()).size, 53);
+  assert.equal(complete.length, 54);
+  assert.deepEqual(parts.map(part => part.length).sort((a, b) => a - b), [10, 11, 11, 11, 11]);
+  assert.equal(new Set(parts.flat()).size, 54);
   assert.deepEqual(parts.flat().sort(), complete.sort());
 });
 
