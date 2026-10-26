@@ -9,8 +9,13 @@ import { withIosProxy } from './proxy';
 import { selectLanguage } from './navigation';
 import { captureFailure, safeNativeTree, safeFailureScreenshot } from './diagnostics';
 export const locale = process.env.IOS_LOCALE || 'en';
-export const test = base.extend<{}, { application: { device: NativeDevice; signedIn: boolean; proxy: Mitmproxy } }>({
-  application: [async ({}, use, workerInfo) => {
+export const test = base.extend<{}, {
+  application: { device: NativeDevice; signedIn: boolean; proxy: Mitmproxy };
+  clubRoomsPopulated: boolean;
+}>({
+  // 不同的工作会话选项让有牌局场景独占应用和代理，空态仍使用默认会话。
+  clubRoomsPopulated: [false, { scope: 'worker', option: true }],
+  application: [async ({ clubRoomsPopulated }, use, workerInfo) => {
     if (!process.env.IOS_GROUP || process.env.IOS_GROUP === 'all') throw new Error('原生执行必须指定IOS_GROUP；all只用于收集清单，CI会按组拆分以隔离真实网络与视觉夹具。');
     await withIosProxy(async proxy => {
       const device = await launchApplication();
@@ -18,6 +23,7 @@ export const test = base.extend<{}, { application: { device: NativeDevice; signe
       try {
         await waitForHall(device);
         await selectLanguage(device, locale);
+        if (clubRoomsPopulated) await proxy.command('native/club-rooms', { active: true });
         ready = true;
         await use({ device, signedIn: false, proxy });
       } catch (error) {

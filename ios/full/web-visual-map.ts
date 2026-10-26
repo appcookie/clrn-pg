@@ -15,7 +15,8 @@ export function webVisualMapping(locale = 'en') {
         : row.pageLabel === 'signed_in_texas_game' ? row.snapshotStates!.indexOf(state) < 10 ? '_table' : '_effects'
           : row.pageLabel === 'signed_in_zhajinhua_game' ? '_table' : '';
     return { pageLabel: row.pageLabel, state,
-      file: `ios/full/tests/${kind === 'application' ? 'parity' : kind === 'records' ? 'records' : 'games'}.spec.ts`,
+      file: `ios/full/tests/${row.pageLabel === 'signed_in_club_rooms_populated' ? 'club-rooms-populated'
+        : kind === 'application' ? 'parity' : kind === 'records' ? 'records' : 'games'}.spec.ts`,
       title: `${locale} / ${kind === 'application' || kind === 'records' ? row.group : kind} / ${row.pageLabel}${part}`,
       capture: locale === 'en' && row.pageLabel === 'signed_in_texas_hall' && state === 'level_up' ? 'animated-level-up' : 'static',
     };

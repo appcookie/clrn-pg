@@ -37,4 +37,11 @@ export const pages: SignedInPageDef[] = [
     navClickTestIds: ['create-club'],
     visualReadySelector: '[data-testid="club-profile-list"]',
   },
+  {
+    // 俱乐部与牌局数据由本场景的 mitmproxy 代理提供，放在空态场景之后。
+    label: 'signed_in_club_rooms_populated',
+    tabTestId: 'club-tab',
+    navClickTestIds: ['club_tab_room'],
+    visualReadySelector: '[data-testid="club-rooms-list"]',
+  },
 ];

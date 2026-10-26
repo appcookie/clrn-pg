@@ -4,7 +4,8 @@ import { iosScenarios } from '../scenarios';
 import { navigateScenario, signIn } from '../navigation';
 import { compareScreenshot } from '../device';
 import { screenshotMasks } from '../screenshot';
-for (const scenario of iosScenarios(locale, process.env.IOS_GROUP)) {
+for (const scenario of iosScenarios(locale, process.env.IOS_GROUP)
+  .filter(item => item.pageLabel !== 'signed_in_club_rooms_populated')) {
   test(`${locale} / ${scenario.group} / ${scenario.pageLabel}`, async ({ application }, testInfo) => {
     if (scenario.signIn && !application.signedIn) {
       await signIn(application.device);
