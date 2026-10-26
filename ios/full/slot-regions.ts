@@ -2,6 +2,14 @@ import type { Bounds, NativeNode } from './native-device';
 
 export const slotNoEnergyImage = /\/slot-machine\/.*\/img_out_of_spins@3x\.png$/;
 
+/** 点击大厅横幅右下方可见的旋转入口，避开文字和循环滚动的图案。 */
+export function slotBannerSpinPoint(bounds: Bounds): { x: number; y: number } {
+  if (![bounds.x, bounds.y, bounds.width, bounds.height].every(Number.isFinite)
+    || bounds.width <= 0 || bounds.height <= 0) throw new Error('老虎机横幅缺少有效的原生边界');
+  return { x: Math.round(bounds.x + bounds.width * 0.72),
+    y: Math.round(bounds.y + bounds.height * 0.70) };
+}
+
 /** The released iOS popup has no slot-no-energy-popup-container identifier.
  * Its content, close control and static left gutter remain measurable natively.
  */

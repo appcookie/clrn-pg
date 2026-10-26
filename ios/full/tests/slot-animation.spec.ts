@@ -16,7 +16,7 @@ import { captureMovingKeyframes } from '../loop-keyframes';
 import { waitAbsent } from '../native-state';
 import { gameReady, gameScreenshot } from '../game-controls';
 import { cropMotionRegion, samePixels } from '../motion-regions';
-import { slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
+import { slotBannerSpinPoint, slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
 import { slotBackgroundMasks, slotHeadReference, verifySlotHeadGeometry } from '../slot-background';
 import { animationRecordOnly } from '../record-only';
 
@@ -46,7 +46,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await verifyLoopAnimation(device, 'hall-slot-banner', testInfo, [bannerMotion], [], { timeoutMs: 8000 });
       await captureMovingKeyframes(device, 'hall-slot-banner', testInfo, [bannerMotion], 32, undefined, 5);
       /** 从登录大厅的真实横幅打开老虎机窗口。 */
-      const pressBanner = () => device!.input.tap({ x: Number(String(Math.round(banner.bounds.x + banner.bounds.width / 2))), y: Number(String(Math.round(banner.bounds.y + banner.bounds.height / 2))) });
+      const pressBanner = () => device!.input.tap(slotBannerSpinPoint(banner.bounds));
       await captureNativeTransition(device, 'slot-popup-enter', testInfo,
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressBanner, [], [], 0, 'videoFrames',
         undefined, undefined, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
@@ -89,7 +89,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         undefined, undefined, [], [], backgroundBannerMasks, [], exposedBannerMasks);
       await waitAbsent(device, { res: 'spin-button' });
       const bannerAgain = await device.info({ res: 'slot-banner' });
-      await device.input.tap({ x: Number(String(Math.round(bannerAgain.bounds.x + bannerAgain.bounds.width / 2))), y: Number(String(Math.round(bannerAgain.bounds.y + bannerAgain.bounds.height / 2))) });
+      await device.input.tap(slotBannerSpinPoint(bannerAgain.bounds));
       await device.wait({ res: 'spin-button' });
       // 控件树在弹层入场中途已出现；等不受滚轮图案影响的左边框停止移动后再点击。
       const reopened = slotReelRegions(await device.nodes());

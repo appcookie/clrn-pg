@@ -30,7 +30,7 @@ test('头部素材或原生位置变化必须失败，不能用新轮廓悄悄�
     { x: 0, y: 0, width: 10, height: 10 }), /素材已变化/);
   const head = { res: slotHeadReference.asset, bounds: { ...slotHeadReference.bounds } };
   verifySlotHeadGeometry([head]);
-  assert.throws(() => verifySlotHeadGeometry([]), /布局偏离/);
+  assert.throws(() => verifySlotHeadGeometry([]), /弹窗头部未出现/);
   for (const key of ['x', 'y', 'width', 'height']) {
     assert.throws(() => verifySlotHeadGeometry([{ ...head, bounds: { ...head.bounds, [key]: head.bounds[key] + 1 } }]), /布局偏离/);
   }

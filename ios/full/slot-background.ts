@@ -11,7 +11,8 @@ export const slotHeadReference = reference;
  */
 export function verifySlotHeadGeometry(nodes: NativeNode[]): void {
   const head = nodes.find(node => node.res === reference.asset);
-  if (!head || (['x', 'y', 'width', 'height'] as const)
+  if (!head) throw new Error('老虎机弹窗头部未出现');
+  if ((['x', 'y', 'width', 'height'] as const)
     .some(key => head.bounds[key] !== reference.bounds[key])) throw new Error('老虎机头部原生布局偏离已审查基准');
 }
 
