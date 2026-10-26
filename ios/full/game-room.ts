@@ -58,6 +58,43 @@ export async function submitGameRoom(device: AndroidDevice, proxy: Mitmproxy,
   return room;
 }
 
+/** 房规读取超时发生在建房请求之前；仅对已确认的只读加载错误重新进入表单一次。 */
+export async function openGameRoomForm(device: AndroidDevice, gameButton: string,
+  selectGame = () => tap(device, gameButton),
+  reopenPicker = () => tap(device, 'create-game-button')): Promise<void> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await selectGame();
+    try { await device.wait({ res: 'room-name-input' }); return; }
+    catch (error) {
+      if (attempt || (error as { code?: string }).code !== 'no such element') throw error;
+      const alert = await device.nodes();
+      const timedOut = alert.some(node => node.clazz === 'XCUIElementTypeAlert' && node.text === 'Notice')
+        && alert.some(node => node.clazz === 'XCUIElementTypeStaticText'
+          && node.text === 'timeout of 10000ms exceeded')
+        && alert.some(node => node.clazz === 'XCUIElementTypeButton' && node.text === 'OK');
+      if (!timedOut) throw error;
+      await device.acceptAlert();
+      await device.wait({ clazz: 'XCUIElementTypeAlert' }, { state: 'gone' });
+      const loading = await device.nodes();
+      if (loading.some(node => node.res === 'room-name-input')) return;
+      if (!loading.some(node => node.res === 'create-room-loading-text'
+        && node.text === 'Loading room rules, please wait')
+        || loading.some(node => node.res === 'creat-room-button')) {
+        throw new Error('建房规则超时后页面状态不符，停止重新进入表单');
+      }
+      await device.input.press('Back', loading);
+      await device.wait({ res: 'create-room-loading-container' }, { state: 'gone' });
+      const previous = await device.nodes();
+      if (previous.some(node => node.res === 'select-game-category-text')) continue;
+      if (!previous.some(node => node.res === 'create-game-button')) {
+        throw new Error('建房规则超时后未返回游戏选择入口，停止重新进入表单');
+      }
+      await reopenPicker();
+      await device.wait({ res: 'select-game-category-text' });
+    }
+  }
+}
+
 /**
  * 共用 Web 的余额验证，通过原生表单创建本例私人房，立即登记以便失败时清理。
  * @param device - 专用模拟器连接。
@@ -80,8 +117,7 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
   await reveal(device, { res: 'copy-house-number-button' });
   await tap(device, 'create-game-button');
   await reveal(device, { res: 'select-game-category-text' });
-  await tap(device, `game-type-button-${game === 'texas-holdem' ? 'texas_react_native' : game}`);
-  await device.wait({ res: 'room-name-input' });
+  await openGameRoomForm(device, `game-type-button-${game === 'texas-holdem' ? 'texas_react_native' : game}`);
   await device.fill({ res: 'room-name-input' }, 'TestRoom', { replaceBySelection: true });
   await dismissKeyboard(device);
   if (optionalFeatures) {
