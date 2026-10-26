@@ -17,6 +17,28 @@ def flow(path, method='GET', body=None, authorization=None):
 
 
 class ObserverTests(unittest.TestCase):
+    def test_建房请求只暴露状态且可确认未发出请求(self):
+        observer = NetworkObserver()
+        with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
+            control = flow('/native/observer/room-creation', 'POST', {'after': 0})
+            control.request.host = 'test-mitmproxy.invalid'
+            control.request.headers['X-E2E-Control-Token'] = 'test-token'
+            self.assertTrue(observer.control(control))
+            self.assertEqual(control.response.json(), {'attempts': []})
+            created = flow('/v3/pay_action/do', 'POST', {'secret': 'private-value'})
+            observer.request(created)
+            observer.control(control)
+            self.assertEqual(control.response.json()['attempts'], [
+                {'sequence': 1, 'completed': False, 'status': None, 'ok': None}])
+            created.response = http.Response.make(503, b'{"ok":false,"secret":"private-value"}')
+            observer.response(created)
+            observer.control(control)
+            self.assertEqual(control.response.json()['attempts'], [
+                {'sequence': 1, 'completed': True, 'status': 503, 'ok': False}])
+            self.assertNotIn('private-value', json.dumps(control.response.json()))
+        observer.done()
+        self.assertFalse(observer.room_creation_attempts)
+
     def test_multiple_sessions_are_retained_and_requests_hide_password(self):
         observer = NetworkObserver()
         for device in ['one', 'two']:

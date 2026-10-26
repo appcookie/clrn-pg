@@ -4,7 +4,7 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { setTimeout as delay } from 'node:timers/promises';
 
-export type NativeNode = { res?: string; text?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
+export type NativeNode = { res?: string; text?: string; clazz?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
 
 /** Match the explicit timeout predicate already used by accurate-bet guards.
