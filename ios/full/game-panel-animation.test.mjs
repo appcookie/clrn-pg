@@ -19,6 +19,50 @@ const timeout = {
   text: 'Connection Timeout',
 };
 
+test('续费退场录屏预热时重连，恢复并重读关闭按钮后仅点击一次', async () => {
+  const close = { ...button, res: 'renew-popup-close-button' };
+  const movedClose = { ...close, bounds: { ...close.bounds, x: 50 } };
+  let recording = false, reads = 0;
+  const taps = [];
+  const device = {
+    screenSize: screen,
+    prepareTransientCapture: async () => { assert.equal(recording, true); },
+    inputObservation: async () => {
+      assert.equal(recording, true);
+      return ++reads <= 2 ? [close, connecting] : [movedClose];
+    },
+    nodes: async () => { throw new Error('不应使用录屏前的旧原生树'); },
+    input: { tap: async point => { taps.push({ point, reads }); } },
+  };
+  await animateGamePanel(device, 'texas-holdem', 'renew', close.res, close.bounds,
+    { attach: async () => {} }, 'exit', 'motionFrames', [], undefined, [],
+    async (_device, _name, _info, _region, trigger) => {
+      assert.equal(reads, 0);
+      recording = true;
+      await trigger();
+      recording = false;
+    });
+  assert.equal(taps.length, 1);
+  assert.deepEqual(taps[0].point, { x: 65, y: 40 });
+  assert.ok(taps[0].reads >= 6, '必须在重连消失后重新取得稳定的关闭按钮位置');
+});
+
+test('续费退场预热后出现连接超时，不得点击关闭按钮', async () => {
+  const close = { ...button, res: 'renew-popup-close-button' };
+  let taps = 0;
+  const device = {
+    screenSize: screen,
+    prepareTransientCapture: async () => {},
+    inputObservation: async () => [close, timeout],
+    nodes: async () => { throw new Error('不应使用录屏前的旧原生树'); },
+    input: { tap: async () => { taps++; } },
+  };
+  await assert.rejects(animateGamePanel(device, 'texas-holdem', 'renew', close.res, close.bounds,
+    { attach: async () => {} }, 'exit', 'motionFrames', [], undefined, [],
+    async (_device, _name, _info, _region, trigger) => trigger()), /Connection Timeout/);
+  assert.equal(taps, 0);
+});
+
 for (const name of ['own-profile', 'opponent-profile-1', 'opponent-profile-2']) {
   test(`${name}: 预热才开始重连时恢复后单次点击，tap后不再查询直到录后语义`, async () => {
     let recording = false,

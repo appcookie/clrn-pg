@@ -28,10 +28,11 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
   if (!testInfo) { await gameTap(device, button); return; }
   const guardedEntrance = game === 'texas-holdem' && phase === 'enter'
     && /^(?:own-profile|opponent-profile-[12]|auto-rebuy)$/.test(name);
+  const guardedExit = game === 'texas-holdem' && name === 'renew' && phase === 'exit';
   const menuEntrance = phase === 'enter' && button.startsWith('drawer-menu-item-');
   let press: () => Promise<void>;
-  if (guardedEntrance || menuEntrance) {
-    // 录屏预热期间可能发生重连或菜单位置变化；在录制中重新确认两次目标位置，
+  if (guardedEntrance || guardedExit || menuEntrance) {
+    // 录屏预热期间可能发生重连；在录制中重新确认两次目标位置，
     // 再执行一次真实点击，点击后不查询以免打断动画。
     press = async () => {
       const timing: { preparationStartedUtc: string; tapRequestedUtc?: string;
@@ -43,7 +44,7 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
           timing.tapRequestedUtc = new Date().toISOString();
           timing.point = point;
         };
-        if (menuEntrance) await gameTapCurrent(device, button, undefined, tapped);
+        if (menuEntrance || guardedExit) await gameTapCurrent(device, button, undefined, tapped);
         else await gameTap(device, button, false, tapped);
       } finally {
         timing.completedUtc = new Date().toISOString();
