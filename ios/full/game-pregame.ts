@@ -149,7 +149,8 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
       try { await capture(state); return; }
       catch (error) {
         const reconnecting = (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || ''));
-        if (attempt || !reconnecting || !String(error).includes('页面像素必须保持稳定')) throw error;
+        const visualFailure = /页面像素必须保持稳定|变化比例/.test(String(error));
+        if (attempt || !reconnecting || !visualFailure) throw error;
       }
     }
   };
