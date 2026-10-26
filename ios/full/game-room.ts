@@ -4,8 +4,10 @@ import type { Mitmproxy } from '../../e2e/helpers/mitmproxy-client';
 import { ensureRoomBalance, type Account, type RoomSession } from '../../visual/cases/_shared/room';
 import { dismissKeyboard } from './keyboard';
 import { tap, returnToTabs, reveal } from './navigation';
-import { gameReady, gameGone, gameNodes } from './game-controls';
+import { gameReady, gameGone, gameNodes, gameConnectionState } from './game-controls';
 import { enterTexasRoom } from '../../visual/cases/texas-holdem/room';
+import { setTimeout as delay } from 'node:timers/promises';
+import { NetworkObserver, type RoomCreationAttempt } from './network-observer';
 
 /**
  * 从认证的本机控制接口取得本轮真实会话；不将令牌写入日志或报告。
@@ -13,6 +15,47 @@ import { enterTexasRoom } from '../../visual/cases/texas-holdem/room';
  */
 export async function gameSession(proxy: Mitmproxy): Promise<{ account: Account | null; room: RoomSession | null }> {
   return proxy.command('android/session');
+}
+
+/** 等待真实建房响应；只有代理确认第一次点击没有发出请求且表单仍可操作，才补点一次。 */
+export async function submitGameRoom(device: AndroidDevice, proxy: Mitmproxy,
+  press = () => tap(device, 'creat-room-button'),
+  waits = { firstMs: 20_000, finalMs: 60_000 }): Promise<RoomSession> {
+  const observer = new NetworkObserver(proxy);
+  const cursor = await observer.mark();
+  const attempts = () => observer.roomCreationAttempts(cursor);
+  const waitForRoom = async (timeoutMs: number): Promise<RoomSession | null> => {
+    const deadline = Date.now() + timeoutMs;
+    do {
+      const room = (await gameSession(proxy)).room;
+      if (room) return room;
+      const current = await attempts();
+      const failed = current.find(item => item.completed && (item.status !== 200 || item.ok !== true));
+      if (failed) throw new Error(`真实建房请求失败：HTTP ${failed.status}，业务成功标记 ${failed.ok}`);
+      if (Date.now() >= deadline) return null;
+      await delay(500);
+    } while (true);
+  };
+  await press();
+  let room = await waitForRoom(waits.firstMs);
+  if (!room && (await attempts()).length === 0) {
+    const nodes = await gameNodes(device);
+    gameConnectionState(nodes);
+    const form = nodes.some(node => node.res === 'base-create-room-screen' && node.visible !== false);
+    const button = nodes.find(node => node.res === 'creat-room-button' && node.visible !== false && node.enabled);
+    const blocked = nodes.some(node => node.visible !== false && (node.clazz === 'XCUIElementTypeAlert'
+      || /^(?:common-alert-title|common-alert-message|alert-message-text|popup-content-container)$/.test(node.res || '')));
+    if (!form || !button || blocked) throw new Error('建房点击后没有请求，表单或按钮已变化，禁止重复提交');
+    // 原生树读取期间仍可能发出请求；补点前再次确认代理没有接收第一次提交。
+    if ((await attempts()).length === 0) await press();
+  }
+  room ??= await waitForRoom(waits.finalMs);
+  if (!room) {
+    const current: RoomCreationAttempt[] = await attempts();
+    throw new Error(current.length ? '真实建房请求已发出，但未登记成功房间，禁止重复提交'
+      : '两次真实点击均未发出建房请求');
+  }
+  return room;
 }
 
 /**
@@ -45,16 +88,11 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
     await tap(device, 'advanced-options-button');
     await tap(device, 'BlindsEnableFlipSwitch');
   }
-  await tap(device, 'creat-room-button');
-  let room: RoomSession | null = null;
-  await expect(async () => {
-    room = (await gameSession(proxy)).room;
-    expect(room, '真实建房接口必须返回本轮新建的房间').not.toBeNull();
-  }).toPass({ timeout: 60_000, intervals: [500] });
-  onCreated(room!);
+  const room = await submitGameRoom(device, proxy);
+  onCreated(room);
   if (view !== 'private') {
     const observerApi = await request.newContext();
-    try { await enterTexasRoom({ request: observerApi }, room!); }
+    try { await enterTexasRoom({ request: observerApi }, room); }
     finally { await observerApi.dispose(); }
   }
   // XCUITest marks the non-accessible outer game view hidden even while its
@@ -71,5 +109,5 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
       { timeout: 45_000 }).toBe(9);
     await gameReady(device, 'zhajinhua-text-room-name', 'TestRoom');
   }
-  return room!;
+  return room;
 }

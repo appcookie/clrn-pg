@@ -1,6 +1,6 @@
 import type { TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
-import { gameConnected, gameReady, gameTap } from './game-controls';
+import { gameConnected, gameReady, gameTap, gameTapCurrent } from './game-controls';
 import { captureNativeTransition, captureTimedPrompt } from './animation-transition';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
@@ -28,21 +28,23 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
   if (!testInfo) { await gameTap(device, button); return; }
   const guardedEntrance = game === 'texas-holdem' && phase === 'enter'
     && /^(?:own-profile|opponent-profile-[12]|auto-rebuy)$/.test(name);
+  const menuEntrance = phase === 'enter' && button.startsWith('drawer-menu-item-');
   let press: () => Promise<void>;
-  if (guardedEntrance) {
-    // Runs 39560079179 and 39695625593 reconnected during recorder warm-up,
-    // after the old pre-recording readiness checks. Observe twice immediately
-    // before the one real tap; no query interrupts the ensuing animation.
+  if (guardedEntrance || menuEntrance) {
+    // 录屏预热期间可能发生重连或菜单位置变化；在录制中重新确认两次目标位置，
+    // 再执行一次真实点击，点击后不查询以免打断动画。
     press = async () => {
       const timing: { preparationStartedUtc: string; tapRequestedUtc?: string;
         point?: { x: number; y: number }; completedUtc?: string } = {
         preparationStartedUtc: new Date().toISOString(),
       };
       try {
-        await gameTap(device, button, false, point => {
+        const tapped = (point: Readonly<{ x: number; y: number }>) => {
           timing.tapRequestedUtc = new Date().toISOString();
           timing.point = point;
-        });
+        };
+        if (menuEntrance) await gameTapCurrent(device, button, undefined, tapped);
+        else await gameTap(device, button, false, tapped);
       } finally {
         timing.completedUtc = new Date().toISOString();
         await testInfo.attach(`${game}-${name}-${phase}-tap-timing`, {

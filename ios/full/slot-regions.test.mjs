@@ -1,7 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { slotReelRegions, slotNoEnergyRegions } from './slot-regions.ts';
+import { slotBannerSpinPoint, slotReelRegions, slotNoEnergyRegions } from './slot-regions.ts';
 import { animationRegion } from './animation-region.ts';
+
+test('大厅老虎机入口落在已审查的旋转按钮内并避开滚动画面', () => {
+  const banner = { x: 32, y: 537, width: 1114, height: 267 };
+  const point = slotBannerSpinPoint(banner);
+  assert.deepEqual(point, { x: 834, y: 724 });
+  assert.ok(point.y > banner.y + banner.height * 0.64, '点击位置应低于横幅滚轮的运动区域');
+  assert.throws(() => slotBannerSpinPoint({ ...banner, width: 0 }), /有效的原生边界/);
+});
 
 test('能量不足提示采用真实原生内容与关闭按钮范围，动画左边框不包含随机滚轮', () => {
   const node = (res, bounds, text) => ({ res, bounds, text, clazz: 'XCUIElementTypeOther', children: [] });

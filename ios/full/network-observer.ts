@@ -10,6 +10,7 @@ export type ResponseMatch = { method?: string; path: string | RegExp; after?: nu
   session?: string; timeoutMs?: number };
 export type ObservedSession = { key: string; userId: string; username: string;
   deviceId: string; authorization: string; origin: string };
+export type RoomCreationAttempt = { sequence: number; completed: boolean; status: number | null; ok: boolean | null };
 
 export class NetworkObserver {
   constructor(private readonly proxy: Mitmproxy) {}
@@ -36,6 +37,11 @@ export class NetworkObserver {
   }
   async sessions(): Promise<ObservedSession[]> {
     return (await this.proxy.command<{ sessions: ObservedSession[] }>('native/observer/sessions')).sessions;
+  }
+  /** 只读取本轮建房请求的状态，不返回请求正文、响应正文或房间身份。 */
+  async roomCreationAttempts(after: number): Promise<RoomCreationAttempt[]> {
+    return (await this.proxy.command<{ attempts: RoomCreationAttempt[] }>('native/observer/room-creation',
+      { after })).attempts;
   }
   async respond(rule: { method: string; path: string; status: number; body: unknown; session?: string; times?: number }): Promise<void> {
     await this.proxy.command('native/observer/respond', { ...rule, method: rule.method.toUpperCase() });

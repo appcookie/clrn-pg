@@ -31,17 +31,26 @@ class NetworkObserver:
         self.sessions = {}
         self.authorizations = {}
         self.rules = []
+        self.room_creation_attempts = deque(maxlen=20)
 
     def request(self, flow):
         self.sequence += 1
         flow.metadata['ios_sequence'] = self.sequence
         flow.metadata['ios_request_body'] = without_passwords(parsed(flow.request.content))
         flow.metadata['ios_session'] = self.authorizations.get(flow.request.headers.get('Authorization', ''))
+        if flow.request.method == 'POST' and urlsplit(flow.request.path).path == '/v3/pay_action/do':
+            attempt = {'sequence': self.sequence, 'completed': False, 'status': None, 'ok': None}
+            flow.metadata['ios_room_creation_attempt'] = attempt
+            self.room_creation_attempts.append(attempt)
 
     def response(self, flow):
         if 'ios_sequence' not in flow.metadata:
             return
         body = parsed(flow.response.content) if flow.response else None
+        attempt = flow.metadata.get('ios_room_creation_attempt')
+        if attempt is not None:
+            attempt.update(completed=True, status=flow.response.status_code if flow.response else 0,
+                           ok=isinstance(body, dict) and body.get('ok') is True)
         path = urlsplit(flow.request.path).path
         request_body = flow.metadata.get('ios_request_body')
         if path == LOGIN and flow.request.method == 'POST' and isinstance(body, dict) and body.get('ok') is True:
@@ -99,6 +108,13 @@ class NetworkObserver:
                     'sequence': self.sequence}
         elif endpoint == 'sessions':
             result = {'sessions': list(self.sessions.values())}
+        elif endpoint == 'room-creation':
+            after = data.get('after', 0)
+            if not isinstance(after, int) or after < 0:
+                status, result = 400, {'error': 'Invalid cursor'}
+            else:
+                result = {'attempts': [item for item in self.room_creation_attempts
+                                       if item['sequence'] > after]}
         elif endpoint == 'respond':
             if (data.get('method') not in ('GET', 'POST', 'PUT', 'PATCH', 'DELETE')
                     or not isinstance(data.get('path'), str) or not data['path'].startswith('/')
@@ -128,3 +144,4 @@ class NetworkObserver:
         self.sessions.clear()
         self.authorizations.clear()
         self.rules.clear()
+        self.room_creation_attempts.clear()
