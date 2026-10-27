@@ -28,7 +28,8 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
   if (!testInfo) { await gameTap(device, button); return; }
   const guardedEntrance = game === 'texas-holdem' && phase === 'enter'
     && /^(?:own-profile|opponent-profile-[12]|auto-rebuy)$/.test(name);
-  const guardedExit = game === 'texas-holdem' && name === 'renew' && phase === 'exit';
+  const guardedExit = game === 'texas-holdem' && phase === 'exit'
+    && (name === 'renew' || name === 'theme');
   const menuEntrance = phase === 'enter' && button.startsWith('drawer-menu-item-');
   let press: () => Promise<void>;
   if (guardedEntrance || guardedExit || menuEntrance) {
