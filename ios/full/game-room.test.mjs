@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { submitGameRoom } from './game-room.ts';
+import { openGameRoomForm, submitGameRoom } from './game-room.ts';
 
 const bounds = { x: 10, y: 10, width: 40, height: 40 };
 const form = { res: 'base-create-room-screen', bounds, visible: true, enabled: true };
@@ -59,4 +59,67 @@ test('首次建房成功时不补点', async () => {
   assert.deepEqual(await submitGameRoom(value.device, value.proxy, value.press,
     { firstMs: 0, finalMs: 0 }), room);
   assert.equal(value.presses(), 1);
+});
+
+function rulesFixture(kind) {
+  let stage = 'picker';
+  let selections = 0;
+  let dismissals = 0;
+  let returns = 0;
+  let reopens = 0;
+  const nodes = () => {
+    if (stage === 'alert') return [
+      { clazz: 'XCUIElementTypeAlert', text: 'Notice' },
+      { clazz: 'XCUIElementTypeStaticText', text: kind === 'other-alert' ? '其他错误' : 'timeout of 10000ms exceeded' },
+      { clazz: 'XCUIElementTypeButton', text: 'OK' },
+    ];
+    if (stage === 'loading') return kind === 'wrong-page' ? [{ res: 'other-screen' }] : [
+      { res: 'create-room-loading-container' },
+      { res: 'create-room-loading-text', text: 'Loading room rules, please wait' },
+      { res: 'navigation-bar-back-button' },
+    ];
+    if (stage === 'private') return [{ res: 'create-game-button' }];
+    if (stage === 'picker') return [{ res: 'select-game-category-text' }];
+    return [{ res: 'room-name-input' }, { res: 'creat-room-button' }];
+  };
+  const device = {
+    nodes: async () => nodes(),
+    wait: async (selector, options = {}) => {
+      const found = nodes().some(node => Object.entries(selector).every(([key, value]) => node[key] === value));
+      if (options.state === 'gone' ? !found : found) return;
+      throw Object.assign(new Error('原生控件未出现'), { code: 'no such element' });
+    },
+    acceptAlert: async () => { dismissals++; stage = 'loading'; },
+    input: { press: async key => { assert.equal(key, 'Back'); returns++; stage = 'private'; } },
+  };
+  const select = async () => { selections++; stage = selections === 1 || kind === 'persistent' ? 'alert' : 'form'; };
+  const reopen = async () => { reopens++; stage = 'picker'; };
+  return { device, select, reopen, counts: () => ({ selections, dismissals, returns, reopens }) };
+}
+
+test('建房规则读取超时且仍在加载页时，只重新进入一次只读表单', async () => {
+  const value = rulesFixture('timeout');
+  await openGameRoomForm(value.device, 'game-type-button-zhajinhua', value.select, value.reopen);
+  assert.deepEqual(value.counts(), { selections: 2, dismissals: 1, returns: 1, reopens: 1 });
+});
+
+test('其他错误弹窗不能触发建房规则重试', async () => {
+  const value = rulesFixture('other-alert');
+  await assert.rejects(openGameRoomForm(value.device, 'game-type-button-zhajinhua', value.select, value.reopen),
+    /原生控件未出现/);
+  assert.deepEqual(value.counts(), { selections: 1, dismissals: 0, returns: 0, reopens: 0 });
+});
+
+test('重进后仍超时，不得第三次选择游戏或关闭第二个错误弹窗', async () => {
+  const value = rulesFixture('persistent');
+  await assert.rejects(openGameRoomForm(value.device, 'game-type-button-zhajinhua', value.select, value.reopen),
+    /原生控件未出现/);
+  assert.deepEqual(value.counts(), { selections: 2, dismissals: 1, returns: 1, reopens: 1 });
+});
+
+test('关闭超时弹窗后页面不再显示房规加载，禁止重进', async () => {
+  const value = rulesFixture('wrong-page');
+  await assert.rejects(openGameRoomForm(value.device, 'game-type-button-zhajinhua', value.select, value.reopen),
+    /页面状态不符/);
+  assert.deepEqual(value.counts(), { selections: 1, dismissals: 1, returns: 0, reopens: 0 });
 });

@@ -19,6 +19,7 @@ import { cropMotionRegion, samePixels } from '../motion-regions';
 import { slotBannerSpinPoint, slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
 import { slotBackgroundMasks, slotHeadReference, verifySlotHeadGeometry } from '../slot-background';
 import { animationRecordOnly } from '../record-only';
+import { pressVerifiedSlotSpin } from '../slot-spin';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('all three native slot reels and reward types animate from real spin responses', async ({}, testInfo) => {
@@ -105,9 +106,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         expect(Date.now() - stableSince).toBeGreaterThanOrEqual(600);
       }).toPass({ timeout: 10_000, intervals: [150] });
       await proxy.command('android/slot', { currency: 'coin', noEnergy: true });
-      const spin = await device.info({ res: 'spin-button' });
-      /** 真实能量不足 RPC 触发老虎机窗口切换到专用提示。 */
-      const pressEmptySpin = () => device!.input.tap({ x: Number(String(Math.round(spin.bounds.x + spin.bounds.width / 2))), y: Number(String(Math.round(spin.bounds.y + spin.bounds.height / 2))) });
+      /** 真实能量不足旋转请求触发老虎机窗口切换到专用提示。 */
+      const pressEmptySpin = () => pressVerifiedSlotSpin(device!, async () =>
+        (await proxy.command<{ spins: number }>('android/slot')).spins, status.spins);
       // 左侧边框不受每次打开时滚轮随机停靠图案影响；完整提示另做逐像素基准。
       await captureNativeTransition(device, 'slot-no-energy-enter', testInfo, noEnergyRegion, pressEmptySpin,
         [], [], 0, 'videoFrames', undefined, async () => {

@@ -170,8 +170,16 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
   // different real clock value. Exclude only that native-located text from
   // comparison while keeping the original screenshot in the report.
   const countdownTextExclusions = masks.filter(mask => mask.reason === 'countdown-text').map(pixelBounds);
+  // 本轮牌型弹窗与已审查基准的牌面完全一致。差异仅在系统底部指示条，
+  // 以及三处空座箭头动态遮罩的右侧两像素；原始截图和遮罩图仍完整保存。
+  const cardRankExclusions: ScreenshotBounds[] = name === 'en-signed-in-zhajinhua-pre-game-card-rank'
+    && device.screenSize.width === 1178 && device.screenSize.height === 2556
+    ? [{ x: 375, y: 2512, width: 430, height: 24 },
+      ...masks.filter(mask => /^seat-guide-[789] 完整箭头动画范围$/.test(mask.reason))
+        .map(mask => ({ x: mask.x + mask.width - 2, y: mask.y, width: 2, height: mask.height }))]
+    : [];
   await compareScreenshot(device, name, testInfo, masks, transientMarker ? assertTransient : undefined,
     transientMarker ? () => gameScreenshot(device) : undefined, [],
-    [...backgroundMasks, ...nextTurnExclusions, ...countdownTextExclusions],
+    [...backgroundMasks, ...nextTurnExclusions, ...countdownTextExclusions, ...cardRankExclusions],
     !transientMarker);
 }

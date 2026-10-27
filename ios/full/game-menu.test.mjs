@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { closeThemeSettings, gameMenu } from './game-pregame.ts';
+import { closeThemeSettings, gameMenu, waitForRecordedDrawerMenu } from './game-pregame.ts';
 
 const bounds = x => ({ x, y: 100, width: 20, height: 20 });
 const node = (res, x, text = '') => ({ res, text, bounds: bounds(x), enabled: true, visible: true });
@@ -9,6 +9,29 @@ const theme = node('drawer-menu-item-theme', 40);
 const drawerExit = node('drawer-menu-item-exit', 70);
 const panel = node('game-settings-card-theme-simple', 100);
 const connecting = node('connection', 200, 'Connecting...');
+
+test('菜单录屏已展开侧栏时，重连遮罩退去后才确认真实菜单', async () => {
+  let connectionReads = 0, menuReads = 0, fullReads = 0, taps = 0;
+  const device = {
+    screenSize: { width: 1178, height: 2556 },
+    prepareTransientCapture: async () => {},
+    inputObservation: async target => {
+      if (target === 'drawer-menu-item-exit') { menuReads++; return []; }
+      return ++connectionReads <= 2 ? [connecting] : [];
+    },
+    nodes: async () => {
+      assert.ok(connectionReads >= 3, '连接恢复前不得把遮罩下的控件树判为菜单缺失');
+      fullReads++;
+      return [drawerExit];
+    },
+    input: { tap: async () => { taps++; } },
+  };
+  await waitForRecordedDrawerMenu(device);
+  assert.ok(connectionReads >= 4, '连接恢复后仍须连续观测');
+  assert.equal(menuReads, 1);
+  assert.equal(fullReads, 1);
+  assert.equal(taps, 0, '已成功录下的菜单入场不得再次点击');
+});
 
 test('menu navigation retries the UI tap only after reconnect leaves the drawer open', async () => {
   let state = 'table', connectionReads = 0, themeTaps = 0, rich = false;
