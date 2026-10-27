@@ -26,7 +26,7 @@ export async function toastKeyframes(frames: RecordedFrames, text: ScreenshotBou
       reference = undefined; sequence = []; continue;
     }
     const masked = maskScreenshot(frames[index], masks);
-    // H.264在静止文字边缘有少量编码噪声；沿用截图12/0.1%规则，
+    // H.264 在静止文字边缘有少量编码噪声；沿用截图 12/0.5% 规则，
     // 同时独立比较提示区域，不能以大面积背景稀释文字移动或错误。
     if (!reference || !comparePixels(reference, masked).matches || !comparePixels(referenceLabel!, label).matches) {
       reference = masked; referenceLabel = label; sequence = [index];

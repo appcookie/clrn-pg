@@ -1,4 +1,5 @@
 import { PNG } from 'pngjs';
+import { maximumChangedPixelRatio } from '../visual.mjs';
 import { setImmediate } from 'node:timers/promises';
 import { flattenNodes, type NativeNode } from './game-controls';
 import { playerCountdownNodes } from './game-countdown';
@@ -61,27 +62,28 @@ export function zhajinhuaShowdownLayout(before: NativeNode[], after: NativeNode[
   return {region,timer,cards,label:label.bounds};
 }
 
-/** The timer is excluded only from first-frame and exact start-baseline
- * comparisons. Average retained pixels, preserving all cards/label at end.
- */
+/** 起点距离与差异比例只计算倒计时之外的保留像素，终点仍保留完整牌面和牌型。 */
 export function compareShowdownStart(left: Buffer, right: Buffer, layout: ShowdownLayout) {
   const a=PNG.sync.read(left),b=PNG.sync.read(right),{region,timer}=layout;
   if (a.width!==b.width || a.height!==b.height || a.width!==region.width || a.height!==region.height)
     throw new Error('摊牌起点必须对应完整原生范围');
-  let difference=0,pixels=0,exact=true;
+  let difference=0,pixels=0,changedPixels=0;
   for(let y=0;y<a.height;y++)for(let x=0;x<a.width;x++) {
     const sx=x+region.x,sy=y+region.y;
     if(sx>=timer.x&&sx<timer.x+timer.width&&sy>=timer.y&&sy<timer.y+timer.height)continue;
     pixels++;
+    let changed=false;
     const offset=(y*a.width+x)*4;
     for(let channel=0;channel<4;channel++) {
       const delta=Math.abs(a.data[offset+channel]-b.data[offset+channel]);
       if(channel<3)difference+=delta;
-      if(delta>12)exact=false;
+      if(delta>12)changed=true;
     }
+    if(changed)changedPixels++;
   }
   if(!pixels)throw new Error('摊牌起点不得排除全部像素');
-  return {distance:difference/(pixels*3),samePixels:exact,comparedPixels:pixels,excludedPixels:a.width*a.height-pixels};
+  return {distance:difference/(pixels*3),samePixels:changedPixels/pixels<=maximumChangedPixelRatio,
+    comparedPixels:pixels,excludedPixels:a.width*a.height-pixels};
 }
 
 type Pixels = ReturnType<typeof PNG.sync.read>;

@@ -183,7 +183,7 @@ export async function compareScreenshot(device: NativeDevice, name: string, test
     original = await takeScreenshot();
     await transientState?.();
     result = maskScreenshot(original, masks);
-    const match = comparePixels(previous, result).matches;
+    const match = comparePixels(previous, result, 12, comparisonExclusions).matches;
     if (!match) { previous = result; stableSince = Date.now(); }
     expect(match, '页面截图应稳定').toBe(true);
     expect(Date.now() - stableSince).toBeGreaterThanOrEqual(transientState ? 250 : 1500);

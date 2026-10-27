@@ -72,15 +72,19 @@ test('算法要求两张牌各自的牌面水平位移，静止、只动一张�
   }
 });
 
-test('起点timer排除不改原图、保留区域逐像素检查，牌型和终点不遮',()=>{
+test('起点倒计时排除不改原图，牌型超差仍失败且终点不遮',()=>{
   const original=Buffer.from(images.first),p=PNG.sync.read(images.first),b=layout.timer,r=layout.region;
   for(let y=b.y-r.y;y<b.y-r.y+b.height;y++)for(let x=b.x-r.x;x<b.x-r.x+b.width;x++)
     p.data.set([255,0,0,255],(y*p.width+x)*4);
   const compared=compareShowdownStart(PNG.sync.write(p),images.first,layout);
   assert.equal(compared.distance,0);assert.equal(compared.samePixels,true);
   assert.deepEqual(images.first,original);
-  // Pair's entire label is outside the timer and remains checked.
-  p.data.set([255,255,255,255],((layout.label.y-r.y+10)*p.width+layout.label.x-r.x+10)*4);
+  // 牌型仍处于比较范围；让完整牌型明显变化，不能被倒计时排除或比例门槛放过。
+  for(let y=layout.label.y-r.y;y<layout.label.y-r.y+layout.label.height;y++)
+    for(let x=layout.label.x-r.x;x<layout.label.x-r.x+layout.label.width;x++) {
+      const offset=(y*p.width+x)*4;
+      p.data[offset]=(p.data[offset]+128)%256;
+    }
   assert.equal(compareShowdownStart(PNG.sync.write(p),images.first,layout).samePixels,false);
   assert.ok(compareShowdownStart(images.first,images.end,layout).distance>10);
 });

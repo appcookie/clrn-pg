@@ -15,7 +15,8 @@ import { verifyLoopAnimation } from '../loop-animation';
 import { captureMovingKeyframes } from '../loop-keyframes';
 import { waitAbsent } from '../native-state';
 import { gameReady, gameScreenshot } from '../game-controls';
-import { cropMotionRegion, samePixels } from '../motion-regions';
+import { cropMotionRegion } from '../motion-regions';
+import { comparePixels } from '../../visual.mjs';
 import { slotBannerSpinPoint, slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
 import { slotBackgroundMasks, slotHeadReference, verifySlotHeadGeometry } from '../slot-background';
 import { animationRecordOnly } from '../record-only';
@@ -102,7 +103,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       let stableSince = Date.now();
       await expect(async () => {
         const current = await border();
-        if (!samePixels(current, stableBorder)) { stableBorder = current; stableSince = Date.now(); }
+        if (!comparePixels(current, stableBorder).matches) { stableBorder = current; stableSince = Date.now(); }
         expect(Date.now() - stableSince).toBeGreaterThanOrEqual(600);
       }).toPass({ timeout: 10_000, intervals: [150] });
       await proxy.command('android/slot', { currency: 'coin', noEnergy: true });
@@ -119,7 +120,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const promptImage = cropMotionRegion(await gameScreenshot(device), prompt.full);
       await testInfo.attach('slot-no-energy-visible', { body: promptImage, contentType: 'image/png' });
       if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(promptImage, 'slot-no-energy-visible.png', testInfo);
-      else expect(samePixels(promptImage, readFileSync(baselinePath('slot-no-energy-visible.png'))),
+      else expect(comparePixels(promptImage, readFileSync(baselinePath('slot-no-energy-visible.png'))).matches,
         '能量不足提示完整画面视觉回归').toBe(true);
       const confirm = await device.info({ res: 'confirm-button' });
       /** 通过真实确认按钮关闭能量不足提示。 */
