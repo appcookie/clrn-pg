@@ -104,20 +104,24 @@ class TexasReplayTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.replay.publish(ROOM, payload)
 
-    def test_mixed_batch_keeps_ping_and_unrelated_rpc_and_blocks_only_replay_room(self):
+    def test_混合消息保留房间在线请求并隔离牌局操作(self):
         self.replay.room_id = ROOM
         ping = {'id': 2, 'method': 7}
         unrelated = {'id': 3, 'method': 9, 'params': {'data': {
             'path': f'/v10/texas_holdem/room/{OTHER}/game/test/call'}}}
         bet = {'id': 4, 'method': 9, 'params': {'data': {
             'path': f'/v10/texas_holdem/room/{ROOM}/game/test/call'}}}
-        msg = message(self.socket, [ping, bet, unrelated])
+        alive = {'id': 5, 'method': 9, 'params': {'data': {
+            'method': 'POST', 'path': f'/v10/texas_holdem/room/{ROOM}/player/alive', 'json': {}}}}
+        msg = message(self.socket, [ping, bet, alive, unrelated])
         with patch('texas_replay.ctx.master', create=True) as master:
             self.replay.websocket_message(self.socket)
-            self.assertEqual([json.loads(line) for line in msg.text.splitlines()], [ping, unrelated])
+            self.assertEqual([json.loads(line) for line in msg.text.splitlines()], [ping, alive, unrelated])
             args = master.commands.call.call_args.args
             self.assertTrue(args[2])
             self.assertEqual(json.loads(args[3])['id'], 4)
+            self.assertTrue(self.replay.is_replay_rpc({**alive, 'params': {'data': {
+                **alive['params']['data'], 'method': 'GET'}}}))
             other_socket = socket_flow()
             untouched = message(other_socket, [bet])
             self.replay.websocket_message(other_socket)

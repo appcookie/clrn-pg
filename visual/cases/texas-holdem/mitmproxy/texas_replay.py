@@ -155,6 +155,10 @@ class TexasReplay:
         data = params.get("data") if isinstance(params, dict) else None
         if not isinstance(data, dict) or not isinstance(data.get('path'), str):
             return False
+        # 本轮真实房间的在线请求必须到达服务端；动画录制期间拦截它会让连接失效。
+        if data.get('method') == 'POST' and re.fullmatch(
+                rf"/v\d+/texas_holdem/room/{self.room_id}/player/alive", data['path']):
+            return False
         if re.match(rf"/v\d+/texas_holdem/room/{self.room_id}(?:/|$)", data['path']):
             return True
         if re.match(rf"/v1/chat_room/{self.room_id}(?:/|$)", data['path']):
