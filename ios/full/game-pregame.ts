@@ -18,6 +18,12 @@ import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 type Capture = (state: string) => Promise<void>;
 
+/** 菜单入场录屏后先等待重连遮罩退去，再验证同一次点击打开的真实侧栏。 */
+export async function waitForRecordedDrawerMenu(device: AndroidDevice): Promise<void> {
+  await gameConnectedCurrent(device, 2_000);
+  await gameReadyCurrent(device, 'drawer-menu-item-exit');
+}
+
 /**
  * 打开与 Web 相同的牌桌菜单项，并等待原生面板就绪。
  * @param device - 专用模拟器连接。
@@ -171,7 +177,8 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
           'texas-holdem-drawer-menu-enter-early-phase.png',
           'texas-holdem-drawer-menu-enter-late-phase.png',
         ] : []);
-      await gameReady(device, 'drawer-menu-item-exit');
+      if (animationInfo && game === 'texas-holdem') await waitForRecordedDrawerMenu(device);
+      else await gameReady(device, 'drawer-menu-item-exit');
       await capture('menu');
       await animateGamePanel(device, game, 'card-rank', 'drawer-menu-item-card_rank',
         screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'enter', 'videoFrames');
