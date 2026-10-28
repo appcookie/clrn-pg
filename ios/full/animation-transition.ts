@@ -1,5 +1,6 @@
 import { leaderboardSlideLayout, leaderboardSlideEvidence, MissingLeaderboardSlideError } from './personal-leaderboard-slide';
 import { compareAnimationEndpoint } from './animation-endpoint';
+import { comparePixels, maximumChangedPixelRatio } from '../visual.mjs';
 import { chatEndpointNodes } from './chat-readiness';
 import { animationRegion, endpointMasksInRegion } from './animation-region';
 import { ownProfileIdentityMask } from './profile-region';
@@ -713,13 +714,13 @@ export async function captureNativeTransition(device: AndroidDevice, name: strin
           ? reviewedLauncherStart(before, reference)
           : actionStart ? compareTexasActionStart(before, reference, actionStart).samePixels
           : showdown ? compareShowdownStart(before, reference, showdown).samePixels
-          : samePixels(startEndpoint(before), startEndpoint(reference));
+          : comparePixels(startEndpoint(before), startEndpoint(reference)).matches;
       }), '动画起点视觉回归').toBe(true);
     const endpoint = compareAnimationEndpoint(endEndpoint(after),
       [`${name}-end.png`, ...endPhaseAnchors.filter(file => existsSync(baselinePath(file)))]
         .map(file => ({ name: file, bytes: endEndpoint(readFileSync(baselinePath(file))) })));
     await testInfo.attach(`${name}-endpoint-comparison`, {
-      body: JSON.stringify({ channelTolerance: 12, maximumChangedRatio: 0.001,
+      body: JSON.stringify({ channelTolerance: 12, maximumChangedRatio: maximumChangedPixelRatio,
         comparisons: endpoint.comparisons }), contentType: 'application/json',
     });
     if (!endpoint.matches && endpoint.diff) await testInfo.attach(`${name}-endpoint-diff`, {
@@ -795,7 +796,7 @@ export async function captureTransientTransition(device: AndroidDevice, name: st
     await attachFrameEvidence(testInfo, `${name}-frame-${index}`, frame);
   }
   expect(frameColorDistance(frames[0], before), '短时提示须在采样开始后出现').toBeLessThan(10);
-  expect(samePixels(before, after), '短时提示应自动消失并恢复原画面').toBe(true);
+  expect(comparePixels(before, after).matches, '短时提示应自动消失并恢复原画面').toBe(true);
   const phases = frames.map(frame => ({ frame, distance: frameColorDistance(before, frame) }));
   const peak = phases.reduce((best, item) => item.distance > best.distance ? item : best);
   expect(peak.distance, '短时提示必须产生明显可见变化').toBeGreaterThan(3);
@@ -873,15 +874,15 @@ export async function captureTimedPrompt(device: AndroidDevice, name: string, te
   expect(pair, `${name} 标题稳定后倒计时数字必须变化`).toBeDefined();
   await setTimeout(6000);
   const after = await crop(await gameScreenshot(device));
-  expect(samePixels(maskScreenshot(after, endpointMasks), maskScreenshot(before, endpointMasks)),
+  expect(comparePixels(maskScreenshot(after, endpointMasks), maskScreenshot(before, endpointMasks)).matches,
     `${name} 倒计时结束后须恢复画面`).toBe(true);
   for (const [phase, frame] of [['start', before], ['visible', pair!.first],
     ['countdown', pair!.changed], ['end', after]] as const) {
     const file = `${name}-${phase}.png`;
     await testInfo.attach(file, { body: frame, contentType: 'image/png' });
     if (process.env.IOS_VISUAL_MODE !== 'compare') await assertVisual(frame, file, testInfo);
-    else if (phase === 'start' || phase === 'end') expect(samePixels(maskScreenshot(frame, endpointMasks),
-      maskScreenshot(readFileSync(baselinePath(file)), endpointMasks))).toBe(true);
+    else if (phase === 'start' || phase === 'end') expect(comparePixels(maskScreenshot(frame, endpointMasks),
+      maskScreenshot(readFileSync(baselinePath(file)), endpointMasks)).matches).toBe(true);
     else {
       const reference = readFileSync(baselinePath(file));
       expect(Math.min(...visible.map(candidate => frameColorDistance(candidate, reference))),

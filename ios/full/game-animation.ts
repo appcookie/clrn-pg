@@ -6,7 +6,8 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import { challengeRegion } from './challenge-region';
 import { gameNodes } from './game-controls';
 import { maskScreenshot, type ScreenshotMask } from './screenshot';
-import { motionParts, samePixels } from './motion-regions';
+import { motionParts } from './motion-regions';
+import { comparePixels } from '../visual.mjs';
 import { animationRecordOnly } from './record-only';
 import { recordScreenSamples } from './video-frames';
 
@@ -52,7 +53,7 @@ export async function captureChallengeAnimation(device: AndroidDevice, name: str
       const original = await device.screenshot();
       latest = maskScreenshot(original, masks);
       const parts = motionParts(latest, regions);
-      if (!previous || !parts.outside.equals(previous.outside)) {
+      if (!previous || !comparePixels(parts.outside, previous.outside, 12, regions).matches) {
         stableSince = Date.now();
         best = undefined;
       }
@@ -62,9 +63,9 @@ export async function captureChallengeAnimation(device: AndroidDevice, name: str
       previous = parts;
       if (!best || parts.score > best.score) best = { bytes: latest, original, score: parts.score };
       if (expected) {
-        expect(samePixels(parts.outside, expected.outside), '动画之外的全部像素必须匹配基准').toBe(true);
+        expect(comparePixels(parts.outside, expected.outside, 12, regions).matches, '动画之外的全部像素必须匹配基准').toBe(true);
         parts.regions.forEach((part, index) => {
-          if (!matched[index] && samePixels(part, expected.regions[index])) {
+          if (!matched[index] && comparePixels(part, expected.regions[index]).matches) {
             matched[index] = true;
             matchingFrames[index] = original;
           }

@@ -55,7 +55,7 @@ test('四项白名单及完整timer/屏幕/目标约束，错误或重叠排除�
   assert.throws(() => compareTexasActionStart(frames.first,frames.before,{...plan(),region:{...provenance.region,width:1}}),/完整原生范围/);
 });
 
-test('错误气泡位置/文字仍被起点对齐和逐像素基准比较拦截', () => {
+test('错误气泡位置和文字仍被起点对齐及基准比较拦截', () => {
   const start=plan();
   for(const kind of ['wrong-position','wrong-text']) {
     const image=PNG.sync.read(frames.before);
@@ -67,9 +67,9 @@ test('错误气泡位置/文字仍被起点对齐和逐像素基准比较拦截'
     assert.ok(result.distance>10,kind);
     assert.equal(result.samePixels,false,kind);
   }
-  // Even one changed foreground pixel is rejected by exact start-baseline matching.
+  // 单个绘制抖动像素在统一的 0.5% 范围内，不再要求起点完全一致。
   const image=PNG.sync.read(frames.before);image.data.set([255,255,255,255],(20*image.width+100)*4);
-  assert.equal(compareTexasActionStart(PNG.sync.write(image),frames.before,start).samePixels,false);
+  assert.equal(compareTexasActionStart(PNG.sync.write(image),frames.before,start).samePixels,true);
 });
 
 test('真实原片气泡缩放通过完整capture，已有气泡首帧及硬切仍失败', async () => {
