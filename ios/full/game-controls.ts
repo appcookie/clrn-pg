@@ -228,17 +228,21 @@ export async function gameTap(device: AndroidDevice, res: string, _nativeInput =
   console.log(`IOS > 游戏已点击 ${res}`);
 }
 
-/** 聊天、牌谱入口和关闭遮罩使用同一次轻量原生观测；保留两样本、重连恢复和错误即失败规则。 */
+/** 聊天、牌谱入口和关闭遮罩使用同一次轻量原生观测；可选诊断回调接收每次实际查询。 */
 export async function gameTapCurrent(device: AndroidDevice, res: string,
   pointForTarget?: (bounds: ScreenshotBounds) => { x: number; y: number },
-  onTap?: (point: Readonly<{ x: number; y: number }>) => void): Promise<void> {
+  onTap?: (point: Readonly<{ x: number; y: number }>) => void,
+  onObservation?: (nodes: NativeNode[]) => void): Promise<void> {
   await device.prepareTransientCapture();
   await gameTap(device, res, false, onTap, async () => {
     const observation = await device.inputObservation(res);
+    onObservation?.(observation);
     // 39614829016 的牌谱按钮在真实 XML 和截图中可见，但 predicate 查询持续为空。
     // 只有目标缺失且没有连接遮挡时，改读本轮完整原生树；不复用旧坐标或补造节点。
     if (observation.some(node => node.res === res) || gameConnectionState(observation).connecting)
       return observation;
-    return gameNodes(device);
+    const nodes = await gameNodes(device);
+    onObservation?.(nodes);
+    return nodes;
   }, pointForTarget);
 }
