@@ -5,6 +5,8 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 from mitmproxy import http
+from mitmproxy.flow import Error
+from mitmproxy.net.server_spec import parse as server_spec
 from test_network_observer import flow
 
 with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
@@ -14,6 +16,83 @@ with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
 
 
 class BridgeTests(unittest.IsolatedAsyncioTestCase):
+    @patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                'IOS_FUNCTIONAL': 'false', 'IOS_GAME': 'zhajinhua',
+                'IOS_FIXTURE_URL': 'http://127.0.0.1:12345/', 'IOS_FIXTURE_TOKEN': 'fixture-token'})
+    async def test_creation_diagnostics_preserve_real_responses_and_transport_errors(self):
+        addon = module.IosVisualProxy()
+        for status, category in ((200, 'none'), (502, 'upstream-http')):
+            with self.subTest(status=status), patch.object(module.IosVisualProxy, 'fixture_response', return_value=None):
+                request = flow('/v3/pay_action/do?token=private-query', 'POST', {'secret': 'private-body'})
+                request.request.headers['Authorization'] = 'Bearer private-authorization'
+                before = request.request.get_state()
+                await addon.request(request)
+                self.assertIsNone(request.response)
+                self.assertEqual(request.request.get_state(), before)
+                request.response = http.Response.make(status, b'{"ok":true,"result":{"secret":"private-response"}}',
+                    {'X-Private': 'private-header'})
+                response_before = request.response.get_state()
+                addon.response(request)
+                self.assertEqual(request.response.get_state(), response_before)
+                attempt = addon.observer.room_creation_attempts[-1]
+                event = addon.transport.snapshot()['httpEvents'][-1]
+                self.assertEqual(attempt['status'], status)
+                self.assertTrue(attempt['ok'], '业务标记和 HTTP 状态独立保留，502 不能据 ok=true 成功')
+                self.assertEqual(attempt['sequence'], event['sequence'])
+                self.assertEqual(event['observationHook'], 'response')
+                self.assertEqual(event['failureCategory'], category)
+                self.assertEqual(event['responseSource'], 'upstream')
+                self.assertNotIn('private', json.dumps([attempt, addon.transport.snapshot()]))
+
+        for message, category, proxy, reason in [
+                ('[Errno 61] Connect call failed private-address', 'proxy-connection', True, 'connection-refused'),
+                ('[Errno 111] private-address', 'upstream-connection', False, 'connection-refused'),
+                ('[Errno 60] private-address', 'upstream-connection', False, 'connect-timeout'),
+                ('[Errno -2] private-address', 'upstream-connection', False, 'dns'),
+                ('Certificate verify failed: private-certificate', 'server-tls', False, 'certificate-verify-failed'),
+                ('server closed connection', 'upstream-disconnect', False, 'peer-closed'),
+                ('Client disconnected.', 'client-disconnect', False, None),
+                (Error.KILLED_MESSAGE, 'proxy-abort', False, None),
+                ('private-unknown-error', 'unknown', False, None)]:
+            with self.subTest(category=category), patch.object(module.IosVisualProxy, 'fixture_response', return_value=None):
+                request = flow('/v3/pay_action/do', 'POST', {'secret': 'private-body'})
+                request.server_conn.via = server_spec('http://127.0.0.1:12345', 'http') if proxy else None
+                await addon.request(request)
+                request.error = Error(message)
+                before = request.get_state()
+                addon.error(request)
+                self.assertEqual(request.request.get_state(), before['request'])
+                self.assertEqual(request.error.get_state(), before['error'])
+                self.assertIsNone(request.response, '诊断不能制造界面可能收到的代理 502')
+                attempt = addon.observer.room_creation_attempts[-1]
+                self.assertEqual(attempt['status'], 0)
+                self.assertFalse(attempt['ok'])
+                self.assertEqual(attempt['failureCategory'], category)
+                self.assertEqual(attempt['failureReason'], reason)
+                self.assertEqual(attempt['responseSource'], 'none')
+                self.assertEqual(attempt['observationHook'], 'error')
+                self.assertNotIn('private', json.dumps([attempt, addon.transport.snapshot()]))
+
+    async def test_fixture_callback_failure_keeps_origin_and_original_exception(self):
+        with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                'IOS_FUNCTIONAL': 'false', 'IOS_GAME': 'zhajinhua',
+                'IOS_FIXTURE_URL': 'http://127.0.0.1:12345/', 'IOS_FIXTURE_TOKEN': 'fixture-token'}):
+            addon = module.IosVisualProxy()
+            request = flow('/v3/pay_action/do', 'POST', {'secret': 'private-body'})
+            failure = OSError('private-fixture-error')
+            with patch.object(module.IosVisualProxy, 'fixture_response', side_effect=failure):
+                with self.assertRaises(OSError) as raised:
+                    await addon.request(request)
+                self.assertIs(raised.exception, failure)
+            # mitmproxy may continue upstream after an addon exception; the
+            # lookup failure is evidence, not proof of the final HTTP failure.
+            self.assertIsNone(request.response)
+            request.error = Error('private-fixture-error')
+            addon.error(request)
+            self.assertTrue(addon.observer.room_creation_attempts[-1]['fixtureLookupFailed'])
+            self.assertEqual(addon.observer.room_creation_attempts[-1]['failureCategory'], 'unknown')
+            self.assertNotIn('private', json.dumps(addon.transport.snapshot()))
+
     async def test_native_selected_health_reaches_upstream_and_keeps_real_failures(self):
         with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
                 'IOS_FUNCTIONAL': 'false', 'IOS_GAME': 'zhajinhua',

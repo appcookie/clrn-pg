@@ -4,6 +4,7 @@ import os
 from collections import deque
 from urllib.parse import urlsplit
 from mitmproxy import http
+from http_failure import outcome, utc_now
 
 LOGIN = '/public/v10/user/login/username/password'
 
@@ -39,7 +40,8 @@ class NetworkObserver:
         flow.metadata['ios_request_body'] = without_passwords(parsed(flow.request.content))
         flow.metadata['ios_session'] = self.authorizations.get(flow.request.headers.get('Authorization', ''))
         if flow.request.method == 'POST' and urlsplit(flow.request.path).path == '/v3/pay_action/do':
-            attempt = {'sequence': self.sequence, 'completed': False, 'status': None, 'ok': None}
+            attempt = {'sequence': self.sequence, 'completed': False, 'status': None, 'ok': None,
+                       'method': 'POST', 'path': '/v3/pay_action/do', 'requestAtUtc': utc_now()}
             flow.metadata['ios_room_creation_attempt'] = attempt
             self.room_creation_attempts.append(attempt)
 
@@ -50,7 +52,8 @@ class NetworkObserver:
         attempt = flow.metadata.get('ios_room_creation_attempt')
         if attempt is not None:
             attempt.update(completed=True, status=flow.response.status_code if flow.response else 0,
-                           ok=isinstance(body, dict) and body.get('ok') is True)
+                           ok=isinstance(body, dict) and body.get('ok') is True,
+                           completedAtUtc=utc_now(), **(flow.metadata.get('ios_http_outcome') or outcome(flow)))
         path = urlsplit(flow.request.path).path
         request_body = flow.metadata.get('ios_request_body')
         if path == LOGIN and flow.request.method == 'POST' and isinstance(body, dict) and body.get('ok') is True:

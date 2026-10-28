@@ -31,7 +31,9 @@ export async function submitGameRoom(device: AndroidDevice, proxy: Mitmproxy,
       if (room) return room;
       const current = await attempts();
       const failed = current.find(item => item.completed && (item.status !== 200 || item.ok !== true));
-      if (failed) throw new Error(`真实建房请求失败：HTTP ${failed.status}，业务成功标记 ${failed.ok}`);
+      if (failed) throw new Error(`真实建房请求失败：HTTP ${failed.status}，业务成功标记 ${failed.ok}`
+        + `；请求序号 ${failed.sequence}，响应归属 ${failed.responseSource ?? 'unknown'}`
+        + `，失败类别 ${failed.failureCategory ?? 'unknown'}，原因 ${failed.failureReason ?? 'unknown'}`);
       if (Date.now() >= deadline) return null;
       await delay(500);
     } while (true);

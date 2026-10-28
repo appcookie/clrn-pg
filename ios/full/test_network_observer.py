@@ -17,7 +17,8 @@ def flow(path, method='GET', body=None, authorization=None):
 
 
 class ObserverTests(unittest.TestCase):
-    def test_建房请求只暴露状态且可确认未发出请求(self):
+    @patch('network_observer.utc_now', return_value='2026-10-28T13:50:00+00:00')
+    def test_建房请求只暴露状态且可确认未发出请求(self, _clock):
         observer = NetworkObserver()
         with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
             control = flow('/native/observer/room-creation', 'POST', {'after': 0})
@@ -28,13 +29,20 @@ class ObserverTests(unittest.TestCase):
             created = flow('/v3/pay_action/do', 'POST', {'secret': 'private-value'})
             observer.request(created)
             observer.control(control)
+            pending = {'sequence': 1, 'completed': False, 'status': None, 'ok': None,
+                       'method': 'POST', 'path': '/v3/pay_action/do',
+                       'requestAtUtc': '2026-10-28T13:50:00+00:00'}
             self.assertEqual(control.response.json()['attempts'], [
-                {'sequence': 1, 'completed': False, 'status': None, 'ok': None}])
+                pending])
             created.response = http.Response.make(503, b'{"ok":false,"secret":"private-value"}')
             observer.response(created)
             observer.control(control)
             self.assertEqual(control.response.json()['attempts'], [
-                {'sequence': 1, 'completed': True, 'status': 503, 'ok': False}])
+                {**pending, 'completed': True, 'status': 503, 'ok': False,
+                 'completedAtUtc': '2026-10-28T13:50:00+00:00',
+                 'responseSource': 'upstream', 'failureCategory': 'upstream-http', 'failureReason': None,
+                 'fixtureLookupFailed': False,
+                 'serverTcpEstablished': False, 'serverTlsEstablished': False, 'viaProxy': False}])
             self.assertNotIn('private-value', json.dumps(control.response.json()))
         observer.done()
         self.assertFalse(observer.room_creation_attempts)
