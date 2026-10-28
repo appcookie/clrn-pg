@@ -11,6 +11,34 @@ from transport_diagnostics import TransportDiagnostics
 
 
 class TransportTests(unittest.TestCase):
+    def test_metadata_candidates_are_redacted_read_only_and_support_both_versions(self):
+        host = '67.hk.api.staging.laiwan.shafayouxi.com'
+        for version, servers in ((12, [host, 'private-user.example.com', {'token': 'private'}]),
+                (13, {host: 'private-ip-address', 'private-user.example.com': 'private-value'})):
+            diagnostics = TransportDiagnostics()
+            request = flow(f'/public/v{version}/metadata/servers?token=private-token', 'POST')
+            request.response = http.Response.make(200, json.dumps({'ok': True, 'private': 'private-body',
+                'result': {'servers': servers}}).encode())
+            request.response.encode('gzip')
+            original = request.response.get_state()
+            diagnostics.request(request)
+            diagnostics.response(request)
+            snapshot = diagnostics.snapshot()
+            self.assertEqual(snapshot['httpEvents'][0]['candidateHosts'], [host])
+            self.assertFalse(snapshot['httpEvents'][0]['candidateHostsTruncated'])
+            self.assertNotIn('private', json.dumps(snapshot))
+            self.assertEqual(request.response.get_state(), original)
+        for status, body in ((503, b'{"ok":true,"result":{"servers":[]}}'),
+                (200, b'not-json-private'), (200, b'[]'), (200, b'{"ok":false}'),
+                (200, b'{"ok":true,"result":{"servers":"private"}}'),
+                (200, b'{}' + b' ' * (256 * 1024))):
+            self.assertEqual(TransportDiagnostics.candidates(http.Response.make(status, body)), {})
+        servers = [f'{i}.hk.api.staging.laiwan.shafayouxi.com' for i in range(130)]
+        response = http.Response.make(200, json.dumps({'ok': True, 'result': {'servers': servers}}).encode())
+        candidates = TransportDiagnostics.candidates(response)
+        self.assertEqual(len(candidates['candidateHosts']), 128)
+        self.assertTrue(candidates['candidateHostsTruncated'])
+
     def test_profile_diagnostics_redact_identity_and_only_keep_response_shape(self):
         diagnostics = TransportDiagnostics()
         identifier = '12345678-1234-4234-8234-123456789abc'

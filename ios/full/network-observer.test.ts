@@ -35,27 +35,34 @@ test('真实mitmdump控制协议支持精确覆写、计数、鉴权和内存观
     environment: { ...process.env, IOS_FUNCTIONAL: 'true' } });
 });
 
-/** iOS 客户端公共请求经过与真实任务相同的 Python -> Node 夹具桥，不依赖 Android 平台字段。 */
-test('iOS原生桥透传本地上游健康与metadata，业务共享夹具继续生效', async () => {
+/** 经真实 iOS 插件与本地上游验证多节点；只改进程上游，不更改系统网络。 */
+test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业务夹具继续生效', async () => {
   const { createServer } = await import('node:http');
   const { visualNetworkRouter } = await import('./network-routes');
   const route = await visualNetworkRouter();
   const token = 'offline-ios-fixture-token';
+  const nodes = ['64.kr-seoul.api.staging.laiwan.shafayouxi.com',
+    '67.hk.api.staging.laiwan.shafayouxi.com', '68.kr.api.staging.laiwan.shafayouxi.com'];
   let upstreamRequests = 0;
-  const upstream = createServer((request, response) => {
+  let fixtureRequests = 0;
+  const upstream = createServer((incoming, response) => {
     upstreamRequests++;
-    const url = new URL(request.url!, 'http://local-upstream');
-    const failed = url.searchParams.has('failed');
-    response.writeHead(failed ? 503 : 200, { 'Content-Type': 'application/json', 'X-Real-Upstream': 'yes' });
-    response.end(JSON.stringify(url.pathname === '/node/v1/status'
-      ? { server_load: failed ? 'unavailable' : 'normal', backend_delay: 37 }
-      : { ok: true, result: { servers: { '64.kr-seoul.api.staging.laiwan.shafayouxi.com': '192.0.2.1' } } }));
+    const url = new URL(incoming.url!, `http://${incoming.headers.host}`);
+    const failed = url.searchParams.has('failed') || url.hostname === nodes[2];
+    const status = incoming.method === 'OPTIONS' ? 204 : failed ? 503 : 200;
+    response.writeHead(status, { 'Content-Type': 'application/json', 'X-Real-Upstream': 'yes',
+      'Access-Control-Allow-Origin': 'https://app.test', 'Access-Control-Allow-Headers': 'authorization',
+      'ETag': 'upstream-tag' });
+    const candidates = url.searchParams.has('without64') ? nodes.slice(1) : nodes;
+    response.end(incoming.method === 'OPTIONS' ? '' : JSON.stringify(url.pathname === '/node/v1/status'
+      ? { server_load: failed ? 'unavailable' : 'normal',
+        backend_delay: url.hostname === nodes[0] ? 1065 : 37, new_health: true }
+      : { ok: !failed, extra: 42, result: { servers: url.pathname.includes('/v12/') ? candidates
+        : Object.fromEntries(candidates.map((host, index) => [host, `192.0.2.${index + 1}`])) } }));
   });
   await new Promise<void>(resolve => upstream.listen(0, '127.0.0.1', resolve));
   const upstreamAddress = upstream.address();
   assert.ok(upstreamAddress && typeof upstreamAddress !== 'string');
-  // Start the actual listener in upstream mode from its first instruction.
-  // A test-only executable wrapper leaves production process arguments intact.
   const directory = await mkdtemp(path.join(tmpdir(), 'ios-upstream-test-'));
   const executable = path.join(directory, 'mitmdump');
   const previousExecutable = process.env.MITMDUMP_PATH;
@@ -64,10 +71,11 @@ test('iOS原生桥透传本地上游健康与metadata，业务共享夹具继续
   const quote = (value: string) => "'" + value.replaceAll("'", "'\"'\"'") + "'";
   await writeFile(executable, `#!/bin/sh\nexec ${quote(realExecutable)} --mode ${quote(`upstream:http://127.0.0.1:${upstreamAddress.port}`)} "$@"\n`, { mode: 0o700 });
   process.env.MITMDUMP_PATH = executable;
-  const server = createServer(async (request, response) => {
-    if (request.headers.authorization !== token) { response.writeHead(403).end(); return; }
+  const server = createServer(async (incoming, response) => {
+    if (incoming.headers.authorization !== token) { response.writeHead(403).end(); return; }
+    fixtureRequests++;
     let body = '';
-    for await (const chunk of request) body += chunk;
+    for await (const chunk of incoming) body += chunk;
     response.setHeader('Content-Type', 'application/json');
     response.end(JSON.stringify(await route(JSON.parse(body).url)));
   });
@@ -75,43 +83,83 @@ test('iOS原生桥透传本地上游健康与metadata，业务共享夹具继续
   const address = server.address();
   assert.ok(address && typeof address !== 'string');
   try {
-    await withMitmproxy(async proxy => {
-      for (const path of ['/public/v13/metadata/servers?platform=ios', '/public/v13/metadata/servers?failed',
-        '/node/v1/status', '/node/v1/status?failed',
-        '/public/v10/profile/country?platform=ios', '/public/v1/hall_matching/available.json',
-        '/public/v1/hall_matching/texas_holdem/halls', '/public/v1/hall_matching/zhajinhua/halls']) {
-        const body = await new Promise<any>((resolve, reject) => {
+    for (const mode of [{ game: 'texas-holdem' }, { game: 'zhajinhua' }, { game: '', records: true }, { game: '' }]) {
+      await withMitmproxy(async proxy => {
+        const fetch = (host: string, apiPath: string, method = 'GET') => new Promise<{
+          status: number; headers: import('node:http').IncomingHttpHeaders; body: any;
+        }>((resolve, reject) => {
           const req = request({ hostname: '127.0.0.1', port: new URL(proxy.server).port,
-            path: `http://64.kr-seoul.api.staging.laiwan.shafayouxi.com${path}`,
-            headers: { Host: '64.kr-seoul.api.staging.laiwan.shafayouxi.com',
-              'User-Agent': 'laiwan/2.0 CFNetwork iPhone iOS 18.5', 'X-Platform': 'ios' } }, response => {
-            try {
-              assert.equal(response.statusCode, path.includes('failed') ? 503 : 200);
-              if (path.includes('/metadata/') || path.startsWith('/node/')) assert.equal(response.headers['x-real-upstream'], 'yes');
-            } catch (error) { response.resume(); reject(error); return; }
+            path: `http://${host}${apiPath}`, method,
+            headers: { Host: host, 'User-Agent': 'laiwan/2.0 CFNetwork iPhone iOS 18.5', 'X-Platform': 'ios',
+              Origin: 'https://app.test', 'Access-Control-Request-Headers': 'authorization' } }, response => {
             let text = ''; response.on('data', chunk => { text += chunk; });
-            response.once('end', () => { try { resolve(JSON.parse(text)); } catch (error) { reject(error); } });
+            response.once('error', reject);
+            response.once('end', () => {
+              try { resolve({ status: response.statusCode!, headers: response.headers, body: text ? JSON.parse(text) : null }); }
+              catch (error) { reject(error); }
+            });
           });
           req.once('error', reject); req.end();
         });
-        if (path.startsWith('/node/v1/status')) {
-          assert.equal(body.server_load, path.includes('failed') ? 'unavailable' : 'normal');
-          assert.equal(body.backend_delay, 37);
-        } else assert.equal(body.ok, true);
-        if (path.includes('/metadata/')) assert.equal(body.result.servers['64.kr-seoul.api.staging.laiwan.shafayouxi.com'], '192.0.2.1');
-        if (path.startsWith('/public/v10/profile/country')) assert.equal(body.result.countryPhoneCode, '86');
-      }
-      const transport = await proxy.command<{ responses: { path: string; status: number; count: number }[];
-        tlsFailures: unknown[]; httpEvents: { path: string; status: number; mocked: boolean; elapsedMs: number; source: string }[] }>('native/transport');
-      assert.ok(transport.responses.some(item => item.path === '/node/v1/status' && item.status === 200));
-      assert.ok(transport.responses.some(item => item.path === '/public/v13/metadata/servers' && item.status === 200));
-      assert.deepEqual(transport.tlsFailures, []);
-      assert.equal(upstreamRequests, 4, 'only health/metadata reach local upstream; business routes remain fixtures');
-      assert.ok(transport.responses.some(item => item.path === '/node/v1/status' && item.status === 503));
-      assert.ok(transport.httpEvents.every(item => !item.mocked && item.source === 'upstream' && item.elapsedMs >= 0));
-    }, { addonPath: fileURLToPath(new URL('./proxy-addon.py', import.meta.url)),
-      environment: { ...process.env, IOS_FUNCTIONAL: 'false', IOS_GAME: 'zhajinhua', IOS_FIXTURE_TOKEN: token,
-        IOS_FIXTURE_URL: `http://127.0.0.1:${address.port}/` } });
+        const fixtureBefore = fixtureRequests;
+        for (const host of ['api.shafayouxi.org', ...nodes]) {
+          for (const version of [12, 13]) {
+            for (const method of ['GET', 'POST', 'OPTIONS']) {
+              for (const query of ['platform=ios', 'without64', 'failed']) {
+                const result = await fetch(host, `/public/v${version}/metadata/servers?${query}`, method);
+                const failed = query === 'failed' || host === nodes[2];
+                assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
+                assert.equal(result.headers['x-real-upstream'], 'yes');
+                assert.equal(result.headers['access-control-allow-origin'], 'https://app.test');
+                assert.equal(result.headers['etag'], 'upstream-tag');
+                if (method === 'OPTIONS') assert.equal(result.headers['access-control-allow-headers'], 'authorization');
+                else {
+                  const candidates = query === 'without64' ? nodes.slice(1) : nodes;
+                  assert.deepEqual(result.body, { ok: !failed, extra: 42, result: { servers: version === 12 ? candidates
+                    : Object.fromEntries(candidates.map((node, index) => [node, `192.0.2.${index + 1}`])) } });
+                }
+              }
+            }
+          }
+          for (const method of ['GET', 'OPTIONS']) {
+            for (const query of ['', '?failed']) {
+              const result = await fetch(host, `/node/v1/status${query}`, method);
+              const failed = query === '?failed' || host === nodes[2];
+              assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
+              assert.equal(result.headers['x-real-upstream'], 'yes');
+              if (method === 'GET') assert.deepEqual(result.body, { server_load: failed ? 'unavailable' : 'normal',
+                backend_delay: host === nodes[0] ? 1065 : 37, new_health: true });
+            }
+          }
+        }
+        assert.equal(fixtureRequests, fixtureBefore, '选线请求不能进入 Node 业务夹具桥');
+        const transport = await proxy.command<{ tlsFailures: unknown[]; httpEvents: {
+          host: string; path: string; status: number; mocked: boolean; elapsedMs: number;
+          source: string; backendDelay?: number; fixtureElapsedMs: number | null; candidateHosts?: string[];
+        }[] }>('native/transport');
+        assert.deepEqual(transport.tlsFailures, []);
+        assert.ok(transport.httpEvents.some(item => JSON.stringify(item.candidateHosts) === JSON.stringify([...nodes].sort())));
+        assert.ok(transport.httpEvents.some(item => JSON.stringify(item.candidateHosts) === JSON.stringify(nodes.slice(1).sort())));
+        assert.ok(transport.httpEvents.some(item => item.host === nodes[0] && item.backendDelay === 1065));
+        assert.ok(transport.httpEvents.some(item => item.host === nodes[1] && item.backendDelay === 37 && item.status === 200));
+        assert.ok(transport.httpEvents.some(item => item.host === nodes[2] && item.status === 503));
+        assert.ok(transport.httpEvents.every(item => !item.mocked && item.source === 'upstream'
+          && item.elapsedMs >= 0 && item.fixtureElapsedMs === null));
+        const before = upstreamRequests;
+        for (const apiPath of ['/public/v10/profile/country?platform=ios', '/public/v1/hall_matching/available.json',
+          '/public/v1/hall_matching/texas_holdem/halls', '/public/v1/hall_matching/zhajinhua/halls']) {
+          const result = await fetch(nodes[1], apiPath);
+          assert.equal(result.status, 200);
+          assert.equal(result.body.ok, true);
+          if (apiPath.includes('/country')) assert.equal(result.body.result.countryPhoneCode, '86');
+        }
+        assert.equal(upstreamRequests, before, '业务共享夹具继续生效');
+        assert.equal(fixtureRequests - fixtureBefore, 4);
+      }, { addonPath: fileURLToPath(new URL('./proxy-addon.py', import.meta.url)),
+        environment: { ...process.env, IOS_FUNCTIONAL: 'false', IOS_GAME: mode.game,
+          IOS_RECORDS: mode.records ? 'true' : 'false', IOS_MATCHING: 'false', IOS_SLOT: 'false',
+          IOS_FIXTURE_TOKEN: token, IOS_FIXTURE_URL: `http://127.0.0.1:${address.port}/` } });
+    }
   } finally {
     if (previousExecutable === undefined) delete process.env.MITMDUMP_PATH;
     else process.env.MITMDUMP_PATH = previousExecutable;
