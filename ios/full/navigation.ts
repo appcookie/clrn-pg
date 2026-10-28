@@ -66,7 +66,14 @@ export async function stableNativeTarget(device: Pick<NativeDevice, 'info'>, ide
     }
   }
 }
-export async function tap(device: NativeDevice, identifier: string) {
+export type NativeTapObservation = {
+  target: Pick<NativeNode, 'res' | 'bounds' | 'visible' | 'enabled'>;
+  point: { x: number; y: number };
+  observedAtUtc: string;
+  connectionUi: { connecting: boolean | null; timeout: boolean | null };
+};
+export async function tap(device: NativeDevice, identifier: string,
+  observeInput?: (observation: NativeTapObservation) => void) {
   await reveal(device, { res: identifier });
   const target = await stableNativeTarget(device, identifier);
   const nodes = await device.nodes();
@@ -77,6 +84,12 @@ export async function tap(device: NativeDevice, identifier: string) {
   const point = { x: bounds.x + bounds.width * (overlaps || identifier === 'username-or-email-sign-in-button' ? 0.95 : 0.5),
     y: bounds.y + bounds.height / 2 };
   if (!pointInside(point, viewport)) throw new Error(`点击位置仍被祖先裁切：${identifier}`);
+  // 只读回执位于原有真实点击之前，不添加查询、等待、重试或第二次点击。
+  observeInput?.({ target: { res: node.res, bounds: { ...bounds }, visible: node.visible, enabled: node.enabled },
+    point: { ...point }, observedAtUtc: new Date().toISOString(), connectionUi: {
+      connecting: nodes.some(item => item.visible && item.text === 'Connecting...'),
+      timeout: nodes.some(item => item.visible && /Connection Timeout/i.test(item.text || '')),
+    } });
   await device.input.tap(point);
 }
 

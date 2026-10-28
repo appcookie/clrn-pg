@@ -167,6 +167,7 @@ class IosVisualProxy:
                     if replies:
                         ctx.master.commands.call('inject.websocket', flow, True,
                                                  '\n'.join(json.dumps(reply) for reply in replies).encode(), True)
+                        self.transport.matching.proxy_replies(flow, replies)
         if self.game:
             self.game.websocket_message(flow)
 
