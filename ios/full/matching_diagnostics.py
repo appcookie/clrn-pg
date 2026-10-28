@@ -63,11 +63,11 @@ class MatchingDiagnostics:
             self.pending_evicted += 1
         self.event(request, 'request', 'clientToProxy', 'client', 'observed')
 
-    def finish(self, key, source, status, ok=None):
+    def finish(self, key, source, status, ok=None, phase='response'):
         request = self.requests.pop(key, None)
         if request:
-            self.event(request, 'response', 'proxyToClient' if source == 'proxy' else 'serverToClient',
-                       source, status, ok)
+            direction = ('proxyToClient' if source == 'proxy' else 'serverToClient') if phase == 'response' else 'unknown'
+            self.event(request, phase, direction, source, status, ok)
 
     def http_request(self, flow):
         path = urlsplit(flow.request.path).path
@@ -81,8 +81,12 @@ class MatchingDiagnostics:
         key = (flow.id, None)
         if key not in self.requests:
             return
+        if not flow.response:
+            # error 钩子不代表收到上游响应，也不能据此判断故障归属。
+            self.finish(key, 'unknown', 'transport-error', phase='incomplete')
+            return
         ok = None
-        if flow.response and len(flow.response.content or b'') <= 256 * 1024:
+        if len(flow.response.content or b'') <= 256 * 1024:
             try:
                 body = flow.response.json()
                 value = body.get('ok') if isinstance(body, dict) else None
@@ -90,7 +94,7 @@ class MatchingDiagnostics:
             except (ValueError, UnicodeDecodeError):
                 pass
         self.finish(key, 'proxy' if flow.metadata.get('ios_mocked') is True else 'upstream',
-                    flow.response.status_code if flow.response else 'transport-error', ok)
+                    flow.response.status_code, ok)
 
     def websocket_message(self, flow, connection=None):
         if not flow.websocket or not flow.websocket.messages:
@@ -115,8 +119,11 @@ class MatchingDiagnostics:
                 status, ok = self.status(frame)
                 self.finish((flow.id, rpc_id), 'upstream', status, ok)
 
-    def proxy_replies(self, flow, replies):
+    def proxy_replies(self, flow, replies, *, failed=False):
         for frame in replies:
+            if failed:
+                self.finish((flow.id, frame['id']), 'proxy', 'injection-failed', phase='incomplete')
+                continue
             # 表示 inject.websocket 已返回；并不证明应用收到或执行回调。
             _, ok = self.status(frame)
             self.finish((flow.id, frame['id']), 'proxy', 'injection-returned', ok)

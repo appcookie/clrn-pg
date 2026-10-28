@@ -16,6 +16,65 @@ with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
 
 
 class BridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_matching_injection_failure_keeps_original_error_and_does_not_claim_a_reply(self):
+        with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                'IOS_MATCHING': 'true'}):
+            addon = module.IosVisualProxy()
+        target = flow('/v2/centrifugo/connection/websocket')
+        target.websocket = websocket.WebSocketData()
+        addon.websocket_start(target)
+        content = b'{"id":51,"method":9,"params":{"data":{"method":"POST","path":"/v1/hall_matching/quit"}}}'
+        sent = websocket.WebSocketMessage(Opcode.TEXT, True, content)
+        target.websocket.messages.append(sent)
+        failure = RuntimeError('private-injection-error')
+        with patch.object(module, 'ctx') as context:
+            context.master.commands.call.side_effect = failure
+            with self.assertRaises(RuntimeError) as caught:
+                addon.websocket_message(target)
+            self.assertIs(caught.exception, failure)
+            self.assertEqual(context.master.commands.call.call_count, 1)
+        self.assertTrue(sent.dropped, '保留既有夹具隔离，不把失败请求改为透传或重放')
+        self.assertEqual(sent.content, content)
+        result = addon.transport.snapshot()['matchingRpc']
+        self.assertEqual(result['pending'], [])
+        self.assertEqual([item['phase'] for item in result['events']], ['request', 'incomplete'])
+        event = result['events'][-1]
+        self.assertEqual(event['source'], 'proxy')
+        self.assertEqual(event['status'], 'injection-failed')
+        self.assertEqual(event['direction'], 'unknown')
+        self.assertIsNone(event['ok'])
+        self.assertEqual(event['sequence'], result['events'][0]['sequence'])
+        self.assertEqual(sum(item['count'] for item in result['counts'] if item['phase'] == 'incomplete'), 1)
+        self.assertFalse(any(item['phase'] == 'response' for item in result['counts']))
+        addon.websocket_end(target)
+        self.assertEqual(addon.transport.snapshot()['matchingRpc']['eventTotal'], 2)
+        self.assertNotIn('private', json.dumps(result))
+
+    async def test_matching_http_error_hook_records_no_response_without_attributing_upstream(self):
+        with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                'IOS_FUNCTIONAL': 'true'}):
+            addon = module.IosVisualProxy()
+        target = flow('/v1/hall_matching/quit?token=private-query', 'POST', {'token': 'private-body'})
+        original = target.request.get_state()
+        await addon.request(target)
+        from mitmproxy.flow import Error
+        target.error = Error('private-transport-error')
+        addon.error(target)
+        addon.error(target)  # 重复结束通知不能重复统计同一请求。
+        self.assertIsNone(target.response)
+        self.assertEqual(target.request.get_state(), original)
+        self.assertEqual(target.error.msg, 'private-transport-error')
+        result = addon.transport.snapshot()['matchingRpc']
+        self.assertEqual(result['pending'], [])
+        self.assertEqual([item['phase'] for item in result['events']], ['request', 'incomplete'])
+        event = result['events'][-1]
+        self.assertEqual(event['status'], 'transport-error')
+        self.assertEqual(event['source'], 'unknown')
+        self.assertEqual(event['direction'], 'unknown')
+        self.assertIsNone(event['ok'])
+        self.assertEqual(sum(item['count'] for item in result['counts']), 2)
+        self.assertNotIn('private', json.dumps(result))
+
     async def test_matching_http_observation_preserves_real_and_existing_fixture_responses(self):
         for mocked in (False, True):
             with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',

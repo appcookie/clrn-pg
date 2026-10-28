@@ -125,8 +125,14 @@ class MatchingTests(unittest.TestCase):
         diagnostics.request(pending)
         result = diagnostics.snapshot()['matchingRpc']
         responses = [item for item in result['events'] if item['phase'] == 'response']
-        self.assertEqual([item['source'] for item in responses], ['upstream', 'proxy', 'upstream', 'upstream'])
-        self.assertEqual([item['status'] for item in responses], [200, 200, 503, 'transport-error'])
+        self.assertEqual([item['source'] for item in responses], ['upstream', 'proxy', 'upstream'])
+        self.assertEqual([item['status'] for item in responses], [200, 200, 503])
+        incomplete = [item for item in result['events'] if item['phase'] == 'incomplete']
+        self.assertEqual(len(incomplete), 1)
+        self.assertEqual(incomplete[0]['status'], 'transport-error')
+        self.assertEqual(incomplete[0]['source'], 'unknown')
+        self.assertEqual(incomplete[0]['direction'], 'unknown')
+        self.assertIsNone(incomplete[0]['ok'])
         self.assertEqual(len(result['pending']), 1)
         self.assertNotIn('private', json.dumps(result))
 
