@@ -6,7 +6,8 @@ import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { frameColorDistance, framePaletteDistance } from './animation-transition';
 import { gameScreenshot } from './game-controls';
-import { cropNativeFrame, samePixels } from './motion-regions';
+import { cropNativeFrame } from './motion-regions';
+import { comparePixels } from '../visual.mjs';
 import type { ScreenshotBounds } from './screenshot';
 import { baselinePath } from './baseline-path.mjs';
 import { shortAnimationMinimumFrames } from './video-timeline';
@@ -64,7 +65,7 @@ export async function captureAssetSequence(device: AndroidDevice, name: string, 
     }
   }
   await setTimeout(2500);
-  expect(samePixels(before, await crop(await gameScreenshot(device))), `${name} 须播放结束并恢复画面`).toBe(true);
+  expect(comparePixels(before, await crop(await gameScreenshot(device))).matches, `${name} 须播放结束并恢复画面`).toBe(true);
   if (flightRegion) {
     /**
      * 裁切道具经过的中途路线，独立锁定飞行轨迹。

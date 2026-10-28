@@ -25,8 +25,8 @@ test('翻牌终点仍拒绝缺牌、整像素错位、字形损坏和明显变�
       const offset = (y * picture.width + x) * 4;
       if (kind === 'missing') picture.data.set([45, 140, 118, 255], offset);
       if (kind === 'translated') source.copy(picture.data, offset, offset - 4, offset);
-      if (kind === 'glyph' && x >= 297 && x < 320 && y >= 26 && y < 38)
-        picture.data.set([235, 235, 235, 255], offset);
+      if (kind === 'glyph' && x >= 297 && x < 320 && y >= 26 && y < 50)
+        picture.data[offset] = (source[offset] + 128) % 256;
       if (kind === 'color') picture.data[offset] = 160;
     }
     const result = compareAnimationEndpoint(PNG.sync.write(picture), references);

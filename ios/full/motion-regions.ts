@@ -60,7 +60,7 @@ export function cropMotionRegions(bytes: Buffer, regions: ScreenshotBounds[],
   });
 }
 
-/** 相位稳定要求每个像素都在编码容差内；不能用全图平均掩盖局部回归。 */
+/** 运动检测逐像素识别超出编码容差的变化；截图匹配与稳定性另用统一比例比较器。 */
 export function samePixels(actual: Buffer, expected: Buffer): boolean {
   const a = PNG.sync.read(actual), b = PNG.sync.read(expected);
   return a.width === b.width && a.height === b.height
