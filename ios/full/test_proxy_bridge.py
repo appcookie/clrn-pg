@@ -52,6 +52,8 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
                 ('Certificate verify failed: private-certificate', 'server-tls', False, 'certificate-verify-failed'),
                 ('server closed connection', 'upstream-disconnect', False, 'peer-closed'),
                 ('Client disconnected.', 'client-disconnect', False, None),
+                ('HTTP/1 protocol error: private-details', 'http-protocol', False, None),
+                ('HTTP/2 protocol error: private-details', 'http-protocol', False, None),
                 (Error.KILLED_MESSAGE, 'proxy-abort', False, None),
                 ('private-unknown-error', 'unknown', False, None)]:
             with self.subTest(category=category), patch.object(module.IosVisualProxy, 'fixture_response', return_value=None):

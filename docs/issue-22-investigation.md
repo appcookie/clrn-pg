@@ -4,7 +4,15 @@
 
 本轮修复建房诊断缺失，供发布后的固定构建原生回归继续定位；**尚未确认历史 502 的根因，也未确认 master 恢复**。不能以隔离回归、用例收集或诊断代码完成代替真实建房通过。
 
-开始时工作树干净，HEAD 为 `026e21ecd6ac31edcd66d55eb44323cee39ea8f1`，无 MERGE_HEAD、冲突或相对基线的已有修改。没有可仅靠已有合并解决的更新。目标工作树中不存在 AGENTS.md、AGENTS.txt、DEVELOPMENT.md 或 .codegraph/；已核对 README.md、ios-full.yml 和 ios-simulator.yml。
+首轮开始时工作树干净，HEAD 为 `026e21ecd6ac31edcd66d55eb44323cee39ea8f1`，无 MERGE_HEAD、冲突或相对基线的已有修改。没有可仅靠已有合并解决的更新。目标工作树中不存在 AGENTS.md、AGENTS.txt、DEVELOPMENT.md 或 .codegraph/；已核对 README.md、ios-full.yml 和 ios-simulator.yml。
+
+## 重新分析与增补
+
+本次开始时工作树干净，HEAD 为已有修复 `af5052de477d6e1f9fe242dd79dd9d7097591825`，无 MERGE_HEAD 或冲突；保留该提交相对基线的全部 14 个项目文件改动。只读查询远端 master 仍为基线 `026e21e`，所以没有主分支更新已解决问题的证据。本次重新读取的 #22 正文与提供的资料一致，评论为空。
+
+核对本工作树安装的 mitmproxy 12.2.3 源码时发现，`proxy/layers/http/_http2.py` 会生成 `HTTP/2 protocol error:`，已有诊断仅识别 HTTP/1 的固定前缀，会将 HTTP/2 协议失败误记为 unknown。本次补齐同一 `http-protocol` 类别，从实际 iOS addon 入口加入 HTTP/1、HTTP/2 回归：修复前 HTTP/2 用例失败，修复后通过；同时验证请求、错误和响应状态未被修改，私有错误内容未输出。这不证明历史建房采用 HTTP/2 或历史 502 已恢复。
+
+本次再次读取历史作业完整日志；原始产物 ZIP 的本地下载仍因 DNS 无法解析而失败，未查看其中的报告、截图或 build-info。历史证据缺口继续保留。已有提交的[完整回归 40722507732](https://github.com/appcookie/clrn-pg/actions/runs/40722507732)绑定 `af5052d`、attempt 1，查询时整体尚未结束，proxy-check 作业已成功；这些结果不覆盖本次未发布的增补，也不能代表真实建房或 master 已恢复。
 
 ## 已取得与缺失的历史证据
 
@@ -41,9 +49,9 @@ TLS 按实际连接身份关联已观察到的失败 hook；固定的证书验�
 
 ## 验证与后续恢复条件
 
-本轮已通过 iOS 代理目录的 30 项 Python 隔离测试、8 项建房流程测试及 TypeScript 检查。隔离测试从实际 iOS addon 入口验证上游 200、上游 502、代理/上游连接错误、客户端中断、TLS 精确关联、夹具异常和 unknown 脱敏，比较请求与响应保持原样，并验证失败 POST 不补点。
+本次增补后重新通过 iOS 代理目录的 30 项 Python 隔离测试、8 项建房流程测试及 TypeScript 检查；原生用例收集为 184 项，仅证明登记成功。隔离测试从实际 iOS addon 入口验证上游 200、上游 502、代理/上游连接错误、客户端中断、HTTP/1 与 HTTP/2 协议错误、TLS 精确关联、夹具异常和 unknown 脱敏，比较请求与响应保持原样，并验证失败 POST 不补点。
 
-`npm run check` 的完整单测阶段有 20 项因 `listen EPERM 127.0.0.1` 失败；实际 mitmdump 集成测试也受同一沙箱限制，不能记作通过。集成回归已加入正常建房与上游 502 的本地上游字节校验，以及不可用代理导致「客户端 502 / observer 0」的单次 POST 场景，由宿主 `check:python` 执行。依赖通过本地缓存安装 npm 包；Python 隔离测试只读使用相邻工作树已有的 mitmproxy 环境，未修改该环境。宿主仍需按固定检查重新安装并验证本工作树。
+本次 `npm run check` 的完整单测为 499 项，479 通过、20 项因 `listen EPERM 127.0.0.1` 失败，未跳过任何测试；因此该命令未通过，后续用例收集另行执行。`npm run check:python` 在共享代理的真实上游集成测试绑定回环端口时被沙箱拒绝，整体未通过；单独执行的 3 项 mitmdump 集成测试同样全部因 `listen EPERM` 失败，不能记作通过。集成回归已加入正常建房与上游 502 的本地上游字节校验，以及不可用代理导致「客户端 502 / observer 0」的单次 POST 场景，由宿主 `check:python` 执行。在线 npm 安装因 DNS 不可用中止，随后使用复制到临时目录的本地缓存离线 `npm ci` 成功；Python 使用本工作树已有的 `e2e/.venv`，离线依赖核对成功。宿主仍需按固定检查重新安装并验证本工作树。
 
 发布后的原生验证须继续使用上述固定 Release、iPhone 16 / iOS 18.5 和真实建房入口，要求 HTTP 200、ok=true、本轮真实房间登记及原有桌面/录像检查通过。保存当前提交完整日志、报告、build-info 与适用截图/原片；缺少录像应注明失败阶段，不伪造录像或更新基准。旧失败不证明新提交仍失败或已通过。
 

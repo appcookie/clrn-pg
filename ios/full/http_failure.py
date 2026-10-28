@@ -32,7 +32,7 @@ def outcome(flow):
             category = 'client-disconnect'
         elif message == 'server closed connection':
             category = 'upstream-disconnect'
-        elif message.startswith('HTTP/1 protocol error:'):
+        elif message.startswith(('HTTP/1 protocol error:', 'HTTP/2 protocol error:')):
             category = 'http-protocol'
         elif (server.error or reason is not None
               or (server.via and (message.startswith('Error connecting to ')
