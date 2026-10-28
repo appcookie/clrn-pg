@@ -53,9 +53,12 @@ v12 数组、v13 字典、所有节点健康响应及 CORS 预检完整透传；
 虚拟玩家及业务写操作隔离保持原有范围。启动加载动画可显式暂缓 GET 健康请求，释放后访问真实上游；
 功能测试的异常仅由明确的故障场景或认证控制规则注入。
 
-`npm run check:python` 包含真实 `ios/full/proxy-addon.py` 入口连接本地上游的离线回归：
-64 健康延迟 1065 或失效、67 正常、第三节点真实 503、列表不含 64，以及跨节点回放与房间隔离。
-这些检查证明代理保留上游结果，不代表真实设备或 iOS 视觉比较已通过。原生验收仍使用同一固定 Release，
+`npm run check:python` 包含两类离线回归：
+
+- `ios/full/network-observer.test.ts` 启动真实 mitmdump，加载 `ios/full/proxy-addon.py` 并连接本地 HTTP 上游，覆盖普通视觉、德州、拼三张和战绩模式。检查 v12/v13 列表、缺少 64、64 健康延迟 1065、67 正常、第三节点真实 503 和 CORS 预检；本地上游实际断开 64 连接后，继续核验 67 成功与第三节点失败均保留。业务夹具桥仍生效且不参与选线。
+- `ios/full/test_node_passthrough.py` 手工构造 HTTPFlow 和 WebSocket 消息，进行回调级隔离验证，覆盖压缩响应保真、启动暂缓、异步夹具、跨节点订阅回放及房间/RPC 隔离；它不连接上游，也不运行设备。`e2e/mitmproxy/test_response_overrides_integration.py` 另验证五个共享/Web 代理入口，不代替 iOS 入口验证。
+
+离线检查不代表真实设备或 iOS 视觉比较已通过。原生验收仍使用同一固定 Release，
 结合每例结束时保存的 `native/transport` 脱敏候选域名、健康来源和实际 WebSocket 连接诊断，
 以及本轮截图、录像和构建身份核对；节点地址、查询参数、凭据及业务正文不会写入该诊断。
 

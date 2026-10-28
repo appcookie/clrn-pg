@@ -44,15 +44,23 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
   const nodes = ['64.kr-seoul.api.staging.laiwan.shafayouxi.com',
     '67.hk.api.staging.laiwan.shafayouxi.com', '68.kr.api.staging.laiwan.shafayouxi.com'];
   let upstreamRequests = 0;
+  let upstreamDisconnects = 0;
   let fixtureRequests = 0;
   const upstream = createServer((incoming, response) => {
     upstreamRequests++;
     const url = new URL(incoming.url!, `http://${incoming.headers.host}`);
+    if (url.hostname === nodes[0] && url.searchParams.has('disconnect')) {
+      // 真正关闭上游套接字，让 mitmdump 走 error 回调；不手动填充 HTTPFlow。
+      upstreamDisconnects++;
+      incoming.socket.destroy();
+      return;
+    }
     const failed = url.searchParams.has('failed') || url.hostname === nodes[2];
     const status = incoming.method === 'OPTIONS' ? 204 : failed ? 503 : 200;
     response.writeHead(status, { 'Content-Type': 'application/json', 'X-Real-Upstream': 'yes',
       'Access-Control-Allow-Origin': 'https://app.test', 'Access-Control-Allow-Headers': 'authorization',
-      'ETag': 'upstream-tag' });
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Credentials': 'true',
+      'Vary': 'Origin', 'ETag': 'upstream-tag' });
     const candidates = url.searchParams.has('without64') ? nodes.slice(1) : nodes;
     response.end(incoming.method === 'OPTIONS' ? '' : JSON.stringify(url.pathname === '/node/v1/status'
       ? { server_load: failed ? 'unavailable' : 'normal',
@@ -85,7 +93,7 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
   try {
     for (const mode of [{ game: 'texas-holdem' }, { game: 'zhajinhua' }, { game: '', records: true }, { game: '' }]) {
       await withMitmproxy(async proxy => {
-        const fetch = (host: string, apiPath: string, method = 'GET') => new Promise<{
+        const fetch = (host: string, apiPath: string, method = 'GET', parseJson = true) => new Promise<{
           status: number; headers: import('node:http').IncomingHttpHeaders; body: any;
         }>((resolve, reject) => {
           const req = request({ hostname: '127.0.0.1', port: new URL(proxy.server).port,
@@ -95,7 +103,8 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
             let text = ''; response.on('data', chunk => { text += chunk; });
             response.once('error', reject);
             response.once('end', () => {
-              try { resolve({ status: response.statusCode!, headers: response.headers, body: text ? JSON.parse(text) : null }); }
+              try { resolve({ status: response.statusCode!, headers: response.headers,
+                body: parseJson && text ? JSON.parse(text) : text || null }); }
               catch (error) { reject(error); }
             });
           });
@@ -111,6 +120,9 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
                 assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
                 assert.equal(result.headers['x-real-upstream'], 'yes');
                 assert.equal(result.headers['access-control-allow-origin'], 'https://app.test');
+                assert.equal(result.headers['access-control-allow-methods'], 'GET, POST, OPTIONS');
+                assert.equal(result.headers['access-control-allow-credentials'], 'true');
+                assert.equal(result.headers['vary'], 'Origin');
                 assert.equal(result.headers['etag'], 'upstream-tag');
                 if (method === 'OPTIONS') assert.equal(result.headers['access-control-allow-headers'], 'authorization');
                 else {
@@ -127,6 +139,12 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
               const failed = query === '?failed' || host === nodes[2];
               assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
               assert.equal(result.headers['x-real-upstream'], 'yes');
+              assert.equal(result.headers['access-control-allow-origin'], 'https://app.test');
+              assert.equal(result.headers['access-control-allow-headers'], 'authorization');
+              assert.equal(result.headers['access-control-allow-methods'], 'GET, POST, OPTIONS');
+              assert.equal(result.headers['access-control-allow-credentials'], 'true');
+              assert.equal(result.headers['vary'], 'Origin');
+              assert.equal(result.headers['etag'], 'upstream-tag');
               if (method === 'GET') assert.deepEqual(result.body, { server_load: failed ? 'unavailable' : 'normal',
                 backend_delay: host === nodes[0] ? 1065 : 37, new_health: true });
             }
@@ -145,6 +163,26 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
         assert.ok(transport.httpEvents.some(item => item.host === nodes[2] && item.status === 503));
         assert.ok(transport.httpEvents.every(item => !item.mocked && item.source === 'upstream'
           && item.elapsedMs >= 0 && item.fixtureElapsedMs === null));
+        const disconnectsBefore = upstreamDisconnects;
+        const disconnected = await fetch(nodes[0], '/node/v1/status?disconnect', 'GET', false);
+        assert.equal(disconnected.status, 502, '真实上游断开由 mitmdump 返回网关错误');
+        assert.equal(disconnected.headers['x-real-upstream'], undefined);
+        assert.ok(upstreamDisconnects > disconnectsBefore, '64 请求确实抵达本地上游并断开');
+        const alternate = await fetch(nodes[1], '/node/v1/status');
+        assert.equal(alternate.status, 200, '64 失效后 67 仍可访问');
+        assert.equal(alternate.headers['x-real-upstream'], 'yes');
+        assert.deepEqual(alternate.body, { server_load: 'normal', backend_delay: 37, new_health: true });
+        const unavailable = await fetch(nodes[2], '/node/v1/status');
+        assert.equal(unavailable.status, 503, '第三节点的真实失败仍须保留');
+        assert.equal(unavailable.headers['x-real-upstream'], 'yes');
+        assert.deepEqual(unavailable.body, { server_load: 'unavailable', backend_delay: 37, new_health: true });
+        const afterDisconnect = await proxy.command<{ httpEvents: {
+          host: string; status: number; transportError: boolean; mocked: boolean; source: string;
+        }[] }>('native/transport');
+        assert.ok(afterDisconnect.httpEvents.some(item => item.host === nodes[0] && item.status === 0
+          && item.transportError && !item.mocked && item.source === 'upstream'),
+        '传输失败记录为无上游响应，区别于客户端收到的代理 502');
+        assert.equal(fixtureRequests, fixtureBefore, '连接失败也不能调用业务夹具或伪造健康值');
         const before = upstreamRequests;
         for (const apiPath of ['/public/v10/profile/country?platform=ios', '/public/v1/hall_matching/available.json',
           '/public/v1/hall_matching/texas_holdem/halls', '/public/v1/hall_matching/zhajinhua/halls']) {
