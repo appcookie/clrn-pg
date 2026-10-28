@@ -1,7 +1,9 @@
 """验证传输诊断保留请求状态和耗时，严格排除凭据、用户标识与业务正文。"""
 import json
+from datetime import datetime
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 from mitmproxy import http, websocket
 from wsproto.frame_protocol import Opcode
 from test_network_observer import flow
@@ -81,7 +83,10 @@ class TransportTests(unittest.TestCase):
         self.assertNotIn('private-secret', json.dumps(result))
         self.assertNotIn('secret-user', json.dumps(result))
 
-    def test_real_websocket_lifecycle_counts_only_safe_protocol_metadata(self):
+    @patch('transport_diagnostics.datetime')
+    def test_真实连接仅记录安全协议元数据且不误判采样时间中的错误码(self, wall_clock):
+        sampled_at = datetime.fromisoformat('2026-10-28T01:08:35.999987+00:00')
+        wall_clock.now.return_value = sampled_at
         now = [10.0]
         diagnostics = TransportDiagnostics(clock=lambda: now[0])
         request = self.socket_flow()
@@ -99,7 +104,7 @@ class TransportTests(unittest.TestCase):
         injected = self.message(request, b'{"error":{"code":999}}', injected=True)
         diagnostics.websocket_message(request)
         now[0] = 13
-        diagnostics.websocket_message(request)  # injected traffic cannot refresh last activity
+        diagnostics.websocket_message(request)  # 注入消息不能刷新最后活动时间。
         request.websocket.close_code = 1006
         request.websocket.closed_by_client = False
         request.websocket.close_reason = 'private-close-reason'
@@ -107,11 +112,13 @@ class TransportTests(unittest.TestCase):
         diagnostics.websocket_end(request)
         now[0] = 15
         result = diagnostics.snapshot()
+        self.assertEqual(result['sampledAtUtc'], sampled_at.isoformat(), '采样时间可以包含业务或注入错误码的数字')
         self.assertEqual(result['responses'][0]['status'], 101)
         ws = result['websocket']
         self.assertEqual(ws['opened'], 1)
         self.assertEqual(sum(item['count'] for item in ws['messages']), 2)
-        self.assertEqual([item['code'] for item in ws['protocolErrors']], [109])
+        self.assertEqual([item['code'] for item in ws['protocolErrors']], [109],
+            '仅记录真实协议错误，不记录业务错误 987 或注入错误 999')
         self.assertEqual(ws['closed'][0]['code'], 1006)
         self.assertEqual(ws['closed'][0]['initiator'], 'server')
         self.assertEqual(ws['closed'][0]['count'], 1)
@@ -126,7 +133,7 @@ class TransportTests(unittest.TestCase):
         self.assertFalse(incoming.dropped)
         self.assertFalse(outgoing.dropped)
         self.assertTrue(injected.injected)
-        for sensitive in ('private', 'token=', 'Authorization', '987', '999'):
+        for sensitive in ('private', 'token=', 'Authorization'):
             self.assertNotIn(sensitive, json.dumps(result))
 
     def test_other_endpoints_binary_invalid_json_and_unknown_close_are_safe(self):
