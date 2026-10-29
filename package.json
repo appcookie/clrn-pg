@@ -12,7 +12,8 @@
     "test:unit": "node --import tsx --test ios/*.test.mjs ios/full/*.test.mjs ios/full/functional/coverage.test.mjs scripts/*.test.mjs",
     "test:ios:collect": "playwright test --config ios/full/playwright.config.ts --list",
     "test:ios:full": "playwright test --config ios/full/playwright.config.ts",
-    "check:python": "node scripts/check-python.mjs"
+    "check:python:static": "python3 scripts/check-python-static.py",
+    "check:python": "npm run check:python:static && node scripts/check-python.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
