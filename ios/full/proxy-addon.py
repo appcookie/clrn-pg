@@ -403,7 +403,7 @@ class IosVisualProxy:
         if flow.request.method == 'CONNECT':
             return
         # 39580516924 的真实重连在 Node 夹具查询中等待约10秒后触发应用超时。
-        # 这些端点没有 Web 夹具，直接透传；上面的启动暂缓、节点排除和故障
+        # 这些端点没有 Web 夹具，直接透传；上面的显式启动暂缓和故障
         # 注入仍先执行。录像像素分析不能阻塞健康检查或 WebSocket 握手。
         if is_staging(flow.request.host) and path in {
                 '/node/v1/status', '/public/v12/metadata/servers',

@@ -136,7 +136,7 @@ for (const [suite, game] of [['texas', 'texas-holdem'], ['zhajinhua', 'zhajinhua
             const timedLevelUp = gameAnimation && scenario.pageLabel === 'signed_in_texas_hall';
             expect(index).toBe(states.length - Number(timedLevelUp));
           } catch (error) {
-            await captureFailure(device, testInfo);
+            await captureFailure(device, testInfo, () => proxy.command('native/transport'));
             throw error;
           } finally {
             try {

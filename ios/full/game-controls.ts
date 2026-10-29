@@ -7,8 +7,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 export type NativeNode = { res?: string; text?: string; clazz?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
 
-/** Match the explicit timeout predicate already used by accurate-bet guards.
- * Other business alerts can have intentional confirmation-button scenarios.
+/** 只拒绝明确的连接超时；其他业务弹窗可能是用例需要验证的确认状态。
  */
 export function gameConnectionState(nodes: NativeNode[]): { connecting: boolean } {
   if (nodes.some(node => node.visible !== false && /Connection Timeout/i.test(node.text || ''))) {
@@ -92,10 +91,12 @@ export function gameTextWithin(nodes: NativeNode[], marker: string): string[] {
  */
 export async function gameReady(device: AndroidDevice, res: string, text?: string): Promise<NativeNode> {
   let found: NativeNode | undefined;
-  await expect(async () => {
-    found = (await gameNodes(device)).find(node => node.res === res && (text === undefined || node.text === text));
-    expect(found, `${res} 应可见`).toBeDefined();
-  }).toPass({ timeout: 45_000, intervals: [250] });
+  await expect.poll(async () => {
+    const nodes = await gameNodes(device);
+    const { connecting } = gameConnectionState(nodes);
+    found = connecting ? undefined : nodes.find(node => node.res === res && (text === undefined || node.text === text));
+    return found;
+  }, { message: `${res} 应可见且连接正常`, timeout: 45_000, intervals: [250] }).toBeDefined();
   return found!;
 }
 
@@ -103,15 +104,15 @@ export async function gameReady(device: AndroidDevice, res: string, text?: strin
 export async function gameReadyCurrent(device: AndroidDevice, res: string, text?: string): Promise<NativeNode> {
   await device.prepareTransientCapture();
   let found: NativeNode | undefined;
-  await expect(async () => {
+  await expect.poll(async () => {
     const observation = await device.inputObservation(res);
     const { connecting } = gameConnectionState(observation);
     const nodes = observation.some(node => node.res === res) || connecting
       ? observation : await gameNodes(device);
-    found = !connecting ? nodes.find(node => node.res === res &&
+    found = !gameConnectionState(nodes).connecting ? nodes.find(node => node.res === res &&
       (text === undefined || node.text === text)) as NativeNode | undefined : undefined;
-    expect(found, `${res} 应可见且连接正常`).toBeDefined();
-  }).toPass({ timeout: 90_000, intervals: [250] });
+    return found;
+  }, { message: `${res} 应可见且连接正常`, timeout: 90_000, intervals: [250] }).toBeDefined();
   return found!;
 }
 
@@ -121,8 +122,12 @@ export async function gameReadyCurrent(device: AndroidDevice, res: string, text?
  * @param res - 弹层标记。
  */
 export async function gameGone(device: AndroidDevice, res: string): Promise<void> {
-  await expect.poll(async () => (await gameNodes(device)).some(node => node.res === res),
-    { timeout: 45_000, intervals: [250] }).toBe(false);
+  await expect.poll(async () => {
+    const nodes = await gameNodes(device);
+    const { connecting } = gameConnectionState(nodes);
+    // 重连遮罩可能隐藏面板；只有连接正常后的真实消失才能作为关闭证据。
+    return connecting || nodes.some(node => node.res === res);
+  }, { message: `${res} 应在连接正常时消失`, timeout: 45_000, intervals: [250] }).toBe(false);
 }
 
 /** 等待房间重连遮罩退去并确认牌桌至少一秒内持续可操作。
