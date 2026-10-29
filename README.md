@@ -6,6 +6,9 @@
 
 ## 本机运行
 
+首次克隆后先按 [开发与 pre-commit 安装说明](DEVELOPMENT.md) 安装提交前检查。
+本地 hook 与 CI 共用配置，仅运行只读静态检查；完整测试仍按下文执行。
+
 需要 macOS、Xcode、iOS Simulator runtime、Node.js 24、GitHub CLI 和 ffmpeg。使用专用模拟器，测试会安装应用并清理应用状态。
 
 ```sh

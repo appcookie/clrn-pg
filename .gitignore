@@ -4,6 +4,7 @@ ios/artifacts/
 .DS_Store
 
 e2e/.venv/
+.venv-pre-commit/
 __pycache__/
 *.pyc
 playwright-report/

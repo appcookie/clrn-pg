@@ -87,6 +87,12 @@ jobs:
         with:
           python-version: '3.12'
       - run: npm ci
+      - name: 提交前静态检查（与本地共用配置）
+        run: |
+          python -m venv .venv-pre-commit
+          .venv-pre-commit/bin/python -m pip install -r requirements-dev.txt
+          .venv-pre-commit/bin/pre-commit run --all-files
+          .venv-pre-commit/bin/python scripts/test-pre-commit.py
       - run: |
           python -m venv e2e/.venv
           e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
