@@ -1,4 +1,4 @@
-"""注入 staging 网络故障，并为视觉测试固定代理节点。"""
+"""只在明确的 staging 故障场景注入异常；正常视觉场景保持真实选线。"""
 
 import asyncio
 import json
@@ -6,7 +6,7 @@ import os
 from urllib.parse import parse_qs, urlsplit
 
 from mitmproxy import http
-from response_overrides import VisualNetwork, is_staging as is_staging_api
+from response_overrides import is_staging as is_staging_api
 
 CONTROL_HOST = "test-mitmproxy.invalid"
 FAULT_PATHS = {
@@ -34,7 +34,6 @@ class NetworkFaults:
     def __init__(self):
         self.token = os.environ["MITMPROXY_CONTROL_TOKEN"]
         self.scenario = None
-        self.network = VisualNetwork()
         self.intercepted_requests = 0
         self.proxied_requests = 0
         self.stabilized_requests = 0
@@ -65,10 +64,6 @@ class NetworkFaults:
             "stabilizedRequests": self.stabilized_requests,
         })
 
-    def response(self, flow):
-        if self.scenario == "visual-stable":
-            self.stabilized_requests += self.network.response(flow)
-
     def mock_existing_username(self, flow, path):
         if self.scenario != "login-failure" or path != "/public/v10/user/username/is_existed":
             return False
@@ -89,9 +84,6 @@ class NetworkFaults:
             return
         self.proxied_requests += 1
         url = urlsplit(flow.request.path)
-        if self.scenario == "visual-stable" and self.network.request(flow):
-            self.stabilized_requests += 1
-            return
         # 故障注入放行 CORS 预检和非 staging 流量。
         if flow.request.method == "OPTIONS" or not is_staging_api(flow.request.host):
             return
