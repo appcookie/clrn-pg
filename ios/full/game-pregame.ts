@@ -6,6 +6,7 @@ import { expect, type TestInfo } from '@playwright/test';
 import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameConnectionState, gameReady, gameReadyCurrent,
   gameGone, gameGoneCurrent, gameNodes } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
+import { withRecordedLeaderboardEvidence } from './leaderboard-entrance';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
@@ -266,8 +267,13 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await animateGamePanel(device, game, 'leaderboard',
     game === 'texas-holdem' ? 'texas-holdem-leaderboard-button' : 'zhajinhua-learder-borard-button',
     screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
-  await gameReady(device, 'public-leader-board-empty');
-  await gameGone(device, 'public-leader-board-loading');
+  const assertLeaderboardReady = async () => {
+    await gameReady(device, 'public-leader-board-empty');
+    await gameGone(device, 'public-leader-board-loading');
+  };
+  if (game === 'zhajinhua' && animationInfo)
+    await withRecordedLeaderboardEvidence(device, animationInfo, assertLeaderboardReady);
+  else await assertLeaderboardReady();
   await capture('leaderboard');
   await closeAnimatedGameMask(device, game, 'leaderboard', 'public-leader-board-container',
     screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);

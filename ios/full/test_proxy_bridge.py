@@ -5,6 +5,8 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 from mitmproxy import http
+from mitmproxy import websocket
+from wsproto.frame_protocol import Opcode
 from test_network_observer import flow
 
 with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
@@ -14,6 +16,117 @@ with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
 
 
 class BridgeTests(unittest.IsolatedAsyncioTestCase):
+    async def test_matching_injection_failure_keeps_original_error_and_does_not_claim_a_reply(self):
+        with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                'IOS_MATCHING': 'true'}):
+            addon = module.IosVisualProxy()
+        target = flow('/v2/centrifugo/connection/websocket')
+        target.websocket = websocket.WebSocketData()
+        addon.websocket_start(target)
+        content = b'{"id":51,"method":9,"params":{"data":{"method":"POST","path":"/v1/hall_matching/quit"}}}'
+        sent = websocket.WebSocketMessage(Opcode.TEXT, True, content)
+        target.websocket.messages.append(sent)
+        failure = RuntimeError('private-injection-error')
+        with patch.object(module, 'ctx') as context:
+            context.master.commands.call.side_effect = failure
+            with self.assertRaises(RuntimeError) as caught:
+                addon.websocket_message(target)
+            self.assertIs(caught.exception, failure)
+            self.assertEqual(context.master.commands.call.call_count, 1)
+        self.assertTrue(sent.dropped, '保留既有夹具隔离，不把失败请求改为透传或重放')
+        self.assertEqual(sent.content, content)
+        result = addon.transport.snapshot()['matchingRpc']
+        self.assertEqual(result['pending'], [])
+        self.assertEqual([item['phase'] for item in result['events']], ['request', 'incomplete'])
+        event = result['events'][-1]
+        self.assertEqual(event['source'], 'proxy')
+        self.assertEqual(event['status'], 'injection-failed')
+        self.assertEqual(event['direction'], 'unknown')
+        self.assertIsNone(event['ok'])
+        self.assertEqual(event['sequence'], result['events'][0]['sequence'])
+        self.assertEqual(sum(item['count'] for item in result['counts'] if item['phase'] == 'incomplete'), 1)
+        self.assertFalse(any(item['phase'] == 'response' for item in result['counts']))
+        addon.websocket_end(target)
+        self.assertEqual(addon.transport.snapshot()['matchingRpc']['eventTotal'], 2)
+        self.assertNotIn('private', json.dumps(result))
+
+    async def test_matching_http_error_hook_records_no_response_without_attributing_upstream(self):
+        with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                'IOS_FUNCTIONAL': 'true'}):
+            addon = module.IosVisualProxy()
+        target = flow('/v1/hall_matching/quit?token=private-query', 'POST', {'token': 'private-body'})
+        original = target.request.get_state()
+        await addon.request(target)
+        from mitmproxy.flow import Error
+        target.error = Error('private-transport-error')
+        addon.error(target)
+        addon.error(target)  # 重复结束通知不能重复统计同一请求。
+        self.assertIsNone(target.response)
+        self.assertEqual(target.request.get_state(), original)
+        self.assertEqual(target.error.msg, 'private-transport-error')
+        result = addon.transport.snapshot()['matchingRpc']
+        self.assertEqual(result['pending'], [])
+        self.assertEqual([item['phase'] for item in result['events']], ['request', 'incomplete'])
+        event = result['events'][-1]
+        self.assertEqual(event['status'], 'transport-error')
+        self.assertEqual(event['source'], 'unknown')
+        self.assertEqual(event['direction'], 'unknown')
+        self.assertIsNone(event['ok'])
+        self.assertEqual(sum(item['count'] for item in result['counts']), 2)
+        self.assertNotIn('private', json.dumps(result))
+
+    async def test_matching_http_observation_preserves_real_and_existing_fixture_responses(self):
+        for mocked in (False, True):
+            with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                    'IOS_FUNCTIONAL': 'true', 'IOS_MATCHING': str(mocked).lower()}):
+                addon = module.IosVisualProxy()
+                request = flow('/v1/hall_matching/quit', 'POST', {'token': 'private-body'})
+                original = request.request.content
+                if mocked:
+                    addon.functional = False
+                await addon.request(request)
+                if not mocked:
+                    self.assertIsNone(request.response)
+                    request.response = http.Response.make(503, b'{"ok":false,"error":"private-upstream"}')
+                response = request.response.get_state()
+                addon.response(request)
+                self.assertEqual(request.request.content, original)
+                self.assertEqual(request.response.get_state(), response)
+                event = addon.transport.snapshot()['matchingRpc']['events'][-1]
+                self.assertEqual(event['source'], 'proxy' if mocked else 'upstream')
+                self.assertEqual(event['status'], 200 if mocked else 503)
+                self.assertNotIn('private', json.dumps(addon.transport.snapshot()))
+
+    async def test_matching_socket_observation_preserves_passthrough_and_labels_existing_injection(self):
+        for mocked in (False, True):
+            with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
+                    'IOS_MATCHING': str(mocked).lower()}):
+                addon = module.IosVisualProxy()
+                target = flow('/v2/centrifugo/connection/websocket?token=private-query')
+                target.websocket = websocket.WebSocketData()
+                addon.websocket_start(target)
+                content = json.dumps({'id': 723456, 'method': 9, 'params': {'data': {
+                    'method': 'POST', 'path': '/v1/hall_matching/quit', 'body': 'private-body'}}}).encode()
+                sent = websocket.WebSocketMessage(Opcode.TEXT, True, content)
+                target.websocket.messages.append(sent)
+                with patch.object(module, 'ctx') as context:
+                    addon.websocket_message(target)
+                    self.assertEqual(sent.dropped, mocked, '诊断不能更改既有夹具/透传行为')
+                    self.assertEqual(sent.content, content)
+                    self.assertEqual(context.master.commands.call.call_count, int(mocked))
+                if not mocked:
+                    reply = b'{"id":723456,"error":{"code":109,"message":"private-error"}}'
+                    incoming = websocket.WebSocketMessage(Opcode.TEXT, False, reply)
+                    target.websocket.messages.append(incoming)
+                    addon.websocket_message(target)
+                    self.assertEqual(incoming.content, reply)
+                    self.assertFalse(incoming.dropped)
+                result = addon.transport.snapshot()['matchingRpc']
+                self.assertEqual(len(result['events']), 2)
+                self.assertEqual(result['events'][-1]['source'], 'proxy' if mocked else 'upstream')
+                self.assertEqual(result['events'][-1]['status'], 'injection-returned' if mocked else 'protocol-error')
+                self.assertNotIn('private', json.dumps(result))
+
     async def test_native_selected_health_reaches_upstream_and_keeps_real_failures(self):
         with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token',
                 'IOS_FUNCTIONAL': 'false', 'IOS_GAME': 'zhajinhua',

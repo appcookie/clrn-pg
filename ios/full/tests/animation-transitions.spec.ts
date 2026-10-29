@@ -17,6 +17,7 @@ import { gameReady } from '../game-controls';
 import { waitAbsent } from '../native-state';
 import { captureMovingKeyframes } from '../loop-keyframes';
 import { matchingSpinnerRegion } from '../animation-region';
+import { MatchingTrace } from '../matching-diagnostics';
 
 if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('native launch artwork and staging notice appear on a real app start', async ({}, testInfo) => {
@@ -127,8 +128,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('hall matching spinner animates while the real waiting dialog is visible', async ({}, testInfo) => {
 
   test.setTimeout(1_200_000);
-  await withAndroidProxy(async () => {
+  await withAndroidProxy(async proxy => {
     let device: AndroidDevice | undefined;
+    const trace = new MatchingTrace(proxy, testInfo);
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
       await waitForHall(device);
@@ -137,8 +139,10 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       expect(hall).toBeDefined();
       await navigateScenario(device, hall!);
       const masks = await screenshotMasks(device, hall!);
-      await tap(device, 'match-game-item-texas_holdem-tourists');
-      await device.wait({ res: 'game-matching-loading-view' });
+      await trace.save('before-matching');
+      await trace.input('spinner-join', 'match-game-item-texas_holdem-tourists',
+        observe => tap(device!, 'match-game-item-texas_holdem-tourists', observe));
+      await trace.modal('spinner-join', 'visible', () => device!.wait({ res: 'game-matching-loading-view' }));
       const nodes = await device.nodes();
       const countdown = nodes.find(node => node.res === 'game-matching-countdown-text')!;
       const spinner = matchingSpinnerRegion(nodes, device.screenSize);
@@ -154,12 +158,15 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await captureMovingKeyframes(device, 'hall-matching-spinner', testInfo,
         [spinner], 2);
       await compareScreenshot(device, 'en-hall-matching', testInfo, masks, undefined, capture);
-      await tap(device, 'quick-start-room-cancel');
-      await waitAbsent(device, { res: 'game-matching-loading-view' });
+      try {
+        await trace.input('spinner-cancel', 'quick-start-room-cancel',
+          observe => tap(device!, 'quick-start-room-cancel', observe));
+        await trace.modal('spinner-cancel', 'gone', () => waitAbsent(device!, { res: 'game-matching-loading-view' }));
+      } finally { await trace.save('spinner-cancel'); }
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
       throw error;
-    } finally { await device?.close(); }
+    } finally { await trace.save('final'); await device?.close(); }
   }, false, true);
 });
 

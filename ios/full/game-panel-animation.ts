@@ -3,6 +3,7 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import { gameConnected, gameReady, gameTap, gameTapCurrent } from './game-controls';
 import { captureNativeTransition, captureTimedPrompt } from './animation-transition';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
+import { tapRecordedLeaderboard, zhajinhuaLeaderboardButton } from './leaderboard-entrance';
 
 /**
  * 在原生牌桌的实际入口点击期间采样面板动效；其他语言复用静态页面截图。
@@ -32,7 +33,10 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
     && (name === 'renew' || name === 'theme');
   const menuEntrance = phase === 'enter' && button.startsWith('drawer-menu-item-');
   let press: () => Promise<void>;
-  if (guardedEntrance || guardedExit || menuEntrance) {
+  if (game === 'zhajinhua' && name === 'leaderboard' && phase === 'enter'
+    && button === zhajinhuaLeaderboardButton) {
+    press = () => tapRecordedLeaderboard(device, testInfo);
+  } else if (guardedEntrance || guardedExit || menuEntrance) {
     // 录屏预热期间可能发生重连；在录制中重新确认两次目标位置，
     // 再执行一次真实点击，点击后不查询以免打断动画。
     press = async () => {
