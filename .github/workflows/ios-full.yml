@@ -32,6 +32,9 @@ on:
         default: ''
 permissions:
   contents: read
+env:
+  # 为依赖下载预留更长的有限重试窗口，避免短暂域名解析故障中断回归。
+  PIP_RETRIES: '10'
 jobs:
   plan:
     runs-on: ubuntu-latest
