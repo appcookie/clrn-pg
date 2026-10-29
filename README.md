@@ -45,6 +45,8 @@ npm run check         # TypeScript、算法/协议/清单契约与实际用例�
 npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 ```
 
+`check` 还会执行 ESLint 复杂度/嵌套与网络伪造规则、dependency-cruiser 架构检查及 jscpd 新增重复门禁；`check:python` 包含 Ruff C901。统一入口为 `npm run check:all`。固定版本、实测基线、精确历史迁移清单和临时负例见 [静态质量门禁](docs/static-quality.md)，这些静态结果不代表真实设备运行通过。
+
 完整原生测试通过「iOS 完整回归」工作流运行。每个 job 明确一个 `IOS_GROUP`，全量模式拆成三语言、业务组和牌桌分片。代理仅允许 GitHub 托管临时 macOS runner，保存并恢复系统代理；本机默认拒绝更改日常网络。
 
 游客组每种语言拆成两个 job：`pages` 执行 18 个页面，`startup` 执行启动页及认证截图用例。英语 21 项、简中 20 项、繁中 20 项；独立动画清单有 25 组，其中 20 组进入当前 PR 录屏分片。整体最多并行 10 个 job，每个 job 仍只启动一个模拟器。

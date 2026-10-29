@@ -1,0 +1,3854 @@
+[
+  {
+    "tool": "dependencies",
+    "rule": "no-circular",
+    "from": "ios/full/caret-mask.ts",
+    "to": "ios/full/screenshot.ts",
+    "cycle": [
+      {
+        "name": "ios/full/screenshot.ts",
+        "dependencyTypes": [
+          "local",
+          "type-only",
+          "import"
+        ]
+      },
+      {
+        "name": "ios/full/caret-mask.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      }
+    ],
+    "reason": "基线 caret-mask 与 screenshot 相互引用；保留截图契约，待独立解耦。"
+  },
+  {
+    "tool": "dependencies",
+    "rule": "no-ui-response-implementation",
+    "from": "ios/full/network-routes.ts",
+    "to": "visual/src/support/networkMocks.ts",
+    "reason": "基线原生代理桥复用 Web 响应实现；待迁往 Python 后移除此跨层依赖。"
+  },
+  {
+    "tool": "dependencies",
+    "rule": "no-ui-response-implementation",
+    "from": "ios/full/proxy.ts",
+    "to": "ios/full/network-routes.ts",
+    "reason": "基线原生代理桥复用 Web 响应实现；待迁往 Python 后移除此跨层依赖。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/animation-gate.test.mjs",
+        "start": {
+          "column": 73,
+          "line": 130,
+          "position": 8089
+        },
+        "end": {
+          "column": 7,
+          "line": 135,
+          "position": 8367
+        }
+      },
+      {
+        "file": "ios/full/animation-gate.test.mjs",
+        "start": {
+          "column": 98,
+          "line": 153,
+          "position": 9438
+        },
+        "end": {
+          "column": 7,
+          "line": 158,
+          "position": 9716
+        }
+      }
+    ],
+    "tokens": 79,
+    "lines": 6,
+    "fragment": "a4197f9a61a04fdc4ae09eebbb4856afd7acc8f9cddf9ea90d4d27c20e4a2988",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/animation-gate.test.mjs",
+        "start": {
+          "column": 74,
+          "line": 44,
+          "position": 2832
+        },
+        "end": {
+          "column": 9,
+          "line": 49,
+          "position": 3136
+        }
+      },
+      {
+        "file": "ios/full/animation-gate.test.mjs",
+        "start": {
+          "column": 88,
+          "line": 103,
+          "position": 6551
+        },
+        "end": {
+          "column": 97,
+          "line": 107,
+          "position": 6846
+        }
+      }
+    ],
+    "tokens": 80,
+    "lines": 6,
+    "fragment": "e1dd4a8f3e3b218455486ec015d4b5028149ee2d8a933da77a20cce5d94dbafa",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/chat-readiness.test.mjs",
+        "start": {
+          "column": 55,
+          "line": 3,
+          "position": 126
+        },
+        "end": {
+          "column": 86,
+          "line": 8,
+          "position": 566
+        }
+      },
+      {
+        "file": "ios/full/chat-region.test.mjs",
+        "start": {
+          "column": 48,
+          "line": 5,
+          "position": 253
+        },
+        "end": {
+          "column": 86,
+          "line": 12,
+          "position": 785
+        }
+      }
+    ],
+    "tokens": 124,
+    "lines": 6,
+    "fragment": "44c65598827482a9bfd3d3cf9e243e11050d6e4eaf1e8c0815e030119f2b5dad",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/game-menu.test.mjs",
+        "start": {
+          "column": 55,
+          "line": 64,
+          "position": 2815
+        },
+        "end": {
+          "column": 20,
+          "line": 72,
+          "position": 3254
+        }
+      },
+      {
+        "file": "ios/full/game-menu.test.mjs",
+        "start": {
+          "column": 86,
+          "line": 88,
+          "position": 3942
+        },
+        "end": {
+          "column": 20,
+          "line": 97,
+          "position": 4385
+        }
+      }
+    ],
+    "tokens": 108,
+    "lines": 9,
+    "fragment": "a6a6f1f2dd8fae740d6914a79d8da18c30600049af19b81737b5a5ddfbec768b",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/game-panel-animation.test.mjs",
+        "start": {
+          "column": 0,
+          "line": 277,
+          "position": 9193
+        },
+        "end": {
+          "column": 77,
+          "line": 287,
+          "position": 9715
+        }
+      },
+      {
+        "file": "ios/full/profile-readiness.test.mjs",
+        "start": {
+          "column": 79,
+          "line": 38,
+          "position": 2438
+        },
+        "end": {
+          "column": 77,
+          "line": 47,
+          "position": 2957
+        }
+      }
+    ],
+    "tokens": 133,
+    "lines": 11,
+    "fragment": "918d03aa389b286881b86651a2e7810ffdf28665252918b82a420e1b2e251020",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/game-panel-animation.test.mjs",
+        "start": {
+          "column": 0,
+          "line": 288,
+          "position": 9717
+        },
+        "end": {
+          "column": 13,
+          "line": 301,
+          "position": 10313
+        }
+      },
+      {
+        "file": "ios/full/profile-readiness.test.mjs",
+        "start": {
+          "column": 77,
+          "line": 47,
+          "position": 2957
+        },
+        "end": {
+          "column": 11,
+          "line": 56,
+          "position": 3477
+        }
+      }
+    ],
+    "tokens": 204,
+    "lines": 14,
+    "fragment": "5bef01987b2ce72238dc0fce8925f84fef4887c341b0250d92ef70134dbce8fc",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/game-panel-animation.test.mjs",
+        "start": {
+          "column": 61,
+          "line": 301,
+          "position": 10361
+        },
+        "end": {
+          "column": 24,
+          "line": 308,
+          "position": 10569
+        }
+      },
+      {
+        "file": "ios/full/profile-readiness.test.mjs",
+        "start": {
+          "column": 67,
+          "line": 56,
+          "position": 3533
+        },
+        "end": {
+          "column": 65,
+          "line": 61,
+          "position": 3717
+        }
+      }
+    ],
+    "tokens": 78,
+    "lines": 8,
+    "fragment": "4c7b843ad1002c5aea65ffeb6ad7401f684d64bb92f01f85758de22582021ec6",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "javascript",
+    "locations": [
+      {
+        "file": "ios/full/profile-zoom.test.mjs",
+        "start": {
+          "column": 61,
+          "line": 44,
+          "position": 2640
+        },
+        "end": {
+          "column": 26,
+          "line": 55,
+          "position": 3287
+        }
+      },
+      {
+        "file": "ios/full/profile-zoom.test.mjs",
+        "start": {
+          "column": 63,
+          "line": 20,
+          "position": 1137
+        },
+        "end": {
+          "column": 26,
+          "line": 31,
+          "position": 1784
+        }
+      }
+    ],
+    "tokens": 177,
+    "lines": 12,
+    "fragment": "64cba9cc2471102f09e73b6246f74580f73920f9467efa8be5789fd97b64a88b",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "ios/full/proxy-addon.py",
+        "start": {
+          "column": 21,
+          "line": 118,
+          "position": 5641
+        },
+        "end": {
+          "column": 30,
+          "line": 128,
+          "position": 6272
+        }
+      },
+      {
+        "file": "ios/full/proxy-addon.py",
+        "start": {
+          "column": 25,
+          "line": 148,
+          "position": 7588
+        },
+        "end": {
+          "column": 30,
+          "line": 158,
+          "position": 8219
+        }
+      }
+    ],
+    "tokens": 118,
+    "lines": 11,
+    "fragment": "304d6d2201dd5ae449bdbbdbaed16de1bfc2d2d62bcab9c488827207a06ec1cc",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/game-record/mitmproxy/addon.py",
+        "start": {
+          "column": 4,
+          "line": 23,
+          "position": 906
+        },
+        "end": {
+          "column": 5,
+          "line": 32,
+          "position": 1365
+        }
+      },
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
+        "start": {
+          "column": 4,
+          "line": 25,
+          "position": 861
+        },
+        "end": {
+          "column": 5,
+          "line": 34,
+          "position": 1320
+        }
+      }
+    ],
+    "tokens": 73,
+    "lines": 10,
+    "fragment": "0fd655422a414447afca754e248763f498032d7808fcfb356ac7fe9a06751994",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/game-record/mitmproxy/test_addon.py",
+        "start": {
+          "column": 91,
+          "line": 152,
+          "position": 8768
+        },
+        "end": {
+          "column": 13,
+          "line": 157,
+          "position": 9061
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_addon.py",
+        "start": {
+          "column": 34,
+          "line": 107,
+          "position": 5978
+        },
+        "end": {
+          "column": 13,
+          "line": 112,
+          "position": 6271
+        }
+      }
+    ],
+    "tokens": 76,
+    "lines": 6,
+    "fragment": "505a7b0a6a9fd3a4ef2e2a7372b84dfb47a83f7899149884a1eca0be4cf180a6",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
+        "start": {
+          "column": 107,
+          "line": 17,
+          "position": 691
+        },
+        "end": {
+          "column": 5,
+          "line": 34,
+          "position": 1320
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/addon.py",
+        "start": {
+          "column": 92,
+          "line": 14,
+          "position": 548
+        },
+        "end": {
+          "column": 5,
+          "line": 31,
+          "position": 1177
+        }
+      }
+    ],
+    "tokens": 96,
+    "lines": 18,
+    "fragment": "74ab1562dec656a20b7fa8dbe1a46d03ef6871359e96637cf0151e62e81e4d4e",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
+        "start": {
+          "column": 26,
+          "line": 44,
+          "position": 1688
+        },
+        "end": {
+          "column": 25,
+          "line": 57,
+          "position": 2222
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/addon.py",
+        "start": {
+          "column": 37,
+          "line": 39,
+          "position": 1495
+        },
+        "end": {
+          "column": 25,
+          "line": 52,
+          "position": 2029
+        }
+      }
+    ],
+    "tokens": 108,
+    "lines": 14,
+    "fragment": "8a777a789bb69ff95661d54d7563e0f0d59d846d1796f34dfbf78fcb2ff0ac5a",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_addon.py",
+        "start": {
+          "column": 68,
+          "line": 40,
+          "position": 1787
+        },
+        "end": {
+          "column": 7,
+          "line": 49,
+          "position": 2291
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_addon.py",
+        "start": {
+          "column": 72,
+          "line": 45,
+          "position": 2255
+        },
+        "end": {
+          "column": 7,
+          "line": 54,
+          "position": 2759
+        }
+      }
+    ],
+    "tokens": 106,
+    "lines": 10,
+    "fragment": "375d460db32293852ac7beb1c005d65f55d0d4439a9e0535fdc6f2dfe6f28e7f",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_addon.py",
+        "start": {
+          "column": 73,
+          "line": 30,
+          "position": 1140
+        },
+        "end": {
+          "column": 28,
+          "line": 36,
+          "position": 1486
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_addon.py",
+        "start": {
+          "column": 77,
+          "line": 35,
+          "position": 1600
+        },
+        "end": {
+          "column": 28,
+          "line": 41,
+          "position": 1946
+        }
+      }
+    ],
+    "tokens": 75,
+    "lines": 7,
+    "fragment": "e2de8714f52bb9a22db39daf933b9bd1cec23ff5679b865c7711187a2ea81a3e",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 0,
+          "line": 14,
+          "position": 435
+        },
+        "end": {
+          "column": 11,
+          "line": 26,
+          "position": 980
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 0,
+          "line": 14,
+          "position": 430
+        },
+        "end": {
+          "column": 11,
+          "line": 26,
+          "position": 975
+        }
+      }
+    ],
+    "tokens": 106,
+    "lines": 13,
+    "fragment": "4b2b3c6f2bebc2cefb2d0e639774b71ba6a17c05d2ce0bec14f89351dfae40c4",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 0,
+          "line": 29,
+          "position": 1011
+        },
+        "end": {
+          "column": 5,
+          "line": 42,
+          "position": 1499
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 0,
+          "line": 29,
+          "position": 1003
+        },
+        "end": {
+          "column": 5,
+          "line": 42,
+          "position": 1491
+        }
+      }
+    ],
+    "tokens": 90,
+    "lines": 14,
+    "fragment": "1ebd0c7bc1466c9c37b344c545816a5c169a1e5e40d54447752ddb811d144948",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 109,
+          "line": 53,
+          "position": 2097
+        },
+        "end": {
+          "column": 80,
+          "line": 61,
+          "position": 2567
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 106,
+          "line": 73,
+          "position": 3282
+        },
+        "end": {
+          "column": 80,
+          "line": 81,
+          "position": 3752
+        }
+      }
+    ],
+    "tokens": 111,
+    "lines": 9,
+    "fragment": "258573236e676891656b94d3fc3ed732e8bf614b933eaa06722da8470d98f3d0",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 33,
+          "line": 44,
+          "position": 1591
+        },
+        "end": {
+          "column": 7,
+          "line": 51,
+          "position": 1890
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 37,
+          "line": 44,
+          "position": 1591
+        },
+        "end": {
+          "column": 7,
+          "line": 51,
+          "position": 1890
+        }
+      }
+    ],
+    "tokens": 77,
+    "lines": 8,
+    "fragment": "689f8b9bbbdf9695bdcc3acfc62be528de296a177b9480fb7b27b7f7faa4fe77",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 44,
+          "line": 65,
+          "position": 2820
+        },
+        "end": {
+          "column": 28,
+          "line": 92,
+          "position": 4329
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 48,
+          "line": 85,
+          "position": 4006
+        },
+        "end": {
+          "column": 28,
+          "line": 112,
+          "position": 5515
+        }
+      }
+    ],
+    "tokens": 316,
+    "lines": 28,
+    "fragment": "ccf2a167fecfe849d9a5e98c34c82813e92cd83165dae5fff48eb3fe83606e16",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 44,
+          "line": 93,
+          "position": 4427
+        },
+        "end": {
+          "column": 7,
+          "line": 107,
+          "position": 5123
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 48,
+          "line": 113,
+          "position": 5614
+        },
+        "end": {
+          "column": 7,
+          "line": 127,
+          "position": 6310
+        }
+      }
+    ],
+    "tokens": 148,
+    "lines": 15,
+    "fragment": "fffb06c158468d462df91e6f670e066350f34dba8f56df260d5f4292d76ea262",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 47,
+          "line": 216,
+          "position": 11589
+        },
+        "end": {
+          "column": 19,
+          "line": 228,
+          "position": 12287
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 40,
+          "line": 222,
+          "position": 11671
+        },
+        "end": {
+          "column": 19,
+          "line": 234,
+          "position": 12369
+        }
+      }
+    ],
+    "tokens": 131,
+    "lines": 13,
+    "fragment": "9d2fef65a712d641bee373efe0d6b61a1ac73033624f029f5e589abe41f5cddd",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/test_texas_replay.py",
+        "start": {
+          "column": 63,
+          "line": 129,
+          "position": 6552
+        },
+        "end": {
+          "column": 7,
+          "line": 170,
+          "position": 8663
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/test_zhajinhua_replay.py",
+        "start": {
+          "column": 63,
+          "line": 145,
+          "position": 7425
+        },
+        "end": {
+          "column": 7,
+          "line": 186,
+          "position": 9536
+        }
+      }
+    ],
+    "tokens": 422,
+    "lines": 42,
+    "fragment": "c088b9e322447a66897f14cfa96f5bf383d6679f3323f1cff6a1ec26a15b51c7",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/texas_replay.py",
+        "start": {
+          "column": 16,
+          "line": 113,
+          "position": 5331
+        },
+        "end": {
+          "column": 24,
+          "line": 157,
+          "position": 7833
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/zhajinhua_replay.py",
+        "start": {
+          "column": 16,
+          "line": 89,
+          "position": 4097
+        },
+        "end": {
+          "column": 24,
+          "line": 133,
+          "position": 6599
+        }
+      }
+    ],
+    "tokens": 477,
+    "lines": 45,
+    "fragment": "c78b869d521beaf15aabe09f10a9b6187c36afb05eae42fc47178ba1bc61fda3",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/texas_replay.py",
+        "start": {
+          "column": 4,
+          "line": 41,
+          "position": 1594
+        },
+        "end": {
+          "column": 30,
+          "line": 50,
+          "position": 2126
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/zhajinhua_replay.py",
+        "start": {
+          "column": 4,
+          "line": 21,
+          "position": 586
+        },
+        "end": {
+          "column": 30,
+          "line": 30,
+          "position": 1118
+        }
+      }
+    ],
+    "tokens": 101,
+    "lines": 10,
+    "fragment": "bff89fe5aeabe785942dac32c349dcbaeb73b43dd943345d01821f6fa1bc55a7",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/texas_replay.py",
+        "start": {
+          "column": 50,
+          "line": 81,
+          "position": 3537
+        },
+        "end": {
+          "column": 47,
+          "line": 107,
+          "position": 4892
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/zhajinhua_replay.py",
+        "start": {
+          "column": 47,
+          "line": 58,
+          "position": 2444
+        },
+        "end": {
+          "column": 47,
+          "line": 84,
+          "position": 3799
+        }
+      }
+    ],
+    "tokens": 279,
+    "lines": 27,
+    "fragment": "22cff189236c3d73e6c3385d5806e7c8da4a9b8fc960c79379f11418815999ef",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "python",
+    "locations": [
+      {
+        "file": "visual/cases/texas-holdem/mitmproxy/texas_replay.py",
+        "start": {
+          "column": 55,
+          "line": 53,
+          "position": 2263
+        },
+        "end": {
+          "column": 13,
+          "line": 65,
+          "position": 2822
+        }
+      },
+      {
+        "file": "visual/cases/zhajinhua/mitmproxy/zhajinhua_replay.py",
+        "start": {
+          "column": 59,
+          "line": 33,
+          "position": 1256
+        },
+        "end": {
+          "column": 13,
+          "line": 45,
+          "position": 1815
+        }
+      }
+    ],
+    "tokens": 110,
+    "lines": 13,
+    "fragment": "c189bd00640eb46c55e862afb0a8ce9fb0dd1769df7603fc46ba0284d63c36f9",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 102,
+          "line": 89,
+          "position": 5713
+        },
+        "end": {
+          "column": 42,
+          "line": 98,
+          "position": 6327
+        }
+      },
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 94,
+          "line": 108,
+          "position": 7051
+        },
+        "end": {
+          "column": 42,
+          "line": 117,
+          "position": 7665
+        }
+      }
+    ],
+    "tokens": 191,
+    "lines": 10,
+    "fragment": "f9551445122d8a0229b04ce8bc9f453c496fe1ef679b344487a7ab9f63b2114e",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 4,
+          "line": 179,
+          "position": 11864
+        },
+        "end": {
+          "column": 91,
+          "line": 184,
+          "position": 12277
+        }
+      },
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 49,
+          "line": 50,
+          "position": 3134
+        },
+        "end": {
+          "column": 91,
+          "line": 56,
+          "position": 3555
+        }
+      }
+    ],
+    "tokens": 143,
+    "lines": 7,
+    "fragment": "1d9feb7fac540986954709cca5d0f54af4558c6861b624e3e261fe8847885f52",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 65,
+          "line": 185,
+          "position": 12347
+        },
+        "end": {
+          "column": 15,
+          "line": 191,
+          "position": 12580
+        }
+      },
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 71,
+          "line": 165,
+          "position": 10998
+        },
+        "end": {
+          "column": 15,
+          "line": 174,
+          "position": 11390
+        }
+      }
+    ],
+    "tokens": 95,
+    "lines": 10,
+    "fragment": "fbdb7cf60d4b5163a0ddb087454626a4cb421bb6973a0274d933d33e366c5e86",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 71,
+          "line": 165,
+          "position": 10998
+        },
+        "end": {
+          "column": 15,
+          "line": 174,
+          "position": 11390
+        }
+      },
+      {
+        "file": "ios/full/pregame-panel-region.ts",
+        "start": {
+          "column": 106,
+          "line": 31,
+          "position": 1958
+        },
+        "end": {
+          "column": 15,
+          "line": 40,
+          "position": 2348
+        }
+      }
+    ],
+    "tokens": 95,
+    "lines": 10,
+    "fragment": "fbdb7cf60d4b5163a0ddb087454626a4cb421bb6973a0274d933d33e366c5e86",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/animation-region.ts",
+        "start": {
+          "column": 71,
+          "line": 165,
+          "position": 10998
+        },
+        "end": {
+          "column": 15,
+          "line": 174,
+          "position": 11390
+        }
+      },
+      {
+        "file": "ios/full/profile-region.ts",
+        "start": {
+          "column": 89,
+          "line": 19,
+          "position": 1444
+        },
+        "end": {
+          "column": 15,
+          "line": 28,
+          "position": 1831
+        }
+      }
+    ],
+    "tokens": 95,
+    "lines": 10,
+    "fragment": "fbdb7cf60d4b5163a0ddb087454626a4cb421bb6973a0274d933d33e366c5e86",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/applications-region.ts",
+        "start": {
+          "column": 30,
+          "line": 12,
+          "position": 681
+        },
+        "end": {
+          "column": 6,
+          "line": 17,
+          "position": 950
+        }
+      },
+      {
+        "file": "ios/full/pregame-panel-region.ts",
+        "start": {
+          "column": 4,
+          "line": 21,
+          "position": 1292
+        },
+        "end": {
+          "column": 6,
+          "line": 26,
+          "position": 1561
+        }
+      }
+    ],
+    "tokens": 70,
+    "lines": 6,
+    "fragment": "24c47fc514e921ea300c44d2c87fda383fb6c874626bb114af3643e9e6d4a3cc",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/functional/club-search-results.spec.ts",
+        "start": {
+          "column": 92,
+          "line": 10,
+          "position": 520
+        },
+        "end": {
+          "column": 11,
+          "line": 20,
+          "position": 920
+        }
+      },
+      {
+        "file": "ios/full/functional/social.spec.ts",
+        "start": {
+          "column": 22,
+          "line": 7,
+          "position": 317
+        },
+        "end": {
+          "column": 47,
+          "line": 11,
+          "position": 705
+        }
+      }
+    ],
+    "tokens": 94,
+    "lines": 11,
+    "fragment": "22692c16658840a2a3f086847bfb6efb12ca8e70536dca01e02ad3a11bf9e297",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/game-pregame.ts",
+        "start": {
+          "column": 29,
+          "line": 237,
+          "position": 13663
+        },
+        "end": {
+          "column": 7,
+          "line": 243,
+          "position": 14116
+        }
+      },
+      {
+        "file": "ios/full/game-pregame.ts",
+        "start": {
+          "column": 76,
+          "line": 225,
+          "position": 12847
+        },
+        "end": {
+          "column": 7,
+          "line": 230,
+          "position": 13189
+        }
+      }
+    ],
+    "tokens": 81,
+    "lines": 6,
+    "fragment": "19a9f08b399ad94b56847d88cc9b3d80e0407e5a9345f935604e7ff99a62f4a6",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/game-transient.ts",
+        "start": {
+          "column": 124,
+          "line": 54,
+          "position": 3114
+        },
+        "end": {
+          "column": 31,
+          "line": 61,
+          "position": 3518
+        }
+      },
+      {
+        "file": "ios/full/prediction-result.ts",
+        "start": {
+          "column": 37,
+          "line": 101,
+          "position": 6300
+        },
+        "end": {
+          "column": 31,
+          "line": 109,
+          "position": 6710
+        }
+      }
+    ],
+    "tokens": 95,
+    "lines": 8,
+    "fragment": "fa6a6c26cd053c49c236f5764877d394a355397cb27b1038878a02f4195d1ec1",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/game-transient.ts",
+        "start": {
+          "column": 49,
+          "line": 61,
+          "position": 3536
+        },
+        "end": {
+          "column": 1,
+          "line": 66,
+          "position": 3976
+        }
+      },
+      {
+        "file": "ios/full/prediction-result.ts",
+        "start": {
+          "column": 54,
+          "line": 109,
+          "position": 6733
+        },
+        "end": {
+          "column": 1,
+          "line": 114,
+          "position": 7173
+        }
+      }
+    ],
+    "tokens": 103,
+    "lines": 6,
+    "fragment": "b772435f8fd6201f3c40b218c4ff5086de42efb3895b12c3bb6f3bd9d0f6c4cc",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/motion-regions.ts",
+        "start": {
+          "column": 57,
+          "line": 48,
+          "position": 2777
+        },
+        "end": {
+          "column": 14,
+          "line": 57,
+          "position": 3482
+        }
+      },
+      {
+        "file": "ios/full/motion-regions.ts",
+        "start": {
+          "column": 68,
+          "line": 19,
+          "position": 1038
+        },
+        "end": {
+          "column": 14,
+          "line": 28,
+          "position": 1743
+        }
+      }
+    ],
+    "tokens": 193,
+    "lines": 10,
+    "fragment": "674e7a0c000e1f3e29689407a2d852e023b6b4f3195babaec3a1195a044b2857",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/profile-zoom.ts",
+        "start": {
+          "column": 0,
+          "line": 11,
+          "position": 455
+        },
+        "end": {
+          "column": 35,
+          "line": 18,
+          "position": 659
+        }
+      },
+      {
+        "file": "ios/full/texas-raise-masks.ts",
+        "start": {
+          "column": 89,
+          "line": 6,
+          "position": 328
+        },
+        "end": {
+          "column": 100,
+          "line": 9,
+          "position": 523
+        }
+      }
+    ],
+    "tokens": 75,
+    "lines": 8,
+    "fragment": "b46751774e94cf3f6129ef7928da0d441401ba3ddae171297c4e4ae1da4d219f",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/profile-zoom.ts",
+        "start": {
+          "column": 1,
+          "line": 11,
+          "position": 456
+        },
+        "end": {
+          "column": 35,
+          "line": 18,
+          "position": 659
+        }
+      },
+      {
+        "file": "ios/full/zhajinhua-showdown-endpoint.ts",
+        "start": {
+          "column": 52,
+          "line": 3,
+          "position": 199
+        },
+        "end": {
+          "column": 100,
+          "line": 6,
+          "position": 393
+        }
+      }
+    ],
+    "tokens": 74,
+    "lines": 8,
+    "fragment": "b46751774e94cf3f6129ef7928da0d441401ba3ddae171297c4e4ae1da4d219f",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "start": {
+          "column": 57,
+          "line": 195,
+          "position": 11463
+        },
+        "end": {
+          "column": 56,
+          "line": 204,
+          "position": 11738
+        }
+      },
+      {
+        "file": "ios/full/tests/animation-transitions.spec.ts",
+        "start": {
+          "column": 83,
+          "line": 233,
+          "position": 13817
+        },
+        "end": {
+          "column": 56,
+          "line": 242,
+          "position": 14092
+        }
+      }
+    ],
+    "tokens": 77,
+    "lines": 10,
+    "fragment": "a6e528b7e061052bd4477f6be369981ff3ff4954523647f49cdd7ed29e45e32d",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "duplicates",
+    "rule": "jscpd",
+    "format": "typescript",
+    "locations": [
+      {
+        "file": "ios/full/texas-action-start.ts",
+        "start": {
+          "column": 70,
+          "line": 47,
+          "position": 3152
+        },
+        "end": {
+          "column": 31,
+          "line": 62,
+          "position": 3813
+        }
+      },
+      {
+        "file": "ios/full/zhajinhua-showdown.ts",
+        "start": {
+          "column": 64,
+          "line": 69,
+          "position": 5031
+        },
+        "end": {
+          "column": 29,
+          "line": 84,
+          "position": 5599
+        }
+      }
+    ],
+    "tokens": 203,
+    "lines": 16,
+    "fragment": "65a478e804d9ae3c760604312cf489765179bf6bc652b5fa4f208453ac11b643",
+    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-endpoint.test.mjs",
+    "line": 20,
+    "column": 38,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "60cd6cba778f7da07c5465a1afe7cbccaaac0eeb81cedc532652c91d9d2eb36d",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-endpoint.test.mjs",
+    "line": 26,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "751925251606d1e3b19eb13145bdf20f8268a1f9c97a630a4a354142c94470db",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-endpoint.test.mjs",
+    "line": 27,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "64c2e2fd75377ce9ef1bbed780dcef812acb95967a87e34a02b37fe93827d96e",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-endpoint.test.mjs",
+    "line": 28,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "29be1abb8d94afe7f36e172be7d56575919810c680d0a934f9db73c8d0abd8d3",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-endpoint.test.mjs",
+    "line": 30,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "b86ad1652322b74d420c230e638f8961929d686db1e9523a528027fcdbc0c983",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-gate.mjs",
+    "line": 16,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'validateAnimationReport' has a complexity of 40. Maximum allowed is 10.",
+    "anchor": "86b54e23d6faada8592c08b0170c73f4a0460d5a1ffba3d436102c73fb3648e4",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-gate.mjs",
+    "line": 70,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "df5ab0911090970e537146d65ba7785e260d0185a010703dfaaae313fbc12a25",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-region.ts",
+    "line": 191,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'animationRegion' has a complexity of 36. Maximum allowed is 10.",
+    "anchor": "8cd9e54c6d6766538bfcd56a13c834fbde1cd05321a36b8d13cc130ee4ec9861",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-transition.test.mjs",
+    "line": 66,
+    "column": 43,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 18. Maximum allowed is 10.",
+    "anchor": "b58a6e2503e331535965206c1e54a77085e9b3d5f6308ad2c791cb27c4940ff0",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/animation-transition.ts",
+    "line": 262,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureNativeTransition' has a complexity of 107. Maximum allowed is 10.",
+    "anchor": "962c1bb793de669cd5037b501c581a957c2edb574b872790b48173391521bff7",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/asset-sequence.ts",
+    "line": 28,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureAssetSequence' has a complexity of 19. Maximum allowed is 10.",
+    "anchor": "105713442b77e694727e8e1b606b938291f3d621f19d195bfec218a8d60a5296",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/asset-sequence.ts",
+    "line": 93,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "ccb98194466ce42f648cf257d4ac2ba4828cd48dbb2cc82d21fa6340f05c5205",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/asset-sequence.ts",
+    "line": 95,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "863235046f8cb78f7e40f1c51764e5673b12728d7e84347f716133f43b625e87",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/barrage-motion.test.mjs",
+    "line": 11,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'picture' has a complexity of 20. Maximum allowed is 10.",
+    "anchor": "5f8ebc49ecb370ffba350e568ac7acfa1358c86fd36f961758f92ef520c21458",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/barrage-motion.test.mjs",
+    "line": 17,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "165ee078070f6db67aea113c5e1600c74266e145723bce2c510fa6092acc8dee",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/barrage-motion.ts",
+    "line": 16,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'barrageTargets' has a complexity of 35. Maximum allowed is 10.",
+    "anchor": "5d4b1ce09773cc68d1ae2c0169bee5d7e6d53019a9c0d911a8087f00aa2ea452",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/barrage-motion.ts",
+    "line": 37,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "2b34fad5338f67fe6a153347df4ba90be1d42390e52e19bc9e3adb38eebbc68b",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/barrage-motion.ts",
+    "line": 39,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "3fa2a44d7d9ee513a55e2d9364def438b048eb96c5af7db26b440dcf34ad130c",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/barrage-motion.ts",
+    "line": 48,
+    "column": 43,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "308cd1dffc4d0e6d1843efe55770c12a9de2c8b1c7ea29b59946794fafcd3a89",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/barrage-motion.ts",
+    "line": 50,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "5041f5ee075bca9388e0fabcb0389c031317ad4a06e66085459a62cdcec7a8d5",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/baseline-path.mjs",
+    "line": 38,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'baselineRelativePath' has a complexity of 28. Maximum allowed is 10.",
+    "anchor": "c83a11adc6fab7557a91690f3189ad9ae30658b8d2ae7c58b2aa0c0937599931",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/baseline-preflight.mjs",
+    "line": 78,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "98842c8ec77fc4caf6ce8512c5cc0d11e486ddc1cbc3794725b99dda64d67233",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/baseline-source.mjs",
+    "line": 2,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'validateBaselineSource' has a complexity of 18. Maximum allowed is 10.",
+    "anchor": "41a25363b42b65ef51ac8a45494a09d8fd6497c1ca2af69510590538b1ea268f",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/brand-fade.test.mjs",
+    "line": 21,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'frame' has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "95369a62c4a5f346dda73774fbf5198f8ad2268fc1e826d1303813345a490df4",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/brand-fade.ts",
+    "line": 105,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureBrandFadeWithSamplingRecapture' has a complexity of 27. Maximum allowed is 10.",
+    "anchor": "f5ceb0d8f395ebce80b96fac38eb617a2b98f2d12d4646b3aea0c8f6089544e2",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/brand-fade.ts",
+    "line": 138,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "df19d299492f57ad72839916196483b19003d4f593c249ba3c20f35b5f8e2934",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/brand-fade.ts",
+    "line": 5,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'brandFadeEvidence' has a complexity of 28. Maximum allowed is 10.",
+    "anchor": "cc92fe18c2b68f0408a419f104ed7e7d1b1971e6745cebd1c221a231c5328237",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/brand-fade.ts",
+    "line": 66,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "29a87ea0d8e67c4402fb5d5408cdee7b2921d5ff3466f3f20504ad0128a52eb6",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/ci-failure-summary.mjs",
+    "line": 11,
+    "column": 3,
+    "rule": "complexity",
+    "message": "Function 'visit' has a complexity of 19. Maximum allowed is 10.",
+    "anchor": "e0bb56357d3a36cffbcb5921a20d1aed5a0f3cbd57e879bec43eb197184f629e",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/ci-failure-summary.mjs",
+    "line": 16,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "ea59bd8f96cc796c7e52916917e040d1e70891ea483bd0c3f942b36cee6ef824",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/ci-failure-summary.mjs",
+    "line": 73,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "2104c624d1768a57e5774258f77125a0621258a59c558b52e16d93e86dd72052",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/country-picker.ts",
+    "line": 6,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'waitForCountryPicker' has a complexity of 17. Maximum allowed is 10.",
+    "anchor": "e82743ae9bd49b5ac503a29660b1a726052c8ed63b7d26a5773ca77ca479b4ae",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/device.ts",
+    "line": 151,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'assertVisual' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "fe5f28d2f52ae54e7a1bfc272ece8698450ef36d00c26974a31900acbe53cd95",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/device.ts",
+    "line": 171,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'compareScreenshot' has a complexity of 16. Maximum allowed is 10.",
+    "anchor": "f34b231a6624e9f9edb12baea510dc991f310103563c4b440ce38546ac52a12d",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/device.ts",
+    "line": 203,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "401baedb98d2c1c476c10981218e336e0caea5ad18bfd57bc275ed11cd98ed26",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/device.ts",
+    "line": 45,
+    "column": 23,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "a8cba0cbfaedb3e39c4ed7a12666673a03ae8c26efe653344cf2568a7843a928",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/device.ts",
+    "line": 62,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'launchApplication' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "f9a0c6c4acef29009ea20fc9a3c930d1b47b3ff3f544085337c1e0312986951a",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/diagnostics.ts",
+    "line": 13,
+    "column": 68,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "6454529cfe9278fbf7a69ca9d8711033c328f4d30de85a8a65c8b6834bcd5a69",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/export-candidates.mjs",
+    "line": 52,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "bc1572142ef4bd78fdc51e085dcd88b5c192b3c50200e3a288d8114f16b6886c",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/export-candidates.mjs",
+    "line": 56,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "68bb51b442e8188fc14816574952753f57f5f1579e824190f7c9974fbe81994d",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/export-candidates.mjs",
+    "line": 59,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "77277064bb994c27e58b1aa42e575fd4d496d23c681c1fb26fcfca9994ab8320",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/export-candidates.mjs",
+    "line": 62,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "be5e05b18b973c3f9dd52727a32ed9bbc816dc31c14d9e5b65f6738fb862bcda",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/export-candidates.mjs",
+    "line": 65,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "52463afd81b140c230f164fac16337e7eb0038f93a7a14ff39da23b8854314ed",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/functional/creation.spec.ts",
+    "line": 52,
+    "column": 100,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "af2dc524b2a1c5f748a005ce3bdb7bf8670404bf3a33e91c014867331d437c3c",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/functional/creation.spec.ts",
+    "line": 52,
+    "column": 104,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "af2dc524b2a1c5f748a005ce3bdb7bf8670404bf3a33e91c014867331d437c3c",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/functional/creation.spec.ts",
+    "line": 52,
+    "column": 53,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "af2dc524b2a1c5f748a005ce3bdb7bf8670404bf3a33e91c014867331d437c3c",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/functional/creation.spec.ts",
+    "line": 79,
+    "column": 35,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "813b6936fdd6d411b31048b1e3b93e1c847e07cf9f834978de22568afe66beb2",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/functional/shared/api.ts",
+    "line": 47,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'credentials' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "cff67c9dc15c6441f688b8d3a234cd833ce47d1294e4a03fbd20c6629ec8a993",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-capture.ts",
+    "line": 40,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureGame' has a complexity of 52. Maximum allowed is 10.",
+    "anchor": "eb7835408967f07c521e3ff2265d042ee31e9da4b604ef52a502977e3d7ce324",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-controls.ts",
+    "line": 179,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'gameTap' has a complexity of 23. Maximum allowed is 10.",
+    "anchor": "8fc290c3a3105789a83258c59b382fbaa8842776de5f6bb1681a5a0e06024845",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-controls.ts",
+    "line": 212,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "78ef6966bb1b4e312a69a6cf7d5bb38769bd60afa65a421cc974ad7501004929",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-countdown.test.mjs",
+    "line": 39,
+    "column": 37,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "866a26952ecf9da8bf6ef48358b4a2c7565700be4f055b1302262bd7b6b9d445",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-countdown.ts",
+    "line": 6,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'playerCountdownNodes' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "fea3ecb0e3bbcbe33ec054a23c5181cf14b4d74096449acb91d5d67437931133",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-loading-region.ts",
+    "line": 9,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'gameLoadingRegions' has a complexity of 26. Maximum allowed is 10.",
+    "anchor": "07899b9d6693728f5ece1af52b09491cfec1a81227f6258de6c773380fc6431c",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-masks.ts",
+    "line": 71,
+    "column": 50,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "6f3a04221ae5b8bcfa3d754290c660b797a5559553d606c67573421c9af90bda",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-panel-animation.test.mjs",
+    "line": 289,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'basePicture' has a complexity of 23. Maximum allowed is 10.",
+    "anchor": "80d793dc90724f7096a8f2197cbcc8081bec17e0feb15c1005e521627d054e19",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-panel-animation.ts",
+    "line": 21,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'animateGamePanel' has a complexity of 17. Maximum allowed is 10.",
+    "anchor": "06d15ba067adb6e69f7eaab839e998344ab4fc94500217ae0c53e6b481e2c7fe",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-pregame.ts",
+    "line": 146,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'gamePreGame' has a complexity of 38. Maximum allowed is 10.",
+    "anchor": "7ac9713e015c5cf634e2dc44721129546123904d9a4db9993851307ab5a0c889",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-replay.test.mjs",
+    "line": 12,
+    "column": 57,
+    "rule": "complexity",
+    "message": "Async arrow function has a complexity of 18. Maximum allowed is 10.",
+    "anchor": "949bada8986ad2f0c1adce6dca8bfa861bd6c3efa5c81a018407aeadd7935eb0",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-room.ts",
+    "line": 107,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'createGameRoom' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "749130ab3ee24458174a2cb75d6681257e79c1d6b8f245f105f364365e16f0ad",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-room.ts",
+    "line": 21,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'submitGameRoom' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "cd1b37ff6370df5d103a6d1393d02e6841a7c68230dc00ffeb67d18805e9261b",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-room.ts",
+    "line": 62,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'openGameRoomForm' has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "5d0e9f5ad31fbca2e30e0df8d8d2db06a09af7694e05a201d23a3f73574a0359",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/game-transient.ts",
+    "line": 21,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureToast' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "0f61f597d56f886fa9630aeb1e8a9f72896b4f183d532342ba1013bcc2af9513",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/launch-artwork.ts",
+    "line": 19,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'launchArtworkMatch' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "7587b068c9d0c8a255bfb6fc315fe7a82236d1586396731e243c32ec04629715",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/launch-capture.ts",
+    "line": 41,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'verifyLaunchCapture' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "ef169f72fa0b60c3b2ff4fcb1350b226ebd3627fa8a68d4c01a6124ce1f90d70",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/launch-recovery.ts",
+    "line": 5,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'waitForHallAfterLaunchHold' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "65e952d689e5fdc6fe7dfead6d8f3038752f73f1c856cd4f523d3f723fcc6d14",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/legal-document.ts",
+    "line": 18,
+    "column": 3,
+    "rule": "complexity",
+    "message": "Function 'visit' has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "b85017fb733c5af8f6f803ce741941ac4c69e9c61f37d6768fffb39fcc72ef18",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/loop-keyframes.ts",
+    "line": 38,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureLoopKeyframes' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "c613dea17702ea814beb2dd4088537477163891627a7fda9e18c151f65d42410",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/loop-keyframes.ts",
+    "line": 99,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureMovingKeyframes' has a complexity of 18. Maximum allowed is 10.",
+    "anchor": "6576d031d04be7eb0a644084955c6b3703dba796eafa2bc97e6b61cd3f8b855f",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/modal-background-masks.ts",
+    "line": 9,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'modalBackgroundMasks' has a complexity of 21. Maximum allowed is 10.",
+    "anchor": "b356d5df44833e24dcd4d5c1357512ded6900bf7edbe5a0b15b5dfcc097da257",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/motion-regions.ts",
+    "line": 14,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'cropNativeRegions' has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "91874e4cb355531212fc58201d2b892f106e33e9428ed3551a16e57fec780afe",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/motion-regions.ts",
+    "line": 80,
+    "column": 36,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "65b40b76d7a1b14c53b5f99041309fc99fad59a7ca4013ecacc34763f6b528cf",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/native-crash.ts",
+    "line": 8,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'nativeCrashSummary' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "992f256a077ddbae1657bf28ca6fa1e878d810f6492a54718d3150fc4cf4d9df",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/native-device.ts",
+    "line": 150,
+    "column": 3,
+    "rule": "complexity",
+    "message": "Method 'matches' has a complexity of 17. Maximum allowed is 10.",
+    "anchor": "08aabbce792b1133113565ac032592d5f1261c915f7f88a2bdb36c7655f80303",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/native-device.ts",
+    "line": 236,
+    "column": 21,
+    "rule": "complexity",
+    "message": "Async arrow function has a complexity of 17. Maximum allowed is 10.",
+    "anchor": "96c1cc2d6eab2afd3b6515cdf53ee894b4cc890d91a3f33888b35e53d337982e",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/native-device.ts",
+    "line": 51,
+    "column": 3,
+    "rule": "complexity",
+    "message": "Function 'visit' has a complexity of 16. Maximum allowed is 10.",
+    "anchor": "b29eb72a6a4da34c7918e8aa279cfa1a89303b0131c7024bf270eaf9e196e492",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/navigation.ts",
+    "line": 16,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'reveal' has a complexity of 21. Maximum allowed is 10.",
+    "anchor": "ce49bc7900b1231078ba1bafea6d70e2b3ca8982e0d69460b839675e720a671c",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/navigation.ts",
+    "line": 160,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'revealScenarioReady' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "0588f425acccfbc426187de67eb40308b5755ea59be144c99b122b6ab5eafe5d",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/navigation.ts",
+    "line": 192,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'navigateScenario' has a complexity of 31. Maximum allowed is 10.",
+    "anchor": "f85b042b8ddb4216bfb121f306702b6f7700386577fd9c6567a689a984bab57a",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/navigation.ts",
+    "line": 219,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "1e6f4c6a1245a2d84fa61c587be5c6280b32039e9cfab1e6ef801664c1c7ffc7",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/navigation.ts",
+    "line": 84,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'selectGuestSettingsTab' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "c5ab383342e6af7c11a0fb6ffe1a2105ca264b4bc0faabaffb72aab97a6c85bb",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/network-routes.ts",
+    "line": 21,
+    "column": 5,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "402161c485181b4b50b348db7aa878cc0d295f9148d16a133bbdab3492af9c37",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/network-routes.ts",
+    "line": 43,
+    "column": 7,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "ecc591f133ddb7f390c0083626827c25860040e08a6884ff85ba7cf334aedf26",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/personal-leaderboard-slide.ts",
+    "line": 103,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "27a20512a78a1377ec010a890e1599695c162411b86d692977ad40ee992416ab",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/personal-leaderboard-slide.ts",
+    "line": 111,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "6e98864638cd9e473b61a8c17b74a333a17a565f0c364231fba1fa9caa40c191",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/personal-leaderboard-slide.ts",
+    "line": 119,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "933ffa4c2bb3fdb269b22d16ea0fc00020bf916dec07ab502f504e423b16454f",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/personal-leaderboard-slide.ts",
+    "line": 128,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "893055f532b73f2163cc37854e3901bba543e3ef4a50d3ed6dd05fba62628b98",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/personal-leaderboard-slide.ts",
+    "line": 134,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "71f7e82d904f332e14997ca172dd72fda54c65979701539d1b073da50eaad7f4",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/personal-leaderboard-slide.ts",
+    "line": 58,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'leaderboardSlideEvidence' has a complexity of 23. Maximum allowed is 10.",
+    "anchor": "8ec3d5c39da12b0114772cc6b4a524a481c50a4c662b765a3c9592b5fa3d72a7",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/pregame-panel-region.test.mjs",
+    "line": 52,
+    "column": 33,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "cf5efbc725256dcdca5b5e3cf887b8e217b07afce7b95354867b671b3d3f791e",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-readiness.test.mjs",
+    "line": 48,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'basePicture' has a complexity of 23. Maximum allowed is 10.",
+    "anchor": "80d793dc90724f7096a8f2197cbcc8081bec17e0feb15c1005e521627d054e19",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-region.ts",
+    "line": 28,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'ownProfileIdentityMask' has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "e98f7601886930dbbf3cc66e69fe585d51c2db12bd412508af54fc41b04553f9",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.test.mjs",
+    "line": 60,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Async function 'syntheticZoom' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "6fbd9d35ac888a720548d1a79e71c8561347de870aa846eada0d898877cca078",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.ts",
+    "line": 159,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "d30f70fe4a6865ceffcc72cd133ba586accde0d0efe5390f3c806f3c45db2ff5",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.ts",
+    "line": 177,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "b3311db5053d59abf286b8a073585b572239b65ed64cebd62c54f15b084709e5",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.ts",
+    "line": 185,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "933ffa4c2bb3fdb269b22d16ea0fc00020bf916dec07ab502f504e423b16454f",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.ts",
+    "line": 195,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "720658e3519782ae17464baec49524b340bd1fbc3ebd7b79088f2bcb29225327",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.ts",
+    "line": 222,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "ab7f82dca393ec02440b9a89a055f85fb6f5d3e23fbe173fe34edebc09e05fc3",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.ts",
+    "line": 228,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "e9fa7c1424e790d9b7bc64a2e1a0951e05d13305b07fc89e159dcca6d05e8ddc",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/profile-zoom.ts",
+    "line": 85,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'profileZoomEvidence' has a complexity of 33. Maximum allowed is 10.",
+    "anchor": "7948e1ddbda5df1b7803b2cedd51fc433b0e5f92c8d952c20f2bfc9da78b7b69",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/proxy.ts",
+    "line": 31,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'withIosProxy' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "1405c636567f7634705dea7724615063fad873d530e446bcc76cfabab469d0b1",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/review-endpoint-masks.ts",
+    "line": 6,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'reviewEndpointNetworkMasks' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "34be5c68199ad09069aa45a0824c98c091521286e8a8b4d8a738f66eabc57e67",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/screenshot-evidence.mjs",
+    "line": 19,
+    "column": 32,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 23. Maximum allowed is 10.",
+    "anchor": "40c35511d45348c4432a2bda8d733a303bdbc6b110c332de9fed944c7f49c398",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/screenshot-evidence.mjs",
+    "line": 62,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'exportScreenshotEvidence' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "b4fac6476329db3c6f0bcc786a47ac22a1d1f2b1c4eea247cbbbe3285b13a587",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/screenshot.ts",
+    "line": 42,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'screenshotMasks' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "228695b4525dbd7943b84d150cde410b3e4570b06d4fd91743333d08f54c7e18",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/slot-regions.ts",
+    "line": 62,
+    "column": 51,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "5057719e7b080c680dd01ab7262c9343de9f437695afb7e44b311a114b133204",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/staging-card.ts",
+    "line": 7,
+    "column": 3,
+    "rule": "complexity",
+    "message": "Function 'visit' has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "bd58e8bd1c378207263ff915ec71e89cb01287dade12c90eae9ede3952438e44",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/tests/games.spec.ts",
+    "line": 61,
+    "column": 44,
+    "rule": "complexity",
+    "message": "Async arrow function has a complexity of 38. Maximum allowed is 10.",
+    "anchor": "09307c65d86734574739e4ccc80da9366284e9a3654eb1d90859c522ee9afb65",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/tests/launch-branding.spec.ts",
+    "line": 20,
+    "column": 40,
+    "rule": "complexity",
+    "message": "Async arrow function has a complexity of 16. Maximum allowed is 10.",
+    "anchor": "09307c65d86734574739e4ccc80da9366284e9a3654eb1d90859c522ee9afb65",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/tests/launch-branding.spec.ts",
+    "line": 72,
+    "column": 13,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "03d9aba6351173e5f8c479f3e786247afca28bd814dd42e6477fa51b48c9fe36",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/tests/launch-branding.spec.ts",
+    "line": 77,
+    "column": 15,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "905fa9a6339fd69530ba160673957bb58d122e62f74644e2816ef82ef0614807",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/tests/records.spec.ts",
+    "line": 104,
+    "column": 13,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "b10ba8fdbb55dbb03226ebc45a69746bc70451901306714f6ebb6f5a8af687cc",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/tests/records.spec.ts",
+    "line": 22,
+    "column": 45,
+    "rule": "complexity",
+    "message": "Async arrow function has a complexity of 21. Maximum allowed is 10.",
+    "anchor": "9a3b7a8744dfd0b879ceef80a242ba6499057a548d9e04b40c268ea2b78f57cf",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-action-region.test.mjs",
+    "line": 66,
+    "column": 42,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "730dfe4e09eb8ec6cc89b6ea9150b51a5669e2eb1a3148d2709e4c0c39c7a7ce",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-action-start.ts",
+    "line": 16,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'texasActionStart' has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "a48ffdf1169d25b6d47ce3b0a8fb24bde1b51ac28d74929877e174ca790c3d3a",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-action-start.ts",
+    "line": 44,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'compareTexasActionStart' has a complexity of 16. Maximum allowed is 10.",
+    "anchor": "5c96d9e66c05cd75de9fd87de12fec74247551bfe041fc862989409b2a522470",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-action-start.ts",
+    "line": 57,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "e674b24d02348c0c444318c89d744d50b668ac9fc85ecd7e54536a3329cf3d68",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-action-start.ts",
+    "line": 58,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "c8db06e4c40f09bb779c6ca110efa8f3db2bafc0b47f80f8db2867336969cf11",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-card-region.ts",
+    "line": 31,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'nativeOwnCardRegion' has a complexity of 17. Maximum allowed is 10.",
+    "anchor": "232fabfed12b542033eaaa17f60fad399526a4e45d72d2d294a4c496adfd41ad",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-card-region.ts",
+    "line": 7,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'nativeCommunityCardRegion' has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "3e9a4cd2609a4e960b5555a06f86d27b315e8b9e3f4f7708c1d13a4dd582b04e",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-flows.ts",
+    "line": 29,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'runTexasScenario' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "12a79294f74845296f8a37edaeb8b821b64e45abc6babc01b56756ed21fd1fdf",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-gameplay.ts",
+    "line": 35,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'texasGameplay' has a complexity of 19. Maximum allowed is 10.",
+    "anchor": "3866a858cf0439825b9c025ed0ce37b5b75ffef5d0b29bab70a912382967bbea",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-panel-variants.ts",
+    "line": 16,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'texasPanelVariants' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "eb1f16c094a8c34285c85939e8e7a491bf0c697cb8f39086f5c14ed78be5d384",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-panels.ts",
+    "line": 22,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'texasPanels' has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "84529f913bb0dfbc961207018017b7814d5018d7902651e09b5b9d59e50255f8",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-raise-masks.ts",
+    "line": 20,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'thumbImage' has a complexity of 40. Maximum allowed is 10.",
+    "anchor": "f2b25f93752e4c5685edb585b18cc9f5c07532729a509a7ae392bf787495d7a0",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/texas-raise-masks.ts",
+    "line": 65,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'texasRaiseClockMasks' has a complexity of 20. Maximum allowed is 10.",
+    "anchor": "cf3adc738a0c9725ce9418989a18e3ae8850ce801fc99f494b14e07d758790ca",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/timed-prompt.test.mjs",
+    "line": 6,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'frame' has a complexity of 18. Maximum allowed is 10.",
+    "anchor": "2a71c182bc9469b36c815a73484a6bd36d3b67be0fcf663457ef8e284226f560",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/toast-keyframes.ts",
+    "line": 8,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'toastKeyframes' has a complexity of 20. Maximum allowed is 10.",
+    "anchor": "f34b352df817677bfe7e6c3ea55a7c3477fcb04821d92e7e0a13142387a0cddc",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/toast-panel.ts",
+    "line": 5,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'toastPanelPixels' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "cb3d27ccfe1dae81052155f35fa6f97e4b70bf7b803f295b158b711b2b10e439",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 36,
+    "column": 5,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "2de53ce8750b95d4ab04c056218e02e347477e27f28a047957f35f8d93b60dcc",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 43,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "228871c9eb89d53362163ef4eb3573bc2408ae68a2dee5cfc434c978e73802d1",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 46,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "14ff283c97b61b99ee94d74622e3ee34990026a35c66c09f57a993d59f83f4a2",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 50,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "abb1b742f2fd3d6f461ea6e9e8af4765a60b107d85c1b6622efe340ceb61ca96",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 52,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "801ee8d4cc80fdd8467fe94bee77d1857854c347fd86f86e483a0fe2f21ea90a",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 53,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "9cafe3faae82f8e59f5dae242db463da80a9f96ebab823129f4a5ad1c9392f60",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 56,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "5bba55b86bfcfddf701c47153e9f371c922137e55d880a5bb9641a4b7d544f91",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 58,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "a72cfea073c94648db8669bfc93612293d4755c8fba9c5fe3bc1c48e31408dd8",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 59,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "f300431b25bfaeaf5f3ec3cd95cee675552b312ed7ef5972c3fda4d6c8b61e87",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 61,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "9fd8b92bb293bc0502a4ed656e2c689928b0fca014681818089a09359b6b9c03",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-evidence.mjs",
+    "line": 8,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'exportVideoEvidence' has a complexity of 33. Maximum allowed is 10.",
+    "anchor": "103705979d734da1cad0ec5a6d50909f8e504ae9e2fb7542aa7f204d2078b40d",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-frames.ts",
+    "line": 117,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "3dbc3862978ac692f93d7f7a7b88b8e1fb1e84fbb2fb53cecd2be991a1b126e5",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-frames.ts",
+    "line": 118,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "4a2b445b4c7063039ecf548927218eca3df5de996303398946d42b2abed754f9",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-frames.ts",
+    "line": 19,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'recordNativeVideoFrames' has a complexity of 43. Maximum allowed is 10.",
+    "anchor": "016564fc473ea8b0ce602b5a387e759342072d72ee7c4e09770abe1b51b6fabe",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/video-timeline.ts",
+    "line": 12,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'validateRecordedTimeline' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "eea4896596a89e035c1dcaf9b4f26066c311b15ed4011570ceb210aff1272009",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/web-animation-parity.ts",
+    "line": 64,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'reviewedBrandFrameMatches' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "49a3a413750a9c6e8db171aff6fe6b326131296ec7857a41a0b72f10bcbd244b",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/web-visual-map.ts",
+    "line": 7,
+    "column": 83,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 25. Maximum allowed is 10.",
+    "anchor": "59c8d4f12456e20b2b3c2fbd790e6d974bbff00f7ade02ec92435009de7e82f0",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/xctest-video.ts",
+    "line": 14,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'captureXCTestRecording' has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "da94202607169d42be90d836744a258623cbf10691b6863ce820b7c9cbe454ef",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-gameplay.ts",
+    "line": 30,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'zhajinhuaGameplay' has a complexity of 16. Maximum allowed is 10.",
+    "anchor": "feb99f1f0b6592a4367d96990b2b27087789e6f9149dacb84f475a566ac30bc1",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown-endpoint.ts",
+    "line": 16,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'requireZhajinhuaShowdownPlayers' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "c33133cdba1d6672fd15b7fb63b3ffa841a676df41e6c03ec179c1d5cbfce11e",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.test.mjs",
+    "line": 48,
+    "column": 55,
+    "rule": "complexity",
+    "message": "Arrow function has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "97877dd68a6d2a049701accd35891a3c2385b8f04519c5f2b8352a18c8437970",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.test.mjs",
+    "line": 52,
+    "column": 32,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "8b8f45098af07b3f296aeb3e1fd0aaa46935f65db1cbd2f4e6b975aca8c03bc5",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.ts",
+    "line": 105,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'showdownHorizontalEvidence' has a complexity of 17. Maximum allowed is 10.",
+    "anchor": "80c4e1b689b0175bdd09649a050662fbea3307f5ab6590fa58eec88ac65b10c2",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.ts",
+    "line": 122,
+    "column": 44,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "21d2e6ab61136595a183b1bf3ebd70ed4f41d245bbdae4945839a1309d9453dd",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.ts",
+    "line": 143,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "6111edae2df99e3343f9d3418d136daea76377d6b05f200ba5ee60aa1fd5062b",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.ts",
+    "line": 66,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'compareShowdownStart' has a complexity of 16. Maximum allowed is 10.",
+    "anchor": "6a7f5c41e9d30d635ebae260c54e2d5baafe80c5b8d77b41717fb39f472a3fa2",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.ts",
+    "line": 79,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "6c6238ad1ed3ba15dde4624a9de5a31602d4b3b10fe4a2c4cfc9e6aed85fdddf",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/full/zhajinhua-showdown.ts",
+    "line": 80,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "79f4e15ed63445aa8f34c9c256505891586b350fafb861f3bdb4507ff402a5f0",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/recording.mjs",
+    "line": 7,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'recordAnimation' has a complexity of 20. Maximum allowed is 10.",
+    "anchor": "54c1affa106439d97e079bdd9ec9a1d6dd1e3e52af3fced6cb0388be6d2fcb65",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/release.mjs",
+    "line": 22,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'validateRelease' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "a895a267c8bfdc6c06de58b6c96c2b81cb4cde914dbca9d8210f4664b59f15a0",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/release.mjs",
+    "line": 34,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'validateBuild' has a complexity of 18. Maximum allowed is 10.",
+    "anchor": "275ba996f4e2d8f7c0bf77c321ba338a21c2256b309cf788e77f3f093415b863",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 47,
+    "column": 21,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "563f2377e31007e4fb4ca701bdce30a9a030493b9775a2e9ffdeb35e45c4c365",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 66,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "94ad48dec35d4d01e271459b5f5ecac879747906662530928e0eacf78348c015",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 70,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "f2f0b2614886783ccf0f15718cc20ecc052cefaa5e716a0e9452edd9e5db999c",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 77,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "6764e67b7323f31863ed27c5fdf45c19314bdf56a1c36649b813980af4f25f58",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 80,
+    "column": 9,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (5). Maximum allowed is 3.",
+    "anchor": "1d6f5dca06f1ed096123054f7b67e3d773fca4916004008607e9ee89488fbb34",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 84,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "146da52e13b98eb061c8d9d7e3201c9c047bf7430f5b809d26d09ca9c8c419ba",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 87,
+    "column": 11,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (6). Maximum allowed is 3.",
+    "anchor": "5f342a33c1cbef12c65e3f8a6401674c11e5412cb1ccd4cd2e89910ad5cbbcbe",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 90,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "1d6f5dca06f1ed096123054f7b67e3d773fca4916004008607e9ee89488fbb34",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/run.mjs",
+    "line": 94,
+    "column": 7,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "6cdafc703d671da2990e909053ea1505be9f053070b6bd1302ddd31dcfc7c647",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/visual.mjs",
+    "line": 6,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'comparePixels' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "144dbf4c25814e9639b87f22bae65dfac41ce0c0ccfa5e65043e7d5c2f5631fd",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "ios/webdriver.mjs",
+    "line": 14,
+    "column": 3,
+    "rule": "complexity",
+    "message": "Async method 'request' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "b4542422bd6ee2e1d706d7c2f963dec3078d9c580abde2d37f1373388a7c6aa9",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/account-network-fixture.mjs",
+    "line": 13,
+    "column": 41,
+    "rule": "complexity",
+    "message": "Async arrow function has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "b189f4399122fcb007ff7069aa4e6ae36df478cbd8b903f51cb5976fcc7a313e",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/animation-workflow.test.mjs",
+    "line": 46,
+    "column": 34,
+    "rule": "max-depth",
+    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
+    "anchor": "cdb4e989f1499485c97c6aab7feeb359110c454d15a6dbd72eab60300a2a9ad2",
+    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/ci-accounts.mjs",
+    "line": 130,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'parseCiAccountPool' has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "fc7d48210c3d9eb719128b5c488200aeac658c13034270fc02d6de20af144838",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/ci-accounts.mjs",
+    "line": 28,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'allocateCiAccount' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "c5513c87da57d8c889484f6fe9305fdd6441cf4d4b3223b2a0683563494f5520",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/ci-accounts.mjs",
+    "line": 45,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'iosAccountMatrix' has a complexity of 11. Maximum allowed is 10.",
+    "anchor": "cfeb19eecf8109f80c4486d11c2226fc2aa4e8600a23fa9070d7cca26e866509",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/prepare-test-account-rooms.mjs",
+    "line": 32,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'recoverable' has a complexity of 15. Maximum allowed is 10.",
+    "anchor": "3e1aed4e9616c5c711fdefb090377e88c50c47df1ba4fe6b2b5f32f59cac40f6",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/prepare-test-account-rooms.mjs",
+    "line": 44,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'prepareTestAccountRooms' has a complexity of 17. Maximum allowed is 10.",
+    "anchor": "17790954b6f02a3fd95df1be85600f5b230118539ecbbb3aa0fceb138d1ec6c2",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/prepare-test-account.mjs",
+    "line": 64,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'prepareTestAccountCoins' has a complexity of 26. Maximum allowed is 10.",
+    "anchor": "3b93cdce439a44efbe0e6fe76eb9c47ef0e535ff5546a283586f5ffb3f6f76db",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/prepare-test-account.mjs",
+    "line": 7,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'transportFailureCode' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "cf0006c851a15f1cd05223f9397ee712edeae638a159f04399ff75ec7c4d622a",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "scripts/with-test-account.mjs",
+    "line": 39,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Async function 'run' has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "bdd8dd311fd5f56403f6521df5bc89856a5b09e97d8cfe158f050fe54b1ee6b5",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/cases/_shared/room.ts",
+    "line": 37,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Async function 'ensureRoomBalance' has a complexity of 14. Maximum allowed is 10.",
+    "anchor": "4616960966d424ce18da05c7bdf26928cc39a4c76e5dba7a85b1dee0295e119c",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/cases/texas-holdem/replayData.ts",
+    "line": 21,
+    "column": 8,
+    "rule": "complexity",
+    "message": "Function 'restoreTable' has a complexity of 13. Maximum allowed is 10.",
+    "anchor": "6ac3bca1703e6b22b67ebebbd9500cb5436b1b698528c3c1d4e29ce18319bcb9",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/scenarios.ts",
+    "line": 206,
+    "column": 1,
+    "rule": "complexity",
+    "message": "Function 'buildLocaleViewportScenarios' has a complexity of 12. Maximum allowed is 10.",
+    "anchor": "282695cc3c3475682ca8a7658c74c0dcec8fb795c3e82eb71defc5a37d2d4fbc",
+    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 106,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "0b91e258e0dfeb39f42ea04a884ead7ba858b02caac802a80463bd7114d075eb",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 107,
+    "column": 5,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 116,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "cd6e344fe2e1bb5ebd55e3bb89c3fee46c64b36aba5b0e5eb19f39b8adf1ff41",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 117,
+    "column": 5,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 123,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "96aae55c88d88a7a162fa3bc38c155fd7437f0b2df0791e997179169ba4d5b88",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 124,
+    "column": 5,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 145,
+    "column": 5,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 153,
+    "column": 11,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "e9b24569b3b09a0eb7998c180e9696f327f961e82d7c592a66a46258ad4fa464",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 157,
+    "column": 11,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "e9b24569b3b09a0eb7998c180e9696f327f961e82d7c592a66a46258ad4fa464",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 16,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "538d075e03d2b4b73476d5007b011a99c2ac667d60a5678b49d6191387095cc5",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 163,
+    "column": 11,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "dc606b367d2ad30bfecaeaf7a0b1a19b8b1d24004c967ad5287a49efc64c4e1c",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 17,
+    "column": 11,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "14a0c2bd83b5200129ea5a5832c99cb1f9380e41819bf28398324e9f8c03ca3a",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 170,
+    "column": 11,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "8e07a04d202993ecb5fa11efb8fbc25aea89376eee686c9935ba99a9810f5c10",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 173,
+    "column": 11,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "47037b8306941c3cc18f309be71f68be86a15dea2cf971bdc18cda43d234b050",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 177,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "1255ba7f765cc61877dfd895c811954e6d6474a144f159a8fdc46a46f39877fd",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 230,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "e9b24569b3b09a0eb7998c180e9696f327f961e82d7c592a66a46258ad4fa464",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 234,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "70ec5e50d1a90bb1d03579028e482ffd024fb63b8fc0bc348995da1b68de6274",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 243,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "e082d8ab66d95631a067206f1d031a2066ed179b32a5dc39a2485614d513b12c",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 246,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "e14e27400b35d4c9a21c81630b635f8c776e44369fe61e7a0ffe39911843a6c4",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 249,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "4864a31e646e8ce797b0ffe62a4786c3a188fb977fa331f8eae46a438c177fb3",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 268,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "b8a4df76b63d9aabf9516f90647a6c4eb86e5a7130e8d5b7bf0e818005bb42cf",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 270,
+    "column": 61,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "1a47221247275bd65e84b80f11db56c4d7b313f3d4d876ce4e69c4b92ab28711",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 270,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "1a47221247275bd65e84b80f11db56c4d7b313f3d4d876ce4e69c4b92ab28711",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 40,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "cc25708034f4dbaa385b7c7cad2f117c9a546a12816b1940ab10345ca9affde0",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 41,
+    "column": 5,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 61,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "6b81bdeaae0ada41e47b2644d5c303438a5dc44b189d69a24c9d133792645987",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 62,
+    "column": 5,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 83,
+    "column": 9,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
+    "anchor": "3e8625a6314979debb7c928544c92d0172a0cd82b57491c50f5771da0623f10e",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "eslint",
+    "file": "visual/src/support/networkMocks.ts",
+    "line": 86,
+    "column": 12,
+    "rule": "architecture/no-network-fabrication",
+    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
+    "anchor": "13e998df57483f1ca0b44072f7c406deb2b890c5dc92bfec6762ecae16cbc821",
+    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
+  },
+  {
+    "tool": "ruff",
+    "file": "ios/full/network_observer.py",
+    "line": 90,
+    "column": 9,
+    "rule": "C901",
+    "message": "`control` is too complex (14 > 10)",
+    "anchor": "5d62add86206fe8bfbaf31e566191e979b275b412a0787b75afa7592656cf823",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "ios/full/presentation.py",
+    "line": 15,
+    "column": 9,
+    "rule": "C901",
+    "message": "`normalize` is too complex (14 > 10)",
+    "anchor": "5b5a9b2817946ab78281e65643f15dca86d39be886878c41190a9f1a2376a973",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "ios/full/proxy-addon.py",
+    "line": 116,
+    "column": 9,
+    "rule": "C901",
+    "message": "`websocket_message` is too complex (16 > 10)",
+    "anchor": "c936ec5a7bac14a94a49aad941b9361475d12c6d28526b84652158fe422daea1",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "ios/full/proxy-addon.py",
+    "line": 191,
+    "column": 15,
+    "rule": "C901",
+    "message": "`request` is too complex (15 > 10)",
+    "anchor": "5495d068f027d1ec83e09f501f1be125b14aae8391f9ee0df71ac0fd3835da87",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "ios/full/proxy-addon.py",
+    "line": 242,
+    "column": 15,
+    "rule": "C901",
+    "message": "`route_request` is too complex (44 > 10)",
+    "anchor": "346cf4861fe923e62cbe2c33e45c1d5c544f8d57a66c17193fac902973ae0e18",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "ios/full/proxy-addon.py",
+    "line": 79,
+    "column": 9,
+    "rule": "C901",
+    "message": "`response` is too complex (11 > 10)",
+    "anchor": "0b36d16cf8f925acd7a2b362e677c7c28d83808393d2e568f2ebefc6f734a0b0",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "visual/cases/game-record/mitmproxy/addon.py",
+    "line": 53,
+    "column": 9,
+    "rule": "C901",
+    "message": "`control` is too complex (12 > 10)",
+    "anchor": "5d62add86206fe8bfbaf31e566191e979b275b412a0787b75afa7592656cf823",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "visual/cases/game-record/mitmproxy/addon.py",
+    "line": 92,
+    "column": 9,
+    "rule": "C901",
+    "message": "`fixture` is too complex (29 > 10)",
+    "anchor": "7de657de29b3eaf426a39d572478423df92353b81965ce44ec896cdeb93fe75b",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
+    "line": 122,
+    "column": 9,
+    "rule": "C901",
+    "message": "`request` is too complex (18 > 10)",
+    "anchor": "6a95f92a15255350bac09c0d5983160713ae49736e8f3bd8409c44d03276f631",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
+    "line": 46,
+    "column": 9,
+    "rule": "C901",
+    "message": "`control` is too complex (13 > 10)",
+    "anchor": "5d62add86206fe8bfbaf31e566191e979b275b412a0787b75afa7592656cf823",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "visual/cases/texas-holdem/mitmproxy/texas_replay.py",
+    "line": 83,
+    "column": 9,
+    "rule": "C901",
+    "message": "`websocket_message` is too complex (20 > 10)",
+    "anchor": "c936ec5a7bac14a94a49aad941b9361475d12c6d28526b84652158fe422daea1",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "visual/cases/zhajinhua/mitmproxy/addon.py",
+    "line": 41,
+    "column": 9,
+    "rule": "C901",
+    "message": "`control` is too complex (12 > 10)",
+    "anchor": "5d62add86206fe8bfbaf31e566191e979b275b412a0787b75afa7592656cf823",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  },
+  {
+    "tool": "ruff",
+    "file": "visual/cases/zhajinhua/mitmproxy/zhajinhua_replay.py",
+    "line": 60,
+    "column": 9,
+    "rule": "C901",
+    "message": "`websocket_message` is too complex (20 > 10)",
+    "anchor": "c936ec5a7bac14a94a49aad941b9361475d12c6d28526b84652158fe422daea1",
+    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
+  }
+]
