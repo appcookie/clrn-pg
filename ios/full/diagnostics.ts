@@ -55,8 +55,15 @@ export function safeFailureScreenshot(bytes: Buffer, nodes: DiagnosticNode[]): B
   return PNG.sync.write(picture);
 }
 
-/** 先获得脱敏所需树；树不可读时不退回输出原始屏幕。 */
-export async function captureFailure(device: NativeDevice, testInfo: TestInfo): Promise<void> {
+/** 在设备关闭前保存脱敏传输快照，再读取截图脱敏所需的原生树。 */
+export async function captureFailure(device: NativeDevice, testInfo: TestInfo,
+  transport?: () => Promise<unknown>): Promise<void> {
+  if (transport) {
+    // 只接收 native/transport 的脱敏结果；不能改用会话接口或原始代理日志。
+    const snapshot = await transport().catch(() => ({ unavailable: true }));
+    await testInfo.attach('failure-transport', { body: JSON.stringify(snapshot),
+      contentType: 'application/json' }).catch(() => {});
+  }
   const nodes = await device.nodes().catch(() => undefined);
   if (!nodes) {
     if (!device.applicationId) return;

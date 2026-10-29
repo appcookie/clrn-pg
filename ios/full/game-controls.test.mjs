@@ -2,7 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeDevice } from './native-device.ts';
-import { gameTap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameGoneCurrent, gameConnectionState } from './game-controls.ts';
+import { gameTap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameGoneCurrent, gameConnectionState,
+  gameReady, gameReadyCurrent, gameGone } from './game-controls.ts';
 
 test('录像内关闭和连接查询只读实际标记，短暂重连重置连续就绪时间', async () => {
   let panelQueries = 0, connectionQueries = 0, lastConnectingAt = 0;
@@ -144,6 +145,62 @@ function driverFixture(snapshots) {
   device.screenSize = { width: 100, height: 200 };
   return { device, reads, taps };
 }
+
+test('牌桌就绪及关闭等待立即报告连接超时和驱动错误，不能等到后续样本恢复后通过', async () => {
+  for (const wait of [gameReady, gameGone]) {
+    for (const bad of [[message('Connection Timeout')], new Error('原生驱动读取失败')]) {
+      const recovered = wait === gameReady ? [button] : [];
+      const { device, reads } = driverFixture([bad, recovered]);
+      await assert.rejects(wait(device, 'target'), error => bad instanceof Error
+        ? error === bad : /Connection Timeout/.test(error.message));
+      assert.equal(reads.length, 1, '真实连接错误和驱动错误不能被等待重试吞掉');
+    }
+  }
+});
+
+test('牌桌定向就绪等待立即报告连接超时和驱动错误，不以恢复后的目标掩盖失败', async () => {
+  for (const bad of [[message('Connection Timeout')], new Error('原生定向查询失败')]) {
+    let reads = 0;
+    const target = { ...button, bounds: { x: 10, y: 20, width: 30, height: 40 } };
+    const device = {
+      prepareTransientCapture: async () => {},
+      inputObservation: async () => {
+        if (reads++) return [target];
+        if (bad instanceof Error) throw bad;
+        return bad;
+      },
+      nodes: async () => { throw new Error('错误观测后不应读取完整树'); },
+    };
+    await assert.rejects(gameReadyCurrent(device, 'target'), error => bad instanceof Error
+      ? error === bad : /Connection Timeout/.test(error.message));
+    assert.equal(reads, 1, '定向等待不能在真实错误后继续轮询');
+  }
+});
+
+test('重连中的目标可见不能证明就绪，面板暂时缺失也不能证明关闭', async () => {
+  const ready = driverFixture([[button, message('Connecting...')], [button]]);
+  assert.equal((await gameReady(ready.device, 'target')).res, 'target');
+  assert.equal(ready.reads.length, 2, '必须等到连接遮罩消失才确认就绪');
+  const gone = driverFixture([[message('Connecting...')], [button], []]);
+  await gameGone(gone.device, 'target');
+  assert.equal(gone.reads.length, 3, '必须在连接恢复后确认面板真实消失');
+});
+
+test('定向查询漏报后读取的新原生树仍须检查连接超时和重连遮罩', async () => {
+  for (const timedOut of [false, true]) {
+    const first = timedOut ? message('Connection Timeout') : message('Connecting...');
+    const { device, reads } = driverFixture([[button, first], [button]]);
+    device.prepareTransientCapture = async () => {};
+    device.inputObservation = async () => [];
+    if (timedOut) {
+      await assert.rejects(gameReadyCurrent(device, 'target'), /Connection Timeout/);
+      assert.equal(reads.length, 1, '回查出现连接超时也必须立即失败');
+    } else {
+      assert.equal((await gameReadyCurrent(device, 'target')).res, 'target');
+      assert.equal(reads.length, 2, '不能使用回查中被重连遮罩覆盖的目标');
+    }
+  }
+});
 
 test('真实NativeDevice source契约：健康点击只读取两次完整树并点击一次稳定中心', async () => {
   const { device, reads, taps } = driverFixture([[button]]);
