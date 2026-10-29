@@ -29,8 +29,9 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
         // The iOS Home indicator changes with simulator appearance; it is outside the app canvas.
         const homeIndicator = { x: Math.floor(width * 0.31), y: height - 48,
           width: Math.ceil(width * 0.38), height: 32 };
-        await compareScreenshot(device, `${locale}-launch-staging-notice`, info, [], undefined,
-          fullScreen, [], [homeIndicator]);
+        await compareScreenshot(device, `${locale}-launch-staging-notice`, info, {
+          takeScreenshot: fullScreen, comparisonExclusions: [homeIndicator],
+        });
       } catch (error) { await captureFailure(device, info); throw error; }
       finally { await device.close(); }
     });
