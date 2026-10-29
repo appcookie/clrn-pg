@@ -178,8 +178,9 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
       ...masks.filter(mask => /^seat-guide-[789] 完整箭头动画范围$/.test(mask.reason))
         .map(mask => ({ x: mask.x + mask.width - 2, y: mask.y, width: 2, height: mask.height }))]
     : [];
-  await compareScreenshot(device, name, testInfo, masks, transientMarker ? assertTransient : undefined,
-    transientMarker ? () => gameScreenshot(device) : undefined, [],
-    [...backgroundMasks, ...nextTurnExclusions, ...countdownTextExclusions, ...cardRankExclusions],
-    !transientMarker);
+  await compareScreenshot(device, name, testInfo, {
+    masks, transientState: transientMarker ? assertTransient : undefined,
+    takeScreenshot: transientMarker ? () => gameScreenshot(device) : undefined,
+    comparisonExclusions: [...backgroundMasks, ...nextTurnExclusions, ...countdownTextExclusions, ...cardRankExclusions],
+  });
 }

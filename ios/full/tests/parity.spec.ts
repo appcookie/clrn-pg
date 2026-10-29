@@ -13,6 +13,6 @@ for (const scenario of iosScenarios(locale, process.env.IOS_GROUP)
     }
     const { backgroundBanner, readySnapshot } = await navigateScenario(application.device, scenario);
     const masks = await screenshotMasks(application.device, scenario, backgroundBanner, readySnapshot);
-    await compareScreenshot(application.device, `${locale}-${scenario.pageLabel.replaceAll('_', '-')}`, testInfo, masks);
+    await compareScreenshot(application.device, `${locale}-${scenario.pageLabel.replaceAll('_', '-')}`, testInfo, { masks });
   });
 }

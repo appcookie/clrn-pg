@@ -155,6 +155,9 @@ export async function assertVisual(bytes: Buffer, name: string, testInfo: TestIn
   if (name.includes('..') || name.startsWith('/')) throw new Error('视觉产物名称不能越界。');
   const filename = name.endsWith('.png') ? name : `${name}.png`;
   await testInfo.attach(filename, { body: bytes, contentType: 'image/png' });
+  if (comparisonExclusions.length) await testInfo.attach(`${filename}-exclusions`, {
+    body: JSON.stringify(comparisonExclusions), contentType: 'application/json',
+  });
   // smoke 的合成算法测试也会调用此入口；仅真正存取基准时要求共享场景已归类。
   const baseline = mode === 'smoke' ? undefined : baselinePath(filename);
   if (mode === 'reference') {
@@ -168,10 +171,11 @@ export async function assertVisual(bytes: Buffer, name: string, testInfo: TestIn
     expect(comparison.matches, `${filename} 变化比例 ${comparison.changedRatio}`).toBe(true);
   }
 }
+/** 截图来源与有效区域在采集前确定；稳定后只比较一次当前基准，失败不得换源或追加排除区。 */
 export async function compareScreenshot(device: NativeDevice, name: string, testInfo: TestInfo,
-  masks: ScreenshotMask[] = [], transientState?: () => Promise<void>, takeScreenshot: () => Promise<Buffer> = () => device.screenshot(),
-  _alternateSnapshots: string[] = [], comparisonExclusions: ScreenshotBounds[] = [],
-  nativeFallback = false) {
+  options: { masks?: ScreenshotMask[]; transientState?: () => Promise<void>;
+    takeScreenshot?: () => Promise<Buffer>; comparisonExclusions?: ScreenshotBounds[] } = {}) {
+  const { masks = [], transientState, takeScreenshot = () => device.screenshot(), comparisonExclusions = [] } = options;
   if (masks.length) await testInfo.attach(`${name}-masks`, { body: JSON.stringify(masks), contentType: 'application/json' });
   await transientState?.();
   let previous = maskScreenshot(await takeScreenshot(), masks);
@@ -188,27 +192,6 @@ export async function compareScreenshot(device: NativeDevice, name: string, test
     expect(match, '页面截图应稳定').toBe(true);
     expect(Date.now() - stableSince).toBeGreaterThanOrEqual(transientState ? 250 : 1500);
   }).toPass({ timeout: 30_000, intervals: [transientState ? 100 : 500] });
-  if (nativeFallback && process.env.IOS_VISUAL_MODE === 'compare') {
-    const reference = readFileSync(baselinePath(`${name}.png`));
-    if (!comparePixels(reference, result, 12, comparisonExclusions).matches) {
-      // XCTest can return a stable but clipped game layer after a recording.
-      // Compare a fresh Simulator capture to the same reviewed baseline. The
-      // only extra exclusion is iPhone 16's hardware Dynamic Island, which
-      // Simulator draws black while XCTest omits it from screenshots.
-      const island = { x: 400, y: 32, width: 379, height: 114 };
-      if (device.screenSize.width === 1178 && device.screenSize.height === 2556) {
-        const exclusions = [...comparisonExclusions, island];
-        const fallbackOriginal = await device.nativeScreenshot();
-        const fallback = maskScreenshot(fallbackOriginal, masks);
-        if (comparePixels(reference, fallback, 12, exclusions).matches) {
-          await testInfo.attach(`${name}-xctest-clipped`, { body: original, contentType: 'image/png' });
-          original = fallbackOriginal;
-          result = fallback;
-          comparisonExclusions = exclusions;
-        }
-      }
-    }
-  }
   if (masks.length) await testInfo.attach(`${name}-original`, { body: original, contentType: 'image/png' });
   await assertVisual(result, name, testInfo, comparisonExclusions);
 }

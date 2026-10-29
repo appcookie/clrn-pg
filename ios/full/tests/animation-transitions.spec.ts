@@ -153,7 +153,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         { takeScreenshot: capture, timeoutMs: 4_000 });
       await captureMovingKeyframes(device, 'hall-matching-spinner', testInfo,
         [spinner], 2);
-      await compareScreenshot(device, 'en-hall-matching', testInfo, masks, undefined, capture);
+      await compareScreenshot(device, 'en-hall-matching', testInfo, { masks, takeScreenshot: capture });
       await tap(device, 'quick-start-room-cancel');
       await waitAbsent(device, { res: 'game-matching-loading-view' });
     } catch (error) {

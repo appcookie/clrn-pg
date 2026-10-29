@@ -30,6 +30,10 @@ IOS_SIMULATOR_UDID=<专用模拟器 UUID> npm run test:ios
 
 首次运行 reference 后，从 Actions 产物取回 `snapshots/`，审查并提交，再用 compare 验证后续 Release。不会自动把新版本覆盖成基准。动画按页面就绪后的相对时间采样，当前比较对循环动画的起始相位和网络内容敏感，需要查看 MP4/diff 判断原因；不覆盖页面切换过程或精确动画性能检测。原始 MP4 可用于人工对照。
 
+完整回归的普通截图在采集前固定来源和有效区域，稳定后只比较一个当前基准；失败不会换用另一来源或追加排除区。
+确认是预期画面更新后，逐图审阅真实 reference 候选并替换对应基准，即使变化在比较容差内也不恢复旧图。
+比较入口、遮罩、备用动画相位、保留原因及待验证项见 [截图与动画比较清点](docs/visual-comparison-policy.md)。
+
 ## CI
 
 `ios-simulator.yml` 是无需自定义 Secrets 的基础冒烟工作流。PR、master 推送还会执行 `ios-full.yml` 的静态截图比较和当前未隔离的 20 组录屏；其余 5 组列在 [隔离目录](ios/full/quarantined/README.md)，不计为通过。其中登录场景需要下文列出的测试账号 Secrets。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
