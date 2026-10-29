@@ -1,6 +1,74 @@
 # iOS 拼三张排行榜单次点击调查（#23）
 
-## 本轮结论与边界
+## 2026-10-29 需求与当前提交复核
+
+重新读取 GitHub Issue #23 正文与评论列表：正文仍为 2026-10-28 的调查要求，评论为空。
+复核开始时工作树干净，HEAD 为 `e3596e045230a7773d610445bdfc21979d4b8707`，
+已包含下述首轮修复；`origin/master` 仍为基线 `026e21ecd6ac31edcd66d55eb44323cee39ea8f1`。
+没有 MERGE_HEAD 或冲突。主分支没有另一个更新可替代该修复；本次保留全部已有代码和测试，
+没有执行合并、提交、重置或修改 Git 配置。
+再次核对目标仓库及适用子目录，没有 AGENTS.md、AGENTS.txt、DEVELOPMENT.md 或 `.codegraph/`；
+已重读 README.md 和两个 iOS 工作流。
+
+### 当前提交的远端状态
+
+GitHub 返回该 HEAD 的完整回归为[运行 40738293032](https://github.com/appcookie/clrn-pg/actions/runs/40738293032)。
+读取排行榜分片、唯一失败的原生分片及汇总门禁日志，确认实际检出的是 PR #30 的临时合并提交
+`106e4fc2fa82a4fb2f2d5b679e263be6c0d362d7`，即将上述 HEAD 合入上述基线。
+两个原生分片均记录固定 Release `ios-staging-36-1-c3ff78c66c7a`、应用提交
+`c3ff78c66c7aedd586a66c9b09e8849497565365`，设备为 iPhone 16 / iOS 18.5，
+使用 `compare` 与 `IOS_ANIMATION_RECORD_ONLY=1`。
+
+| UTC / 检查 | 本次读取的日志或接口结果 |
+| --- | --- |
+| 04:06:17.720 | `animation-22` 开始排行榜入场 simctl 录屏流程；不等于编码首帧时间 |
+| 04:06:31.644 | 进入目标按钮的单次点击准备；不等于实际 tap 请求时间 |
+| 04:06:41.322 | 驱动点击返回后的“游戏已点击”日志 |
+| 04:06:56.320 | 执行 `leaderboard` 静态截图，已越过原有面板就绪断言 |
+| 04:07:23.444 | 开始排行榜退场录屏流程 |
+| 04:26:18.280 | `animation-22` 用例 1 passed；后续录屏有效性门禁也成功 |
+| `proxy-check` | success |
+| 基础模拟器工作流 40738293557 | success |
+| 完整截图与录像汇总门禁 | failure，不能标为整体恢复 |
+
+排行榜日志来自[作业 123199473651](https://github.com/appcookie/clrn-pg/actions/runs/40738293032/job/123199473651)。
+这是一次实际 CI 原生模拟器运行结果，不是本地用例收集；record-only 仍不代表动画效果比较或基准批准。
+当前完整回归唯一失败的原生分片为
+[德州 animation-11 / 作业 123124497010](https://github.com/appcookie/clrn-pg/actions/runs/40738293032/job/123124497010)：
+`drawer-menu-item-card_rank` 准备阶段在 `connectedObservation` 等待 120 秒未恢复，
+堆栈为 `gameTapCurrent → animateGamePanel → gamePreGame:184`；没有“游戏已点击”完成日志。
+它不经过本次新增的排行榜条件分支。保持其失败，不延长超时、不补点，也不扩展本 Issue 去修改该路径。
+代理末尾汇总不能证明此失败的运行时根因。
+
+### 仍缺少的附件证据
+
+已重新读取原失败作业日志，并再次请求原产物 `12821894690`，同时请求了当前排行榜产物
+[`12873038258`](https://github.com/appcookie/clrn-pg/actions/runs/40738293032/artifacts/12873038258)
+和当前德州失败产物
+[`12869041136`](https://github.com/appcookie/clrn-pg/actions/runs/40738293032/artifacts/12869041136)。
+下载接口均返回 ZIP 链接，但本地请求下载主机仍报 `Could not resolve host`。
+因此本次没有读取这些 ZIP 中的原片、截图、控件树、recorder-process、输入/语义附件或 build-info.json。
+接口绑定排行榜产物到 HEAD `e3596e0`，ZIP SHA-256 为
+`f4a829b3334ab60dc606c123c52578e5709a8b00d9936d1ebfe06edd562d57b2`；
+这是接口记录，尚未对下载字节独立验算。包 SHA-256 也尚未从 build-info.json 独立核实。
+
+上述新日志支持“本次排行榜用例执行成功”，仍不足以重建实际点击时刻、坐标、媒体 PTS 与连接状态的完整对应，
+更不能倒推原失败的根因或批准旧截图。保留首轮已通过隔离回归证实的同步修复，交由宿主验证；
+附件审阅与完整门禁继续保留未完成/未通过状态，不能据此自动关单。
+
+### 本次本地检查
+
+- `npm ci --offline` 使用已有缓存成功；没有修改依赖或锁文件。
+- `npm run check` 类型检查成功；508 项单元测试中 488 项通过，20 项均因本地端口
+  `listen EPERM: operation not permitted 127.0.0.1` 失败，已读取全部失败堆栈。
+- 单独重跑 `leaderboard-entrance`、`game-panel-animation`、`game-controls` 的 36 项隔离测试全部通过。
+- 单独原生用例收集成功：184 项、13 个文件；不表示设备运行通过。
+- `python3 -m venv e2e/.venv` 和固定 requirements 安装成功（已有 `mitmproxy==12.2.3`）。
+  `npm run check:python` 在完成 `ios/full` 的 26 项测试后，于 `e2e/mitmproxy` 的真实 HTTP
+  集成测试绑定 127.0.0.1 时遇到 `PermissionError: [Errno 1] Operation not permitted`，该组 15 项中 1 项错误；
+  后续组未执行。完整 Python 检查未通过，交由宿主运行固定检查，不跳过失败测试。
+
+## 首轮结论与边界（以下保留首轮记录）
 
 基线为 `026e21ecd6ac31edcd66d55eb44323cee39ea8f1`。开始时工作树干净，HEAD 与基线相同，
 没有 MERGE_HEAD、冲突或已合入的主分支更新。本轮不执行合并或提交。
