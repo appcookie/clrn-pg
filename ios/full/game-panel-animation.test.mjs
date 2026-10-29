@@ -19,6 +19,31 @@ const timeout = {
   text: 'Connection Timeout',
 };
 
+test('拼三张排行榜预热期间位置变化，实际点击须使用录制中的稳定位置', async () => {
+  const target = { ...button, res: 'zhajinhua-learder-borard-button' };
+  let recording = false, reads = 0;
+  const taps = [];
+  const device = {
+    screenSize: screen,
+    prepareTransientCapture: async () => {},
+    nodes: async () => [target],
+    inputObservation: async () => {
+      assert.equal(recording, true);
+      reads++;
+      return [{ ...target, bounds: { ...target.bounds, x: reads === 1 ? 40 : 50 } }];
+    },
+    input: { tap: async point => { taps.push({ point, reads, recording }); } },
+  };
+  await animateGamePanel(device, 'zhajinhua', 'leaderboard', target.res, target.bounds,
+    { attach: async () => {} }, 'enter', 'videoFrames', [], undefined, [],
+    async (_d, _n, _i, _r, trigger) => {
+      recording = true;
+      await trigger();
+      recording = false;
+    });
+  assert.deepEqual(taps, [{ point: { x: 65, y: 40 }, reads: 3, recording: true }]);
+});
+
 for (const [name, resource] of [
   ['renew', 'renew-popup-close-button'],
   ['theme', 'game-settings-close-button'],
