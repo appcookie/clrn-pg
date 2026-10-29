@@ -12,6 +12,7 @@ function keyboardDevice() {
   const device = {
     screenSize: { width: 1000, height: 2000 },
     wait: async () => {},
+    waitSnapshot: async () => device.nodes(),
     info: async selector => node(selector.res),
     nodes: async () => [...controls, ...(keyboardVisible ? [{
       clazz: 'XCUIElementTypeKeyboard', bounds: { x: 0, y: 1300, width: 1000, height: 700 }, children: [],

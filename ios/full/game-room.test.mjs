@@ -23,8 +23,11 @@ function fixture(first) {
     presses++;
     if (presses === 1 && first === 'pending')
       attempts.push({ sequence: 1, completed: false, status: null, ok: null });
-    if (presses === 1 && first === 'failed')
-      attempts.push({ sequence: 1, completed: true, status: 503, ok: false });
+    if (presses === 1 && ['failed', 'transport', 'bad-http-ok'].includes(first))
+      attempts.push({ sequence: 1, completed: true, status: first === 'transport' ? 0 : 503,
+        ok: first === 'bad-http-ok', responseSource: first === 'transport' ? 'none' : 'upstream',
+        failureCategory: first === 'transport' ? 'proxy-connection' : 'upstream-http',
+        failureReason: first === 'transport' ? 'connection-refused' : null });
     if (presses === 1 && first === 'succeeded') currentRoom = room;
     if (presses === 2) currentRoom = room;
   };
@@ -39,10 +42,11 @@ test('首次点击未发出建房请求且原表单仍可操作时只补点一�
 });
 
 test('建房请求待响应或已失败时不得重复提交', async () => {
-  for (const state of ['pending', 'failed']) {
+  for (const state of ['pending', 'failed', 'transport', 'bad-http-ok']) {
     const value = fixture(state);
     await assert.rejects(submitGameRoom(value.device, value.proxy, value.press,
-      { firstMs: 0, finalMs: 0 }), /已发出|HTTP 503/);
+      { firstMs: 0, finalMs: 0 }), state === 'transport'
+      ? /HTTP 0.*响应归属 none.*proxy-connection.*connection-refused/ : /已发出|HTTP 503/);
     assert.equal(value.presses(), 1, '不得重复可能已经生效的建房请求');
   }
 });

@@ -5,12 +5,61 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 from mitmproxy import http, websocket
+from mitmproxy.flow import Error
 from wsproto.frame_protocol import Opcode
 from test_network_observer import flow
 from transport_diagnostics import TransportDiagnostics
 
 
 class TransportTests(unittest.TestCase):
+    def test_creation_tls_failure_is_correlated_by_connection_not_host(self):
+        for side in ('client', 'server'):
+            with self.subTest(side=side):
+                diagnostics = TransportDiagnostics()
+                request = flow('/v3/pay_action/do?token=private-query', 'POST', {'secret': 'private-body'})
+                request.metadata['ios_sequence'] = 7
+                request.server_conn.timestamp_tcp_setup = 10
+                diagnostics.request(request)
+                context = SimpleNamespace(client=request.client_conn, server=request.server_conn)
+                diagnostics.tls_failure(side, SimpleNamespace(context=context))
+                request.error = Error('private-tls-error')
+                diagnostics.response(request, hook='error')
+                event = diagnostics.snapshot()['httpEvents'][-1]
+                self.assertEqual(event['failureCategory'], f'{side}-tls')
+                self.assertEqual(event['sequence'], 7)
+                self.assertTrue(event['serverTcpEstablished'])
+                self.assertFalse(event['serverTlsEstablished'])
+                self.assertEqual(event['responseSource'], 'none')
+                self.assertEqual(event['status'], 0)
+                self.assertIsNotNone(datetime.fromisoformat(event['requestAtUtc']))
+                self.assertIsNotNone(datetime.fromisoformat(event['completedAtUtc']))
+                other = flow('/v3/pay_action/do', 'POST')
+                diagnostics.request(other)
+                other.error = Error('private-tls-error')
+                diagnostics.response(other, hook='error')
+                self.assertEqual(diagnostics.snapshot()['httpEvents'][-1]['failureCategory'], 'unknown',
+                    '同主机其他连接的 TLS 失败不能归到本次建房请求')
+                self.assertNotIn('private', json.dumps(diagnostics.snapshot()))
+
+    def test_creation_fixture_502_is_not_an_upstream_502_and_unrecognized_text_stays_unknown(self):
+        diagnostics = TransportDiagnostics()
+        request = flow('/v3/pay_action/do', 'POST')
+        request.metadata['ios_mocked'] = True
+        diagnostics.request(request)
+        request.response = http.Response.make(502, b'private-error-response')
+        diagnostics.response(request)
+        event = diagnostics.snapshot()['httpEvents'][-1]
+        self.assertEqual(event['responseSource'], 'fixture')
+        self.assertEqual(event['failureCategory'], 'fixture-http')
+        request = flow('/v3/pay_action/do', 'POST')
+        diagnostics.request(request)
+        request.error = Error('private-body mentions TLS timeout connection refused')
+        diagnostics.response(request, hook='error')
+        event = diagnostics.snapshot()['httpEvents'][-1]
+        self.assertEqual(event['failureCategory'], 'unknown')
+        self.assertIsNone(event['failureReason'])
+        self.assertNotIn('private', json.dumps(diagnostics.snapshot()))
+
     def test_profile_diagnostics_redact_identity_and_only_keep_response_shape(self):
         diagnostics = TransportDiagnostics()
         identifier = '12345678-1234-4234-8234-123456789abc'

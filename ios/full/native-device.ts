@@ -158,8 +158,9 @@ export class NativeDevice {
       && (selector.clickable === undefined || !selector.clickable || /Button|Link|Cell/.test(node.clazz))
       && (selector.scrollable === undefined || !selector.scrollable || /ScrollView|CollectionView|Table/.test(node.clazz));
   }
-  async info(selector: NativeSelector): Promise<NativeNode> {
-    const node = (await this.nodes()).find(item => this.matches(item, selector));
+  /** 仅在没有界面操作的连续检查间显式传递快照，不跨操作缓存控件。 */
+  async info(selector: NativeSelector, snapshot?: NativeNode[]): Promise<NativeNode> {
+    const node = (snapshot ?? await this.nodes()).find(item => this.matches(item, selector));
     if (!node) throw new ElementNotFound(`找不到原生控件：${JSON.stringify(selector)}`);
     return node;
   }
@@ -270,10 +271,15 @@ export class NativeDevice {
     };
   }
   async wait(selector: NativeSelector, options: { timeout?: number; state?: 'gone' | 'visible' } = {}) {
+    await this.waitSnapshot(selector, options);
+  }
+  /** 返回满足条件的那次观测，供后续无界面操作的检查显式复用。 */
+  async waitSnapshot(selector: NativeSelector, options: { timeout?: number; state?: 'gone' | 'visible' } = {}) {
     const deadline = Date.now() + (options.timeout ?? this.timeout);
     do {
-      const found = (await this.nodes()).find(node => this.matches(node, selector));
-      if (options.state === 'gone' ? !found : found) return;
+      const nodes = await this.nodes();
+      const found = nodes.find(node => this.matches(node, selector));
+      if (options.state === 'gone' ? !found : found) return nodes;
       await delay(250);
     } while (Date.now() < deadline);
     throw new ElementNotFound(`等待控件${options.state === 'gone' ? '消失' : '出现'}超时：${JSON.stringify(selector)}`);

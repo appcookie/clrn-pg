@@ -13,18 +13,19 @@ import { fullyInside, intersectBounds, nativeViewport, pointInside } from './nat
 import { waitForClubReady } from './guest-club-ready';
 export { dismissKeyboard } from './keyboard';
 
-export async function reveal(device: NativeDevice, selector: NativeSelector, fullyVisible = false) {
-  for (let attempt = 0; attempt < 10; attempt++) {
+export async function reveal(device: NativeDevice, selector: NativeSelector, fullyVisible = false): Promise<NativeNode[]> {
+  for (let attempt = 0; ; attempt++) {
     let geometry: ReturnType<typeof nativeViewport> | undefined;
     const screen = { x: 0, y: 0, width: device.screenSize.width,
       height: device.screenSize.height * (fullyVisible ? 0.93 : 0.98) };
     try {
-      await device.wait(selector, { timeout: attempt === 0 ? 5000 : 1000 });
-      const target = await device.info(selector);
-      geometry = nativeViewport(await device.nodes(), target, screen);
+      // 等待、控件匹配及祖先裁切检查共享同一次真实观测，滑动后重新读取。
+      const nodes = await device.waitSnapshot(selector, { timeout: attempt === 0 ? 5000 : 1000 });
+      const target = await device.info(selector, nodes);
+      geometry = nativeViewport(nodes, target, screen);
       const bounds = geometry.node.bounds;
       if (fullyVisible ? fullyInside(bounds, geometry.viewport)
-        : pointInside({ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }, geometry.viewport)) return;
+        : pointInside({ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }, geometry.viewport)) return nodes;
     } catch (error) { if ((error as { code?: string }).code !== 'no such element') throw error; }
     if (attempt === 9) throw new Error(`滚动后仍未显示控件：${JSON.stringify(selector)}`);
     await device.hideKeyboard();
@@ -44,12 +45,10 @@ export async function reveal(device: NativeDevice, selector: NativeSelector, ful
       x2: x + width * 0.97, y2: y + height * (upward ? 0.2 : 0.85), duration: 600 });
   }
 }
-/** Seed the first real observation before polling; a slow first XCTest tree is
- * not evidence of movement. Still require a later, enabled observation to agree.
- */
+/** 首次真实观测完成后再计算稳定等待时间，必须另读一次启用状态及位置。 */
 export async function stableNativeTarget(device: Pick<NativeDevice, 'info'>, identifier: string,
-  { timeout = 10_000, interval = 200 } = {}): Promise<NativeNode> {
-  let target = await device.info({ res: identifier });
+  { timeout = 10_000, interval = 200, initialTarget }: { timeout?: number; interval?: number; initialTarget?: NativeNode } = {}): Promise<NativeNode> {
+  let target = initialTarget ?? await device.info({ res: identifier });
   const deadline = Date.now() + timeout;
   for (;;) {
     await delay(interval);
@@ -67,9 +66,13 @@ export async function stableNativeTarget(device: Pick<NativeDevice, 'info'>, ide
   }
 }
 export async function tap(device: NativeDevice, identifier: string) {
-  await reveal(device, { res: identifier });
-  const target = await stableNativeTarget(device, identifier);
-  const nodes = await device.nodes();
+  let nodes = await reveal(device, { res: identifier });
+  const initialTarget = await device.info({ res: identifier }, nodes);
+  const target = await stableNativeTarget({ info: async selector => {
+    nodes = await device.nodes();
+    return device.info(selector, nodes);
+  } }, identifier, { initialTarget });
+  // 最后一次稳定观测同时用于点击几何检查，不能混用更早的祖先或横幅位置。
   const { node, viewport } = nativeViewport(nodes, target, { x: 0, y: 0, ...device.screenSize });
   const { bounds } = node;
   const warning = nodes.find(node => node.res === 'switch-to-production-tip-container');
