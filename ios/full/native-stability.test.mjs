@@ -58,3 +58,38 @@ test('关闭后慢速原生缺失查询必须完成，连续两次缺失才确�
       assert.equal(current, null);
     }, { timeout: 0, interval: 0 }));
 });
+
+test('重连恢复晚于布局预算时，重新取得两份连续一致的恢复后观测', async context => {
+  let now = 100;
+  context.mock.method(Date, 'now', () => now);
+  const sequence = [
+    { x: 10, recovered: false },
+    { x: 20, recovered: true },
+    { x: 30, recovered: false },
+    { x: 30, recovered: false },
+  ];
+  let calls = 0;
+  const compared = [];
+  const result = await stableNativeObservation(async () => {
+    if (calls === 1) now += 20;
+    return sequence[calls++];
+  }, (before, current) => {
+    compared.push([before.x, current.x]);
+    assert.equal(before.x, current.x);
+  }, { timeout: 10, interval: 0, restartOn: current => current.recovered });
+  assert.equal(calls, 4, '恢复后的单份观测不能直接作为稳定结果');
+  assert.deepEqual(compared, [[20, 30], [30, 30]], '不能跨越重连比较旧布局');
+  assert.equal(result.x, 30);
+});
+
+test('恢复后的真实位移仍受稳定预算约束，驱动错误继续传播', async () => {
+  let calls = 0;
+  await assert.rejects(stableNativeObservation(async () => ({
+    x: calls++, recovered: calls === 2,
+  }), (before, current) => assert.equal(before.x, current.x),
+  { timeout: 0, interval: 0, restartOn: current => current.recovered }));
+  const error = new Error('原生观测失败');
+  await assert.rejects(stableNativeObservation(async () => {
+    throw error;
+  }, () => {}, { initial: {}, interval: 0, restartOn: () => true }), actual => actual === error);
+});

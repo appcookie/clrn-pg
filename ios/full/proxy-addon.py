@@ -210,7 +210,7 @@ class IosVisualProxy:
             if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
                 flow.response = http.Response.make(403, b'Forbidden')
             else:
-                flow.response = http.Response.make(200, json.dumps(self.transport.snapshot()).encode(),
+                flow.response = http.Response.make(200, json.dumps(self.transport_snapshot()).encode(),
                     {'Content-Type': 'application/json'})
             return
         self.transport.request(flow)
@@ -450,6 +450,20 @@ class IosVisualProxy:
                 'coin': 100 if currency == 'coin' else 0,
                 'diamond': 5 if currency == 'currency_diamond' else 0,
                 'energy': 10 if currency == 'energy' else 0}}}}
+
+    def transport_snapshot(self):
+        """区分连接仍活跃和当前房间已订阅，只导出计数，不导出房间或玩家身份。"""
+        snapshot = self.transport.snapshot()
+        if self.game_session and self.game_session.room:
+            from replay_control import replay_readiness
+            game = self.game_session.game_type
+            replay = self.game.texas if game == 'texas_holdem' else self.game.replay
+            try:
+                snapshot['roomSubscription'] = replay_readiness(
+                    replay, game, self.game_session.room['roomId'])
+            except ValueError:
+                snapshot['roomSubscription'] = {'unavailable': True}
+        return snapshot
 
 
 addons = [IosVisualProxy()]
