@@ -380,12 +380,12 @@
         "start": {
           "column": 4,
           "line": 23,
-          "position": 906
+          "position": 891
         },
         "end": {
           "column": 5,
           "line": 32,
-          "position": 1365
+          "position": 1350
         }
       },
       {
@@ -393,12 +393,12 @@
         "start": {
           "column": 4,
           "line": 25,
-          "position": 861
+          "position": 846
         },
         "end": {
           "column": 5,
           "line": 34,
-          "position": 1320
+          "position": 1305
         }
       }
     ],
@@ -452,33 +452,33 @@
       {
         "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
         "start": {
-          "column": 107,
+          "column": 92,
           "line": 17,
-          "position": 691
+          "position": 676
         },
         "end": {
           "column": 5,
           "line": 34,
-          "position": 1320
+          "position": 1305
         }
       },
       {
         "file": "visual/cases/zhajinhua/mitmproxy/addon.py",
         "start": {
-          "column": 92,
+          "column": 77,
           "line": 14,
-          "position": 548
+          "position": 539
         },
         "end": {
           "column": 5,
           "line": 31,
-          "position": 1177
+          "position": 1168
         }
       }
     ],
     "tokens": 96,
     "lines": 18,
-    "fragment": "74ab1562dec656a20b7fa8dbe1a46d03ef6871359e96637cf0151e62e81e4d4e",
+    "fragment": "0a0a0b485555375aa139b97f59d4ac2c4877f51dabed4066528c0e1960313950",
     "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
   },
   {
@@ -490,26 +490,26 @@
         "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
         "start": {
           "column": 26,
-          "line": 44,
-          "position": 1688
+          "line": 43,
+          "position": 1634
         },
         "end": {
           "column": 25,
-          "line": 57,
-          "position": 2222
+          "line": 56,
+          "position": 2168
         }
       },
       {
         "file": "visual/cases/zhajinhua/mitmproxy/addon.py",
         "start": {
           "column": 37,
-          "line": 39,
-          "position": 1495
+          "line": 38,
+          "position": 1447
         },
         "end": {
           "column": 25,
-          "line": 52,
-          "position": 2029
+          "line": 51,
+          "position": 1981
         }
       }
     ],
@@ -2084,7 +2084,7 @@
   {
     "tool": "eslint",
     "file": "ios/full/game-controls.ts",
-    "line": 179,
+    "line": 184,
     "column": 8,
     "rule": "complexity",
     "message": "Async function 'gameTap' has a complexity of 23. Maximum allowed is 10.",
@@ -2094,7 +2094,7 @@
   {
     "tool": "eslint",
     "file": "ios/full/game-controls.ts",
-    "line": 212,
+    "line": 217,
     "column": 9,
     "rule": "max-depth",
     "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
@@ -2414,7 +2414,7 @@
   {
     "tool": "eslint",
     "file": "ios/full/network-routes.ts",
-    "line": 43,
+    "line": 40,
     "column": 7,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
@@ -3434,7 +3434,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 106,
+    "line": 60,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3444,7 +3444,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 107,
+    "line": 71,
     "column": 5,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
@@ -3454,7 +3454,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 116,
+    "line": 70,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3464,7 +3464,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 117,
+    "line": 78,
     "column": 5,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
@@ -3474,7 +3474,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 123,
+    "line": 77,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3484,7 +3484,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 124,
+    "line": 99,
     "column": 5,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
@@ -3494,17 +3494,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 145,
-    "column": 5,
-    "rule": "architecture/no-network-fabrication",
-    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
-    "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
-    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
-  },
-  {
-    "tool": "eslint",
-    "file": "visual/src/support/networkMocks.ts",
-    "line": 153,
+    "line": 107,
     "column": 11,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3514,7 +3504,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 157,
+    "line": 111,
     "column": 11,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3534,7 +3524,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 163,
+    "line": 117,
     "column": 11,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3554,7 +3544,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 170,
+    "line": 124,
     "column": 11,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3564,7 +3554,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 173,
+    "line": 127,
     "column": 11,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3574,7 +3564,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 177,
+    "line": 131,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3584,7 +3574,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 230,
+    "line": 184,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3594,7 +3584,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 234,
+    "line": 188,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3604,7 +3594,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 243,
+    "line": 197,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3614,7 +3604,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 246,
+    "line": 200,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3624,7 +3614,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 249,
+    "line": 203,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3634,7 +3624,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 268,
+    "line": 221,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3644,7 +3634,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 270,
+    "line": 223,
     "column": 61,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
@@ -3654,7 +3644,7 @@
   {
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
-    "line": 270,
+    "line": 223,
     "column": 9,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
@@ -3685,40 +3675,10 @@
     "tool": "eslint",
     "file": "visual/src/support/networkMocks.ts",
     "line": 61,
-    "column": 9,
-    "rule": "architecture/no-network-fabrication",
-    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
-    "anchor": "6b81bdeaae0ada41e47b2644d5c303438a5dc44b189d69a24c9d133792645987",
-    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
-  },
-  {
-    "tool": "eslint",
-    "file": "visual/src/support/networkMocks.ts",
-    "line": 62,
     "column": 5,
     "rule": "architecture/no-network-fabrication",
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
     "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
-    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
-  },
-  {
-    "tool": "eslint",
-    "file": "visual/src/support/networkMocks.ts",
-    "line": 83,
-    "column": 9,
-    "rule": "architecture/no-network-fabrication",
-    "message": "禁止在 JS/TS 中新增网络响应伪造入口 route；响应实现应放在 Python 代理层。",
-    "anchor": "3e8625a6314979debb7c928544c92d0172a0cd82b57491c50f5771da0623f10e",
-    "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
-  },
-  {
-    "tool": "eslint",
-    "file": "visual/src/support/networkMocks.ts",
-    "line": 86,
-    "column": 12,
-    "rule": "architecture/no-network-fabrication",
-    "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
-    "anchor": "13e998df57483f1ca0b44072f7c406deb2b890c5dc92bfec6762ecae16cbc821",
     "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
   },
   {
@@ -3784,7 +3744,7 @@
   {
     "tool": "ruff",
     "file": "visual/cases/game-record/mitmproxy/addon.py",
-    "line": 53,
+    "line": 52,
     "column": 9,
     "rule": "C901",
     "message": "`control` is too complex (12 > 10)",
@@ -3794,7 +3754,7 @@
   {
     "tool": "ruff",
     "file": "visual/cases/game-record/mitmproxy/addon.py",
-    "line": 92,
+    "line": 91,
     "column": 9,
     "rule": "C901",
     "message": "`fixture` is too complex (29 > 10)",
@@ -3804,17 +3764,17 @@
   {
     "tool": "ruff",
     "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
-    "line": 122,
+    "line": 120,
     "column": 9,
     "rule": "C901",
-    "message": "`request` is too complex (18 > 10)",
+    "message": "`request` is too complex (17 > 10)",
     "anchor": "6a95f92a15255350bac09c0d5983160713ae49736e8f3bd8409c44d03276f631",
     "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
   },
   {
     "tool": "ruff",
     "file": "visual/cases/texas-holdem/mitmproxy/addon.py",
-    "line": 46,
+    "line": 45,
     "column": 9,
     "rule": "C901",
     "message": "`control` is too complex (13 > 10)",
@@ -3834,7 +3794,7 @@
   {
     "tool": "ruff",
     "file": "visual/cases/zhajinhua/mitmproxy/addon.py",
-    "line": 41,
+    "line": 40,
     "column": 9,
     "rule": "C901",
     "message": "`control` is too complex (12 > 10)",

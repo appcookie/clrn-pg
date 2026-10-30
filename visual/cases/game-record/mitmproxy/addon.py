@@ -12,7 +12,7 @@ from data import CLUB, HOUSE, PLAYER, all_records, detail, records, replay, room
 
 # mitmdump 将 addon 目录加入 sys.path；三个独立代理共用字段覆盖工具。
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'e2e' / 'mitmproxy'))
-from response_overrides import VisualNetwork, is_staging, prepare_profiles, patch_profiles, patch_version  # noqa: E402
+from response_overrides import is_staging, prepare_profiles, patch_profiles, patch_version  # noqa: E402
 
 CONTROL_HOST = 'test-mitmproxy.invalid'
 MODES = ('empty', 'list', 'no-hands', 'paged', 'list-error', 'detail-error', 'delete-error')
@@ -33,7 +33,6 @@ class GameRecordProxy:
     def __init__(self):
         self.token = os.environ['MITMPROXY_CONTROL_TOKEN']
         self.scenario = None
-        self.network = VisualNetwork()
         self.user_id = None
         self.version = 'legacy'
         self.mode = 'empty'
@@ -172,7 +171,6 @@ class GameRecordProxy:
     def response(self, flow):
         if self.scenario != 'visual-stable' or not is_staging(flow.request.host):
             return
-        self.stabilized += self.network.response(flow)
         if not self.user_id:
             return
         path = urlsplit(flow.request.path).path
@@ -193,9 +191,6 @@ class GameRecordProxy:
         url = urlsplit(flow.request.path)
         path, method = url.path, flow.request.method
         if self.user_id and prepare_profiles(flow, self.user_id, (PLAYER, HOUSE)):
-            return
-        if self.network.request(flow):
-            self.stabilized += 1
             return
         try:
             body = json.loads(flow.request.content or b'{}')

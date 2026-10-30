@@ -14,7 +14,7 @@ from ui_states import UIStates
 
 # mitmdump 将 addon 目录加入 sys.path；三个独立代理共用字段覆盖工具。
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'e2e' / 'mitmproxy'))
-from response_overrides import VisualNetwork, is_staging, prepare_profiles, patch_profiles, patch_version  # noqa: E402
+from response_overrides import is_staging, prepare_profiles, patch_profiles, patch_version  # noqa: E402
 
 from replay_control import replay_readiness, replay_error  # noqa: E402
 
@@ -35,7 +35,6 @@ class TexasVisualProxy:
     def __init__(self):
         self.token = os.environ['MITMPROXY_CONTROL_TOKEN']
         self.scenario = None
-        self.network = VisualNetwork()
         self.proxied_requests = 0
         self.stabilized_requests = 0
         self.texas = TexasReplay()
@@ -101,7 +100,6 @@ class TexasVisualProxy:
 
     def response(self, flow):
         if self.scenario == 'visual-stable' and is_staging(flow.request.host):
-            self.stabilized_requests += self.network.response(flow)
             path = urlsplit(flow.request.path).path
             if self.texas.room_id and path == '/v10/profile/users':
                 self.stabilized_requests += patch_profiles(flow, self.texas.self_id,
@@ -127,9 +125,6 @@ class TexasVisualProxy:
         if self.scenario != 'visual-stable' or not is_staging(flow.request.host):
             return
         if self.texas.room_id and prepare_profiles(flow, self.texas.self_id, TABLE_PLAYER_IDS):
-            return
-        if self.network.request(flow):
-            self.stabilized_requests += 1
             return
         path = urlsplit(flow.request.path).path
         try:

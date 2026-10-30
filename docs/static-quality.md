@@ -61,7 +61,7 @@ dependency-cruiser 检查所有本地 JS/TS 导入（含重导出及 type-only�
 
 ## 迁移清单与审查
 
-初始清单共 271 项：ESLint 213、Ruff 13、依赖 3、重复 42。每项都有原因。JS/Python 使用文件、行列、规则、诊断和该行源码 SHA-256；依赖使用规则、源/目标及完整循环路径；重复使用两侧行列/字符位置、token/行数及片段 SHA-256。新增违规失败，旧项消失也会提示删除失效条目。清单比较包含具体内容，不能用“某文件允许 N 个错误”给新违规腾额度。
+初始清单共 271 项：ESLint 213、Ruff 13、依赖 3、重复 42。合入下述最新 master 并逐项复核后，当前清单为 267 项，其中 ESLint 209 项。每项都有原因。JS/Python 使用文件、行列、规则、诊断和该行源码 SHA-256；依赖使用规则、源/目标及完整循环路径；重复使用两侧行列/字符位置、token/行数及片段 SHA-256。新增违规失败，旧项消失也会提示删除失效条目。清单比较包含具体内容，不能用“某文件允许 N 个错误”给新违规腾额度。
 
 修复历史问题后，手动删除对应条目，再运行检查。此清单故意严格：移动历史违规位置或修改诊断也不获得新例外，需在该次变更中消除违规。没有自动重建/扩大清单的命令；不得添加新例外、全局关闭规则、排除整个测试目录或删除原有断言。`assertShrinking` 还会比较已提交的清单，只允许保留完全相同的违规或删除。仅修改原因文字不改变违规身份。
 
@@ -70,6 +70,23 @@ dependency-cruiser 检查所有本地 JS/TS 导入（含重导出及 type-only�
 `quality/static.test.mjs` 与 `quality/python.test.mjs` 在临时目录构造复杂函数、过深嵌套、循环、越层导入（含 type-only）、未解析导入、非法 Mock 和新增重复；还验证已有重复的第三份拷贝、合法单测、数据文本、清单扩张/移动/变更、解析错误、ESLint 内联禁用以及行级/文件级 noqa。静态负例放在 `.cache/worktree` 路径，覆盖宿主工作树布局下的绝对报告路径。它们只解析样例，不执行样例代码，不运行设备或业务网络。
 
 工具定义参见 [ESLint complexity](https://eslint.org/docs/latest/rules/complexity)、[max-depth](https://eslint.org/docs/latest/rules/max-depth)、[Ruff C901](https://docs.astral.sh/ruff/rules/complex-structure/)、[dependency-cruiser](https://github.com/sverweij/dependency-cruiser) 和 [jscpd](https://github.com/kucherenko/jscpd)。
+
+## 首次引入期间合入最新 master 的复核
+
+2026-10-30 合入 `299991928aba4e986f59e8389a1c32d5704d4765`，目标分支尚未引入本门禁和迁移清单。该提交删除旧的单节点选线覆盖，并加强真实连接等待。保留上面的原始测量记录，另将合入后实测摘要保存于 [merge-measurement.json](../quality/merge-measurement.json)。
+
+本次重新审查首次引入的清单，删除四个已消失的选线伪造入口；其余 32 项变更均与该 master 源树的实际诊断逐项相符，没有为本轮新增代码建立例外：24 项 ESLint 仅位置变化，5 项 Ruff 的位置变化中包含德州请求复杂度从 18 降至 17，3 项重复记录受删除导入或前置代码影响而改变位置及片段。涉及 `game-controls.ts`、`network-routes.ts`、`networkMocks.ts` 和三个玩法的 Python 插件。清单总量由 271 减至 267。
+
+master 新增的多节点集成测试出现两处复杂度和三处嵌套超限。本轮按本地上游响应构造、协议头验证、候选列表交换和健康交换整理验证职责，保留所有节点、版本、方法、失败响应和业务夹具断言，没有将这些新增诊断放入历史清单。
+
+检查实现、工具版本、阈值、扫描范围、两项精确的适配器单测例外及负例均未放宽。首次引入的清单仍由实际目标分支审查；检查运行时使用工作流传入的目标提交作为 `QUALITY_BASE_SHA`。本次尚未提交的合并可按远端相同基准验证：
+
+```sh
+QUALITY_BASE_SHA=299991928aba4e986f59e8389a1c32d5704d4765 npm run check:all
+node scripts/measure-quality.mjs
+```
+
+合并提交创建后，本地默认使用已提交清单。`assertShrinking` 仍逐项拒绝向已提交基准新增、移动或修改例外；本次复核不增加自动刷新清单的入口。
 
 ## 本轮本地验证（2026-10-29）
 

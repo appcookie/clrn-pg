@@ -112,11 +112,11 @@ export async function recordNativeVideoFrames(device: NativeDevice, name: string
     const finished = new Promise<{ code: number | null; signal: string | null }>(resolve =>
       recorder.once('close', (code, signal) => resolve({ code, signal })));
     try {
-      // The first recorded frame took 12.6s on a real CI runner; allow up to 30s.
+      // 40880440669 的首帧耗时 40.4 秒；每次观察间隔 200 毫秒，最多等待 60 秒。
       for (let attempt = 0; !recordingStartedAt; attempt++) {
         if (failed) throw failed;
         if (recorder.exitCode !== null || attempt >= 300) throw new Error(`iOS 录屏未启动：${stderr}`);
-        await delay(100);
+        await delay(200);
       }
       // simctl documents this message as the first processed frame. Actual CI media
       // durations nevertheless differed from wall-clock recording time. This pre-roll
