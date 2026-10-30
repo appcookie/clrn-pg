@@ -6,20 +6,27 @@
     "node": ">=24"
   },
   "scripts": {
-    "check": "npm run typecheck && npm run test:unit && npm run test:ios:collect",
+    "check": "npm run check:static && npm run typecheck && npm run test:unit && npm run test:ios:collect",
     "test:ios": "node ios/run.mjs",
     "typecheck": "tsc --noEmit",
     "test:unit": "node --import tsx --test ios/*.test.mjs ios/full/*.test.mjs ios/full/functional/coverage.test.mjs scripts/*.test.mjs",
     "test:ios:collect": "playwright test --config ios/full/playwright.config.ts --list",
     "test:ios:full": "playwright test --config ios/full/playwright.config.ts",
-    "check:python": "node scripts/check-python.mjs"
+    "check:python": "node scripts/quality-check.mjs ruff && node --test quality/python.test.mjs && node scripts/check-python.mjs",
+    "check:static": "node scripts/quality-check.mjs eslint dependencies duplicates && node --test quality/static.test.mjs",
+    "check:all": "npm run check && npm run check:python",
+    "measure:quality": "node scripts/measure-quality.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
     "@types/node": "22.15.30",
     "@types/pngjs": "6.0.5",
+    "@typescript-eslint/parser": "8.71.1",
     "appium": "3.4.2",
+    "dependency-cruiser": "17.3.9",
+    "eslint": "10.12.0",
     "fast-xml-parser": "5.11.2",
+    "jscpd": "5.1.2",
     "pngjs": "7.0.0",
     "sharp": "0.34.5",
     "tsx": "4.20.3",

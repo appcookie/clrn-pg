@@ -1,0 +1,151 @@
+{
+  "sourceCommit": "026e21ecd6ac31edcd66d55eb44323cee39ea8f1",
+  "measuredAt": "2026-10-28T19:29:56.744Z",
+  "versions": {
+    "eslint": "10.12.0",
+    "@typescript-eslint/parser": "8.71.1",
+    "dependency-cruiser": "17.3.9",
+    "jscpd": "5.1.2",
+    "ruff": "ruff 0.15.12"
+  },
+  "limits": {
+    "jsComplexity": 10,
+    "jsMaxDepth": 3,
+    "pythonComplexity": 10,
+    "duplicateMinLines": 5,
+    "duplicateMinTokens": 70,
+    "duplicateMode": "mild"
+  },
+  "files": {
+    "js": 307,
+    "python": 40
+  },
+  "jsComplexity": {
+    "count": 4108,
+    "maximum": 107,
+    "aboveLimit": 109
+  },
+  "jsDepthBlocks": {
+    "count": 2238,
+    "maximum": 6,
+    "aboveLimit": 73
+  },
+  "pythonComplexity": {
+    "count": 292,
+    "maximum": 44,
+    "aboveLimit": 13
+  },
+  "networkFabrication": {
+    "count": 31,
+    "files": [
+      "ios/full/network-routes.ts",
+      "visual/src/support/networkMocks.ts"
+    ]
+  },
+  "architecture": {
+    "findings": [
+      {
+        "tool": "dependencies",
+        "rule": "no-circular",
+        "from": "ios/full/caret-mask.ts",
+        "to": "ios/full/screenshot.ts",
+        "cycle": [
+          {
+            "name": "ios/full/screenshot.ts",
+            "dependencyTypes": [
+              "local",
+              "type-only",
+              "import"
+            ]
+          },
+          {
+            "name": "ios/full/caret-mask.ts",
+            "dependencyTypes": [
+              "local",
+              "import"
+            ]
+          }
+        ]
+      },
+      {
+        "tool": "dependencies",
+        "rule": "no-ui-response-implementation",
+        "from": "ios/full/network-routes.ts",
+        "to": "visual/src/support/networkMocks.ts"
+      },
+      {
+        "tool": "dependencies",
+        "rule": "no-ui-response-implementation",
+        "from": "ios/full/proxy.ts",
+        "to": "ios/full/network-routes.ts"
+      }
+    ],
+    "measuredFiles": 333
+  },
+  "duplication": {
+    "clones": 42,
+    "duplicatedLines": 479,
+    "duplicatedTokens": 5687,
+    "lines": 30918,
+    "newClones": 0,
+    "newDuplicatedLines": 0,
+    "percentage": 1.5492593311339673,
+    "percentageTokens": 1.6754164236178624,
+    "sources": 342,
+    "tokens": 339438,
+    "formats": {
+      "javascript": {
+        "clones": 8,
+        "duplicatedLines": 64,
+        "duplicatedTokens": 983,
+        "lines": 10963,
+        "newClones": 0,
+        "newDuplicatedLines": 0,
+        "percentage": 0.583781811547934,
+        "percentageTokens": 0.7333412909193996,
+        "sources": 141,
+        "tokens": 134044
+      },
+      "python": {
+        "clones": 19,
+        "duplicatedLines": 294,
+        "duplicatedTokens": 3020,
+        "lines": 5191,
+        "newClones": 0,
+        "newDuplicatedLines": 0,
+        "percentage": 5.663648622616066,
+        "percentageTokens": 6.373997467285775,
+        "sources": 40,
+        "tokens": 47380
+      },
+      "typescript": {
+        "clones": 15,
+        "duplicatedLines": 121,
+        "duplicatedTokens": 1684,
+        "lines": 14764,
+        "newClones": 0,
+        "newDuplicatedLines": 0,
+        "percentage": 0.8195610945543214,
+        "percentageTokens": 1.065728353183895,
+        "sources": 161,
+        "tokens": 158014
+      }
+    },
+    "belowMinTokens": [
+      "ios/full/keyboard.ts",
+      "ios/full/record-only.ts",
+      "ios/full/record-states.ts",
+      "visual/cases/club/guest.ts",
+      "visual/src/support/requestError.ts"
+    ]
+  },
+  "legacyCounts": {
+    "no-circular": 1,
+    "no-ui-response-implementation": 2,
+    "jscpd": 42,
+    "complexity": 109,
+    "max-depth": 73,
+    "architecture/no-network-fabrication": 31,
+    "C901": 13
+  }
+}

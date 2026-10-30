@@ -32,6 +32,9 @@ on:
         default: ''
 permissions:
   contents: read
+env:
+  # 为依赖下载预留更长的有限重试窗口，避免短暂域名解析故障中断回归。
+  PIP_RETRIES: '10'
 jobs:
   plan:
     runs-on: ubuntu-latest
@@ -77,8 +80,12 @@ jobs:
         run: node ios/full/select-ci-matrix.mjs
   proxy-check:
     runs-on: ubuntu-latest
+    env:
+      QUALITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -90,6 +97,7 @@ jobs:
       - run: |
           python -m venv e2e/.venv
           e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
+      - run: npm run check:static
       - run: npm run check:python
   native:
     needs: [plan, proxy-check]

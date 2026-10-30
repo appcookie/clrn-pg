@@ -17,13 +17,14 @@ import { waitAbsent } from '../native-state';
 import { gameReady, gameScreenshot } from '../game-controls';
 import { cropMotionRegion } from '../motion-regions';
 import { comparePixels } from '../../visual.mjs';
-import { slotBannerSpinPoint, slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
+import { slotNoEnergyImage, slotNoEnergyRegions, slotReelRegions } from '../slot-regions';
 import { slotBackgroundMasks, slotHeadReference, verifySlotHeadGeometry } from '../slot-background';
 import { animationRecordOnly } from '../record-only';
 import { pressVerifiedSlotSpin } from '../slot-spin';
+import { pressSlotBanner } from '../slot-banner';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
-    || (process.env.IOS_LOCALE || 'en') !== 'en')) test('all three native slot reels and reward types animate from real spin responses', async ({}, testInfo) => {
+    || (process.env.IOS_LOCALE || 'en') !== 'en')) test('三个原生老虎机滚轮与各类奖励均由真实旋转响应驱动动画', async ({}, testInfo) => {
 
   // Seven independent native transitions plus login and loop recordings.
   test.setTimeout(2_700_000);
@@ -47,8 +48,8 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         readFileSync(join(await simulatorAppPath(), slotHeadReference.asset)), bannerMotion);
       await verifyLoopAnimation(device, 'hall-slot-banner', testInfo, [bannerMotion], [], { timeoutMs: 8000 });
       await captureMovingKeyframes(device, 'hall-slot-banner', testInfo, [bannerMotion], 32, undefined, 5);
-      /** 从登录大厅的真实横幅打开老虎机窗口。 */
-      const pressBanner = () => device!.input.tap(slotBannerSpinPoint(banner.bounds));
+      /** 录屏预热后重新定位大厅横幅，再执行一次真实点击。 */
+      const pressBanner = () => pressSlotBanner(device!, testInfo);
       await captureNativeTransition(device, 'slot-popup-enter', testInfo,
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressBanner, [], [], 0, 'videoFrames',
         undefined, undefined, ['slot-popup-enter-background.png', 'slot-popup-enter-overlap.png',
@@ -90,8 +91,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         screenBounds(device, { x: 0, y: 500, width: 720, height: 680 }), pressClose, [], [], 0, 'videoFrames',
         undefined, undefined, [], [], backgroundBannerMasks, [], exposedBannerMasks);
       await waitAbsent(device, { res: 'spin-button' });
-      const bannerAgain = await device.info({ res: 'slot-banner' });
-      await device.input.tap(slotBannerSpinPoint(bannerAgain.bounds));
+      await pressSlotBanner(device, testInfo);
       await device.wait({ res: 'spin-button' });
       // 控件树在弹层入场中途已出现；等不受滚轮图案影响的左边框停止移动后再点击。
       const reopened = slotReelRegions(await device.nodes());

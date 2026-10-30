@@ -247,3 +247,10 @@ export async function gameTapCurrent(device: AndroidDevice, res: string,
     return gameNodes(device);
   }, pointForTarget);
 }
+
+/** 返回确认连接正常的同一份原生树，并标明是否经历重连恢复。 */
+export async function gameConnectedObservation(device: AndroidDevice): Promise<{
+  nodes: NativeNode[]; recovered: boolean;
+}> {
+  return connectedObservation(device, 0);
+}

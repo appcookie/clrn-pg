@@ -16,7 +16,7 @@
       "id": "animation-2",
       "group": "social",
       "file": "tests/slot-animation.spec.ts",
-      "title": "all three native slot reels and reward types animate from real spin responses",
+      "title": "三个原生老虎机滚轮与各类奖励均由真实旋转响应驱动动画",
       "images": [
         "hall-slot-banner-1-first.png",
         "hall-slot-banner-1-moved.png",
