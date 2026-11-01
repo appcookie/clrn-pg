@@ -61,12 +61,7 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
       'Access-Control-Allow-Origin': 'https://app.test', 'Access-Control-Allow-Headers': 'authorization',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS', 'Access-Control-Allow-Credentials': 'true',
       'Vary': 'Origin', 'ETag': 'upstream-tag' });
-    const candidates = url.searchParams.has('without64') ? nodes.slice(1) : nodes;
-    response.end(incoming.method === 'OPTIONS' ? '' : JSON.stringify(url.pathname === '/node/v1/status'
-      ? { server_load: failed ? 'unavailable' : 'normal',
-        backend_delay: url.hostname === nodes[0] ? 1065 : 37, new_health: true }
-      : { ok: !failed, extra: 42, result: { servers: url.pathname.includes('/v12/') ? candidates
-        : Object.fromEntries(candidates.map((host, index) => [host, `192.0.2.${index + 1}`])) } }));
+    response.end(incoming.method === 'OPTIONS' ? '' : JSON.stringify(upstreamBody(url, nodes, failed)));
   });
   await new Promise<void>(resolve => upstream.listen(0, '127.0.0.1', resolve));
   const upstreamAddress = upstream.address();
@@ -112,43 +107,8 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
         });
         const fixtureBefore = fixtureRequests;
         for (const host of ['api.shafayouxi.org', ...nodes]) {
-          for (const version of [12, 13]) {
-            for (const method of ['GET', 'POST', 'OPTIONS']) {
-              for (const query of ['platform=ios', 'without64', 'failed']) {
-                const result = await fetch(host, `/public/v${version}/metadata/servers?${query}`, method);
-                const failed = query === 'failed' || host === nodes[2];
-                assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
-                assert.equal(result.headers['x-real-upstream'], 'yes');
-                assert.equal(result.headers['access-control-allow-origin'], 'https://app.test');
-                assert.equal(result.headers['access-control-allow-methods'], 'GET, POST, OPTIONS');
-                assert.equal(result.headers['access-control-allow-credentials'], 'true');
-                assert.equal(result.headers['vary'], 'Origin');
-                assert.equal(result.headers['etag'], 'upstream-tag');
-                if (method === 'OPTIONS') assert.equal(result.headers['access-control-allow-headers'], 'authorization');
-                else {
-                  const candidates = query === 'without64' ? nodes.slice(1) : nodes;
-                  assert.deepEqual(result.body, { ok: !failed, extra: 42, result: { servers: version === 12 ? candidates
-                    : Object.fromEntries(candidates.map((node, index) => [node, `192.0.2.${index + 1}`])) } });
-                }
-              }
-            }
-          }
-          for (const method of ['GET', 'OPTIONS']) {
-            for (const query of ['', '?failed']) {
-              const result = await fetch(host, `/node/v1/status${query}`, method);
-              const failed = query === '?failed' || host === nodes[2];
-              assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
-              assert.equal(result.headers['x-real-upstream'], 'yes');
-              assert.equal(result.headers['access-control-allow-origin'], 'https://app.test');
-              assert.equal(result.headers['access-control-allow-headers'], 'authorization');
-              assert.equal(result.headers['access-control-allow-methods'], 'GET, POST, OPTIONS');
-              assert.equal(result.headers['access-control-allow-credentials'], 'true');
-              assert.equal(result.headers['vary'], 'Origin');
-              assert.equal(result.headers['etag'], 'upstream-tag');
-              if (method === 'GET') assert.deepEqual(result.body, { server_load: failed ? 'unavailable' : 'normal',
-                backend_delay: host === nodes[0] ? 1065 : 37, new_health: true });
-            }
-          }
+          await assertCandidateResponses(fetch, nodes, host);
+          await assertHealthResponses(fetch, nodes, host);
         }
         assert.equal(fixtureRequests, fixtureBefore, '选线请求不能进入 Node 业务夹具桥');
         const transport = await proxy.command<{ tlsFailures: unknown[]; httpEvents: {
@@ -206,3 +166,65 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+/** 根据本地上游请求构造候选列表或健康响应，保留失败节点和未知字段。 */
+function upstreamBody(url: URL, nodes: string[], failed: boolean) {
+  if (url.pathname === '/node/v1/status') return {
+    server_load: failed ? 'unavailable' : 'normal',
+    backend_delay: url.hostname === nodes[0] ? 1065 : 37, new_health: true,
+  };
+  const candidates = url.searchParams.has('without64') ? nodes.slice(1) : nodes;
+  return { ok: !failed, extra: 42, result: { servers: url.pathname.includes('/v12/') ? candidates
+    : Object.fromEntries(candidates.map((host, index) => [host, `192.0.2.${index + 1}`])) } };
+}
+
+type UpstreamResponse = { status: number; headers: import('node:http').IncomingHttpHeaders; body: any };
+type FetchUpstream = (host: string, apiPath: string, method?: string, parseJson?: boolean) => Promise<UpstreamResponse>;
+
+/** 每种响应都必须保留真实上游身份、缓存字段和跨域协议字段。 */
+function assertUpstreamHeaders(result: UpstreamResponse) {
+  assert.equal(result.headers['x-real-upstream'], 'yes');
+  assert.equal(result.headers['access-control-allow-origin'], 'https://app.test');
+  assert.equal(result.headers['access-control-allow-headers'], 'authorization');
+  assert.equal(result.headers['access-control-allow-methods'], 'GET, POST, OPTIONS');
+  assert.equal(result.headers['access-control-allow-credentials'], 'true');
+  assert.equal(result.headers['vary'], 'Origin');
+  assert.equal(result.headers['etag'], 'upstream-tag');
+}
+
+/** 独立验证每个候选列表交换，不减少版本、方法或候选集合的覆盖。 */
+async function assertCandidateExchange(fetch: FetchUpstream, nodes: string[], host: string,
+  version: number, method: string, query: string) {
+  const result = await fetch(host, `/public/v${version}/metadata/servers?${query}`, method);
+  const failed = query === 'failed' || host === nodes[2];
+  assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
+  assertUpstreamHeaders(result);
+  if (method === 'OPTIONS') return;
+  const candidates = query === 'without64' ? nodes.slice(1) : nodes;
+  assert.deepEqual(result.body, { ok: !failed, extra: 42, result: { servers: version === 12 ? candidates
+    : Object.fromEntries(candidates.map((node, index) => [node, `192.0.2.${index + 1}`])) } });
+}
+
+async function assertCandidateResponses(fetch: FetchUpstream, nodes: string[], host: string) {
+  for (const version of [12, 13]) {
+    for (const method of ['GET', 'POST', 'OPTIONS']) {
+      for (const query of ['platform=ios', 'without64', 'failed']) {
+        await assertCandidateExchange(fetch, nodes, host, version, method, query);
+      }
+    }
+  }
+}
+
+/** 健康响应仍区分真实失败、慢节点和预检，不用固定健康值掩盖错误。 */
+async function assertHealthResponses(fetch: FetchUpstream, nodes: string[], host: string) {
+  for (const method of ['GET', 'OPTIONS']) {
+    for (const query of ['', '?failed']) {
+      const result = await fetch(host, `/node/v1/status${query}`, method);
+      const failed = query === '?failed' || host === nodes[2];
+      assert.equal(result.status, method === 'OPTIONS' ? 204 : failed ? 503 : 200);
+      assertUpstreamHeaders(result);
+      if (method === 'GET') assert.deepEqual(result.body, { server_load: failed ? 'unavailable' : 'normal',
+        backend_delay: host === nodes[0] ? 1065 : 37, new_health: true });
+    }
+  }
+}

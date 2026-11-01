@@ -188,3 +188,38 @@ class NativeNodeTests(unittest.IsolatedAsyncioTestCase):
         connection.websocket.messages.append(message)
         addon.websocket_message(connection)
         return message
+
+    async def test_房间订阅诊断只读且不泄露身份(self):
+        for game, stream in (('texas-holdem', 'texas_holdem'), ('zhajinhua', 'zhajinhua')):
+            addon = proxy(game)
+            self.assertNotIn('roomSubscription', addon.transport_snapshot())
+            addon.game_session.room = {'roomId': ROOM, 'authorization': 'private-token'}
+            connection = flow('/v2/centrifugo/connection/websocket')
+            connection.websocket = websocket.WebSocketData()
+            channel = f'{stream}>{ROOM}#{USER}'
+            self.send(addon, connection, [{'id': 1, 'method': 1, 'params': {'channel': channel}}])
+            pending = addon.transport_snapshot()['roomSubscription']
+            self.assertFalse(pending['ready'])
+            self.assertEqual(pending['pendingSubscriptions'], 1)
+            self.send(addon, connection, [{'id': 1, 'result': {}}], False)
+            request = flow('/native/transport')
+            request.request.host = 'test-mitmproxy.invalid'
+            request.request.headers['X-E2E-Control-Token'] = 'test-token'
+            with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token'}):
+                await addon.request(request)
+            snapshot = request.response.json()
+            state = snapshot['roomSubscription']
+            self.assertTrue(state['ready'])
+            self.assertEqual(state['confirmedSubscriptions'], 1)
+            self.assertEqual(state['pendingSubscriptions'], 0)
+            self.assertEqual(state['liveConnections'], 1)
+            for secret in (ROOM, USER, 'private-token', channel):
+                self.assertNotIn(secret, json.dumps(snapshot))
+            replay = addon.game.texas if game == 'texas-holdem' else addon.game.replay
+            self.assertEqual(replay.subscriptions[connection.id][1], {channel})
+            addon.websocket_end(connection)
+            self.assertFalse(addon.transport_snapshot()['roomSubscription']['ready'])
+            replay.room_id = OTHER
+            mismatched = addon.transport_snapshot()
+            self.assertEqual(mismatched['roomSubscription'], {'unavailable': True})
+            self.assertIn('websocket', mismatched, '订阅身份不一致不能丢失原有传输证据')
