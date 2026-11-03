@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PNG } from 'pngjs';
-import sharp from 'sharp';
+import { panelNodes, picture } from './profile-animation-fixture.mjs';
 import { captureNativeTransition } from './animation-transition.ts';
 import { animateGamePanel } from './game-panel-animation.ts';
 
@@ -291,61 +291,6 @@ test('菜单面板入场在录屏预热后重新确认目标位置并只点击�
   const timing = JSON.parse(attachments.get('zhajinhua-settings-enter-tap-timing').body);
   assert.deepEqual(timing.point, taps[0]);
 });
-
-const node = (res, x, y, width, height, text) => ({
-  res,
-  text,
-  visible: true,
-  clazz: 'XCUIElementTypeOther',
-  bounds: { x, y, width, height },
-  children: [],
-});
-const panelNodes = [
-  node(undefined, 10, 20, 100, 140),
-  node('avatar_image', 20, 26, 18, 18),
-  node('player-profile-popup-close', 100, 25, 5, 5),
-  node('player-profile-nickname', 20, 25, 40, 8, 'Player'),
-  node('player-profile-level', 65, 25, 20, 8, 'Lv 1'),
-  node('player-profile-id', 20, 36, 30, 3, 'ID: abcdef12'),
-  node('player-profile-balance', 20, 43, 20, 7, '10000'),
-  node('PlayerStatisticComponent_List', 18, 60, 84, 90),
-  node('PlayerStatisticComponent_Item_0', 18, 60, 40, 14, 'Total Hands, 100'),
-];
-function basePicture(panel = false) {
-  const png = new PNG(screen);
-  for (let y = 0; y < screen.height; y++)
-    for (let x = 0; x < screen.width; x++) {
-      const inside = panel && x >= 10 && x < 110 && y >= 20 && y < 160;
-      let rgb = inside ? (y < 55 ? [27, 30, 45] : [50, 55, 76]) : [20, 100 + (y % 20), 60];
-      if (panel && x >= 20 && x < 38 && y >= 26 && y < 44)
-        rgb =
-          (Math.floor((x - 20) / 3) + Math.floor((y - 26) / 3)) % 2
-            ? [230, 230, 230]
-            : [20, 20, 20];
-      if (panel && x >= 100 && x < 105 && y >= 25 && y < 30)
-        rgb = x - 100 === y - 25 || x - 100 + (y - 25) === 4 ? [230, 230, 230] : [20, 20, 20];
-      png.data.set([...rgb, 255], (y * screen.width + x) * 4);
-    }
-  return PNG.sync.write(png);
-}
-const pictures = new Map([
-  [0, basePicture()],
-  [1, basePicture(true)],
-]);
-const scaledPanel = await sharp(pictures.get(1))
-  .extract({ left: 10, top: 20, width: 100, height: 140 })
-  .resize(65, 91)
-  .png()
-  .toBuffer();
-const dimmed = await sharp(pictures.get(0)).linear(0.9, 0).png().toBuffer();
-pictures.set(
-  0.65,
-  await sharp(dimmed)
-    .composite([{ input: scaledPanel, left: 28, top: 45 }])
-    .png()
-    .toBuffer()
-);
-const picture = (scale = 0) => pictures.get(scale);
 
 test('只有连接spinner运动而资料硬切时，不能冒充profile的真实zoom中间帧', async () => {
   const before = picture(),

@@ -116,62 +116,9 @@ class IosVisualProxy:
     def websocket_message(self, flow):
         self.transport.websocket_message(flow)
         if self.slot and flow.websocket:
-            message = flow.websocket.messages[-1]
-            if message.from_client and message.is_text and not message.injected:
-                try:
-                    frames = [json.loads(line) for line in message.text.splitlines() if line]
-                except (ValueError, TypeError):
-                    frames = []
-                blocked = [frame for frame in frames if isinstance(frame, dict)
-                           and frame.get('method') == 9 and isinstance(frame.get('params'), dict)
-                           and isinstance(frame['params'].get('data'), dict)
-                           and re.fullmatch(r'/v2/slot_machine/user/[^/]+/(energy|spin)',
-                                            str(frame['params']['data'].get('path'))) is not None]
-                if blocked:
-                    kept = [frame for frame in frames if frame not in blocked]
-                    if kept:
-                        message.content = '\n'.join(json.dumps(frame) for frame in kept).encode()
-                    else:
-                        message.drop()
-                    replies = []
-                    for frame in blocked:
-                        path = frame['params']['data']['path']
-                        user_id = path.split('/')[4]
-                        valid_user = self.presentation.user_id and user_id == self.presentation.user_id
-                        data = self.slot_result(path.endswith('/spin')) if valid_user else {
-                            'ok': False, 'error': 'unknown_user'}
-                        if isinstance(frame.get('id'), int):
-                            replies.append({'id': frame['id'], 'result': {'data': data}})
-                    if replies:
-                        ctx.master.commands.call('inject.websocket', flow, True,
-                                                 '\n'.join(json.dumps(reply) for reply in replies).encode(), True)
+            self.slot_websocket_message(flow)
         if self.matching and flow.websocket:
-            message = flow.websocket.messages[-1]
-            if message.from_client and message.is_text and not message.injected:
-                try:
-                    frames = [json.loads(line) for line in message.text.splitlines() if line]
-                except (ValueError, TypeError):
-                    frames = []
-                blocked = [frame for frame in frames if isinstance(frame, dict)
-                           and frame.get('method') == 9 and isinstance(frame.get('params'), dict)
-                           and isinstance(frame['params'].get('data'), dict)
-                           and frame['params']['data'].get('path') in self.matching_paths]
-                if blocked:
-                    kept = [frame for frame in frames if frame not in blocked]
-                    if kept:
-                        message.content = '\n'.join(json.dumps(frame) for frame in kept).encode()
-                    else:
-                        message.drop()
-                    replies = [{'id': frame['id'], 'result': {'data': {'ok': True, 'result': {}}}}
-                               for frame in blocked if isinstance(frame.get('id'), int)]
-                    if replies:
-                        try:
-                            ctx.master.commands.call('inject.websocket', flow, True,
-                                                     '\n'.join(json.dumps(reply) for reply in replies).encode(), True)
-                        except Exception:
-                            self.transport.matching.proxy_replies(flow, replies, failed=True)
-                            raise
-                        self.transport.matching.proxy_replies(flow, replies)
+            self.matching_websocket_message(flow)
         if self.game:
             self.game.websocket_message(flow)
 
@@ -194,29 +141,7 @@ class IosVisualProxy:
         self.observer.done()
 
     async def request(self, flow):
-        path = urlsplit(flow.request.path).path
-        if flow.request.host == 'test-mitmproxy.invalid' and path == '/ios/club-search':
-            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
-                flow.response = http.Response.make(403, '无权访问'.encode())
-                return
-            if flow.request.method == 'POST':
-                try:
-                    self.club_search_fixture.configure(json.loads(flow.request.content)['active'])
-                except (ValueError, KeyError, TypeError):
-                    flow.response = http.Response.make(400, '俱乐部搜索配置无效'.encode())
-                    return
-            elif flow.request.method != 'GET':
-                flow.response = http.Response.make(405, '请求方法不受支持'.encode())
-                return
-            flow.response = http.Response.make(200, json.dumps(self.club_search_fixture.status()).encode(),
-                                               {'Content-Type': 'application/json'})
-            return
-        if flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/native/transport':
-            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
-                flow.response = http.Response.make(403, b'Forbidden')
-            else:
-                flow.response = http.Response.make(200, json.dumps(self.transport_snapshot()).encode(),
-                    {'Content-Type': 'application/json'})
+        if self.request_control(flow):
             return
         self.transport.request(flow)
         if self.observer.control(flow):
@@ -232,12 +157,7 @@ class IosVisualProxy:
             if is_staging(flow.request.host) and self.observer.override(flow):
                 return
             if self.functional:
-                path = urlsplit(flow.request.path).path
-                if is_staging(flow.request.host) and path.startswith('/public/v11/user/register/'):
-                    flow.response = http.Response.make(403, b'{"ok":false,"error":"native_test_registration_blocked"}',
-                        {'Content-Type': 'application/json'})
-                    return
-                await self.faults.request(flow)
+                await self.functional_request(flow)
                 return
             await self.route_request(flow)
         finally:
@@ -248,149 +168,11 @@ class IosVisualProxy:
         if await self.launch.request(flow):
             return
         path = urlsplit(flow.request.path).path
-        if flow.request.host == 'test-mitmproxy.invalid' and path == '/native/club-rooms':
-            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
-                flow.response = http.Response.make(403, b'Forbidden')
+        for handler in (self.club_room_request, self.auto_rebuy_request, self.invitable_request,
+                        self.skeleton_request, self.slot_control_request, self.slot_data_request,
+                        self.matching_session_request):
+            if await handler(flow, path):
                 return
-            if flow.request.method == 'POST':
-                try:
-                    active = json.loads(flow.request.content).get('active')
-                except (ValueError, TypeError, AttributeError):
-                    active = None
-                if not isinstance(active, bool):
-                    flow.response = http.Response.make(400, b'Invalid club room state')
-                    return
-                self.club_rooms_active = active
-                self.club_rooms.club_room_requests = {}
-            flow.response = http.Response.make(200, json.dumps({
-                'active': self.club_rooms_active,
-                'requests': self.club_rooms.club_room_requests,
-            }).encode(), {'Content-Type': 'application/json'})
-            return
-        if self.club_rooms_active and is_staging(flow.request.host):
-            result = self.club_rooms.fixture(flow)
-            if result is not None:
-                self.club_rooms.club_room_requests[path] = self.club_rooms.club_room_requests.get(path, 0) + 1
-                flow.response = http.Response.make(200, json.dumps({'ok': True, 'result': result}).encode(),
-                    {'Content-Type': 'application/json'})
-                return
-        if self.game and flow.request.host == 'test-mitmproxy.invalid' \
-                and path == '/android/auto-rebuy-hold':
-            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
-                flow.response = http.Response.make(403, b'Forbidden')
-                return
-            if flow.request.method == 'POST':
-                settings = json.loads(flow.request.content)
-                self.auto_rebuy_hold = settings.get('hold') is True
-                if self.auto_rebuy_hold:
-                    self.auto_rebuy_requested = False
-                    self.auto_rebuy_release.clear()
-                else:
-                    self.auto_rebuy_release.set()
-            flow.response = http.Response.make(200, json.dumps({'hold': self.auto_rebuy_hold,
-                'requested': self.auto_rebuy_requested}).encode(), {'Content-Type': 'application/json'})
-            return
-        if self.game and self.auto_rebuy_hold and flow.request.method == 'PUT' \
-                and re.fullmatch(r'/v10/texas_holdem/room/[^/]+/user_settings/enable_auto_rebuy', path):
-            self.auto_rebuy_requested = True
-            try:
-                await asyncio.wait_for(self.auto_rebuy_release.wait(), timeout=45)
-            except asyncio.TimeoutError:
-                flow.response = http.Response.make(504, b'Visual auto-rebuy hold expired')
-                return
-            # 释放后回放成功响应；隔离房间的真实后端可能拒绝修改设置。
-            flow.response = http.Response.make(200, b'{"ok":true,"result":{"auto_rebuy":true}}',
-                                               {'Content-Type': 'application/json'})
-            return
-        if self.invitable and path == '/v2/building/rooms' and flow.request.method == 'PUT':
-            room = {'room_id': '00000000-0000-4000-8000-000000000099', 'room_name': 'TestRoom',
-                    'created_at': '2026-01-01T00:00:00Z', 'creator_id': 'visual-user-id',
-                    'building_id': 'visual-house-id', 'building_type': 'house', 'game_type': 'texas_holdem',
-                    'room_status': 'opening', 'timer_status': 'wait_for_timing',
-                    'remaining_seconds': 3600, 'booking_seconds': 3600, 'seat_occupied': 0,
-                    'options': {'game_version': {'type': 'texas_holdem', 'variant': 'normal',
-                                                 'buildNumber': 1, 'engineType': 'react_native'}},
-                    'game_config': {'currency': 'coin', 'small_blind': 1, 'big_blind': 2, 'ante': 0,
-                                    'minimum_buy_in': 100, 'seat_quantity': 9,
-                                    'variation': 'texas_holdem'}}
-            flow.response = http.Response.make(200, json.dumps({'ok': True, 'result': [room]}).encode(),
-                                               {'Content-Type': 'application/json'})
-            return
-        if self.skeleton and flow.request.host == 'test-mitmproxy.invalid' and path == '/android/skeleton':
-            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
-                flow.response = http.Response.make(403, b'Forbidden')
-                return
-            if flow.request.method == 'POST':
-                settings = json.loads(flow.request.content)
-                self.skeleton_hold = settings.get('hold') is True
-                if not self.skeleton_hold:
-                    self.skeleton_release.set()
-                else:
-                    self.skeleton_release.clear()
-            flow.response = http.Response.make(200, json.dumps({'loaded': self.skeleton_loaded,
-                'holding': self.skeleton_hold}).encode(), {'Content-Type': 'application/json'})
-            return
-        if self.skeleton and path == '/v10/club' and flow.request.method == 'GET' \
-                and 'user_id' in urlsplit(flow.request.path).query:
-            body = {'ok': True, 'result': {'clubs': [{'id': club['id']} for club in self.skeleton_clubs]}}
-            flow.response = http.Response.make(200, json.dumps(body).encode(), {'Content-Type': 'application/json'})
-            return
-        if self.skeleton and path == '/v10/clubs' and flow.request.method == 'PUT':
-            if self.skeleton_hold:
-                await self.skeleton_release.wait()
-            self.skeleton_loaded += 1
-            flow.response = http.Response.make(200, json.dumps({'ok': True, 'result': self.skeleton_clubs}).encode(),
-                                               {'Content-Type': 'application/json'})
-            return
-        if self.slot and flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/android/slot':
-            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
-                flow.response = http.Response.make(403, b'Forbidden')
-                return
-            if flow.request.method == 'POST':
-                try:
-                    settings = json.loads(flow.request.content)
-                except (ValueError, TypeError):
-                    settings = {}
-                if settings.get('currency') not in ('coin', 'currency_diamond', 'energy'):
-                    flow.response = http.Response.make(400, b'Invalid slot currency')
-                    return
-                self.slot_currency = settings['currency']
-                self.slot_no_energy = settings.get('noEnergy') is True
-            flow.response = http.Response.make(200, json.dumps({'spins': self.slot_spins,
-                'currency': self.slot_currency, 'noEnergy': self.slot_no_energy}).encode(),
-                {'Content-Type': 'application/json'})
-            return
-        if self.slot and re.fullmatch(r'/v10/wallet/[^/]+', urlsplit(flow.request.path).path) \
-                and flow.request.method == 'PUT':
-            requested_user = urlsplit(flow.request.path).path.split('/')[3]
-            if not self.presentation.user_id or requested_user != self.presentation.user_id:
-                flow.response = http.Response.make(403, b'Unknown slot account')
-                return
-            wallet = {'ok': True, 'result': {'currencies': [
-                {'code': 'coin', 'name': '金币', 'balance': '10000'},
-                {'code': 'diamond', 'name': '钻石', 'balance': '60'}]}}
-            flow.response = http.Response.make(200, json.dumps(wallet).encode(),
-                {'Content-Type': 'application/json'})
-            return
-        if self.slot and re.fullmatch(r'/v2/slot_machine/user/[^/]+/(energy|spin)',
-                                      urlsplit(flow.request.path).path):
-            path = urlsplit(flow.request.path).path
-            valid_user = self.presentation.user_id and path.split('/')[4] == self.presentation.user_id
-            data = self.slot_result(path.endswith('/spin')) if valid_user else {'ok': False, 'error': 'unknown_user'}
-            flow.response = http.Response.make(200, json.dumps(data).encode(), {'Content-Type': 'application/json'})
-            return
-        if self.matching and urlsplit(flow.request.path).path in self.matching_paths:
-            flow.response = http.Response.make(200, b'{"ok":true,"result":{}}',
-                                               {'Content-Type': 'application/json'})
-            return
-        if self.game and flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/android/session':
-            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
-                flow.response = http.Response.make(403, b'Forbidden')
-            else:
-                flow.response = http.Response.make(200, json.dumps({
-                    'account': self.game_session.account, 'room': self.game_session.room}).encode(),
-                    {'Content-Type': 'application/json'})
-            return
         if self.game:
             self.game.request(flow)
             if flow.response:
@@ -399,6 +181,9 @@ class IosVisualProxy:
             await self.records.request(flow)
             if flow.response:
                 return
+        await self.route_fallback(flow, path)
+
+    async def route_fallback(self, flow, path):
         if flow.request.host == 'test-mitmproxy.invalid':
             if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
                 flow.response = http.Response.make(403, b'Forbidden')
@@ -414,23 +199,7 @@ class IosVisualProxy:
                 '/node/v1/status', '/public/v12/metadata/servers',
                 '/public/v13/metadata/servers', '/v2/centrifugo/connection/websocket'}:
             return
-        payload = json.dumps({'url': flow.request.pretty_url}).encode()
-        request = urllib.request.Request(os.environ['IOS_FIXTURE_URL'], data=payload,
-            headers={'Content-Type': 'application/json',
-                     'Authorization': os.environ['IOS_FIXTURE_TOKEN']})
-        self.transport.fixture_started(flow)
-        try:
-            result = await asyncio.to_thread(self.fixture_response, request)
-        finally:
-            self.transport.fixture_finished(flow)
-        if result is None:
-            return
-        if result.get('aborted'):
-            flow.kill()
-            return
-        flow.response = http.Response.make(result.get('status', 200),
-            result.get('body', '').encode(),
-            {'Content-Type': result.get('contentType', 'application/json')})
+        await self.request_fixture(flow)
 
     @staticmethod
     def fixture_response(request):
@@ -469,6 +238,288 @@ class IosVisualProxy:
             except ValueError:
                 snapshot['roomSubscription'] = {'unavailable': True}
         return snapshot
+
+    @staticmethod
+    def websocket_request_path(frame):
+        if not isinstance(frame, dict) or frame.get('method') != 9:
+            return None
+        params = frame.get('params')
+        if not isinstance(params, dict) or not isinstance(params.get('data'), dict):
+            return None
+        return params['data'].get('path')
+
+    @staticmethod
+    def websocket_frames(message):
+        try:
+            return [json.loads(line) for line in message.text.splitlines() if line]
+        except (ValueError, TypeError):
+            return []
+
+    def slot_websocket_message(self, flow):
+        message = flow.websocket.messages[-1]
+        if message.from_client and message.is_text and not message.injected:
+            frames = self.websocket_frames(message)
+            blocked = [frame for frame in frames if re.fullmatch(r'/v2/slot_machine/user/[^/]+/(energy|spin)',
+                                        str(self.websocket_request_path(frame))) is not None]
+            if blocked:
+                kept = [frame for frame in frames if frame not in blocked]
+                if kept:
+                    message.content = '\n'.join(json.dumps(frame) for frame in kept).encode()
+                else:
+                    message.drop()
+                replies = []
+                for frame in blocked:
+                    path = frame['params']['data']['path']
+                    user_id = path.split('/')[4]
+                    valid_user = self.presentation.user_id and user_id == self.presentation.user_id
+                    data = self.slot_result(path.endswith('/spin')) if valid_user else {
+                        'ok': False, 'error': 'unknown_user'}
+                    if isinstance(frame.get('id'), int):
+                        replies.append({'id': frame['id'], 'result': {'data': data}})
+                if replies:
+                    ctx.master.commands.call('inject.websocket', flow, True,
+                                             '\n'.join(json.dumps(reply) for reply in replies).encode(), True)
+
+    def matching_websocket_message(self, flow):
+        message = flow.websocket.messages[-1]
+        if message.from_client and message.is_text and not message.injected:
+            frames = self.websocket_frames(message)
+            blocked = [frame for frame in frames if self.websocket_request_path(frame) in self.matching_paths]
+            if blocked:
+                kept = [frame for frame in frames if frame not in blocked]
+                if kept:
+                    message.content = '\n'.join(json.dumps(frame) for frame in kept).encode()
+                else:
+                    message.drop()
+                replies = [{'id': frame['id'], 'result': {'data': {'ok': True, 'result': {}}}}
+                           for frame in blocked if isinstance(frame.get('id'), int)]
+                if replies:
+                    try:
+                        ctx.master.commands.call('inject.websocket', flow, True,
+                                                 '\n'.join(json.dumps(reply) for reply in replies).encode(), True)
+                    except Exception:
+                        self.transport.matching.proxy_replies(flow, replies, failed=True)
+                        raise
+                    self.transport.matching.proxy_replies(flow, replies)
+
+    def request_control(self, flow):
+        path = urlsplit(flow.request.path).path
+        if flow.request.host == 'test-mitmproxy.invalid' and path == '/ios/club-search':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, '无权访问'.encode())
+                return True
+            if flow.request.method == 'POST':
+                try:
+                    self.club_search_fixture.configure(json.loads(flow.request.content)['active'])
+                except (ValueError, KeyError, TypeError):
+                    flow.response = http.Response.make(400, '俱乐部搜索配置无效'.encode())
+                    return True
+            elif flow.request.method != 'GET':
+                flow.response = http.Response.make(405, '请求方法不受支持'.encode())
+                return True
+            flow.response = http.Response.make(200, json.dumps(self.club_search_fixture.status()).encode(),
+                                               {'Content-Type': 'application/json'})
+            return True
+        if flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/native/transport':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, b'Forbidden')
+            else:
+                flow.response = http.Response.make(200, json.dumps(self.transport_snapshot()).encode(),
+                    {'Content-Type': 'application/json'})
+            return True
+        return False
+
+    async def functional_request(self, flow):
+        path = urlsplit(flow.request.path).path
+        if is_staging(flow.request.host) and path.startswith('/public/v11/user/register/'):
+            flow.response = http.Response.make(403, b'{"ok":false,"error":"native_test_registration_blocked"}',
+                {'Content-Type': 'application/json'})
+            return
+        await self.faults.request(flow)
+        return
+
+    async def club_room_request(self, flow, path):
+        if flow.request.host == 'test-mitmproxy.invalid' and path == '/native/club-rooms':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, b'Forbidden')
+                return True
+            if flow.request.method == 'POST':
+                try:
+                    active = json.loads(flow.request.content).get('active')
+                except (ValueError, TypeError, AttributeError):
+                    active = None
+                if not isinstance(active, bool):
+                    flow.response = http.Response.make(400, b'Invalid club room state')
+                    return True
+                self.club_rooms_active = active
+                self.club_rooms.club_room_requests = {}
+            flow.response = http.Response.make(200, json.dumps({
+                'active': self.club_rooms_active,
+                'requests': self.club_rooms.club_room_requests,
+            }).encode(), {'Content-Type': 'application/json'})
+            return True
+        if self.club_rooms_active and is_staging(flow.request.host):
+            result = self.club_rooms.fixture(flow)
+            if result is not None:
+                self.club_rooms.club_room_requests[path] = self.club_rooms.club_room_requests.get(path, 0) + 1
+                flow.response = http.Response.make(200, json.dumps({'ok': True, 'result': result}).encode(),
+                    {'Content-Type': 'application/json'})
+                return True
+        return False
+
+    async def auto_rebuy_request(self, flow, path):
+        if self.game and flow.request.host == 'test-mitmproxy.invalid' \
+                and path == '/android/auto-rebuy-hold':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, b'Forbidden')
+                return True
+            if flow.request.method == 'POST':
+                settings = json.loads(flow.request.content)
+                self.auto_rebuy_hold = settings.get('hold') is True
+                if self.auto_rebuy_hold:
+                    self.auto_rebuy_requested = False
+                    self.auto_rebuy_release.clear()
+                else:
+                    self.auto_rebuy_release.set()
+            flow.response = http.Response.make(200, json.dumps({'hold': self.auto_rebuy_hold,
+                'requested': self.auto_rebuy_requested}).encode(), {'Content-Type': 'application/json'})
+            return True
+        if self.game and self.auto_rebuy_hold and flow.request.method == 'PUT' \
+                and re.fullmatch(r'/v10/texas_holdem/room/[^/]+/user_settings/enable_auto_rebuy', path):
+            self.auto_rebuy_requested = True
+            try:
+                await asyncio.wait_for(self.auto_rebuy_release.wait(), timeout=45)
+            except asyncio.TimeoutError:
+                flow.response = http.Response.make(504, b'Visual auto-rebuy hold expired')
+                return True
+            # 释放后回放成功响应；隔离房间的真实后端可能拒绝修改设置。
+            flow.response = http.Response.make(200, b'{"ok":true,"result":{"auto_rebuy":true}}',
+                                               {'Content-Type': 'application/json'})
+            return True
+        return False
+
+    async def invitable_request(self, flow, path):
+        if self.invitable and path == '/v2/building/rooms' and flow.request.method == 'PUT':
+            room = {'room_id': '00000000-0000-4000-8000-000000000099', 'room_name': 'TestRoom',
+                    'created_at': '2026-01-01T00:00:00Z', 'creator_id': 'visual-user-id',
+                    'building_id': 'visual-house-id', 'building_type': 'house', 'game_type': 'texas_holdem',
+                    'room_status': 'opening', 'timer_status': 'wait_for_timing',
+                    'remaining_seconds': 3600, 'booking_seconds': 3600, 'seat_occupied': 0,
+                    'options': {'game_version': {'type': 'texas_holdem', 'variant': 'normal',
+                                                 'buildNumber': 1, 'engineType': 'react_native'}},
+                    'game_config': {'currency': 'coin', 'small_blind': 1, 'big_blind': 2, 'ante': 0,
+                                    'minimum_buy_in': 100, 'seat_quantity': 9,
+                                    'variation': 'texas_holdem'}}
+            flow.response = http.Response.make(200, json.dumps({'ok': True, 'result': [room]}).encode(),
+                                               {'Content-Type': 'application/json'})
+            return True
+        return False
+
+    async def skeleton_request(self, flow, path):
+        if self.skeleton and flow.request.host == 'test-mitmproxy.invalid' and path == '/android/skeleton':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, b'Forbidden')
+                return True
+            if flow.request.method == 'POST':
+                settings = json.loads(flow.request.content)
+                self.skeleton_hold = settings.get('hold') is True
+                if not self.skeleton_hold:
+                    self.skeleton_release.set()
+                else:
+                    self.skeleton_release.clear()
+            flow.response = http.Response.make(200, json.dumps({'loaded': self.skeleton_loaded,
+                'holding': self.skeleton_hold}).encode(), {'Content-Type': 'application/json'})
+            return True
+        if self.skeleton and path == '/v10/club' and flow.request.method == 'GET' \
+                and 'user_id' in urlsplit(flow.request.path).query:
+            body = {'ok': True, 'result': {'clubs': [{'id': club['id']} for club in self.skeleton_clubs]}}
+            flow.response = http.Response.make(200, json.dumps(body).encode(), {'Content-Type': 'application/json'})
+            return True
+        if self.skeleton and path == '/v10/clubs' and flow.request.method == 'PUT':
+            if self.skeleton_hold:
+                await self.skeleton_release.wait()
+            self.skeleton_loaded += 1
+            flow.response = http.Response.make(200, json.dumps({'ok': True, 'result': self.skeleton_clubs}).encode(),
+                                               {'Content-Type': 'application/json'})
+            return True
+        return False
+
+    async def slot_control_request(self, flow, path):
+        if self.slot and flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/android/slot':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, b'Forbidden')
+                return True
+            if flow.request.method == 'POST':
+                try:
+                    settings = json.loads(flow.request.content)
+                except (ValueError, TypeError):
+                    settings = {}
+                if settings.get('currency') not in ('coin', 'currency_diamond', 'energy'):
+                    flow.response = http.Response.make(400, b'Invalid slot currency')
+                    return True
+                self.slot_currency = settings['currency']
+                self.slot_no_energy = settings.get('noEnergy') is True
+            flow.response = http.Response.make(200, json.dumps({'spins': self.slot_spins,
+                'currency': self.slot_currency, 'noEnergy': self.slot_no_energy}).encode(),
+                {'Content-Type': 'application/json'})
+            return True
+        return False
+
+    async def slot_data_request(self, flow, path):
+        if self.slot and re.fullmatch(r'/v10/wallet/[^/]+', urlsplit(flow.request.path).path) \
+                and flow.request.method == 'PUT':
+            requested_user = urlsplit(flow.request.path).path.split('/')[3]
+            if not self.presentation.user_id or requested_user != self.presentation.user_id:
+                flow.response = http.Response.make(403, b'Unknown slot account')
+                return True
+            wallet = {'ok': True, 'result': {'currencies': [
+                {'code': 'coin', 'name': '金币', 'balance': '10000'},
+                {'code': 'diamond', 'name': '钻石', 'balance': '60'}]}}
+            flow.response = http.Response.make(200, json.dumps(wallet).encode(),
+                {'Content-Type': 'application/json'})
+            return True
+        if self.slot and re.fullmatch(r'/v2/slot_machine/user/[^/]+/(energy|spin)',
+                                      urlsplit(flow.request.path).path):
+            path = urlsplit(flow.request.path).path
+            valid_user = self.presentation.user_id and path.split('/')[4] == self.presentation.user_id
+            data = self.slot_result(path.endswith('/spin')) if valid_user else {'ok': False, 'error': 'unknown_user'}
+            flow.response = http.Response.make(200, json.dumps(data).encode(), {'Content-Type': 'application/json'})
+            return True
+        return False
+
+    async def matching_session_request(self, flow, path):
+        if self.matching and urlsplit(flow.request.path).path in self.matching_paths:
+            flow.response = http.Response.make(200, b'{"ok":true,"result":{}}',
+                                               {'Content-Type': 'application/json'})
+            return True
+        if self.game and flow.request.host == 'test-mitmproxy.invalid' and urlsplit(flow.request.path).path == '/android/session':
+            if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
+                flow.response = http.Response.make(403, b'Forbidden')
+            else:
+                flow.response = http.Response.make(200, json.dumps({
+                    'account': self.game_session.account, 'room': self.game_session.room}).encode(),
+                    {'Content-Type': 'application/json'})
+            return True
+        return False
+
+    async def request_fixture(self, flow):
+        payload = json.dumps({'url': flow.request.pretty_url}).encode()
+        request = urllib.request.Request(os.environ['IOS_FIXTURE_URL'], data=payload,
+            headers={'Content-Type': 'application/json',
+                     'Authorization': os.environ['IOS_FIXTURE_TOKEN']})
+        self.transport.fixture_started(flow)
+        try:
+            result = await asyncio.to_thread(self.fixture_response, request)
+        finally:
+            self.transport.fixture_finished(flow)
+        if result is None:
+            return
+        if result.get('aborted'):
+            flow.kill()
+            return
+        flow.response = http.Response.make(result.get('status', 200),
+            result.get('body', '').encode(),
+            {'Content-Type': result.get('contentType', 'application/json')})
 
 
 addons = [IosVisualProxy()]

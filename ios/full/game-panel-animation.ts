@@ -27,43 +27,7 @@ export async function animateGamePanel(device: AndroidDevice, game: 'texas-holde
   videoPhaseAnchors: string[] = [],
   capture: typeof captureNativeTransition = captureNativeTransition): Promise<void> {
   if (!testInfo) { await gameTap(device, button); return; }
-  const guardedEntrance = game === 'texas-holdem' && phase === 'enter'
-    && /^(?:own-profile|opponent-profile-[12]|auto-rebuy)$/.test(name);
-  const guardedExit = game === 'texas-holdem' && phase === 'exit'
-    && (name === 'renew' || name === 'theme');
-  const menuEntrance = phase === 'enter' && button.startsWith('drawer-menu-item-');
-  let press: () => Promise<void>;
-  if (game === 'zhajinhua' && name === 'leaderboard' && phase === 'enter'
-    && button === zhajinhuaLeaderboardButton) {
-    press = () => tapRecordedLeaderboard(device, testInfo);
-  } else if (guardedEntrance || guardedExit || menuEntrance) {
-    // 录屏预热期间可能发生重连；在录制中重新确认两次目标位置，
-    // 再执行一次真实点击，点击后不查询以免打断动画。
-    press = async () => {
-      const timing: { preparationStartedUtc: string; tapRequestedUtc?: string;
-        point?: { x: number; y: number }; completedUtc?: string } = {
-        preparationStartedUtc: new Date().toISOString(),
-      };
-      try {
-        const tapped = (point: Readonly<{ x: number; y: number }>) => {
-          timing.tapRequestedUtc = new Date().toISOString();
-          timing.point = point;
-        };
-        if (menuEntrance || guardedExit) await gameTapCurrent(device, button, undefined, tapped);
-        else await gameTap(device, button, false, tapped);
-      } finally {
-        timing.completedUtc = new Date().toISOString();
-        await testInfo.attach(`${game}-${name}-${phase}-tap-timing`, {
-          body: JSON.stringify(timing), contentType: 'application/json',
-        });
-      }
-    };
-  } else {
-    await gameConnected(device);
-    const { bounds } = await gameReady(device, button);
-    press = () => device.input.tap({ x: Math.round(bounds.x + bounds.width / 2),
-      y: Math.round(bounds.y + bounds.height / 2) });
-  }
+  const press = await gamePanelPress(device, game, name, button, testInfo, phase);
   await capture(device, `${game}-${name}-${phase}`, testInfo, region, press,
     masks, [], 0, samplingMethod, undefined, afterReady, videoPhaseAnchors);
 }
@@ -80,4 +44,54 @@ export async function captureTimedLevelUp(device: AndroidDevice, game: 'texas-ho
   const { bounds } = await gameReady(device, button);
   await captureTimedPrompt(device, `${game}-level-up`, testInfo,
     () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) }));
+}
+
+function guardedGamePanel(game: string, name: string, phase: string) {
+  return {
+    guardedEntrance: game === 'texas-holdem' && phase === 'enter'
+      && /^(?:own-profile|opponent-profile-[12]|auto-rebuy)$/.test(name),
+    guardedExit: game === 'texas-holdem' && phase === 'exit' && (name === 'renew' || name === 'theme'),
+  };
+}
+
+async function gamePanelPress(device: AndroidDevice, game: string, name: string, button: string,
+  testInfo: TestInfo, phase: string): Promise<() => Promise<void>> {
+  const { guardedEntrance, guardedExit } = guardedGamePanel(game, name, phase);
+  const menuEntrance = phase === 'enter' && button.startsWith('drawer-menu-item-');
+  let press: () => Promise<void>;
+  if (game === 'zhajinhua' && name === 'leaderboard' && phase === 'enter'
+    && button === zhajinhuaLeaderboardButton) {
+    press = () => tapRecordedLeaderboard(device, testInfo);
+  } else if (guardedEntrance || guardedExit || menuEntrance) {
+    // 录屏预热期间可能发生重连；在录制中重新确认两次目标位置，
+    // 再执行一次真实点击，点击后不查询以免打断动画。
+    press = () => timedGamePanelTap(device, button, testInfo, `${game}-${name}-${phase}`, menuEntrance || guardedExit);
+  } else {
+    await gameConnected(device);
+    const { bounds } = await gameReady(device, button);
+    press = () => device.input.tap({ x: Math.round(bounds.x + bounds.width / 2),
+      y: Math.round(bounds.y + bounds.height / 2) });
+  }
+  return press;
+}
+
+async function timedGamePanelTap(device: AndroidDevice, button: string, testInfo: TestInfo,
+  attachment: string, current: boolean): Promise<void> {
+  const timing: { preparationStartedUtc: string; tapRequestedUtc?: string;
+    point?: { x: number; y: number }; completedUtc?: string } = {
+    preparationStartedUtc: new Date().toISOString(),
+  };
+  try {
+    const tapped = (point: Readonly<{ x: number; y: number }>) => {
+      timing.tapRequestedUtc = new Date().toISOString();
+      timing.point = point;
+    };
+    if (current) await gameTapCurrent(device, button, undefined, tapped);
+    else await gameTap(device, button, false, tapped);
+  } finally {
+    timing.completedUtc = new Date().toISOString();
+    await testInfo.attach(`${attachment}-tap-timing`, {
+      body: JSON.stringify(timing), contentType: 'application/json',
+    });
+  }
 }

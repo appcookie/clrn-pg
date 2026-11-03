@@ -175,9 +175,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
 
   test.setTimeout(1_200_000);
   await withAndroidProxy(async () => {
-    let device: AndroidDevice | undefined;
-    try {
-      device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+    await withAnimationDevice(testInfo, async device => {
       await waitForHall(device);
       await signIn(device);
       const club = androidScenarios('en', 'social').find(scenario => scenario.pageLabel === 'signed_in_club');
@@ -200,10 +198,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'club-rooms-empty-enter', testInfo,
         screenBounds(device, { x: 100, y: 420, width: 520, height: 200 }), pressRoomsTab);
       await device.wait({ res: 'club-rooms-empty-title' });
-    } catch (error) {
-      if (device) await captureFailure(device, testInfo);
-      throw error;
-    } finally { await device?.close(); }
+    });
   });
 });
 
@@ -212,9 +207,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
 
   test.setTimeout(1_200_000);
   await withAndroidProxy(async () => {
-    let device: AndroidDevice | undefined;
-    try {
-      device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+    await withAnimationDevice(testInfo, async device => {
       device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
@@ -238,10 +231,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'game-picker-exit', testInfo, region, pressBackdrop,
         [], [], 0, 'videoFrames', undefined,
         () => device!.wait({ res: 'select-game-category-text' }, { state: 'gone' }));
-    } catch (error) {
-      if (device) await captureFailure(device, testInfo);
-      throw error;
-    } finally { await device?.close(); }
+    });
   });
 });
 
@@ -283,3 +273,15 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
     } finally { await device?.close(); }
   }, false, false, false, false, true);
 });
+
+async function withAnimationDevice(testInfo: Parameters<typeof captureFailure>[1],
+  run: (device: AndroidDevice) => Promise<void>): Promise<void> {
+  let device: AndroidDevice | undefined;
+  try {
+    device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+    await run(device);
+  } catch (error) {
+    if (device) await captureFailure(device, testInfo);
+    throw error;
+  } finally { await device?.close(); }
+}

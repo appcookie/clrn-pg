@@ -96,35 +96,11 @@ export async function tap(device: NativeDevice, identifier: string,
 /** Guest login must open from the actual account tab, not scroll a missed tab tap's hall. */
 export async function selectGuestSettingsTab(device: NativeDevice,
   { timeout = 5000, tapTab = () => tap(device, 'settings-tab') }: { timeout?: number; tapTab?: () => Promise<void> } = {}) {
-  const visible = (node: NativeNode) => node.visible !== false && node.bounds.width > 0 && node.bounds.height > 0;
-  const screen = { x: 0, y: 0, ...device.screenSize };
-  const visibleInTree = (nodes: NativeNode[], node: NativeNode) => {
-    if (!visible(node)) return false;
-    const geometry = nativeViewport(nodes, node, screen);
-    return visible(geometry.node) && geometry.visibleBounds.width > 0 && geometry.visibleBounds.height > 0;
-  };
-  const blocked = (nodes: NativeNode[]) => nodes.some(node => (
-    /^(XCUIElementTypeAlert|XCUIElementTypeKeyboard|XCUIElementTypeSheet)$/.test(node.clazz)
-    || /^(alert-message-text|popup-content-container|confirm-pop-up-image-background|staging-dialog|html-render|country-code-list|base-create-room-screen|username-or-email-sign-in-button)$/.test(node.res || '')
-  ) && visibleInTree(nodes, node));
-  const actionable = (nodes: NativeNode[], res: string) => {
-    const target = nodes.find(node => node.res === res && visible(node) && node.enabled);
-    if (!target) return false;
-    const { node, viewport } = nativeViewport(nodes, target, screen);
-    return visible(node) && pointInside({ x: node.bounds.x + node.bounds.width / 2,
-      y: node.bounds.y + node.bounds.height / 2 }, viewport);
-  };
+  const { visibleInTree, blocked, actionable } = guestSettingsPredicates(device);
   for (let attempt = 0; attempt < 2; attempt++) {
     await tapTab();
-    const deadline = Date.now() + timeout;
-    let nodes: NativeNode[];
-    do {
-      nodes = await device.nodes();
-      if (blocked(nodes)) throw new Error('切换我的标签时出现错误弹窗、键盘或其他模态页面');
-      if (nodes.some(node => node.res === 'settings-list' && visibleInTree(nodes, node)) && actionable(nodes, 'sign-in-button')) return;
-      if (Date.now() >= deadline) break;
-      await delay(200);
-    } while (true);
+    const nodes = await pollGuestSettings(device, timeout, blocked, visibleInTree, actionable);
+    if (!nodes) return;
     // Retry one real tap only when the old hall is still visibly active and its
     // tab button remains actionable. Other pages never receive blind scrolling.
     const hall = nodes.find(node => node.res === 'hall-content-list' && visibleInTree(nodes, node));
@@ -180,7 +156,7 @@ export async function revealScenarioReady(device: NativeDevice, scenario: Pick<V
     return waitForCountryPicker(device);
   }
   if (selector.res === 'club-tab-screen') {
-    if (scenario.signIn !== true && !(scenario.pageLabel === 'guest_club' && scenario.signIn === false)) {
+    if (!explicitClubScenario(scenario)) {
       throw new Error('俱乐部就绪检查需要明确的游客场景或已登录场景。');
     }
     await waitForClubReady(device, { signIn: scenario.signIn });
@@ -205,14 +181,7 @@ export type NavigationResult = { backgroundBanner?: ScreenshotBounds; readySnaps
 export async function navigateScenario(device: NativeDevice, scenario: VisualScenario): Promise<NavigationResult> {
   await returnToTabs(device);
   await tap(device, scenario.tabTestId || 'hall-tab');
-  for (let reset = 0; reset < 3; reset++) {
-    const list = (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
-      && node.bounds.height > device.screenSize.height * 0.3);
-    if (!list) break;
-    const { x, y, width, height } = list.bounds;
-    await device.input.swipe({ x1: x + width * 0.5, y1: y + height * 0.2,
-      x2: x + width * 0.5, y2: y + height * 0.85, duration: 600 });
-  }
+  await resetScenarioScroll(device);
   let filled = false;
   let backgroundBanner: ScreenshotBounds | undefined;
   for (const identifier of scenario.navClickTestIds) {
@@ -224,22 +193,7 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
       backgroundBanner = (await device.marker('slot-banner'))?.bounds;
     }
     if (identifier === 'advanced-options-button') { await fillScenarioInputs(device, scenario); filled = true; }
-    if (identifier === 'personal-house-create' || identifier === 'personal-house-join') {
-      await tap(device, 'hall-tab');
-      await tap(device, identifier);
-      if (identifier === 'personal-house-create') {
-        await reveal(device, { res: 'select-game-category-text' });
-        if (!scenario.navClickTestIds.includes('create-game-button')) await closePicker(device);
-      } else await reveal(device, { res: 'copy-house-number-button' });
-    } else if (identifier === 'create-game-button' && await exists(device, { res: 'select-game-category-text' })) continue;
-    else if (identifier === 'user-agreement-button' || identifier === 'user-privacy-button') {
-      await openNativeLegalDocument(device, identifier === 'user-agreement-button' ? 'user-agreement' : 'user-privacy',
-        entry => tap(device, entry));
-    } else if (identifier === 'hall-sign-in-button') {
-      await selectGuestSettingsTab(device);
-      await tap(device, 'sign-in-button');
-      await device.wait({ res: 'username-or-email-sign-in-button' });
-    } else await tap(device, identifier);
+    await clickScenarioEntry(device, scenario, identifier);
   }
   if (!filled) await fillScenarioInputs(device, scenario);
   const readySnapshot = await revealScenarioReady(device, scenario);
@@ -247,21 +201,10 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
     // This country's readiness snapshot already checks loading, errors, keyboard
     // and actionable geometry. There is no UI action before screenshot masking.
     // New constraints must be implemented explicitly rather than silently omitted.
-    if (scenario.pageLabel !== 'login_pick_country_code' || scenario.readyText || scenario.visualGoneSelector
-      || scenario.fixedTexts.length || scenario.navClickTestIds.includes('advanced-options-button')) {
-      throw new Error('国家区号快照就绪分支尚未覆盖新增场景约束');
-    }
+    validateCountrySnapshotScenario(scenario);
     return { backgroundBanner, readySnapshot };
   }
-  if (scenario.pageLabel === 'hall') await scrollToEnd(device, { res: 'hall-content-list' }, { res: 'hall-sign-in-button' });
-  if (scenario.navClickTestIds.includes('advanced-options-button')) {
-    await scrollToEnd(device, { scrollable: true }, { res: 'create-room-tips-text' });
-  }
-  if (scenario.visualGoneSelector) await waitAbsent(device, nativeSelector(scenario.visualGoneSelector));
-  if (scenario.readyText) await device.wait({ text: scenario.readyText });
-  if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
-  await waitAbsent(device, { res: 'alert-message-text' });
-  await device.hideKeyboard();
+  await finishScenarioNavigation(device, scenario);
   return { backgroundBanner };
 }
 export async function signIn(device: NativeDevice, username = process.env.VISUAL_USERNAME, password = process.env.VISUAL_PASSWORD) {
@@ -293,4 +236,99 @@ export async function selectLanguage(device: NativeDevice, locale: string) {
   await device.wait({ res: 'switch-language-label', text: expected });
   await tap(device, 'close-user-authentication-button');
   await device.wait({ res: 'settings-tab' });
+}
+
+function guestSettingsPredicates(device: NativeDevice) {
+  const visible = (node: NativeNode) => node.visible !== false && node.bounds.width > 0 && node.bounds.height > 0;
+  const screen = { x: 0, y: 0, ...device.screenSize };
+  const visibleInTree = (nodes: NativeNode[], node: NativeNode) => {
+    if (!visible(node)) return false;
+    const geometry = nativeViewport(nodes, node, screen);
+    return visible(geometry.node) && geometry.visibleBounds.width > 0 && geometry.visibleBounds.height > 0;
+  };
+  const blocked = (nodes: NativeNode[]) => nodes.some(node => (
+    /^(XCUIElementTypeAlert|XCUIElementTypeKeyboard|XCUIElementTypeSheet)$/.test(node.clazz)
+    || /^(alert-message-text|popup-content-container|confirm-pop-up-image-background|staging-dialog|html-render|country-code-list|base-create-room-screen|username-or-email-sign-in-button)$/.test(node.res || '')
+  ) && visibleInTree(nodes, node));
+  const actionable = (nodes: NativeNode[], res: string) => {
+    const target = nodes.find(node => node.res === res && visible(node) && node.enabled);
+    if (!target) return false;
+    const { node, viewport } = nativeViewport(nodes, target, screen);
+    return visible(node) && pointInside({ x: node.bounds.x + node.bounds.width / 2,
+      y: node.bounds.y + node.bounds.height / 2 }, viewport);
+  };
+  return { visibleInTree, blocked, actionable };
+}
+
+async function pollGuestSettings(device: NativeDevice, timeout: number,
+  blocked: (nodes: NativeNode[]) => boolean,
+  visibleInTree: (nodes: NativeNode[], node: NativeNode) => boolean,
+  actionable: (nodes: NativeNode[], res: string) => boolean) {
+    const deadline = Date.now() + timeout;
+    let nodes: NativeNode[];
+    do {
+      nodes = await device.nodes();
+      if (blocked(nodes)) throw new Error('切换我的标签时出现错误弹窗、键盘或其他模态页面');
+      if (nodes.some(node => node.res === 'settings-list' && visibleInTree(nodes, node)) && actionable(nodes, 'sign-in-button')) return undefined;
+      if (Date.now() >= deadline) break;
+      await delay(200);
+    } while (true);
+  return nodes;
+}
+
+function explicitClubScenario(scenario: Pick<VisualScenario, 'pageLabel' | 'signIn'>) {
+  return scenario.signIn === true || (scenario.pageLabel === 'guest_club' && scenario.signIn === false);
+}
+
+async function resetScenarioScroll(device: NativeDevice) {
+  for (let reset = 0; reset < 3; reset++) {
+    const list = (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
+      && node.bounds.height > device.screenSize.height * 0.3);
+    if (!list) break;
+    const { x, y, width, height } = list.bounds;
+    await device.input.swipe({ x1: x + width * 0.5, y1: y + height * 0.2,
+      x2: x + width * 0.5, y2: y + height * 0.85, duration: 600 });
+  }
+}
+
+async function clickScenarioEntry(device: NativeDevice, scenario: VisualScenario, identifier: string) {
+  if (identifier === 'personal-house-create' || identifier === 'personal-house-join') {
+    await openPersonalHouse(device, scenario, identifier);
+  } else if (identifier === 'create-game-button' && await exists(device, { res: 'select-game-category-text' })) return;
+  else if (identifier === 'user-agreement-button' || identifier === 'user-privacy-button') {
+    await openNativeLegalDocument(device, identifier === 'user-agreement-button' ? 'user-agreement' : 'user-privacy',
+      entry => tap(device, entry));
+  } else if (identifier === 'hall-sign-in-button') {
+    await selectGuestSettingsTab(device);
+    await tap(device, 'sign-in-button');
+    await device.wait({ res: 'username-or-email-sign-in-button' });
+  } else await tap(device, identifier);
+}
+
+async function openPersonalHouse(device: NativeDevice, scenario: VisualScenario, identifier: string) {
+  await tap(device, 'hall-tab');
+  await tap(device, identifier);
+  if (identifier === 'personal-house-create') {
+    await reveal(device, { res: 'select-game-category-text' });
+    if (!scenario.navClickTestIds.includes('create-game-button')) await closePicker(device);
+  } else await reveal(device, { res: 'copy-house-number-button' });
+}
+
+function validateCountrySnapshotScenario(scenario: VisualScenario) {
+  if (scenario.pageLabel !== 'login_pick_country_code' || scenario.readyText || scenario.visualGoneSelector
+    || scenario.fixedTexts.length || scenario.navClickTestIds.includes('advanced-options-button')) {
+    throw new Error('国家区号快照就绪分支尚未覆盖新增场景约束');
+  }
+}
+
+async function finishScenarioNavigation(device: NativeDevice, scenario: VisualScenario) {
+  if (scenario.pageLabel === 'hall') await scrollToEnd(device, { res: 'hall-content-list' }, { res: 'hall-sign-in-button' });
+  if (scenario.navClickTestIds.includes('advanced-options-button')) {
+    await scrollToEnd(device, { scrollable: true }, { res: 'create-room-tips-text' });
+  }
+  if (scenario.visualGoneSelector) await waitAbsent(device, nativeSelector(scenario.visualGoneSelector));
+  if (scenario.readyText) await device.wait({ text: scenario.readyText });
+  if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
+  await waitAbsent(device, { res: 'alert-message-text' });
+  await device.hideKeyboard();
 }
