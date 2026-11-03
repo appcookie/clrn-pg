@@ -207,16 +207,27 @@ jobs:
       - name: 发布可回看的视频证据
         if: always() && hashFiles('ios/artifacts/video-evidence/manifest.json') != ''
         id: videos
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: ios-video-evidence-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 30
           if-no-files-found: error
           path: ios/artifacts/video-evidence/
+      - name: 重试发布视频证据
+        if: always() && steps.videos.outcome == 'failure'
+        id: videos_retry
+        uses: actions/upload-artifact@v4
+        with:
+          # FinalizeArtifact 断连时可能已创建同名产物，重试使用独立名称。
+          name: ios-video-evidence-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}-retry
+          retention-days: 30
+          if-no-files-found: error
+          path: ios/artifacts/video-evidence/
       - name: 录屏观看入口
-        if: matrix.recordOnly && steps.videos.outputs.artifact-url != ''
+        if: matrix.recordOnly && (steps.videos.outputs.artifact-url != '' || steps.videos_retry.outputs.artifact-url != '')
         env:
-          VIDEOS_URL: ${{ steps.videos.outputs.artifact-url }}
+          VIDEOS_URL: ${{ steps.videos.outputs.artifact-url || steps.videos_retry.outputs.artifact-url }}
           ANIMATION_CASE: ${{ matrix.animation }}
         run: |
           echo "### $ANIMATION_CASE 动画录屏" >> "$GITHUB_STEP_SUMMARY"
