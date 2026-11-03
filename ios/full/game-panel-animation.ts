@@ -54,10 +54,15 @@ function guardedGamePanel(game: string, name: string, phase: string) {
   };
 }
 
+function isMenuEntrance(game: string, name: string, button: string, phase: string): boolean {
+  return phase === 'enter' && (button.startsWith('drawer-menu-item-')
+    || (game === 'texas-holdem' && name === 'drawer-menu' && button === 'menu-button'));
+}
+
 async function gamePanelPress(device: AndroidDevice, game: string, name: string, button: string,
   testInfo: TestInfo, phase: string): Promise<() => Promise<void>> {
   const { guardedEntrance, guardedExit } = guardedGamePanel(game, name, phase);
-  const menuEntrance = phase === 'enter' && button.startsWith('drawer-menu-item-');
+  const menuEntrance = isMenuEntrance(game, name, button, phase);
   let press: () => Promise<void>;
   if (game === 'zhajinhua' && name === 'leaderboard' && phase === 'enter'
     && button === zhajinhuaLeaderboardButton) {

@@ -172,3 +172,34 @@ test('录后诊断驱动错误保留原断言失败；断言成功时也不能�
     assert.equal(f.taps.length, 0);
   }
 });
+
+for (const state of ['unchanged', 'loading', 'connecting', 'timeout', 'different-page', 'driver-error']) {
+  test(`排行榜录后未就绪：${state} 只允许原牌桌重录一次`, async () => {
+    const { recordLeaderboardEntrance } = await import('./leaderboard-entrance.ts');
+    const error = new Error('public-leader-board-empty 应可见且连接正常');
+    const table = [target, { ...target, res: 'zhajinhua-start-room-timer-button' }];
+    const states = {
+      unchanged: table, loading: [...table, { ...target, res: 'public-leader-board-loading' }],
+      connecting: [...table, connecting], timeout: [...table, timeout], 'different-page': [],
+    };
+    let recordings = 0, assertions = 0;
+    const device = { screenSize: { width: 120, height: 180 }, nodes: async () => {
+      if (state === 'driver-error') throw new Error('driver failed');
+      return states[state];
+    } };
+    const run = () => recordLeaderboardEntrance(device, async () => { recordings++; }, async () => {
+      if (++assertions === 1 || state !== 'unchanged') throw error;
+    });
+    if (state === 'unchanged') { await run(); assert.equal(recordings, 2); }
+    else { await assert.rejects(run); assert.equal(recordings, 1); }
+  });
+}
+test('第二次排行榜入场仍未就绪时保留失败', async () => {
+  const { recordLeaderboardEntrance } = await import('./leaderboard-entrance.ts');
+  let recordings = 0;
+  const error = new Error('public-leader-board-empty 应可见且连接正常');
+  await assert.rejects(recordLeaderboardEntrance({ screenSize: { width: 120, height: 180 },
+    nodes: async () => [target, { ...target, res: 'zhajinhua-start-room-timer-button' }] },
+  async () => { recordings++; }, async () => { throw error; }), error);
+  assert.equal(recordings, 2);
+});

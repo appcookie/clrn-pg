@@ -220,8 +220,28 @@ export async function signIn(device: NativeDevice, username = process.env.VISUAL
   await device.hideKeyboard();
   await tap(device, 'sign-in-button');
   await device.wait({ res: 'settings-tab' }, { timeout: 60_000 });
-  await tap(device, 'settings-tab');
+  await openSignedInSettings(device);
   await device.wait({ res: 'user-info-button' }, { timeout: 30_000 });
+}
+
+/** Retry only the observed profile request timeout, once, before opening settings. */
+export async function openSignedInSettings(device: NativeDevice) {
+  try { await tap(device, 'settings-tab'); }
+  catch (error) {
+    const nodes = await device.nodes();
+    const alert = nodes.find(node => node.visible && node.clazz === 'XCUIElementTypeAlert'
+      && flattenAlert(node).some(child => child.text === 'timeout of 10000ms exceeded'));
+    const retry = alert && flattenAlert(alert).find(node => node.visible && node.enabled
+      && node.clazz === 'XCUIElementTypeButton' && node.text === 'Retry');
+    if (!retry) throw error;
+    await device.input.tap({ x: retry.bounds.x + retry.bounds.width / 2,
+      y: retry.bounds.y + retry.bounds.height / 2 });
+    await device.wait({ clazz: 'XCUIElementTypeAlert' }, { state: 'gone' });
+    await tap(device, 'settings-tab');
+  }
+}
+function flattenAlert(node: NativeNode): NativeNode[] {
+  return [node, ...node.children.flatMap(flattenAlert)];
 }
 export async function selectLanguage(device: NativeDevice, locale: string) {
   const identifier = { en: 'english', 'zh-Hans': 'zh-hans', 'zh-Hant': 'zh-hant' }[locale];

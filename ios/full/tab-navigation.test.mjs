@@ -96,3 +96,36 @@ test('驱动查询或真实点击错误原样传播，不触发额外点击', as
     assert.ok(f.taps() <= 1);
   }
 });
+
+for (const message of ['timeout of 10000ms exceeded', 'Authentication failed']) {
+  test(`登录后的原生弹窗 ${message} 只重试已识别的请求超时`, async () => {
+    const { openSignedInSettings } = await import('./navigation.ts');
+    const retry = node('Retry', { x: 60, y: 80, width: 40, height: 20 },
+      { clazz: 'XCUIElementTypeButton', text: 'Retry' });
+    const alert = node('alert', full, { clazz: 'XCUIElementTypeAlert', children: [
+      node('message', full, { text: message }), retry,
+    ] });
+    const hidden = node('hidden', full, { visible: false, children: [tab] });
+    let retried = 0, tabTaps = 0;
+    const device = {
+      screenSize: { width: 1178, height: 2556 },
+      wait: async () => {}, hideKeyboard: async () => {},
+      info: async selector => {
+        if (selector.res === 'settings-tab') return tab;
+        throw Object.assign(new Error('missing'), { code: 'no such element' });
+      },
+      nodes: async () => retried ? [tab] : [hidden, tab, alert],
+      input: { tap: async point => {
+        if (point.x === 80 && point.y === 90) retried++;
+        else tabTaps++;
+      } },
+    };
+    if (message.startsWith('timeout')) {
+      await openSignedInSettings(device);
+      assert.equal(retried, 1); assert.equal(tabTaps, 1);
+    } else {
+      await assert.rejects(openSignedInSettings(device));
+      assert.equal(retried, 0); assert.equal(tabTaps, 0);
+    }
+  });
+}
