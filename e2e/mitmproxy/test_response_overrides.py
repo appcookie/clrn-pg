@@ -3,26 +3,26 @@
 import json
 import unittest
 from mitmproxy import http
-from response_overrides import PROXY_HOST, METADATA_PATH, VisualNetwork, prepare_profiles, patch_profiles, patch_version
+from response_overrides import prepare_profiles, patch_profiles, patch_version
 from test_network_faults import flow
 
 
 class ResponseOverrideTests(unittest.TestCase):
-    def metadata(self, body, status=200, method='GET', host='api.shafayouxi.org'):
-        request = flow(f'https://{host}{METADATA_PATH}', method)
+    def version_response(self, body, status=200, method='GET', host='api.shafayouxi.org'):
+        request = flow(f'https://{host}/public/v11/game_log/available.json', method)
         request.response = http.Response.make(status, json.dumps(body).encode(), {
             'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://app.test',
             'X-Upstream': 'kept', 'ETag': 'old',
         })
         return request
 
-    def test_metadata_only_filters_servers_and_preserves_compression_headers_and_unknown_fields(self):
+    def test_version_override_preserves_servers_compression_headers_and_unknown_fields(self):
         original = {'ok': True, 'trace': 'new-trace', 'result': {'extra': {'new': True},
-            'servers': {PROXY_HOST: 'real-ip', 'other': 'another-ip'}}}
-        request = self.metadata(original)
+            'servers': {'node-a': 'real-ip', 'node-b': 'another-ip'}, 'available_url_version': 'v1'}}
+        request = self.version_response(original)
         request.response.encode('gzip')
-        self.assertTrue(VisualNetwork().response(request))
-        original['result']['servers'].pop('other')
+        self.assertTrue(patch_version(request, 'v11'))
+        original['result']['available_url_version'] = 'v11'
         self.assertEqual(request.response.json(), original)
         self.assertEqual(request.response.headers['Content-Encoding'], 'gzip')
         self.assertEqual(request.response.headers['X-Upstream'], 'kept')
@@ -30,37 +30,27 @@ class ResponseOverrideTests(unittest.TestCase):
         self.assertNotIn('ETag', request.response.headers)
         self.assertEqual(int(request.response.headers['Content-Length']), len(request.response.raw_content))
 
-    def test_metadata_errors_or_contract_changes_preserve_original_bytes(self):
+    def test_version_errors_or_contract_changes_preserve_original_bytes(self):
         for body, status in (({'ok': False, 'error': 'auth'}, 200), ({'ok': True}, 503),
                              ({'ok': True, 'result': []}, 200),
                              ({'ok': True, 'result': {'servers': {}}}, 200),
                              ({'ok': True, 'result': {'servers': []}}, 200)):
-            request = self.metadata(body, status)
+            request = self.version_response(body, status)
             original = request.response.raw_content
-            self.assertFalse(VisualNetwork().response(request))
+            self.assertFalse(patch_version(request, 'v11'))
             self.assertEqual(request.response.raw_content, original)
             self.assertEqual(request.response.status_code, status)
             self.assertEqual(request.response.headers['ETag'], 'old')
         request.response.content = b'<html>Bad Gateway</html>'
-        self.assertFalse(VisualNetwork().response(request))
+        self.assertFalse(patch_version(request, 'v11'))
         self.assertEqual(request.response.content, b'<html>Bad Gateway</html>')
 
-    def test_network_overrides_are_staging_only_and_read_only(self):
-        network = VisualNetwork()
-        body = {'ok': True, 'result': {'servers': {PROXY_HOST: 'ip', 'other': 'ip2'}}}
-        for method in ('POST', 'PUT', 'DELETE'):
-            self.assertFalse(network.response(self.metadata(body, method=method)))
-            self.assertFalse(network.request(flow('https://offline.api.staging.laiwan.shafayouxi.com/node/v1/status', method)))
-        for host in ('production.example.com', 'api.staging.laiwan.shafayouxi.com.evil.test'):
-            self.assertFalse(network.response(self.metadata(body, host=host)))
-            self.assertFalse(network.request(flow(f'https://{host}/node/v1/status')))
-
     def test_version_keeps_new_fields_and_does_not_recreate_removed_fields(self):
-        request = self.metadata({'ok': True, 'result': {'available_url_version': 'v1', 'new': 42}})
+        request = self.version_response({'ok': True, 'result': {'available_url_version': 'v1', 'new': 42}})
         self.assertTrue(patch_version(request, 'v11'))
         self.assertEqual(request.response.json()['result'], {'available_url_version': 'v11', 'new': 42})
         for result in ({'new_version_field': 'v12'}, {'available_url_version': ['v12']}):
-            request = self.metadata({'ok': True, 'result': result})
+            request = self.version_response({'ok': True, 'result': result})
             original = request.response.content
             self.assertFalse(patch_version(request, 'v11'))
             self.assertEqual(request.response.content, original)

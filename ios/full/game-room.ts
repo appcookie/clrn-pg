@@ -60,7 +60,7 @@ export async function submitGameRoom(device: AndroidDevice, proxy: Mitmproxy,
 
 /** 房规读取超时发生在建房请求之前；仅对已确认的只读加载错误重新进入表单一次。 */
 export async function openGameRoomForm(device: AndroidDevice, gameButton: string,
-  selectGame = () => tap(device, gameButton),
+  selectGame = () => selectGameFromPicker(device, gameButton),
   reopenPicker = () => tap(device, 'create-game-button')): Promise<void> {
   for (let attempt = 0; attempt < 2; attempt++) {
     await selectGame();
@@ -146,4 +146,29 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
     await gameReady(device, 'zhajinhua-text-room-name', 'TestRoom');
   }
   return room;
+}
+
+/** 只有首次选择后仍是无遮挡、可操作的游戏列表，才补点一次只读导航。 */
+export async function selectGameFromPicker(device: AndroidDevice, gameButton: string,
+  press = () => tap(device, gameButton)): Promise<void> {
+  await press();
+  try {
+    await device.wait({ res: 'select-game-category-text' }, { state: 'gone' });
+    return;
+  } catch (error) {
+    if ((error as { code?: string }).code !== 'no such element') throw error;
+    const nodes = await device.nodes();
+    if (!unchangedGamePicker(nodes, gameButton)) throw error;
+  }
+  await press();
+  await device.wait({ res: 'select-game-category-text' }, { state: 'gone' });
+}
+
+/** 加载页、表单、系统弹窗或业务弹窗出现后，不能把列表残留当作漏点。 */
+function unchangedGamePicker(nodes: Awaited<ReturnType<AndroidDevice['nodes']>>, gameButton: string): boolean {
+  const visible = nodes.filter(node => node.visible !== false);
+  const blocked = visible.some(node => /Alert|Keyboard/.test(node.clazz)
+    || /^(?:common-alert-title|common-alert-message|alert-message-text|popup-content-container|create-room-loading-container|base-create-room-screen|room-name-input)$/.test(node.res || ''));
+  return !blocked && visible.some(node => node.res === 'select-game-category-text')
+    && visible.some(node => node.res === gameButton && node.enabled);
 }

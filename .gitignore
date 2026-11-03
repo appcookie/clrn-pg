@@ -9,3 +9,6 @@ __pycache__/
 *.pyc
 playwright-report/
 test-results/
+
+# ttyctl local runtime data (agent-writable)
+.ttyctl/

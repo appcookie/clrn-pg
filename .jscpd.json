@@ -1,0 +1,17 @@
+{
+  "minLines": 5,
+  "minTokens": 70,
+  "mode": "mild",
+  "maxSize": "10mb",
+  "format": ["javascript", "typescript", "jsx", "tsx", "python"],
+  "formatsExts": {
+    "javascript": ["js", "mjs", "cjs"],
+    "typescript": ["ts", "mts", "cts"],
+    "jsx": ["jsx"],
+    "tsx": ["tsx"],
+    "python": ["py"]
+  },
+  "ignore": ["**/node_modules/**", "**/.venv/**", "**/__pycache__/**", ".git/**", "ios/artifacts/**", "**/playwright-report/**", "**/test-results/**"],
+  "reporters": ["json"],
+  "absolute": false
+}

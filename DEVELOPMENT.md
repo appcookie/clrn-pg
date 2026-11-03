@@ -35,9 +35,9 @@ Git 不会把本地 hook 复制到新克隆；每次克隆都要安装。虚拟�
 仅改 Markdown、PNG 或 MP4 时没有匹配的 hook；手动 `--all-files` 会检查全仓库。
 TypeScript 的实际源码范围由现有 `tsconfig.json` 决定。
 
-原有 `check:python` 没有静态子步骤：它运行各目录的 Python 单元测试和真实 mitmproxy
-集成测试，需要代理依赖并监听本地端口。因此新增独立的静态入口，完整 `check:python`
-先调用它，再原样执行这些测试。静态入口用标准库 `compile` 在内存中检查 Git 跟踪的全部
+完整 `check:python` 先运行独立的语法检查，再运行 Ruff、质量检查及各目录的 Python
+单元测试和真实 mitmproxy 集成测试；集成测试需要代理依赖并监听本地端口。
+语法检查入口用标准库 `compile` 在内存中检查 Git 跟踪的全部
 Python 文件；支持编码声明，不导入/执行源码、不生成 `__pycache__`/`.pyc`，不检查未跟踪及
 忽略文件，已删除文件不再读取。这只是语法检查，不是 Ruff、类型检查或测试运行。
 

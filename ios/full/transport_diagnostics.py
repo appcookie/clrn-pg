@@ -134,6 +134,23 @@ class TransportDiagnostics:
             result['backendDelay'] = delay
         return result
 
+    @classmethod
+    def candidates(cls, response):
+        """仅保留公开 staging 候选域名，不导出 IP、任意字段或错误正文。"""
+        if not response or response.status_code != 200 or len(response.content or b'') > 256 * 1024:
+            return {}
+        try:
+            body = response.json()
+        except (ValueError, UnicodeDecodeError):
+            return {}
+        if not isinstance(body, dict) or body.get('ok') is not True or not isinstance(body.get('result'), dict):
+            return {}
+        servers = body['result'].get('servers')
+        if not isinstance(servers, (dict, list)):
+            return {}
+        hosts = sorted({host for host in servers if cls.host(host) != '<other>'})
+        return {'candidateHosts': hosts[:128], 'candidateHostsTruncated': len(hosts) > 128}
+
     def response(self, flow):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
         if host != '<other>' and path:
@@ -142,10 +159,11 @@ class TransportDiagnostics:
             if event is not None:
                 event.update(ended=self.clock(), status=flow.response.status_code if flow.response else 0,
                     mocked=flow.metadata.get('ios_mocked') is True, transportError=bool(flow.error),
-                    source='visual-node-exclusion' if flow.metadata.get('visual_node_excluded') is True
-                        else 'fixture' if flow.metadata.get('ios_mocked') is True else 'upstream')
+                    source='fixture' if flow.metadata.get('ios_mocked') is True else 'upstream')
                 if path == '/node/v1/status':
                     event.update(self.health(flow.response))
+                elif path in ('/public/v12/metadata/servers', '/public/v13/metadata/servers'):
+                    event.update(self.candidates(flow.response))
                 elif path == '/v10/profile/<user>' and flow.response:
                     # 仅记录字段是否存在，不保留用户身份、头像地址、昵称或错误正文。
                     try:
