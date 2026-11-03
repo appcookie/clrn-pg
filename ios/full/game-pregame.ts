@@ -278,6 +278,20 @@ async function waitForRenewal(device: AndroidDevice) {
     { timeout: 45_000 }).toBeGreaterThan(0);
 }
 
+/** 未生效的主题点击仅在完整树证明侧栏仍开着时重录一次，保留两次原片。 */
+export async function recordThemeEntrance(device: AndroidDevice, record: () => Promise<void>): Promise<void> {
+  await record();
+  await gameConnected(device, 1_000);
+  const nodes = await gameNodes(device);
+  if (!gameConnectionState(nodes).connecting
+    && nodes.some(node => node.res === 'drawer-menu-item-exit')
+    && !nodes.some(node => node.res === 'game-settings-card-theme-simple')) {
+    await record();
+  }
+  await gameGone(device, 'drawer-menu-item-exit');
+  await gameReady(device, 'game-settings-card-theme-simple');
+}
+
 async function capturePreGameMenu(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
   state: string, ready: string, close: string, captureConnected: Capture, animationInfo?: TestInfo) {
   // 重连遮罩会短暂盖住菜单按钮；等真实牌桌恢复后再点击下一项。
@@ -286,11 +300,16 @@ async function capturePreGameMenu(device: AndroidDevice, game: 'texas-holdem' | 
   await tap(device, 'menu-button');
   await gameReady(device, `drawer-menu-item-${state}`);
   const renewalReady = state === 'renew' && animationInfo ? () => waitForRenewal(device) : undefined;
-  await animateGamePanel(device, game, state, `drawer-menu-item-${state}`,
+  const recordEntrance = () => animateGamePanel(device, game, state, `drawer-menu-item-${state}`,
     screenBounds(device, { x: 110, y: 360, width: 480, height: 500 }), animationInfo, 'enter',
     menuSamplingMethod(game, state, 'enter'), [], renewalReady);
-  await gameGone(device, 'drawer-menu-item-exit');
-  await gameReady(device, ready);
+  if (game === 'texas-holdem' && state === 'theme' && animationInfo) {
+    await recordThemeEntrance(device, recordEntrance);
+  } else {
+    await recordEntrance();
+    await gameGone(device, 'drawer-menu-item-exit');
+    await gameReady(device, ready);
+  }
   if (state === 'renew') await waitForRenewal(device);
   await captureConnected(state);
   const exitReady = game === 'zhajinhua' && state === 'buy_in' && animationInfo ? async () => {
