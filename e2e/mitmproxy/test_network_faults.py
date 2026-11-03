@@ -120,7 +120,7 @@ class NetworkFaultTests(unittest.IsolatedAsyncioTestCase):
         await self.addon.request(preflight)
         self.assertIsNone(preflight.response)
 
-    async def test_visual_mode_reads_real_metadata_and_selected_health(self):
+    async def test_visual_mode_passes_all_candidates_and_health_to_upstream(self):
         await self.configure("visual-stable")
         host = "64.kr-seoul.api.staging.laiwan.shafayouxi.com"
         metadata = flow("https://api.shafayouxi.org/public/v13/metadata/servers")
@@ -128,14 +128,13 @@ class NetworkFaultTests(unittest.IsolatedAsyncioTestCase):
         self.assertIsNone(metadata.response)
         metadata.response = http.Response.make(200, json.dumps({"ok": True, "result": {
             "servers": {host: "real-address", "other": "other-address"}, "extra": 1}}).encode())
-        self.addon.response(metadata)
-        self.assertEqual(metadata.response.json()["result"], {"servers": {host: "real-address"}, "extra": 1})
+        self.assertEqual(metadata.response.json()["result"], {"servers": {host: "real-address", "other": "other-address"}, "extra": 1})
         selected = flow(f"https://{host}/node/v1/status")
         await self.addon.request(selected)
         self.assertIsNone(selected.response)
         unavailable = flow("https://offline.api.staging.laiwan.shafayouxi.com/node/v1/status")
         await self.addon.request(unavailable)
-        self.assertEqual(unavailable.response.status_code, 503)
+        self.assertIsNone(unavailable.response)
         for url in (
             "https://production.example.com/public/v13/metadata/servers",
             "https://offline.example.com/node/v1/status",
@@ -145,10 +144,10 @@ class NetworkFaultTests(unittest.IsolatedAsyncioTestCase):
             await self.addon.request(request)
             self.assertIsNone(request.response)
             self.assertIsNone(request.error)
-        self.assertEqual(self.addon.stabilized_requests, 2)
+        self.assertEqual(self.addon.stabilized_requests, 0)
         self.assertEqual(self.addon.intercepted_requests, 0)
 
-    async def test_visual_preflight_passes_through_except_locally_blocked_nodes(self):
+    async def test_visual_preflight_passes_through_for_all_nodes(self):
         await self.configure("visual-stable")
         urls = ("https://api.shafayouxi.org/public/v13/metadata/servers",
                 "https://64.kr-seoul.api.staging.laiwan.shafayouxi.com/node/v1/status")
@@ -159,8 +158,8 @@ class NetworkFaultTests(unittest.IsolatedAsyncioTestCase):
         preflight = flow("https://offline.api.staging.laiwan.shafayouxi.com/node/v1/status", "OPTIONS")
         preflight.request.headers["Access-Control-Request-Headers"] = "authorization"
         await self.addon.request(preflight)
-        self.assertEqual(preflight.response.status_code, 204)
-        self.assertEqual(preflight.response.headers["Access-Control-Allow-Headers"], "authorization")
+        self.assertIsNone(preflight.response)
+        self.assertEqual(preflight.request.headers["Access-Control-Request-Headers"], "authorization")
         await self.configure(None)
         normal = flow(urls[0])
         await self.addon.request(normal)

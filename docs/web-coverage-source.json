@@ -1743,7 +1743,7 @@
       "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
       "nativeImplementation": {
         "file": "ios/full/tests/slot-animation.spec.ts",
-        "testTitle": "all three native slot reels and reward types animate from real spin responses",
+        "testTitle": "三个原生老虎机滚轮与各类奖励均由真实旋转响应驱动动画",
         "locale": "en",
         "platformChanges": "原生循环实际帧",
         "validation": "collected-and-typechecked; native-execution-pending"
@@ -1951,7 +1951,7 @@
       "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
       "nativeImplementation": {
         "file": "ios/full/tests/slot-animation.spec.ts",
-        "testTitle": "all three native slot reels and reward types animate from real spin responses",
+        "testTitle": "三个原生老虎机滚轮与各类奖励均由真实旋转响应驱动动画",
         "locale": "en",
         "platformChanges": "原生三种奖励",
         "validation": "collected-and-typechecked; native-execution-pending"
@@ -1970,7 +1970,7 @@
       "androidOverlap": "Native analogue in android/ANIMATION_COVERAGE.md; exact native trigger and frames need adaptation.",
       "nativeImplementation": {
         "file": "ios/full/tests/slot-animation.spec.ts",
-        "testTitle": "all three native slot reels and reward types animate from real spin responses",
+        "testTitle": "三个原生老虎机滚轮与各类奖励均由真实旋转响应驱动动画",
         "locale": "en",
         "platformChanges": "同例面板/能量不足进退场",
         "validation": "collected-and-typechecked; native-execution-pending"

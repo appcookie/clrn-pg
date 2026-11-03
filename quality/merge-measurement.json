@@ -1,0 +1,47 @@
+{
+  "baseCommit": "299991928aba4e986f59e8389a1c32d5704d4765",
+  "sourceHead": "6ea886b39d5882e626dc3285bd488de5076b008e",
+  "description": "合入最新 master 并修复本轮问题后的未提交源树；位置详情见迁移清单，原始测量记录继续保留。",
+  "command": "node scripts/measure-quality.mjs",
+  "versions": {
+    "eslint": "10.12.0",
+    "@typescript-eslint/parser": "8.71.1",
+    "dependency-cruiser": "17.3.9",
+    "jscpd": "5.1.2"
+  },
+  "ruff": "ruff 0.15.12",
+  "files": {
+    "js": 314,
+    "python": 41
+  },
+  "jsComplexity": {
+    "count": 4245,
+    "maximum": 107,
+    "aboveLimit": 109
+  },
+  "jsDepthBlocks": {
+    "count": 2297,
+    "maximum": 6,
+    "aboveLimit": 73
+  },
+  "pythonComplexity": {
+    "count": 295,
+    "maximum": 44,
+    "aboveLimit": 13
+  },
+  "inventory": {
+    "previous": 271,
+    "current": 267,
+    "eslint": 209,
+    "ruff": 13,
+    "dependencies": 3,
+    "duplicates": 42
+  },
+  "networkFabrication": 27,
+  "duplication": {
+    "clones": 42,
+    "duplicatedLines": 479,
+    "duplicatedTokens": 5687,
+    "sources": 350
+  }
+}
