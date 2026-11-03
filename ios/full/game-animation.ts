@@ -4,7 +4,7 @@ import { baselinePath } from './baseline-path.mjs';
 import { expect, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import { challengeRegion } from './challenge-region';
-import { gameNodes } from './game-controls';
+import { gameGone, gameNodes } from './game-controls';
 import { maskScreenshot, type ScreenshotMask } from './screenshot';
 import { motionParts } from './motion-regions';
 import { comparePixels } from '../visual.mjs';
@@ -22,6 +22,9 @@ import { recordScreenSamples } from './video-frames';
 export async function captureChallengeAnimation(device: AndroidDevice, name: string, testInfo: TestInfo,
   masks: ScreenshotMask[]): Promise<void> {
   if (animationRecordOnly) {
+    // A preceding table action can leave a transient native toast over the
+    // challenge targets. Keep it out of the static comparison, without masking it.
+    await gameGone(device, 'toastText1');
     const original = await device.screenshot();
     const selectors = (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector');
     expect(selectors).toHaveLength(4);

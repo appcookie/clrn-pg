@@ -76,6 +76,24 @@ export async function closeThemeSettings(device: AndroidDevice): Promise<void> {
   await gameGone(device, 'game-settings-card-theme-simple');
 }
 
+/** Retry an idempotent background selection once when its static baseline fails. */
+export async function captureTableBackground(device: AndroidDevice, background: string, capture: Capture): Promise<void> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
+    await gameTapCurrent(device, `game-settings-background-${background}`);
+    await closeThemeSettings(device);
+    try {
+      await capture(`table_${background}`);
+      return;
+    } catch (error) {
+      // CI 41663618101 retained purple after selecting black. The retry
+      // must pass the same reviewed baseline; unrelated failures propagate.
+      if (attempt || !(error instanceof Error)
+        || !error.message.includes(`pre-game-table-${background}.png 变化比例`)) throw error;
+    }
+  }
+}
+
 /**
  * 点击真实弹层遮罩的边缘，避免点击其中央内容。
  * @param device - 专用模拟器连接。
@@ -197,10 +215,7 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture,
   await gameTapCurrent(device, 'game-settings-card-theme-simple');
   await closeThemeSettings(device);
   for (const background of ['blue', 'purple', 'black']) {
-    await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-    await gameTapCurrent(device, `game-settings-background-${background}`);
-    await closeThemeSettings(device);
-    await capture(`table_${background}`);
+    await captureTableBackground(device, background, capture);
   }
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
   await gameTapCurrent(device, 'game-settings-background-green');
