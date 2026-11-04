@@ -66,12 +66,11 @@ export async function withIosProxy<T>(task: (proxy: Mitmproxy) => Promise<T>,
   try {
     return await withMitmproxy(async proxy => {
       try { return await task(proxy); }
-      catch (error) {
-        // 该专用接口只含初始化端点的 host/path/status 计数和 TLS 失败计数。
+      finally {
+        // 成功和失败均保存候选域名、真实健康来源和实际连接的脱敏诊断。
         // 不要改为输出 observer/session 或 mitm 原始日志，其中可能含登录凭据。
         try { console.error('[iOS proxy transport]', JSON.stringify(await proxy.command('native/transport'))); }
         catch { console.error('[iOS proxy transport] diagnostics unavailable'); }
-        throw error;
       }
     }, {
       addonPath: path.join(path.dirname(fileURLToPath(import.meta.url)), 'proxy-addon.py'),
