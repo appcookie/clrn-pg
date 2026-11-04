@@ -4,7 +4,7 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
 import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameConnectionState, gameReady, gameReadyCurrent,
-  gameGone, gameGoneCurrent, gameNodes } from './game-controls';
+  gameGone, gameGoneCurrent, gameNodes, gameConnectedObservation } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
 import { recordLeaderboardEntrance, withRecordedLeaderboardEvidence } from './leaderboard-entrance';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
@@ -35,6 +35,19 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
   // A full accessibility tree costs tens of seconds on a populated table;
   // the focused query still verifies two live bounds and the connection state.
   await gameTapCurrent(device, 'menu-button');
+  await gameConnectedCurrent(device, 2_000);
+  const drawerMarkers = [`drawer-menu-item-${item}`, 'drawer-menu-item-exit'];
+  const drawer = await device.inputObservation(drawerMarkers);
+  if (gameConnectionState(drawer).connecting || !drawer.some(node => drawerMarkers.includes(node.res || ''))) {
+    // 41739214761: the Menu tap left the connected table visible with no
+    // drawer. Confirm that state in the live tree before retrying once;
+    // a focused-query miss must never toggle an already-open drawer shut.
+    const { nodes } = await gameConnectedObservation(device);
+    if (!nodes.some(node => drawerMarkers.includes(node.res || ''))
+      && nodes.some(node => node.res === 'menu-button' && node.visible !== false && node.enabled)) {
+      await gameTapCurrent(device, 'menu-button');
+    }
+  }
   await gameTapCurrent(device, `drawer-menu-item-${item}`);
   // 39725551167: a room reconnect covered the still-open drawer just after
   // its Theme tap. Absence under Connecting is not drawer exit.

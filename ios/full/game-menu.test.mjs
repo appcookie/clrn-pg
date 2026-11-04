@@ -173,3 +173,35 @@ test('background selection retries a missed setting once and preserves baseline 
   }), error => error === transport);
   assert.equal(captures, 1, 'unrelated errors must propagate immediately');
 });
+
+for (const missedTap of [false, true]) {
+  test(`menu opening confirms the live drawer before retrying: missed tap ${missedTap}`, async () => {
+    let state = 'table', menuTaps = 0, themeTaps = 0, fullReads = 0;
+    const visible = () => state === 'table' ? [menu]
+      : state === 'drawer' ? [menu, theme, drawerExit] : [panel];
+    const device = {
+      screenSize: { width: 1178, height: 2556 },
+      prepareTransientCapture: async () => {},
+      nodes: async () => { fullReads++; return visible(); },
+      inputObservation: async names => {
+        const targets = Array.isArray(names) ? names : [names];
+        // A focused miss alone cannot justify another Menu tap.
+        if (Array.isArray(names) && names.includes(theme.res)) return [];
+        return visible().filter(item => targets.includes(item.res));
+      },
+      input: { tap: async ({ x }) => {
+        if (x === 20) {
+          menuTaps++;
+          if (!missedTap || menuTaps === 2) state = state === 'drawer' ? 'table' : 'drawer';
+        } else if (x === 50) { themeTaps++; state = 'panel'; }
+        else throw new Error(`unexpected tap ${x}`);
+      } },
+    };
+    await gameMenu(device, 'theme', panel.res);
+    assert.equal(menuTaps, missedTap ? 2 : 1);
+    assert.equal(themeTaps, 1);
+    assert.equal(state, 'panel');
+    assert.ok(fullReads >= 1);
+  });
+}
+
