@@ -3313,16 +3313,6 @@
   },
   {
     "tool": "eslint",
-    "file": "scripts/animation-workflow.test.mjs",
-    "line": 46,
-    "column": 34,
-    "rule": "max-depth",
-    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
-    "anchor": "cdb4e989f1499485c97c6aab7feeb359110c454d15a6dbd72eab60300a2a9ad2",
-    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
     "file": "scripts/ci-accounts.mjs",
     "line": 130,
     "column": 1,

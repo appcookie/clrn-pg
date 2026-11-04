@@ -48,8 +48,9 @@ test('functional五片账号槽位独立稳定，少量账号只复用已配置�
   const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
   assert.match(workflow, /group: ios-account-\$\{\{ matrix\.account \|\|/);
   assert.match(workflow, /queue: max/);
-  assert.match(workflow, /IOS_PLAYWRIGHT_SHARD: \$\{\{ matrix\.playwrightShard \}\}/);
-  assert.match(workflow, /args\+=\(--shard "\$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1\)/);
+  const action = readFileSync(new URL('../.github/actions/ios-native/action.yml', import.meta.url), 'utf8');
+  assert.match(action, /IOS_PLAYWRIGHT_SHARD: \$\{\{ fromJSON\(inputs\.entry\)\.playwrightShard \}\}/);
+  assert.match(action, /args\+=\(--shard "\$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1\)/);
 });
 
 test('手动俱乐部搜索采图只调度一个用例，PR 事件不能缩减功能组', async () => {

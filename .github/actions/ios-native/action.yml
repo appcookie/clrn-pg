@@ -1,0 +1,163 @@
+name: iOS native shard
+description: 执行一个原有原生分片，两阶段共用全部断言、隔离和诊断步骤。
+inputs:
+  entry:
+    description: 当前分片的完整矩阵记录
+    required: true
+  build_artifact:
+    description: 本轮准备 job 的固定构建产物名
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '24'
+        cache: npm
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - shell: bash
+      run: npm ci
+    - uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.build_artifact }}
+        path: ios/artifacts/release/
+    - name: 校验本轮固定模拟器包并安装测试工具
+      env:
+        GH_TOKEN: ${{ github.token }}
+      shell: bash
+      run: |
+        node ios/verify-ci-release.mjs
+        npx appium driver install xcuitest@12.19.1
+        brew install ffmpeg
+        python -m venv e2e/.venv
+        e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
+    - name: 在独占锁内准备测试账号
+      if: fromJSON(inputs.entry).account != ''
+      env:
+        CLRN_IOS_CI_TEST_ACCOUNTS: ${{ env.CLRN_IOS_CI_TEST_ACCOUNTS }}
+        TESTING_API_TOKEN: ${{ env.TESTING_API_TOKEN }}
+      shell: bash
+      run: node scripts/configure-ci-account.mjs
+    - name: 创建专用模拟器
+      shell: bash
+      run: |
+        udid=$(xcrun simctl create clrn-full com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
+        echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
+    - name: 执行原生业务与静态截图，采集动画录屏
+      id: native_test
+      env:
+        TESTING_API_TOKEN: ${{ env.TESTING_API_TOKEN }}
+        IOS_FILTER: ${{ fromJSON(inputs.entry).filter }}
+        IOS_PLAYWRIGHT_SHARD: ${{ fromJSON(inputs.entry).playwrightShard }}
+      shell: bash
+      run: |
+        args=(--grep "$IOS_FILTER")
+        if [ -n "$IOS_PLAYWRIGHT_SHARD" ]; then
+          # 按测试均衡分片；每个 runner 仍只有一个 worker，顺序执行用例。
+          args+=(--shard "$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1)
+        fi
+        npm run test:ios:full -- "${args[@]}"
+    - name: 恢复 runner 代理设置
+      if: always()
+      shell: bash
+      run: node ios/full/system-proxy.mjs restore
+    - name: 校验本轮游客截图并导出可浏览原图
+      if: fromJSON(inputs.entry).group == 'guest' && !fromJSON(inputs.entry).animation
+      env:
+        IOS_SHARD: ${{ fromJSON(inputs.entry).shard }}
+      shell: bash
+      run: node ios/full/screenshot-evidence.mjs ios/artifacts ios/artifacts/current-screenshots "$IOS_LOCALE" "$IOS_SHARD"
+    - name: 发布本轮截图与录像
+      if: fromJSON(inputs.entry).group == 'guest' && !fromJSON(inputs.entry).animation
+      id: screenshots
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-current-screenshots-${{ fromJSON(inputs.entry).locale }}-${{ fromJSON(inputs.entry).shard }}-${{ github.run_attempt }}
+        retention-days: 30
+        if-no-files-found: error
+        path: ios/artifacts/current-screenshots/
+    - name: 截图入口
+      if: fromJSON(inputs.entry).group == 'guest' && !fromJSON(inputs.entry).animation
+      env:
+        SCREENSHOTS_URL: ${{ steps.screenshots.outputs.artifact-url }}
+      shell: bash
+      run: |
+        node --input-type=module <<'NODE'
+        import { appendFileSync, readFileSync } from 'node:fs';
+        const manifest = JSON.parse(readFileSync('ios/artifacts/current-screenshots/manifest.json', 'utf8'));
+        appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+          `### 本轮游客截图 · ${manifest.locale} · ${manifest.shard}\n\n` +
+          `${manifest.passedTests} 项测试通过，${manifest.screenshots} 张预期原图齐全。\n\n` +
+          `[下载截图与录像](${process.env.SCREENSHOTS_URL})，解压后打开 index.html；v1/ 为统一截图目录，manifest.json 记录本轮来源和 SHA-256。\n\n` +
+          `这是本轮实际采集结果，尚未批准为基准。未隔离动画组由独立分片录制视频供人工观看；暂未运行的组见 ios/full/quarantined/，动画效果断言待 React Native #7056。\n`);
+        NODE
+    - name: 校验本轮录屏存在且文件有效
+      if: fromJSON(inputs.entry).animation
+      env:
+        ANIMATION_CASE: ${{ fromJSON(inputs.entry).animation }}
+        ANIMATION_PART: ${{ fromJSON(inputs.entry).animationPart }}
+      shell: bash
+      run: node ios/full/animation-gate.mjs ios/artifacts/full-results/report.json "$ANIMATION_CASE"
+    - name: 导出本轮视频与关键帧（含失败运行）
+      if: always() && hashFiles('ios/artifacts/full-results/report.json') != '' && hashFiles('ios/artifacts/release/build-info.json') != ''
+      shell: bash
+      run: node ios/full/video-evidence.mjs ios/artifacts ios/artifacts/video-evidence
+    - name: 发布可回看的视频证据
+      if: always() && hashFiles('ios/artifacts/video-evidence/manifest.json') != ''
+      id: videos
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-video-evidence-${{ fromJSON(inputs.entry).group }}-${{ fromJSON(inputs.entry).locale }}-${{ fromJSON(inputs.entry).shard }}-${{ github.run_id }}-${{ github.run_attempt }}
+        retention-days: 30
+        if-no-files-found: error
+        path: ios/artifacts/video-evidence/
+    - name: 录屏观看入口
+      if: fromJSON(inputs.entry).recordOnly && steps.videos.outputs.artifact-url != ''
+      env:
+        VIDEOS_URL: ${{ steps.videos.outputs.artifact-url }}
+        ANIMATION_CASE: ${{ fromJSON(inputs.entry).animation }}
+      shell: bash
+      run: |
+        echo "### $ANIMATION_CASE 动画录屏" >> "$GITHUB_STEP_SUMMARY"
+        echo "[下载录屏]($VIDEOS_URL)，解压后打开 index.html 直接观看。动画效果由 React Native #7056 后续验证。" >> "$GITHUB_STEP_SUMMARY"
+    - name: 保存测试产物
+      if: always()
+      id: test_artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-${{ fromJSON(inputs.entry).group }}-${{ fromJSON(inputs.entry).locale }}-${{ fromJSON(inputs.entry).shard }}-${{ github.run_attempt }}
+        retention-days: 30
+        if-no-files-found: error
+        path: |
+          ios/artifacts/full-results/
+          ios/artifacts/full-report/
+          ios/artifacts/release/build-info.json
+    - name: 保存待审查的视觉基准候选
+      if: success() && env.IOS_VISUAL_MODE == 'reference'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-reference-candidates-${{ fromJSON(inputs.entry).group }}-${{ fromJSON(inputs.entry).locale }}-${{ fromJSON(inputs.entry).shard }}-${{ github.run_id }}
+        retention-days: 30
+        if-no-files-found: error
+        path: ios/snapshots/v1/
+    - name: 删除专用模拟器
+      if: always() && env.IOS_SIMULATOR_UDID != ''
+      shell: bash
+      run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
+    - name: 将失败原因写入运行摘要
+      if: failure()
+      env:
+        CI_LABEL: ${{ fromJSON(inputs.entry).label }}
+        CI_TEST_STEP: ${{ steps.native_test.outcome }}
+        CI_ARTIFACT_URL: ${{ steps.test_artifacts.outputs.artifact-url }}
+      shell: bash
+      run: node ios/full/ci-failure-summary.mjs job
+    - name: 保存失败摘要供总门禁汇总
+      if: failure() && hashFiles('ios/artifacts/ci-failure/summary.md') != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-ci-failure-${{ fromJSON(inputs.entry).group }}-${{ fromJSON(inputs.entry).locale }}-${{ fromJSON(inputs.entry).shard }}-${{ github.run_attempt }}
+        retention-days: 30
+        path: ios/artifacts/ci-failure/summary.md

@@ -32,6 +32,7 @@ on:
         default: ''
 permissions:
   contents: read
+  actions: read
 env:
   # 为依赖下载预留更长的有限重试窗口，避免短暂域名解析故障中断回归。
   PIP_RETRIES: '10'
@@ -39,9 +40,13 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.select.outputs.matrix }}
+      priority: ${{ steps.schedule.outputs.priority }}
+      remaining: ${{ steps.schedule.outputs.remaining }}
+      has_priority: ${{ steps.schedule.outputs.has_priority }}
+      has_remaining: ${{ steps.schedule.outputs.has_remaining }}
       run_native: ${{ steps.select.outputs.run_native }}
       preflight: ${{ steps.preflight.outcome }}
+      artifact_name: ${{ steps.schedule.outputs.artifact_name }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -78,6 +83,21 @@ jobs:
           IOS_BASELINE_PREFLIGHT_OUTCOME: ${{ steps.preflight.outcome == 'skipped' && 'success' || steps.preflight.outcome }}
           IOS_REFERENCE_CASES: ${{ steps.preflight.outputs.reference_cases }}
         run: node ios/full/select-ci-matrix.mjs
+      - name: 读取同范围历史并划分两阶段
+        id: schedule
+        env:
+          GH_TOKEN: ${{ github.token }}
+          IOS_CI_MATRIX: ${{ steps.select.outputs.matrix }}
+          CI_FORCE_FULL: ${{ github.event_name == 'workflow_dispatch' }}
+        run: node scripts/plan-ci-schedule.mjs
+      - name: 保存完整计划（优先失败时也保留剩余清单）
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.schedule.outputs.artifact_name }}
+          path: ios/artifacts/ci-schedule/plan.json
+          if-no-files-found: error
+          retention-days: 30
+
   proxy-check:
     runs-on: ubuntu-latest
     env:
@@ -105,13 +125,36 @@ jobs:
           e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
       - run: npm run check:static
       - run: npm run check:python
-  native:
+  target-build:
+    outputs:
+      artifact_name: ios-target-build-${{ github.run_id }}-${{ github.run_attempt }}
     needs: [plan, proxy-check]
     if: needs.plan.outputs.run_native == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: 下载并校验两阶段共用的目标构建
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node ios/download-release.mjs --simulator
+      - name: 保存本轮不可变目标包及构建身份
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-target-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ios/artifacts/release/
+          if-no-files-found: error
+          retention-days: 30
+
+  native-priority:
+    needs: [plan, proxy-check, target-build]
+    if: needs.plan.outputs.run_native == 'true' && needs.plan.outputs.has_priority == 'true'
     strategy:
       fail-fast: false
       max-parallel: 10
-      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.plan.outputs.priority) }}
     concurrency:
       group: ios-account-${{ matrix.account || format('{0}-{1}-{2}-{3}', github.run_id, matrix.group, matrix.locale, matrix.shard) }}
       queue: max
@@ -130,168 +173,90 @@ jobs:
       CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/ios-native
         with:
-          node-version: '24'
-          cache: npm
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: npm ci
-      - name: 下载公开模拟器包并安装测试工具
+          entry: ${{ toJSON(matrix) }}
+          build_artifact: ${{ needs.target-build.outputs.artifact_name }}
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          node ios/download-release.mjs --simulator
-          npx appium driver install xcuitest@12.19.1
-          brew install ffmpeg
-          python -m venv e2e/.venv
-          e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
-      - name: 在独占锁内准备测试账号
-        if: matrix.account != ''
-        env:
           CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
-        run: node scripts/configure-ci-account.mjs
-      - name: 创建专用模拟器
-        run: |
-          udid=$(xcrun simctl create clrn-full com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
-          echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
-      - name: 执行原生业务与静态截图，采集动画录屏
-        id: native_test
+
+  native:
+    needs: [plan, proxy-check, target-build, native-priority]
+    if: always() && !cancelled() && needs.plan.result == 'success' && needs.proxy-check.result == 'success' && needs.target-build.result == 'success' && needs.plan.outputs.run_native == 'true' && needs.plan.outputs.has_remaining == 'true' && ((needs.plan.outputs.has_priority == 'true' && needs.native-priority.result == 'success') || (needs.plan.outputs.has_priority == 'false' && needs.native-priority.result == 'skipped'))
+    strategy:
+      fail-fast: false
+      max-parallel: 10
+      matrix: ${{ fromJSON(needs.plan.outputs.remaining) }}
+    concurrency:
+      group: ios-account-${{ matrix.account || format('{0}-{1}-{2}-{3}', github.run_id, matrix.group, matrix.locale, matrix.shard) }}
+      queue: max
+    runs-on: macos-15
+    timeout-minutes: ${{ matrix.animation == 'animation-20' && 135 || 120 }}
+    name: ${{ matrix.label }}
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      APPIUM_HOME: ${{ github.workspace }}/.appium
+      IOS_SIMULATOR_UDID: ''
+      IOS_GROUP: ${{ matrix.group }}
+      IOS_LOCALE: ${{ matrix.locale }}
+      IOS_VISUAL_MODE: ${{ matrix.mode || inputs.mode || 'compare' }}
+      IOS_ANIMATION_RECORD_ONLY: ${{ matrix.recordOnly && '1' || '0' }}
+      CLRN_CI_ACCOUNT: ${{ matrix.account }}
+      CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/ios-native
+        with:
+          entry: ${{ toJSON(matrix) }}
+          build_artifact: ${{ needs.target-build.outputs.artifact_name }}
         env:
+          GH_TOKEN: ${{ github.token }}
+          CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
-          IOS_FILTER: ${{ matrix.filter }}
-          IOS_PLAYWRIGHT_SHARD: ${{ matrix.playwrightShard }}
-        run: |
-          args=(--grep "$IOS_FILTER")
-          if [ -n "$IOS_PLAYWRIGHT_SHARD" ]; then
-            # 按测试均衡分片；每个 runner 仍只有一个 worker，顺序执行用例。
-            args+=(--shard "$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1)
-          fi
-          npm run test:ios:full -- "${args[@]}"
-      - name: 恢复 runner 代理设置
-        if: always()
-        run: node ios/full/system-proxy.mjs restore
-      - name: 校验本轮游客截图并导出可浏览原图
-        if: matrix.group == 'guest' && !matrix.animation
-        env:
-          IOS_SHARD: ${{ matrix.shard }}
-        run: node ios/full/screenshot-evidence.mjs ios/artifacts ios/artifacts/current-screenshots "$IOS_LOCALE" "$IOS_SHARD"
-      - name: 发布本轮截图与录像
-        if: matrix.group == 'guest' && !matrix.animation
-        id: screenshots
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-current-screenshots-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
-          retention-days: 30
-          if-no-files-found: error
-          path: ios/artifacts/current-screenshots/
-      - name: 截图入口
-        if: matrix.group == 'guest' && !matrix.animation
-        env:
-          SCREENSHOTS_URL: ${{ steps.screenshots.outputs.artifact-url }}
-        run: |
-          node --input-type=module <<'NODE'
-          import { appendFileSync, readFileSync } from 'node:fs';
-          const manifest = JSON.parse(readFileSync('ios/artifacts/current-screenshots/manifest.json', 'utf8'));
-          appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-            `### 本轮游客截图 · ${manifest.locale} · ${manifest.shard}\n\n` +
-            `${manifest.passedTests} 项测试通过，${manifest.screenshots} 张预期原图齐全。\n\n` +
-            `[下载截图与录像](${process.env.SCREENSHOTS_URL})，解压后打开 index.html；v1/ 为统一截图目录，manifest.json 记录本轮来源和 SHA-256。\n\n` +
-            `这是本轮实际采集结果，尚未批准为基准。未隔离动画组由独立分片录制视频供人工观看；暂未运行的组见 ios/full/quarantined/，动画效果断言待 React Native #7056。\n`);
-          NODE
-      - name: 校验本轮录屏存在且文件有效
-        if: matrix.animation
-        env:
-          ANIMATION_CASE: ${{ matrix.animation }}
-          ANIMATION_PART: ${{ matrix.animationPart }}
-        run: node ios/full/animation-gate.mjs ios/artifacts/full-results/report.json "$ANIMATION_CASE"
-      - name: 导出本轮视频与关键帧（含失败运行）
-        if: always() && hashFiles('ios/artifacts/full-results/report.json') != '' && hashFiles('ios/artifacts/release/build-info.json') != ''
-        run: node ios/full/video-evidence.mjs ios/artifacts ios/artifacts/video-evidence
-      - name: 发布可回看的视频证据
-        if: always() && hashFiles('ios/artifacts/video-evidence/manifest.json') != ''
-        id: videos
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-video-evidence-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
-          retention-days: 30
-          if-no-files-found: error
-          path: ios/artifacts/video-evidence/
-      - name: 录屏观看入口
-        if: matrix.recordOnly && steps.videos.outputs.artifact-url != ''
-        env:
-          VIDEOS_URL: ${{ steps.videos.outputs.artifact-url }}
-          ANIMATION_CASE: ${{ matrix.animation }}
-        run: |
-          echo "### $ANIMATION_CASE 动画录屏" >> "$GITHUB_STEP_SUMMARY"
-          echo "[下载录屏]($VIDEOS_URL)，解压后打开 index.html 直接观看。动画效果由 React Native #7056 后续验证。" >> "$GITHUB_STEP_SUMMARY"
-      - name: 保存测试产物
-        if: always()
-        id: test_artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
-          retention-days: 30
-          if-no-files-found: error
-          path: |
-            ios/artifacts/full-results/
-            ios/artifacts/full-report/
-            ios/artifacts/release/build-info.json
-      - name: 保存待审查的视觉基准候选
-        if: success() && env.IOS_VISUAL_MODE == 'reference'
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-reference-candidates-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}
-          retention-days: 30
-          if-no-files-found: error
-          path: ios/snapshots/v1/
-      - name: 删除专用模拟器
-        if: always() && env.IOS_SIMULATOR_UDID != ''
-        run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
-      - name: 将失败原因写入运行摘要
-        if: failure()
-        env:
-          CI_LABEL: ${{ matrix.label }}
-          CI_TEST_STEP: ${{ steps.native_test.outcome }}
-          CI_ARTIFACT_URL: ${{ steps.test_artifacts.outputs.artifact-url }}
-        run: node ios/full/ci-failure-summary.mjs job
-      - name: 保存失败摘要供总门禁汇总
-        if: failure() && hashFiles('ios/artifacts/ci-failure/summary.md') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-ci-failure-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
-          retention-days: 30
-          path: ios/artifacts/ci-failure/summary.md
+
   screenshot-video-gate:
     # GitHub treats skipped checks as successful. Manual diagnostics must never
     # publish the same check context as the required PR/master aggregate.
     name: ${{ github.event_name == 'workflow_dispatch' && 'iOS recording diagnostics' || 'iOS screenshot and video gate' }}
     if: always() && github.event_name != 'workflow_dispatch'
-    needs: [plan, proxy-check, native]
+    needs: [plan, proxy-check, target-build, native-priority, native]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: 汇集失败分片的简短摘要
-        if: needs.native.result != 'success'
+        if: (needs.plan.outputs.has_remaining == 'true' && needs.native.result != 'success') || (needs.plan.outputs.has_priority == 'true' && needs.native-priority.result != 'success')
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           pattern: ios-ci-failure-*-${{ github.run_attempt }}
           path: ci-failures
       - name: 显示失败原因和证据入口
-        if: needs.plan.result != 'success' || needs.plan.outputs.preflight != 'success' || needs.proxy-check.result != 'success' || needs.native.result != 'success'
+        if: needs.plan.result != 'success' || needs.plan.outputs.preflight != 'success' || needs.proxy-check.result != 'success' || needs.target-build.result != 'success' || (needs.plan.outputs.has_remaining == 'true' && needs.native.result != 'success') || (needs.plan.outputs.has_priority == 'true' && needs.native-priority.result != 'success')
         env:
           CI_PLAN: ${{ needs.plan.result }}
           CI_PREFLIGHT: ${{ needs.plan.outputs.preflight }}
           CI_PROXY: ${{ needs.proxy-check.result }}
-          CI_NATIVE: ${{ needs.native.result }}
+          CI_NATIVE: ${{ (needs.plan.outputs.has_priority == 'true' && needs.native-priority.result != 'success' && needs.native-priority.result) || (needs.plan.outputs.has_remaining == 'true' && needs.native.result) || 'success' }}
         run: node ios/full/ci-failure-summary.mjs gate
+      - name: 读取本轮完整计划
+        if: always()
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.plan.outputs.artifact_name }}
+          path: ios/artifacts/ci-schedule/
+      - uses: actions/setup-node@v4
+        if: always()
+        with:
+          node-version: '24'
       - name: 所有截图与录屏分片必须成功；取消、跳过和缺基准均阻断
+        if: always()
         env:
-          PLAN: ${{ needs.plan.result }}
-          PREFLIGHT: ${{ needs.plan.outputs.preflight }}
-          PROXY: ${{ needs.proxy-check.result }}
-          NATIVE: ${{ needs.native.result }}
-        run: test "$PLAN" = success && test "$PREFLIGHT" = success && test "$PROXY" = success && test "$NATIVE" = success
+          GH_TOKEN: ${{ github.token }}
+          CI_SCHEDULE_METRICS: 'true'
+          CI_STAGE_RESULTS: >-
+            {"plan":"${{ needs.plan.result }}","preflight":"${{ needs.plan.outputs.preflight }}",
+            "proxy":"${{ needs.proxy-check.result }}","build":"${{ needs.target-build.result }}",
+            "priority":"${{ needs.native-priority.result }}","remaining":"${{ needs.native.result }}"}
+        run: node scripts/check-ci-schedule.mjs
