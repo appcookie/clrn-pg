@@ -191,117 +191,6 @@
     "format": "javascript",
     "locations": [
       {
-        "file": "ios/full/game-panel-animation.test.mjs",
-        "start": {
-          "column": 0,
-          "line": 277,
-          "position": 9193
-        },
-        "end": {
-          "column": 77,
-          "line": 287,
-          "position": 9715
-        }
-      },
-      {
-        "file": "ios/full/profile-readiness.test.mjs",
-        "start": {
-          "column": 79,
-          "line": 38,
-          "position": 2438
-        },
-        "end": {
-          "column": 77,
-          "line": 47,
-          "position": 2957
-        }
-      }
-    ],
-    "tokens": 133,
-    "lines": 11,
-    "fragment": "918d03aa389b286881b86651a2e7810ffdf28665252918b82a420e1b2e251020",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "javascript",
-    "locations": [
-      {
-        "file": "ios/full/game-panel-animation.test.mjs",
-        "start": {
-          "column": 0,
-          "line": 288,
-          "position": 9717
-        },
-        "end": {
-          "column": 13,
-          "line": 301,
-          "position": 10313
-        }
-      },
-      {
-        "file": "ios/full/profile-readiness.test.mjs",
-        "start": {
-          "column": 77,
-          "line": 47,
-          "position": 2957
-        },
-        "end": {
-          "column": 11,
-          "line": 56,
-          "position": 3477
-        }
-      }
-    ],
-    "tokens": 204,
-    "lines": 14,
-    "fragment": "5bef01987b2ce72238dc0fce8925f84fef4887c341b0250d92ef70134dbce8fc",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "javascript",
-    "locations": [
-      {
-        "file": "ios/full/game-panel-animation.test.mjs",
-        "start": {
-          "column": 61,
-          "line": 301,
-          "position": 10361
-        },
-        "end": {
-          "column": 24,
-          "line": 308,
-          "position": 10569
-        }
-      },
-      {
-        "file": "ios/full/profile-readiness.test.mjs",
-        "start": {
-          "column": 67,
-          "line": 56,
-          "position": 3533
-        },
-        "end": {
-          "column": 65,
-          "line": 61,
-          "position": 3717
-        }
-      }
-    ],
-    "tokens": 78,
-    "lines": 8,
-    "fragment": "4c7b843ad1002c5aea65ffeb6ad7401f684d64bb92f01f85758de22582021ec6",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "javascript",
-    "locations": [
-      {
         "file": "ios/full/profile-zoom.test.mjs",
         "start": {
           "column": 61,
@@ -1301,43 +1190,6 @@
     "format": "typescript",
     "locations": [
       {
-        "file": "ios/full/game-pregame.ts",
-        "start": {
-          "column": 29,
-          "line": 237,
-          "position": 13663
-        },
-        "end": {
-          "column": 7,
-          "line": 243,
-          "position": 14116
-        }
-      },
-      {
-        "file": "ios/full/game-pregame.ts",
-        "start": {
-          "column": 76,
-          "line": 225,
-          "position": 12847
-        },
-        "end": {
-          "column": 7,
-          "line": 230,
-          "position": 13189
-        }
-      }
-    ],
-    "tokens": 81,
-    "lines": 6,
-    "fragment": "19a9f08b399ad94b56847d88cc9b3d80e0407e5a9345f935604e7ff99a62f4a6",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "typescript",
-    "locations": [
-      {
         "file": "ios/full/game-transient.ts",
         "start": {
           "column": 124,
@@ -2143,36 +1995,6 @@
   },
   {
     "tool": "eslint",
-    "file": "ios/full/game-panel-animation.test.mjs",
-    "line": 289,
-    "column": 1,
-    "rule": "complexity",
-    "message": "Function 'basePicture' has a complexity of 23. Maximum allowed is 10.",
-    "anchor": "80d793dc90724f7096a8f2197cbcc8081bec17e0feb15c1005e521627d054e19",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/game-panel-animation.ts",
-    "line": 21,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'animateGamePanel' has a complexity of 17. Maximum allowed is 10.",
-    "anchor": "06d15ba067adb6e69f7eaab839e998344ab4fc94500217ae0c53e6b481e2c7fe",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/game-pregame.ts",
-    "line": 146,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'gamePreGame' has a complexity of 38. Maximum allowed is 10.",
-    "anchor": "7ac9713e015c5cf634e2dc44721129546123904d9a4db9993851307ab5a0c889",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
     "file": "ios/full/game-replay.test.mjs",
     "line": 12,
     "column": 57,
@@ -2489,16 +2311,6 @@
     "rule": "complexity",
     "message": "Arrow function has a complexity of 11. Maximum allowed is 10.",
     "anchor": "cf5efbc725256dcdca5b5e3cf887b8e217b07afce7b95354867b671b3d3f791e",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/profile-readiness.test.mjs",
-    "line": 48,
-    "column": 1,
-    "rule": "complexity",
-    "message": "Function 'basePicture' has a complexity of 23. Maximum allowed is 10.",
-    "anchor": "80d793dc90724f7096a8f2197cbcc8081bec17e0feb15c1005e521627d054e19",
     "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
   },
   {
