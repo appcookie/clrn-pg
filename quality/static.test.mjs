@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { collectEslint, collectDependencies, collectDuplicates, compareInventory, assertShrinking } from '../scripts/quality-check.mjs';
+import { collectEslint, collectDependencies, collectDuplicates, compareInventory, assertShrinking, sourceFiles } from '../scripts/quality-check.mjs';
 
 function workspace(t, files) {
   const container = mkdtempSync(join(tmpdir(), 'clrn-quality-negative-'));
@@ -83,6 +83,21 @@ test('jscpd blocks new clones, including a third copy of historical code', t => 
   }
   const locations = collectDuplicates(directory).findings.flatMap(entry => entry.locations.map(location => location.file));
   assert.ok(['mts', 'cts', 'jsx', 'tsx'].every(extension => locations.includes(`second.${extension}`)));
+});
+
+test('quality scans exclude the CI pre-commit virtualenv while retaining project clones', t => {
+  const original = Array.from({ length: 20 }, (_, i) => `value${i} = input${i} + offset${i}`).join('\n');
+  const directory = workspace(t, {
+    '.venv-pre-commit/lib/python3.12/site-packages/first.py': original,
+    '.venv-pre-commit/lib/python3.12/site-packages/second.py': original,
+    'first.py': original,
+    'second.py': original,
+  });
+  assert.deepEqual(sourceFiles(directory), ['first.py', 'second.py']);
+  const { findings } = collectDuplicates(directory);
+  assert.ok(findings.length > 0);
+  assert.ok(findings.every(entry => entry.locations.every(location =>
+    ['first.py', 'second.py'].includes(location.file))));
 });
 
 test('migration inventory rejects added, relocated or modified exceptions and detects stale entries', () => {

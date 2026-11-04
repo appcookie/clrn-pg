@@ -8,7 +8,7 @@ import { ESLint } from 'eslint';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 export const inventoryPath = 'quality/legacy.json';
-const ignored = new Set(['node_modules', '.git', '.cache', '.venv', '.appium', '__pycache__',
+const ignored = new Set(['node_modules', '.git', '.cache', '.venv', '.venv-pre-commit', '.appium', '__pycache__',
   'artifacts', 'playwright-report', 'test-results']);
 const jsPattern = /\.(?:[cm]?[jt]s|[jt]sx)$/;
 export const digest = text => createHash('sha256').update(text).digest('hex');

@@ -2,8 +2,10 @@ node_modules/
 .appium/
 ios/artifacts/
 .DS_Store
+.ttyctl/
 
 e2e/.venv/
+.venv-pre-commit/
 __pycache__/
 *.pyc
 playwright-report/
