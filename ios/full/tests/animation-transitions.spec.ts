@@ -157,7 +157,8 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         { takeScreenshot: capture, timeoutMs: 4_000 });
       await captureMovingKeyframes(device, 'hall-matching-spinner', testInfo,
         [spinner], 2);
-      await compareScreenshot(device, 'en-hall-matching', testInfo, masks, undefined, capture);
+      // 静态页面沿用 XCTest 截图通道；Simulator 原片仍用于上面的旋转与录像证据。
+      await compareScreenshot(device, 'en-hall-matching', testInfo, masks);
       try {
         await trace.input('spinner-cancel', 'quick-start-room-cancel',
           observe => tap(device!, 'quick-start-room-cancel', observe));
