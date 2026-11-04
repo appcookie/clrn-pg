@@ -1,0 +1,2 @@
+# Hook framework only; proxy integration dependencies stay in e2e/mitmproxy/requirements.txt.
+pre-commit==4.3.0

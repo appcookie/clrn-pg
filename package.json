@@ -12,7 +12,8 @@
     "test:unit": "node --import tsx --test ios/*.test.mjs ios/full/*.test.mjs ios/full/functional/coverage.test.mjs scripts/*.test.mjs",
     "test:ios:collect": "playwright test --config ios/full/playwright.config.ts --list",
     "test:ios:full": "playwright test --config ios/full/playwright.config.ts",
-    "check:python": "node scripts/quality-check.mjs ruff && node --test quality/python.test.mjs && node scripts/check-python.mjs",
+    "check:python:static": "python3 scripts/check-python-static.py",
+    "check:python": "npm run check:python:static && node scripts/quality-check.mjs ruff && node --test quality/python.test.mjs && node scripts/check-python.mjs",
     "check:static": "node scripts/quality-check.mjs eslint dependencies duplicates && node --test quality/static.test.mjs",
     "check:all": "npm run check && npm run check:python",
     "measure:quality": "node scripts/measure-quality.mjs"
