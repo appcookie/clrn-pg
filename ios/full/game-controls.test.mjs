@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeDevice } from './native-device.ts';
 import { gameTap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameGoneCurrent, gameConnectionState,
-  gameReady, gameReadyCurrent, gameGone } from './game-controls.ts';
+  gameReady, gameReadyCurrent, gameGone, gameConnectedObservation } from './game-controls.ts';
 
 test('录像内关闭和连接查询只读实际标记，短暂重连重置连续就绪时间', async () => {
   let panelQueries = 0, connectionQueries = 0, lastConnectingAt = 0;
@@ -331,5 +331,20 @@ test('完整树回查的连接超时和驱动错误不能被空predicate掩盖',
     };
     await assert.rejects(gameTapCurrent(device, 'target'), /Connection Timeout|source failed/);
     assert.equal(taps.length, 0);
+  }
+});
+
+test('截图连接观测返回恢复后的同一份真实树，显式超时和查询错误继续失败', async () => {
+  const { device, reads, taps } = driverFixture([[message('Connecting...')], [button]]);
+  const observation = await gameConnectedObservation(device);
+  assert.equal(observation.recovered, true);
+  assert.ok(reads.length >= 3, '恢复后须持续连接正常再返回原生树');
+  assert.ok(observation.nodes.some(node => node.res === 'target'));
+  assert.ok(!observation.nodes.some(node => node.text === 'Connecting...'));
+  assert.equal(taps.length, 0, '截图准备只能查询，不能触发业务动作');
+  const healthy = driverFixture([[button]]);
+  assert.equal((await gameConnectedObservation(healthy.device)).recovered, false);
+  for (const snapshot of [[message('Connection Timeout')], new Error('原生整树查询失败')]) {
+    await assert.rejects(gameConnectedObservation(driverFixture([snapshot]).device), /Connection Timeout|原生整树查询失败/);
   }
 });
