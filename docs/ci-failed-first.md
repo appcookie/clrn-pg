@@ -81,7 +81,7 @@ npm run check
 连续修复、API 不可用、计划变化、取消/跳过、失败重跑及 4096 种门禁阶段状态。
 它们不连接 Staging、不启动模拟器、不触发 GitHub CI。
 
-真实 PR 验收仍需在推送实现后完成，不能用本地模拟代替：
+以下真实 PR 验收尚未完成，本地模拟和同提交重跑均不能代替：
 
 1. 首轮全量，保存运行 URL、计划产物、启动数和上述时间观测。
 2. 选择真实失败的少量分片，在新修复提交上确认先只启动对应项及必要依赖。
@@ -90,4 +90,50 @@ npm run check
 5. 从 PR 检查页确认 required checks 仍使用原有名称，取消/跳过不能放行合并。
 6. 分别比较失败反馈耗时与全量成功耗时；两阶段引入的等待可能延长成功总耗时，不能把更早失败反馈写成整体 CI 加速。
 
-实现阶段尚未触发真实 PR CI，以上实测数据应由实际运行摘要补齐。
+### 现有平台证据与未完成项（2026-11-05 只读复核）
+
+[PR #35](https://github.com/appcookie/clrn-pg/pull/35) 的 head 为
+`74af07372cca17f381ca7abb533b924a40407b49`，base 为
+`b748cb566ae8ebf6e2c9d3c49dedbf882d5266f1`。
+[分支运行列表](https://api.github.com/repos/appcookie/clrn-pg/actions/runs?branch=kevinanew/ci&per_page=100)
+返回两条运行，其中完整回归只有 [run 41859632950](https://github.com/appcookie/clrn-pg/actions/runs/41859632950)，
+另一条是独立模拟器回归，不能作为两阶段验收证据。
+[plan 日志](https://github.com/appcookie/clrn-pg/actions/runs/41859632950/job/126677544121)
+记录了 26 项当前矩阵：三语言游客 startup/pages 共 6 项，以及未隔离录屏 20 项。
+完整计划产物为 [ios-ci-plan-1](https://github.com/appcookie/clrn-pg/actions/runs/41859632950/artifacts/13339970025)。
+
+逐项核对 [attempt 1 jobs](https://api.github.com/repos/appcookie/clrn-pg/actions/runs/41859632950/attempts/1/jobs?per_page=100)
+及 [attempt 2 jobs](https://api.github.com/repos/appcookie/clrn-pg/actions/runs/41859632950/attempts/2/jobs?per_page=100)，
+各返回 31 条记录、完整覆盖上述 26 个分片名称；实际启动只统计有正数 `runner_id` 和启动时间的原生分片。
+
+| 运行 | 优先阶段 | 原生分片执行情况 | 总门禁 |
+| --- | --- | --- | --- |
+| attempt 1 | `skipped`，未启动优先分片 | 实际启动 11 项：10 成功、1 失败；其余 15 项未分配 runner 即取消 | [failure](https://github.com/appcookie/clrn-pg/actions/runs/41859632950/job/126829506063) |
+| attempt 2（同提交失败重跑） | `skipped`，未启动优先分片 | 复用 10 项原成功结果，新启动 16 项，最终 26 项均成功 | [success](https://github.com/appcookie/clrn-pg/actions/runs/41859632950/job/126883601019) |
+
+attempt 2 API 也返回了复用成功项，不能把这 10 条记录算作再次启动；按名称、runner、启动和完成时间
+核对两次 attempt，合计实际启动 27 次、覆盖 26 个唯一分片，其中 animation-13 失败后重跑一次。
+以下时间均为 UTC，由运行和 jobs API 的原始时间计算，未使用会合并历史结果的门禁观测摘要：
+
+| 观测 | 时间或耗时 |
+| --- | --- |
+| 原 run 创建 | 2026-11-04 15:37:12 |
+| attempt 1 首个原生分片启动 | 17:06:18；距创建 5346 s |
+| attempt 1 已启动分片的 job 创建至启动等待 | 平均 4868.7 s，最大 8334 s |
+| 首次原生失败反馈（animation-13 完成） | 19:30:58；距创建 14026 s |
+| attempt 2 开始 / 首个新执行分片启动 | 20:07:46 / 20:07:52 |
+| attempt 2 新执行分片的 job 创建至启动等待 | 平均 947.8 s，最大 2341 s |
+| 全量原生成功 / 总门禁成功 | 21:40:21 / 21:41:17；距原创建分别 21789 s / 21845 s |
+
+上述 job 等待不包含 job 创建前的准备和依赖等待；从原 run 创建计算的耗时包含准备、排队及重跑间隔。
+attempt 1 未全量成功，不能记录为成功总耗时；这些数据也没有同范围非空优先阶段的对照，不能据此声称反馈改善或全量加速。
+两次门禁日志分别记录 `priority=skipped, remaining=abandoned` 和
+`priority=skipped, remaining=success`，只支持全量回退及同提交失败重跑路径。
+已核对总门禁仍发布 `iOS screenshot and video gate` 上下文；读取 master 的 required status checks
+配置返回 HTTP 403（集成无权限），因此未验证分支保护实际要求的完整检查集合。
+
+**验收仍未完成：[P2][本PR负责] 非空优先阶段失败阻断，以及后续新提交优先成功后完整、无重复放行的真实 PR 证据仍缺失。**
+[Issue #34](https://github.com/appcookie/clrn-pg/issues/34) 的“本次范围”同时写明
+“仅创建跟踪 issue；实施通过后续独立 PR 完成”，并限制本次不修改 workflow、不触发 CI、不调整分支保护。
+补做上述平台实验需要新提交及真实 CI 运行，与此次仓库内修复及不提交、不推送的限制冲突。
+本次只记录现有证据和缺口，保留全部实现、测试及上述验收要求；待允许开展真实 PR 实验时补齐第 2–6 步，不能将本条标为已通过。
