@@ -2,6 +2,7 @@ node_modules/
 .appium/
 ios/artifacts/
 .DS_Store
+.ttyctl/
 
 e2e/.venv/
 __pycache__/
