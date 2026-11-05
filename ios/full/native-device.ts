@@ -251,18 +251,15 @@ export class NativeDevice {
             this.driver.request('GET', this.driver.path(`/element/${id}/rect`)),
             this.driver.request('GET', this.driver.path(`/element/${id}/attribute/label`)),
           ]);
-        if (typeof displayed !== 'boolean' || !rect
-          || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
-          throw new Error(`短时提示缺少真实可见性或位置属性：${res}`);
-        }
-        if (displayed !== true || rect.width <= 0 || rect.height <= 0) { cachedId = undefined; return null; }
+        assertTransientGeometry(displayed, rect, res);
+        if (transientHidden(displayed, rect)) { cachedId = undefined; return null; }
         cachedId = id;
-        return { res, text: typeof text === 'string' ? text : undefined, bounds: {
+        return { res, text: transientText(text), bounds: {
           x: Math.round(rect.x * this.scale.x), y: Math.round(rect.y * this.scale.y),
           width: Math.round(rect.width * this.scale.x), height: Math.round(rect.height * this.scale.y),
         } };
       } catch (error) {
-        if (['stale element reference', 'no such element'].includes((error as { code?: string }).code || '')) {
+        if (missingTransientElement(error)) {
           cachedId = undefined;
           return null;
         }
@@ -413,4 +410,22 @@ export class NativeDevice {
       await this.driver.request('POST', this.driver.path(`/element/${this.lastInput}/value`), { text });
     },
   };
+}
+
+function assertTransientGeometry(displayed: unknown, rect: Bounds, res: string) {
+  if (typeof displayed !== 'boolean' || !rect
+    || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
+    throw new Error(`短时提示缺少真实可见性或位置属性：${res}`);
+  }
+}
+function transientHidden(displayed: unknown, rect: Bounds) {
+  return displayed !== true || rect.width <= 0 || rect.height <= 0;
+}
+
+function missingTransientElement(error: unknown) {
+  return ['stale element reference', 'no such element'].includes((error as { code?: string }).code || '');
+}
+
+function transientText(text: unknown) {
+  return typeof text === 'string' ? text : undefined;
 }

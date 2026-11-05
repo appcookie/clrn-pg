@@ -23,11 +23,7 @@ function fixture(first) {
     presses++;
     if (presses === 1 && first === 'pending')
       attempts.push({ sequence: 1, completed: false, status: null, ok: null });
-    if (presses === 1 && ['failed', 'transport', 'bad-http-ok'].includes(first))
-      attempts.push({ sequence: 1, completed: true, status: first === 'transport' ? 0 : 503,
-        ok: first === 'bad-http-ok', responseSource: first === 'transport' ? 'none' : 'upstream',
-        failureCategory: first === 'transport' ? 'proxy-connection' : 'upstream-http',
-        failureReason: first === 'transport' ? 'connection-refused' : null });
+    recordFailedAttempt(attempts, presses, first);
     if (presses === 1 && first === 'succeeded') currentRoom = room;
     if (presses === 2) currentRoom = room;
   };
@@ -186,3 +182,11 @@ test('选择游戏时的驱动异常直接传播，不读取列表或补点', as
   await assert.rejects(value.select(), error => error === failure);
   assert.deepEqual(value.counts(), { presses: 1, observations: 0 });
 });
+
+function recordFailedAttempt(attempts, presses, first) {
+  if (presses === 1 && ['failed', 'transport', 'bad-http-ok'].includes(first))
+    attempts.push({ sequence: 1, completed: true, status: first === 'transport' ? 0 : 503,
+      ok: first === 'bad-http-ok', responseSource: first === 'transport' ? 'none' : 'upstream',
+      failureCategory: first === 'transport' ? 'proxy-connection' : 'upstream-http',
+      failureReason: first === 'transport' ? 'connection-refused' : null });
+}

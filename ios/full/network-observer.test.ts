@@ -63,24 +63,10 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
       'Vary': 'Origin', 'ETag': 'upstream-tag' });
     response.end(incoming.method === 'OPTIONS' ? '' : JSON.stringify(upstreamBody(url, nodes, failed)));
   });
-  await new Promise<void>(resolve => upstream.listen(0, '127.0.0.1', resolve));
-  const upstreamAddress = upstream.address();
-  assert.ok(upstreamAddress && typeof upstreamAddress !== 'string');
-  const directory = await mkdtemp(path.join(tmpdir(), 'ios-upstream-test-'));
-  const executable = path.join(directory, 'mitmdump');
-  const previousExecutable = process.env.MITMDUMP_PATH;
-  const realExecutable = previousExecutable || process.env.E2E_MITMDUMP_PATH
-    || fileURLToPath(new URL('../../e2e/.venv/bin/mitmdump', import.meta.url));
-  const quote = (value: string) => "'" + value.replaceAll("'", "'\"'\"'") + "'";
-  await writeFile(executable, `#!/bin/sh\nexec ${quote(realExecutable)} --mode ${quote(`upstream:http://127.0.0.1:${upstreamAddress.port}`)} "$@"\n`, { mode: 0o700 });
-  process.env.MITMDUMP_PATH = executable;
-  const server = createServer(async (incoming, response) => {
-    if (incoming.headers.authorization !== token) { response.writeHead(403).end(); return; }
-    fixtureRequests++;
-    let body = '';
-    for await (const chunk of incoming) body += chunk;
-    response.setHeader('Content-Type', 'application/json');
-    response.end(JSON.stringify(await route(JSON.parse(body).url)));
+  const { directory, previousExecutable } = await useUpstreamProxy(upstream);
+  const server = createServer((incoming, response) => {
+    if (incoming.headers.authorization === token) fixtureRequests++;
+    return serveFixture(incoming, response, token, route);
   });
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
   const address = server.address();
@@ -159,11 +145,7 @@ test('iOS原生入口保留多节点真实健康、v12/v13列表与预检，业�
           IOS_FIXTURE_TOKEN: token, IOS_FIXTURE_URL: `http://127.0.0.1:${address.port}/` } });
     }
   } finally {
-    if (previousExecutable === undefined) delete process.env.MITMDUMP_PATH;
-    else process.env.MITMDUMP_PATH = previousExecutable;
-    await Promise.all([new Promise<void>(resolve => server.close(() => resolve())),
-      new Promise<void>(resolve => upstream.close(() => resolve()))]);
-    await rm(directory, { recursive: true, force: true });
+    await closeUpstreamProxy(previousExecutable, server, upstream, directory);
   }
 });
 
@@ -303,26 +285,8 @@ test('iOS原生桥透传本地上游健康与metadata，业务共享夹具继续
       ? { server_load: failed ? 'unavailable' : 'normal', backend_delay: 37 }
       : { ok: true, result: { servers: { '64.kr-seoul.api.staging.laiwan.shafayouxi.com': '192.0.2.1' } } }));
   });
-  await new Promise<void>(resolve => upstream.listen(0, '127.0.0.1', resolve));
-  const upstreamAddress = upstream.address();
-  assert.ok(upstreamAddress && typeof upstreamAddress !== 'string');
-  // Start the actual listener in upstream mode from its first instruction.
-  // A test-only executable wrapper leaves production process arguments intact.
-  const directory = await mkdtemp(path.join(tmpdir(), 'ios-upstream-test-'));
-  const executable = path.join(directory, 'mitmdump');
-  const previousExecutable = process.env.MITMDUMP_PATH;
-  const realExecutable = previousExecutable || process.env.E2E_MITMDUMP_PATH
-    || fileURLToPath(new URL('../../e2e/.venv/bin/mitmdump', import.meta.url));
-  const quote = (value: string) => "'" + value.replaceAll("'", "'\"'\"'") + "'";
-  await writeFile(executable, `#!/bin/sh\nexec ${quote(realExecutable)} --mode ${quote(`upstream:http://127.0.0.1:${upstreamAddress.port}`)} "$@"\n`, { mode: 0o700 });
-  process.env.MITMDUMP_PATH = executable;
-  const server = createServer(async (request, response) => {
-    if (request.headers.authorization !== token) { response.writeHead(403).end(); return; }
-    let body = '';
-    for await (const chunk of request) body += chunk;
-    response.setHeader('Content-Type', 'application/json');
-    response.end(JSON.stringify(await route(JSON.parse(body).url)));
-  });
+  const { directory, previousExecutable } = await useUpstreamProxy(upstream);
+  const server = createServer((incoming, response) => serveFixture(incoming, response, token, route));
   await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
   const address = server.address();
   assert.ok(address && typeof address !== 'string');
@@ -376,10 +340,39 @@ test('iOS原生桥透传本地上游健康与metadata，业务共享夹具继续
       environment: { ...process.env, IOS_FUNCTIONAL: 'false', IOS_GAME: 'zhajinhua', IOS_FIXTURE_TOKEN: token,
         IOS_FIXTURE_URL: `http://127.0.0.1:${address.port}/` } });
   } finally {
-    if (previousExecutable === undefined) delete process.env.MITMDUMP_PATH;
-    else process.env.MITMDUMP_PATH = previousExecutable;
-    await Promise.all([new Promise<void>(resolve => server.close(() => resolve())),
-      new Promise<void>(resolve => upstream.close(() => resolve()))]);
-    await rm(directory, { recursive: true, force: true });
+    await closeUpstreamProxy(previousExecutable, server, upstream, directory);
   }
 });
+
+async function useUpstreamProxy(upstream: import('node:http').Server) {
+  await new Promise<void>(resolve => upstream.listen(0, '127.0.0.1', resolve));
+  const upstreamAddress = upstream.address();
+  assert.ok(upstreamAddress && typeof upstreamAddress !== 'string');
+  const directory = await mkdtemp(path.join(tmpdir(), 'ios-upstream-test-'));
+  const executable = path.join(directory, 'mitmdump');
+  const previousExecutable = process.env.MITMDUMP_PATH;
+  const realExecutable = previousExecutable || process.env.E2E_MITMDUMP_PATH
+    || fileURLToPath(new URL('../../e2e/.venv/bin/mitmdump', import.meta.url));
+  const quote = (value: string) => "'" + value.replaceAll("'", "'\"'\"'") + "'";
+  await writeFile(executable, `#!/bin/sh\nexec ${quote(realExecutable)} --mode ${quote(`upstream:http://127.0.0.1:${upstreamAddress.port}`)} "$@"\n`, { mode: 0o700 });
+  process.env.MITMDUMP_PATH = executable;
+  return { directory, previousExecutable };
+}
+
+async function serveFixture(incoming: import('node:http').IncomingMessage, response: import('node:http').ServerResponse,
+  token: string, route: (url: string) => unknown) {
+  if (incoming.headers.authorization !== token) { response.writeHead(403).end(); return; }
+  let body = '';
+  for await (const chunk of incoming) body += chunk;
+  response.setHeader('Content-Type', 'application/json');
+  response.end(JSON.stringify(await route(JSON.parse(body).url)));
+}
+
+async function closeUpstreamProxy(previousExecutable: string | undefined, server: import('node:http').Server,
+  upstream: import('node:http').Server, directory: string) {
+  if (previousExecutable === undefined) delete process.env.MITMDUMP_PATH;
+  else process.env.MITMDUMP_PATH = previousExecutable;
+  await Promise.all([new Promise<void>(resolve => server.close(() => resolve())),
+    new Promise<void>(resolve => upstream.close(() => resolve()))]);
+  await rm(directory, { recursive: true, force: true });
+}
