@@ -118,13 +118,6 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
             self.assertTrue(all(not item['mocked'] for item in addon.transport.snapshot()['httpEvents']))
             self.assertTrue(all(item['fixtureElapsedMs'] is None
                 for item in addon.transport.snapshot()['httpEvents']))
-            excluded = flow('/node/v1/status')
-            await addon.request(excluded)
-            self.assertEqual(excluded.response.status_code, 503)
-            addon.response(excluded)
-            event = addon.transport.snapshot()['httpEvents'][-1]
-            self.assertTrue(event['mocked'])
-            self.assertEqual(event['source'], 'visual-node-exclusion')
 
     async def test_native_error_hook_records_elapsed_without_response(self):
         with patch.dict(os.environ, {'MITMPROXY_CONTROL_TOKEN': 'test-token', 'IOS_FUNCTIONAL': 'true'}):

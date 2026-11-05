@@ -1,4 +1,4 @@
-"""四个真实 mitmdump 入口连接本机上游，离线验证响应覆盖和插件加载。"""
+"""五个真实 mitmdump 入口连接本机上游，离线验证响应覆盖和插件加载。"""
 
 import http.client
 import json
@@ -13,7 +13,10 @@ import time
 import unittest
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
-from response_overrides import PROXY_HOST, METADATA_PATH
+
+PROXY_HOST = '64.kr-seoul.api.staging.laiwan.shafayouxi.com'
+OTHER_HOST = '67.hk.api.staging.laiwan.shafayouxi.com'
+METADATA_PATH = '/public/v13/metadata/servers'
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -22,7 +25,7 @@ class Upstream(BaseHTTPRequestHandler):
     def do_GET(self):
         url = urlsplit(self.path)
         if url.path == METADATA_PATH:
-            servers = {PROXY_HOST: 'real-address', 'other': 'another-address'}
+            servers = {PROXY_HOST: 'real-address', OTHER_HOST: 'another-address'}
             if url.query == 'changed':
                 servers = {'new-node': 'new-address'}
             body = {'ok': True, 'new_envelope': 42, 'result': {'servers': servers, 'new_field': True}}
@@ -54,7 +57,8 @@ class LiveOverrideTests(unittest.TestCase):
             for addon in ('e2e/mitmproxy/network_faults.py',
                           'visual/cases/texas-holdem/mitmproxy/addon.py',
                           'visual/cases/zhajinhua/mitmproxy/addon.py',
-                          'visual/cases/game-record/mitmproxy/addon.py'):
+                          'visual/cases/game-record/mitmproxy/addon.py',
+                          'visual/cases/club/mitmproxy/addon.py'):
                 with self.subTest(addon=addon):
                     self.check_addon(upstream.server_port, addon)
         finally:
@@ -90,7 +94,7 @@ class LiveOverrideTests(unittest.TestCase):
                 status, headers, body = self.fetch(port, metadata)
                 self.assertEqual(status, 200)
                 self.assertEqual(body, {'ok': True, 'new_envelope': 42, 'result': {
-                    'servers': {PROXY_HOST: 'real-address'}, 'new_field': True}})
+                    'servers': {PROXY_HOST: 'real-address', OTHER_HOST: 'another-address'}, 'new_field': True}})
                 self.assertEqual(headers['x-upstream'], 'real')
                 self.assertEqual(headers['access-control-allow-origin'], 'https://app.test')
                 self.assertEqual(self.fetch(port, metadata + '?failed')[0], 503)
@@ -100,7 +104,11 @@ class LiveOverrideTests(unittest.TestCase):
                 self.assertEqual(self.fetch(port, health)[2], {
                     'backend_delay': 37, 'server_load': 'normal', 'new_health': True})
                 self.assertEqual(self.fetch(port, health + '?failed')[0], 503)
-                for url in (metadata, health):
+                alternate = f'http://{OTHER_HOST}/node/v1/status'
+                self.assertEqual(self.fetch(port, alternate)[2], {
+                    'backend_delay': 37, 'server_load': 'normal', 'new_health': True})
+                self.assertEqual(self.fetch(port, alternate + '?failed')[0], 503)
+                for url in (metadata, health, alternate):
                     status, headers, _ = self.fetch(port, url, 'OPTIONS')
                     self.assertEqual(status, 204)
                     self.assertEqual(headers['x-upstream'], 'real-preflight')

@@ -1,4 +1,4 @@
-"""仅为俱乐部房间有数据截图提供固定业务响应，并保留独立代理的选址稳定化。"""
+"""仅为俱乐部房间有数据截图提供固定业务响应，节点选线访问真实上游。"""
 
 import json
 import os
@@ -9,7 +9,7 @@ from urllib.parse import parse_qs, urlsplit
 from mitmproxy import http
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4] / 'e2e' / 'mitmproxy'))
-from response_overrides import VisualNetwork, is_staging  # noqa: E402
+from response_overrides import is_staging  # noqa: E402
 
 CONTROL_HOST = 'test-mitmproxy.invalid'
 CLUB_IDENTIFIER = '00000000-0000-4000-8000-000000000151'
@@ -65,7 +65,6 @@ class ClubRoomVisualProxy:
     def __init__(self):
         self.token = os.environ['MITMPROXY_CONTROL_TOKEN']
         self.scenario = None
-        self.network = VisualNetwork()
         self.proxied_requests = 0
         self.stabilized_requests = 0
         self.club_room_requests = {}
@@ -101,11 +100,6 @@ class ClubRoomVisualProxy:
             return
         respond(flow, self.status())
 
-    def response(self, flow):
-        """只在固定场景下整理真实代理选址响应。"""
-        if self.scenario == 'visual-stable' and is_staging(flow.request.host):
-            self.stabilized_requests += self.network.response(flow)
-
     def fixture(self, flow):
         """校验请求方法、目标俱乐部及请求正文后，返回固定业务结果。"""
         url = urlsplit(flow.request.path)
@@ -137,9 +131,6 @@ class ClubRoomVisualProxy:
             return
         self.proxied_requests += 1
         if self.scenario != 'visual-stable' or not is_staging(flow.request.host):
-            return
-        if self.network.request(flow):
-            self.stabilized_requests += 1
             return
         result = self.fixture(flow)
         if result is None:
