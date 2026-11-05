@@ -11,8 +11,8 @@ import { scrollToEnd } from './scroll-end';
 import { openNativeLegalDocument, waitForNativeLegalDocument } from './legal-document';
 import { fullyInside, intersectBounds, nativeViewport, pointInside } from './native-viewport';
 import { waitForClubReady } from './guest-club-ready';
+import { waitForSignInResult } from './sign-in-result';
 export { dismissKeyboard } from './keyboard';
-
 export async function reveal(device: NativeDevice, selector: NativeSelector, fullyVisible = false) {
   for (let attempt = 0; attempt < 10; attempt++) {
     let geometry: ReturnType<typeof nativeViewport> | undefined;
@@ -262,8 +262,7 @@ export async function signIn(device: NativeDevice, username = process.env.VISUAL
   await reveal(device, { res: 'password-input' });
   await device.fill({ res: 'password-input' }, password);
   await device.hideKeyboard();
-  await tap(device, 'sign-in-button');
-  await device.wait({ res: 'settings-tab' }, { timeout: 60_000 });
+  await waitForSignInResult(device, () => tap(device, 'sign-in-button'));
   await tap(device, 'settings-tab');
   await device.wait({ res: 'user-info-button' }, { timeout: 30_000 });
 }

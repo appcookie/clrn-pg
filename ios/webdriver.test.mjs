@@ -4,6 +4,32 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { WebDriver } from './webdriver.mjs';
 
+test('标签切换发送中心触摸并等待原生选中状态，不依赖 click 的成功响应', async () => {
+  const driver = new WebDriver();
+  driver.session = 'test-session';
+  const calls = [];
+  let selectionReads = 0;
+  driver.request = async (method, path, body) => {
+    calls.push({ method, path, body });
+    if (path.endsWith('/element')) return { 'element-6066-11e4-a52e-4f735466cecf': 'message' };
+    if (path.endsWith('/attribute/value')) return ++selectionReads < 3 ? null : '1';
+    if (path.endsWith('/rect')) return { x: 0, y: 769, width: 79, height: 49 };
+    assert.ok(path.endsWith('/actions'));
+  };
+  await driver.selectTab('message-tab');
+  assert.equal(selectionReads, 3);
+  assert.equal(calls[0].body.value, 'message-tab');
+  assert.deepEqual(calls.find(call => call.path.endsWith('/actions')).body, { actions: [{
+    type: 'pointer', id: 'tab-touch', parameters: { pointerType: 'touch' }, actions: [
+      { type: 'pointerMove', duration: 0, origin: 'viewport', x: 40, y: 794 },
+      { type: 'pointerDown', button: 0 }, { type: 'pause', duration: 100 }, { type: 'pointerUp', button: 0 },
+    ],
+  }] });
+  calls.length = 0;
+  await driver.selectTab('message-tab');
+  assert.ok(!calls.some(call => call.path.endsWith('/actions')));
+});
+
 test('WebDriver 使用原生 accessibility id 并能保存截图', async () => {
   const calls = [];
   const server = createServer(async (request, response) => {
