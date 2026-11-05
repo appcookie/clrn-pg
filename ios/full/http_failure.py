@@ -40,13 +40,18 @@ def outcome(flow):
             category = 'proxy-connection' if server.via else 'upstream-connection'
         else:
             category = 'unknown'
-        if message == 'server closed connection':
-            reason = 'peer-closed'
-        elif message == 'connection cancelled':
-            reason = 'connection-cancelled'
+        reason = disconnect_reason(message, reason)
     elif flow.response is not None and flow.response.status_code >= 400:
         category = 'fixture-http' if mocked else 'upstream-http'
     return dict(responseSource=response_source, failureCategory=category, failureReason=reason,
         fixtureLookupFailed=flow.metadata.get('ios_fixture_failure') is True,
         serverTcpEstablished=server.timestamp_tcp_setup is not None,
         serverTlsEstablished=server.tls_established, viaProxy=server.via is not None)
+
+
+def disconnect_reason(message, reason):
+    if message == 'server closed connection':
+        return 'peer-closed'
+    if message == 'connection cancelled':
+        return 'connection-cancelled'
+    return reason

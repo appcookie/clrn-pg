@@ -413,15 +413,7 @@ class IosVisualProxy:
         request = urllib.request.Request(os.environ['IOS_FIXTURE_URL'], data=payload,
             headers={'Content-Type': 'application/json',
                      'Authorization': os.environ['IOS_FIXTURE_TOKEN']})
-        self.transport.fixture_started(flow)
-        try:
-            result = await asyncio.to_thread(self.fixture_response, request)
-        except Exception:
-            # Preserve the original failure; export only its local bridge origin.
-            flow.metadata['ios_fixture_failure'] = True
-            raise
-        finally:
-            self.transport.fixture_finished(flow)
+        result = await self.fetch_fixture(flow, request)
         if result is None:
             return
         if result.get('aborted'):
@@ -430,6 +422,17 @@ class IosVisualProxy:
         flow.response = http.Response.make(result.get('status', 200),
             result.get('body', '').encode(),
             {'Content-Type': result.get('contentType', 'application/json')})
+
+    async def fetch_fixture(self, flow, request):
+        self.transport.fixture_started(flow)
+        try:
+            return await asyncio.to_thread(self.fixture_response, request)
+        except Exception:
+            # Preserve the original failure; export only its local bridge origin.
+            flow.metadata['ios_fixture_failure'] = True
+            raise
+        finally:
+            self.transport.fixture_finished(flow)
 
     @staticmethod
     def fixture_response(request):

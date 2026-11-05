@@ -3415,16 +3415,6 @@
   },
   {
     "tool": "ruff",
-    "file": "ios/full/network_observer.py",
-    "line": 90,
-    "column": 9,
-    "rule": "C901",
-    "message": "`control` is too complex (14 > 10)",
-    "anchor": "5d62add86206fe8bfbaf31e566191e979b275b412a0787b75afa7592656cf823",
-    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
-  },
-  {
-    "tool": "ruff",
     "file": "ios/full/presentation.py",
     "line": 15,
     "column": 9,
