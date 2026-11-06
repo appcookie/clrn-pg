@@ -7,6 +7,8 @@ import { screenshotMasks } from '../screenshot';
 for (const scenario of iosScenarios(locale, process.env.IOS_GROUP)
   .filter(item => item.pageLabel !== 'signed_in_club_rooms_populated')) {
   test(`${locale} / ${scenario.group} / ${scenario.pageLabel}`, async ({ application }, testInfo) => {
+    // Auth navigation includes several independent XCTest layout and keyboard queries.
+    if (scenario.pageLabel === 'login_forgot_password') testInfo.setTimeout(300_000);
     if (scenario.signIn && !application.signedIn) {
       await signIn(application.device);
       application.signedIn = true;
