@@ -127,6 +127,20 @@ test('真实登录页顺序中的空导航标题和状态栏不能抢占表单�
   assert.equal(keyboardDismissTarget([status, clock, empty, whitespace, title, keyboard]), title);
   assert.equal(keyboardDismissTarget([status, clock, empty, whitespace, keyboard]), undefined);
 });
+test('Staging 确认页优先点击内容说明，不能再次选择未能收起键盘的固定标题', () => {
+  const node = (res, clazz, y, height) => ({ res, clazz, text: res, visible: true, enabled: true,
+    bounds: { x: 149, y, width: 880, height }, children: [] });
+  // Geometry and order from run 42137125540, animation-13 attempt 2.
+  const title = node('staging-dialog-title', 'XCUIElementTypeStaticText', 552, 192);
+  const instructions = node('staging-confirmation-instructions', 'XCUIElementTypeStaticText', 1392, 120);
+  const keyboard = node('keyboard', 'XCUIElementTypeKeyboard', 1683, 699);
+  assert.equal(keyboardDismissTarget([title, instructions, keyboard]), instructions);
+  instructions.visible = false;
+  assert.equal(keyboardDismissTarget([title, instructions, keyboard]), title);
+  instructions.visible = true;
+  instructions.bounds.y = 1683;
+  assert.equal(keyboardDismissTarget([title, instructions, keyboard]), title);
+});
 test('隐藏命令返回成功但键盘仍可见时，安全点击后必须再次验证键盘消失', async () => {
   let keyboardVisible = true;
   const commands = [];
