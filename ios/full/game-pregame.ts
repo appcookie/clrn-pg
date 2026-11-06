@@ -200,18 +200,23 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture,
     const selector = { res: `game-settings-switch-${name}` };
     const current = (await gameNodes(device)).find(node => node.res === selector.res);
     if (!current) continue;
-    // The checked query can take longer than its poll timeout after a valid tap.
-    // The final native screenshot compares each visible switch position.
-    if (!current.checked) {
-      await tap(device, selector.res, false, undefined, undefined, bounds => ({
-        x: Math.round(bounds.x + bounds.height / 2),
-        y: Math.round(bounds.y + bounds.height / 2),
-      }));
-    }
+    if (!current.checked) await enablePreGameSetting(device, selector.res);
     count++;
   }
   expect(count).toBeGreaterThanOrEqual(4);
   await capture('settings_enabled');
+}
+
+/** 点击后读取真实开关状态；只有仍关闭时才以当前控件中心重试一次。 */
+export async function enablePreGameSetting(device: AndroidDevice, marker: string): Promise<void> {
+  await tap(device, marker, false, undefined, undefined, bounds => ({
+    x: Math.round(bounds.x + bounds.height / 2),
+    y: Math.round(bounds.y + bounds.height / 2),
+  }));
+  // Run 42176810431 sent both taps but vibrate and shake-avatar remained off
+  // in the final native tree and PNG. Never toggle an already enabled switch.
+  if (!(await gameReady(device, marker)).checked) await tap(device, marker);
+  expect((await gameReady(device, marker)).checked, `${marker} 必须实际开启`).toBe(true);
 }
 
 function connectedCapture(device: AndroidDevice, capture: Capture): Capture {
