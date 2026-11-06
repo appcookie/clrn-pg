@@ -43,6 +43,20 @@ test('隐藏操作区、4个挑战目标与取消区域复用同一次完整原�
   assert.equal(observation.nodes, prepared);
   assert.ok(observation.completedAt <= Date.now());
   assert.equal(reads, 1);
+  // CI 42160909679: one successful native tree read took 43s against a 30s poll.
+  // The completed valid observation must still be accepted without another read.
+  reads = 0;
+  const slow = await readyZhajinhuaChallengeCancel(async () => {
+    reads++;
+    await new Promise(resolve => setTimeout(resolve, 10));
+    return prepared;
+  }, 1);
+  assert.equal(slow.nodes, prepared);
+  assert.equal(reads, 1);
+  await assert.rejects(readyZhajinhuaChallengeCancel(async () => {
+    await new Promise(resolve => setTimeout(resolve, 10));
+    return targets;
+  }, 1), /可点击/);
   assert.throws(() => zhajinhuaChallengeCancel([...prepared, controls[0]]), /必须消失/);
   assert.throws(() => zhajinhuaChallengeCancel(prepared.slice(1)), /4个真实/);
   assert.throws(() => zhajinhuaChallengeCancel([...targets, { ...cancel, enabled: false }]), /可点击/);

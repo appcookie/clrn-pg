@@ -228,10 +228,11 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     } else await closeGameMask(device, 'accurate-bet-popup-container');
     await beginSeenTurn();
     await gameTap(device, 'zhajinhua-operation-button-battle');
-    await expect.poll(async () => (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector').length,
-      { timeout: 30_000 }).toBe(4);
+    // A single native tree read can exceed the state polling deadline. Let the
+    // driver finish, validate the completed state, and reuse that observation.
+    const challenge = await readyZhajinhuaChallengeCancel(() => gameNodes(device));
     if (animationInfo) {
-      const selectors = (await gameNodes(device)).filter(node => node.res === 'challenge_player_selector');
+      const selectors = challenge.nodes.filter(node => node.res === 'challenge_player_selector');
       await captureLoopKeyframes(device, 'zhajinhua-challenge-targets', animationInfo,
         // 控件树给出头像的点击框；闪烁绿色边框绘制在其上下各约 40 像素之外。
         selectors.map(node => ({ x: node.bounds.x - 14, y: node.bounds.y - 42,
