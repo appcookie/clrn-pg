@@ -3,10 +3,6 @@
 import json
 import logging
 from urllib.parse import urlsplit
-from mitmproxy import http
-
-PROXY_HOST = '64.kr-seoul.api.staging.laiwan.shafayouxi.com'
-METADATA_PATH = '/public/v13/metadata/servers'
 
 
 def is_staging(host):
@@ -88,39 +84,3 @@ def patch_profiles(flow, self_id, profiles):
             result[user] = {**(result.get(user) or {}), **profile}
         return True
     return patch_result(flow, change)
-
-
-class VisualNetwork:
-    """只排除其他 staging 节点；选中节点的健康检查和 metadata 都访问真实上游。"""
-
-    def request(self, flow):
-        path = urlsplit(flow.request.path).path
-        if (not is_staging(flow.request.host) or flow.request.host == PROXY_HOST
-                or path != '/node/v1/status' or flow.request.method not in ('GET', 'OPTIONS')):
-            return False
-        preflight = flow.request.method == 'OPTIONS'
-        flow.metadata['visual_node_excluded'] = True
-        flow.response = http.Response.make(204 if preflight else 503,
-            b'' if preflight else b'{"server_load":"unavailable"}', {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': flow.request.headers.get('Origin', '*'),
-                'Access-Control-Allow-Credentials': 'true', 'Vary': 'Origin',
-                'Access-Control-Allow-Methods': 'GET, OPTIONS',
-                'Access-Control-Allow-Headers': flow.request.headers.get('Access-Control-Request-Headers', ''),
-            })
-        return True
-
-    def response(self, flow):
-        if (not is_staging(flow.request.host) or flow.request.method != 'GET'
-                or urlsplit(flow.request.path).path != METADATA_PATH):
-            return False
-
-        def change(result):
-            servers = result.get('servers')
-            if not isinstance(servers, dict) or PROXY_HOST not in servers:
-                raise ValueError('Selected node missing from metadata')
-            if len(servers) == 1:
-                return False
-            result['servers'] = {PROXY_HOST: servers[PROXY_HOST]}
-            return True
-        return patch_result(flow, change)

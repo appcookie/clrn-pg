@@ -6,6 +6,9 @@
 
 ## 本机运行
 
+首次克隆后先按 [开发与 pre-commit 安装说明](DEVELOPMENT.md) 安装提交前检查。
+本地 hook 与 CI 共用配置，仅运行只读静态检查；完整测试仍按下文执行。
+
 需要 macOS、Xcode、iOS Simulator runtime、Node.js 24、GitHub CLI 和 ffmpeg。使用专用模拟器，测试会安装应用并清理应用状态。
 
 ```sh
@@ -49,7 +52,24 @@ npm run check         # TypeScript、算法/协议/清单契约与实际用例�
 npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 ```
 
+`check` 还会执行 ESLint 复杂度/嵌套与网络伪造规则、dependency-cruiser 架构检查及 jscpd 新增重复门禁；`check:python` 包含 Ruff C901。统一入口为 `npm run check:all`。固定版本、实测基线、精确历史迁移清单和临时负例见 [静态质量门禁](docs/static-quality.md)，这些静态结果不代表真实设备运行通过。
+
 完整原生测试通过「iOS 完整回归」工作流运行。每个 job 明确一个 `IOS_GROUP`，全量模式拆成三语言、业务组和牌桌分片。代理仅允许 GitHub 托管临时 macOS runner，保存并恢复系统代理；本机默认拒绝更改日常网络。
+
+正常视觉场景（含德州、拼三张、战绩及登录态采集）由应用根据真实节点列表和健康结果动态选线。
+v12 数组、v13 字典、所有节点健康响应及 CORS 预检完整透传；不固定首尔 64、不把其他节点改成 503，
+也不以 64 存在或健康为初始化条件。房间回放仍只发给实际连接上已确认订阅本轮房间的频道，
+虚拟玩家及业务写操作隔离保持原有范围。启动加载动画可显式暂缓 GET 健康请求，释放后访问真实上游；
+功能测试的异常仅由明确的故障场景或认证控制规则注入。
+
+`npm run check:python` 包含两类离线回归：
+
+- `ios/full/network-observer.test.ts` 启动真实 mitmdump，加载 `ios/full/proxy-addon.py` 并连接本地 HTTP 上游，覆盖普通视觉、德州、拼三张和战绩模式。检查 v12/v13 列表、缺少 64、64 健康延迟 1065、67 正常、第三节点真实 503 和 CORS 预检；本地上游实际断开 64 连接后，继续核验 67 成功与第三节点失败均保留。业务夹具桥仍生效且不参与选线。
+- `ios/full/test_node_passthrough.py` 手工构造 HTTPFlow 和 WebSocket 消息，进行回调级隔离验证，覆盖压缩响应保真、启动暂缓、异步夹具、跨节点订阅回放及房间/RPC 隔离；它不连接上游，也不运行设备。`e2e/mitmproxy/test_response_overrides_integration.py` 另验证五个共享/Web 代理入口，不代替 iOS 入口验证。
+
+离线检查不代表真实设备或 iOS 视觉比较已通过。原生验收仍使用同一固定 Release，
+结合每例结束时保存的 `native/transport` 脱敏候选域名、健康来源和实际 WebSocket 连接诊断，
+以及本轮截图、录像和构建身份核对；节点地址、查询参数、凭据及业务正文不会写入该诊断。
 
 游客组每种语言拆成两个 job：`pages` 执行 18 个页面，`startup` 执行启动页及认证截图用例。英语 21 项、简中 20 项、繁中 20 项；独立动画清单有 25 组，其中 20 组进入当前 PR 录屏分片。整体最多并行 10 个 job，每个 job 仍只启动一个模拟器。
 
@@ -60,6 +80,8 @@ npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 PR 和 master push 默认以 `compare` 运行三语言游客静态截图，以及 `ios/full/animation-gate-cases.json` 中未列入 [隔离清单](ios/full/quarantined/README.md)的 20 个英文录屏分片。牌局分片继续比较页面静态截图；每个运行中的录屏分片必须执行指定用例并产出有效 MP4。CI 产物里的 `index.html` 可直接播放。隔离的 5 组不会在 PR 中运行，CI 摘要会逐项列出，不能视为通过。动画帧数、相位、轨迹、循环变化与素材播放效果均不在当前 PR 的自动门禁中，后续方案和全部 25 组范围见 [React Native #7056](https://github.com/kevinanew/laiwan_react_native/issues/7056)。汇总检查名为 `iOS screenshot and video gate`，任一应运行分片失败、取消或未运行都会失败。
 
 完整回归失败时，先打开 Actions 运行首页的「iOS 完整回归失败原因」摘要；其中列出失败分片、具体用例的首条错误和测试证据入口。完整堆栈、截图及录像仍保存在对应分片的产物中。
+
+真实建房失败保留 HTTP 200 与业务 ok=true 的断言，不自动重放 POST。安全传输诊断包含建房请求序号、无参数路径、时间、响应归属及固定失败类别；HTTP 0 与界面 502 的区别、证据缺口及恢复条件见 [#22 调查记录](docs/issue-22-investigation.md)。
 
 手动 `group=quarantined` 可只重跑隔离的 5 组，`group=animations` 可运行完整清单的旧动画断言作为诊断，两者都不作为 PR 门禁。`group=all` 包括其他业务和功能测试。静态截图基准继续保留审查来源和 SHA-256；缺少静态基准会在分配 macOS runner 前失败。录屏供人工观看，不自动批准新动画基准。
 

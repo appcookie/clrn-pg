@@ -11,45 +11,35 @@ import { scrollToEnd } from './scroll-end';
 import { openNativeLegalDocument, waitForNativeLegalDocument } from './legal-document';
 import { fullyInside, intersectBounds, nativeViewport, pointInside } from './native-viewport';
 import { waitForClubReady } from './guest-club-ready';
+import { waitForSignInResult } from './sign-in-result';
 export { dismissKeyboard } from './keyboard';
 
-export async function reveal(device: NativeDevice, selector: NativeSelector, fullyVisible = false) {
-  for (let attempt = 0; attempt < 10; attempt++) {
+export async function reveal(device: NativeDevice, selector: NativeSelector, fullyVisible = false): Promise<NativeNode[]> {
+  for (let attempt = 0; ; attempt++) {
     let geometry: ReturnType<typeof nativeViewport> | undefined;
     const screen = { x: 0, y: 0, width: device.screenSize.width,
       height: device.screenSize.height * (fullyVisible ? 0.93 : 0.98) };
     try {
-      await device.wait(selector, { timeout: attempt === 0 ? 5000 : 1000 });
-      const target = await device.info(selector);
-      geometry = nativeViewport(await device.nodes(), target, screen);
+      // 等待、控件匹配及祖先裁切检查共享同一次真实观测，滑动后重新读取。
+      const nodes = await device.waitSnapshot(selector, { timeout: attempt === 0 ? 5000 : 1000 });
+      const target = await device.info(selector, nodes);
+      geometry = nativeViewport(nodes, target, screen);
       const bounds = geometry.node.bounds;
-      if (fullyVisible ? fullyInside(bounds, geometry.viewport)
-        : pointInside({ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }, geometry.viewport)) return;
+      if (revealTargetVisible(bounds, geometry.viewport, fullyVisible)) return nodes;
     } catch (error) { if ((error as { code?: string }).code !== 'no such element') throw error; }
     if (attempt === 9) throw new Error(`滚动后仍未显示控件：${JSON.stringify(selector)}`);
     await device.hideKeyboard();
     if (await exists(device, { res: 'stepDescription' })) {
-      await tap(device, await exists(device, { res: 'tooltip-finish-button' }) ? 'tooltip-finish-button' : 'tooltip-next-button');
+      await dismissRevealTooltip(device);
       continue;
     }
-    // Scroll inside the target's nearest ancestor, not a background/sibling list.
-    const ancestor = geometry?.scrollables.slice().reverse().find(item => item.viewport.width > 20 && item.viewport.height > 20);
-    const fallback = !geometry && (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
-      && node.bounds.height > device.screenSize.height * 0.3);
-    const viewport = ancestor?.viewport ?? (fallback ? intersectBounds(screen, fallback.bounds) : undefined);
-    if (!viewport) throw new Error(`控件被裁切且无可滚动祖先：${JSON.stringify(selector)}`);
-    const { x, y, width, height } = viewport;
-    const upward = !geometry || geometry.node.bounds.y >= geometry.viewport.y;
-    await device.input.swipe({ x1: x + width * 0.97, y1: y + height * (upward ? 0.85 : 0.2),
-      x2: x + width * 0.97, y2: y + height * (upward ? 0.2 : 0.85), duration: 600 });
+    await scrollRevealTarget(device, selector, screen, geometry);
   }
 }
-/** Seed the first real observation before polling; a slow first XCTest tree is
- * not evidence of movement. Still require a later, enabled observation to agree.
- */
+/** 首次真实观测完成后再计算稳定等待时间，必须另读一次启用状态及位置。 */
 export async function stableNativeTarget(device: Pick<NativeDevice, 'info'>, identifier: string,
-  { timeout = 10_000, interval = 200 } = {}): Promise<NativeNode> {
-  let target = await device.info({ res: identifier });
+  { timeout = 10_000, interval = 200, initialTarget }: { timeout?: number; interval?: number; initialTarget?: NativeNode } = {}): Promise<NativeNode> {
+  let target = initialTarget ?? await device.info({ res: identifier });
   const deadline = Date.now() + timeout;
   for (;;) {
     await delay(interval);
@@ -67,9 +57,13 @@ export async function stableNativeTarget(device: Pick<NativeDevice, 'info'>, ide
   }
 }
 export async function tap(device: NativeDevice, identifier: string) {
-  await reveal(device, { res: identifier });
-  const target = await stableNativeTarget(device, identifier);
-  const nodes = await device.nodes();
+  let nodes = await reveal(device, { res: identifier });
+  const initialTarget = await device.info({ res: identifier }, nodes);
+  const target = await stableNativeTarget({ info: async selector => {
+    nodes = await device.nodes();
+    return device.info(selector, nodes);
+  } }, identifier, { initialTarget });
+  // 最后一次稳定观测同时用于点击几何检查，不能混用更早的祖先或横幅位置。
   const { node, viewport } = nativeViewport(nodes, target, { x: 0, y: 0, ...device.screenSize });
   const { bounds } = node;
   const warning = nodes.find(node => node.res === 'switch-to-production-tip-container');
@@ -112,12 +106,7 @@ export async function selectGuestSettingsTab(device: NativeDevice,
       if (Date.now() >= deadline) break;
       await delay(200);
     } while (true);
-    // Retry one real tap only when the old hall is still visibly active and its
-    // tab button remains actionable. Other pages never receive blind scrolling.
-    const hall = nodes.find(node => node.res === 'hall-content-list' && visibleInTree(nodes, node));
-    if (attempt === 1 || !hall || !actionable(nodes, 'settings-tab')) {
-      throw new Error('点击我的标签后未显示可操作的游客登录页面');
-    }
+    assertGuestTabRetry(nodes, attempt, visibleInTree, actionable);
     console.info('首次点击我的标签后仍在无遮挡大厅，重新点击一次并验证目标页。');
   }
 }
@@ -167,9 +156,7 @@ export async function revealScenarioReady(device: NativeDevice, scenario: Pick<V
     return waitForCountryPicker(device);
   }
   if (selector.res === 'club-tab-screen') {
-    if (scenario.signIn !== true && !(scenario.pageLabel === 'guest_club' && scenario.signIn === false)) {
-      throw new Error('俱乐部就绪检查需要明确的游客场景或已登录场景。');
-    }
+    assertClubScenario(scenario);
     await waitForClubReady(device, { signIn: scenario.signIn });
     return;
   }
@@ -192,14 +179,7 @@ export type NavigationResult = { backgroundBanner?: ScreenshotBounds; readySnaps
 export async function navigateScenario(device: NativeDevice, scenario: VisualScenario): Promise<NavigationResult> {
   await returnToTabs(device);
   await tap(device, scenario.tabTestId || 'hall-tab');
-  for (let reset = 0; reset < 3; reset++) {
-    const list = (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
-      && node.bounds.height > device.screenSize.height * 0.3);
-    if (!list) break;
-    const { x, y, width, height } = list.bounds;
-    await device.input.swipe({ x1: x + width * 0.5, y1: y + height * 0.2,
-      x2: x + width * 0.5, y2: y + height * 0.85, duration: 600 });
-  }
+  await resetScenarioScroll(device);
   let filled = false;
   let backgroundBanner: ScreenshotBounds | undefined;
   for (const identifier of scenario.navClickTestIds) {
@@ -211,22 +191,7 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
       backgroundBanner = (await device.marker('slot-banner'))?.bounds;
     }
     if (identifier === 'advanced-options-button') { await fillScenarioInputs(device, scenario); filled = true; }
-    if (identifier === 'personal-house-create' || identifier === 'personal-house-join') {
-      await tap(device, 'hall-tab');
-      await tap(device, identifier);
-      if (identifier === 'personal-house-create') {
-        await reveal(device, { res: 'select-game-category-text' });
-        if (!scenario.navClickTestIds.includes('create-game-button')) await closePicker(device);
-      } else await reveal(device, { res: 'copy-house-number-button' });
-    } else if (identifier === 'create-game-button' && await exists(device, { res: 'select-game-category-text' })) continue;
-    else if (identifier === 'user-agreement-button' || identifier === 'user-privacy-button') {
-      await openNativeLegalDocument(device, identifier === 'user-agreement-button' ? 'user-agreement' : 'user-privacy',
-        entry => tap(device, entry));
-    } else if (identifier === 'hall-sign-in-button') {
-      await selectGuestSettingsTab(device);
-      await tap(device, 'sign-in-button');
-      await device.wait({ res: 'username-or-email-sign-in-button' });
-    } else await tap(device, identifier);
+    await navigateIdentifier(device, scenario, identifier);
   }
   if (!filled) await fillScenarioInputs(device, scenario);
   const readySnapshot = await revealScenarioReady(device, scenario);
@@ -234,21 +199,10 @@ export async function navigateScenario(device: NativeDevice, scenario: VisualSce
     // This country's readiness snapshot already checks loading, errors, keyboard
     // and actionable geometry. There is no UI action before screenshot masking.
     // New constraints must be implemented explicitly rather than silently omitted.
-    if (scenario.pageLabel !== 'login_pick_country_code' || scenario.readyText || scenario.visualGoneSelector
-      || scenario.fixedTexts.length || scenario.navClickTestIds.includes('advanced-options-button')) {
-      throw new Error('国家区号快照就绪分支尚未覆盖新增场景约束');
-    }
+    assertReadySnapshotScenario(scenario);
     return { backgroundBanner, readySnapshot };
   }
-  if (scenario.pageLabel === 'hall') await scrollToEnd(device, { res: 'hall-content-list' }, { res: 'hall-sign-in-button' });
-  if (scenario.navClickTestIds.includes('advanced-options-button')) {
-    await scrollToEnd(device, { scrollable: true }, { res: 'create-room-tips-text' });
-  }
-  if (scenario.visualGoneSelector) await waitAbsent(device, nativeSelector(scenario.visualGoneSelector));
-  if (scenario.readyText) await device.wait({ text: scenario.readyText });
-  if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
-  await waitAbsent(device, { res: 'alert-message-text' });
-  await device.hideKeyboard();
+  await finishScenarioNavigation(device, scenario);
   return { backgroundBanner };
 }
 export async function signIn(device: NativeDevice, username = process.env.VISUAL_USERNAME, password = process.env.VISUAL_PASSWORD) {
@@ -262,8 +216,7 @@ export async function signIn(device: NativeDevice, username = process.env.VISUAL
   await reveal(device, { res: 'password-input' });
   await device.fill({ res: 'password-input' }, password);
   await device.hideKeyboard();
-  await tap(device, 'sign-in-button');
-  await device.wait({ res: 'settings-tab' }, { timeout: 60_000 });
+  await waitForSignInResult(device, () => tap(device, 'sign-in-button'));
   await tap(device, 'settings-tab');
   await device.wait({ res: 'user-info-button' }, { timeout: 30_000 });
 }
@@ -280,4 +233,93 @@ export async function selectLanguage(device: NativeDevice, locale: string) {
   await device.wait({ res: 'switch-language-label', text: expected });
   await tap(device, 'close-user-authentication-button');
   await device.wait({ res: 'settings-tab' });
+}
+
+async function scrollRevealTarget(device: NativeDevice, selector: NativeSelector, screen: ScreenshotBounds,
+  geometry: ReturnType<typeof nativeViewport> | undefined) {
+  // Scroll inside the target's nearest ancestor, not a background/sibling list.
+  const ancestor = geometry?.scrollables.slice().reverse().find(item => item.viewport.width > 20 && item.viewport.height > 20);
+  const fallback = !geometry && (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
+    && node.bounds.height > device.screenSize.height * 0.3);
+  const viewport = ancestor?.viewport ?? (fallback ? intersectBounds(screen, fallback.bounds) : undefined);
+  if (!viewport) throw new Error(`控件被裁切且无可滚动祖先：${JSON.stringify(selector)}`);
+  const { x, y, width, height } = viewport;
+  const upward = !geometry || geometry.node.bounds.y >= geometry.viewport.y;
+  await device.input.swipe({ x1: x + width * 0.97, y1: y + height * (upward ? 0.85 : 0.2),
+    x2: x + width * 0.97, y2: y + height * (upward ? 0.2 : 0.85), duration: 600 });
+}
+
+function revealTargetVisible(bounds: ScreenshotBounds, viewport: ScreenshotBounds, fullyVisible: boolean) {
+  return fullyVisible ? fullyInside(bounds, viewport)
+    : pointInside({ x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 }, viewport);
+}
+
+function assertGuestTabRetry(nodes: NativeNode[], attempt: number,
+  visibleInTree: (nodes: NativeNode[], node: NativeNode) => boolean,
+  actionable: (nodes: NativeNode[], res: string) => boolean) {
+  // Retry one real tap only when the old hall is still visibly active and its
+  // tab button remains actionable. Other pages never receive blind scrolling.
+  const hall = nodes.find(node => node.res === 'hall-content-list' && visibleInTree(nodes, node));
+  if (attempt === 1 || !hall || !actionable(nodes, 'settings-tab')) {
+    throw new Error('点击我的标签后未显示可操作的游客登录页面');
+  }
+}
+
+function assertClubScenario(scenario: Pick<VisualScenario, 'signIn' | 'pageLabel'>) {
+  if (scenario.signIn !== true && !(scenario.pageLabel === 'guest_club' && scenario.signIn === false)) {
+    throw new Error('俱乐部就绪检查需要明确的游客场景或已登录场景。');
+  }
+}
+
+async function navigateIdentifier(device: NativeDevice, scenario: VisualScenario, identifier: string) {
+  if (identifier === 'personal-house-create' || identifier === 'personal-house-join') {
+    await tap(device, 'hall-tab');
+    await tap(device, identifier);
+    if (identifier === 'personal-house-create') {
+      await reveal(device, { res: 'select-game-category-text' });
+      if (!scenario.navClickTestIds.includes('create-game-button')) await closePicker(device);
+    } else await reveal(device, { res: 'copy-house-number-button' });
+  } else if (identifier === 'create-game-button' && await exists(device, { res: 'select-game-category-text' })) return;
+  else if (['user-agreement-button', 'user-privacy-button'].includes(identifier)) {
+    await openNativeLegalDocument(device, identifier === 'user-agreement-button' ? 'user-agreement' : 'user-privacy',
+      entry => tap(device, entry));
+  } else if (identifier === 'hall-sign-in-button') {
+    await selectGuestSettingsTab(device);
+    await tap(device, 'sign-in-button');
+    await device.wait({ res: 'username-or-email-sign-in-button' });
+  } else await tap(device, identifier);
+}
+
+function assertReadySnapshotScenario(scenario: VisualScenario) {
+  if (scenario.pageLabel !== 'login_pick_country_code' || scenario.readyText || scenario.visualGoneSelector
+    || scenario.fixedTexts.length || scenario.navClickTestIds.includes('advanced-options-button')) {
+    throw new Error('国家区号快照就绪分支尚未覆盖新增场景约束');
+  }
+}
+
+async function dismissRevealTooltip(device: NativeDevice) {
+  await tap(device, await exists(device, { res: 'tooltip-finish-button' }) ? 'tooltip-finish-button' : 'tooltip-next-button');
+}
+
+async function finishScenarioNavigation(device: NativeDevice, scenario: VisualScenario) {
+  if (scenario.pageLabel === 'hall') await scrollToEnd(device, { res: 'hall-content-list' }, { res: 'hall-sign-in-button' });
+  if (scenario.navClickTestIds.includes('advanced-options-button')) {
+    await scrollToEnd(device, { scrollable: true }, { res: 'create-room-tips-text' });
+  }
+  if (scenario.visualGoneSelector) await waitAbsent(device, nativeSelector(scenario.visualGoneSelector));
+  if (scenario.readyText) await device.wait({ text: scenario.readyText });
+  if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
+  await waitAbsent(device, { res: 'alert-message-text' });
+  await device.hideKeyboard();
+}
+
+async function resetScenarioScroll(device: NativeDevice) {
+  for (let reset = 0; reset < 3; reset++) {
+    const list = (await device.nodes()).find(node => /ScrollView|CollectionView|Table/.test(node.clazz)
+      && node.bounds.height > device.screenSize.height * 0.3);
+    if (!list) break;
+    const { x, y, width, height } = list.bounds;
+    await device.input.swipe({ x1: x + width * 0.5, y1: y + height * 0.2,
+      x2: x + width * 0.5, y2: y + height * 0.85, duration: 600 });
+  }
 }

@@ -62,7 +62,7 @@ try {
   await driver.find('settings-tab', 120_000);
   for (const scenario of selectedScenarios) {
     try {
-      await driver.tap(scenario.tab);
+      await driver.selectTab(scenario.tab);
       for (const click of scenario.clicks || []) await driver.tap(click);
       await driver.find(scenario.ready);
       await delay(1500);

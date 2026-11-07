@@ -13,8 +13,8 @@ function fixture(onTap) {
     device: {
       screenSize: { width: 120, height: 180 },
       prepareTransientCapture: async () => {},
-      inputObservation: async () => [button(++reads === 1 ? 10 : 50)],
-      nodes: async () => { throw new Error('不得复用录屏前的原生树'); },
+      inputObservation: async () => { throw new Error('旋转使用完整原生布局，不能混用定向查询'); },
+      nodes: async () => [button(++reads === 1 ? 10 : 50)],
       input: { tap: async point => { taps.push(point); await onTap(); } },
     },
   };

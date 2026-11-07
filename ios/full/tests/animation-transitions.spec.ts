@@ -199,6 +199,11 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
   });
 });
 
+async function signInToHall(device: AndroidDevice) {
+  await waitForHall(device);
+  await signIn(device);
+}
+
 if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('private room game picker slides into and out of the iOS screen', async ({}, testInfo) => {
 
@@ -208,8 +213,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
       device.nativeVideoBackend = 'xctest';
-      await waitForHall(device);
-      await signIn(device);
+      await signInToHall(device);
       const detail = androidScenarios('en', 'rooms').find(scenario => scenario.pageLabel === 'signed_in_private_room_detail');
       expect(detail).toBeDefined();
       await navigateScenario(device, detail!);

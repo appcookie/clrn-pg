@@ -10,7 +10,11 @@ export type ResponseMatch = { method?: string; path: string | RegExp; after?: nu
   session?: string; timeoutMs?: number };
 export type ObservedSession = { key: string; userId: string; username: string;
   deviceId: string; authorization: string; origin: string };
-export type RoomCreationAttempt = { sequence: number; completed: boolean; status: number | null; ok: boolean | null };
+export type RoomCreationAttempt = { sequence: number; completed: boolean; status: number | null; ok: boolean | null;
+  method: 'POST'; path: '/v3/pay_action/do'; requestAtUtc: string; completedAtUtc?: string;
+  responseSource?: 'none' | 'fixture' | 'upstream'; failureCategory?: string; failureReason?: string | null;
+  observationHook?: 'response' | 'error'; fixtureLookupFailed?: boolean;
+  serverTcpEstablished?: boolean; serverTlsEstablished?: boolean; viaProxy?: boolean };
 
 export class NetworkObserver {
   constructor(private readonly proxy: Mitmproxy) {}

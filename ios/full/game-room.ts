@@ -31,7 +31,9 @@ export async function submitGameRoom(device: AndroidDevice, proxy: Mitmproxy,
       if (room) return room;
       const current = await attempts();
       const failed = current.find(item => item.completed && (item.status !== 200 || item.ok !== true));
-      if (failed) throw new Error(`真实建房请求失败：HTTP ${failed.status}，业务成功标记 ${failed.ok}`);
+      if (failed) throw new Error(`真实建房请求失败：HTTP ${failed.status}，业务成功标记 ${failed.ok}`
+        + `；请求序号 ${failed.sequence}，响应归属 ${failed.responseSource ?? 'unknown'}`
+        + `，失败类别 ${failed.failureCategory ?? 'unknown'}，原因 ${failed.failureReason ?? 'unknown'}`);
       if (Date.now() >= deadline) return null;
       await delay(500);
     } while (true);
@@ -60,28 +62,19 @@ export async function submitGameRoom(device: AndroidDevice, proxy: Mitmproxy,
 
 /** 房规读取超时发生在建房请求之前；仅对已确认的只读加载错误重新进入表单一次。 */
 export async function openGameRoomForm(device: AndroidDevice, gameButton: string,
-  selectGame = () => tap(device, gameButton),
+  selectGame = () => selectGameFromPicker(device, gameButton),
   reopenPicker = () => tap(device, 'create-game-button')): Promise<void> {
   for (let attempt = 0; attempt < 2; attempt++) {
     await selectGame();
     try { await device.wait({ res: 'room-name-input' }); return; }
     catch (error) {
       if (attempt || (error as { code?: string }).code !== 'no such element') throw error;
-      const alert = await device.nodes();
-      const timedOut = alert.some(node => node.clazz === 'XCUIElementTypeAlert' && node.text === 'Notice')
-        && alert.some(node => node.clazz === 'XCUIElementTypeStaticText'
-          && node.text === 'timeout of 10000ms exceeded')
-        && alert.some(node => node.clazz === 'XCUIElementTypeButton' && node.text === 'OK');
-      if (!timedOut) throw error;
+      await assertRulesTimeout(device, error);
       await device.acceptAlert();
       await device.wait({ clazz: 'XCUIElementTypeAlert' }, { state: 'gone' });
       const loading = await device.nodes();
       if (loading.some(node => node.res === 'room-name-input')) return;
-      if (!loading.some(node => node.res === 'create-room-loading-text'
-        && node.text === 'Loading room rules, please wait')
-        || loading.some(node => node.res === 'creat-room-button')) {
-        throw new Error('建房规则超时后页面状态不符，停止重新进入表单');
-      }
+      assertRulesLoading(loading);
       await device.input.press('Back', loading);
       await device.wait({ res: 'create-room-loading-container' }, { state: 'gone' });
       const previous = await device.nodes();
@@ -135,10 +128,7 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
   // native menu and room label are visible. Require those actual controls.
   await gameGone(device, 'game-splash-screen-bg');
   await gameReady(device, 'menu-button');
-  const hallNames: Record<string, string> = { en: 'Hall', 'zh-Hans': '大厅', 'zh-Hant': '大廳' };
-  const roomName = view === 'hall' ? hallNames[process.env.IOS_LOCALE || 'en'] : 'TestRoom';
-  if (!roomName) throw new Error('缺少当前语言的大厅牌桌名称断言。');
-  await gameReady(device, game === 'texas-holdem' ? 'texas-holdem-room-name-text' : 'zhajinhua-text-room-name', roomName);
+  await assertRoomName(device, game, view);
   if (game === 'zhajinhua') {
     // 菜单比真实初始桌况更早挂载；完整九个座位就绪后才能发送牌局回放。
     await expect.poll(async () => (await gameNodes(device)).filter(node => /^zhajinhua-seat-[1-9]$/.test(node.res || '')).length,
@@ -146,4 +136,53 @@ export async function createGameRoom(device: AndroidDevice, proxy: Mitmproxy,
     await gameReady(device, 'zhajinhua-text-room-name', 'TestRoom');
   }
   return room;
+}
+
+/** 只有首次选择后仍是无遮挡、可操作的游戏列表，才补点一次只读导航。 */
+export async function selectGameFromPicker(device: AndroidDevice, gameButton: string,
+  press = () => tap(device, gameButton)): Promise<void> {
+  await press();
+  try {
+    await device.wait({ res: 'select-game-category-text' }, { state: 'gone' });
+    return;
+  } catch (error) {
+    if ((error as { code?: string }).code !== 'no such element') throw error;
+    const nodes = await device.nodes();
+    if (!unchangedGamePicker(nodes, gameButton)) throw error;
+  }
+  await press();
+  await device.wait({ res: 'select-game-category-text' }, { state: 'gone' });
+}
+
+/** 加载页、表单、系统弹窗或业务弹窗出现后，不能把列表残留当作漏点。 */
+function unchangedGamePicker(nodes: Awaited<ReturnType<AndroidDevice['nodes']>>, gameButton: string): boolean {
+  const visible = nodes.filter(node => node.visible !== false);
+  const blocked = visible.some(node => /Alert|Keyboard/.test(node.clazz)
+    || /^(?:common-alert-title|common-alert-message|alert-message-text|popup-content-container|create-room-loading-container|base-create-room-screen|room-name-input)$/.test(node.res || ''));
+  return !blocked && visible.some(node => node.res === 'select-game-category-text')
+    && visible.some(node => node.res === gameButton && node.enabled);
+}
+
+async function assertRulesTimeout(device: AndroidDevice, error: unknown) {
+  const alert = await device.nodes();
+  const timedOut = alert.some(node => node.clazz === 'XCUIElementTypeAlert' && node.text === 'Notice')
+    && alert.some(node => node.clazz === 'XCUIElementTypeStaticText'
+      && node.text === 'timeout of 10000ms exceeded')
+    && alert.some(node => node.clazz === 'XCUIElementTypeButton' && node.text === 'OK');
+  if (!timedOut) throw error;
+}
+
+async function assertRoomName(device: AndroidDevice, game: string, view: string) {
+  const hallNames: Record<string, string> = { en: 'Hall', 'zh-Hans': '大厅', 'zh-Hant': '大廳' };
+  const roomName = view === 'hall' ? hallNames[process.env.IOS_LOCALE || 'en'] : 'TestRoom';
+  if (!roomName) throw new Error('缺少当前语言的大厅牌桌名称断言。');
+  await gameReady(device, game === 'texas-holdem' ? 'texas-holdem-room-name-text' : 'zhajinhua-text-room-name', roomName);
+}
+
+function assertRulesLoading(loading: Awaited<ReturnType<AndroidDevice['nodes']>>) {
+  if (!loading.some(node => node.res === 'create-room-loading-text'
+    && node.text === 'Loading room rules, please wait')
+    || loading.some(node => node.res === 'creat-room-button')) {
+    throw new Error('建房规则超时后页面状态不符，停止重新进入表单');
+  }
 }

@@ -6,6 +6,7 @@ import math
 import re
 from time import monotonic
 from urllib.parse import urlsplit
+from http_failure import outcome, utc_now
 
 
 class TransportDiagnostics:
@@ -19,6 +20,7 @@ class TransportDiagnostics:
         self.socket_errors = Counter()
         self.socket_closes = Counter()
         self.http_events = OrderedDict()
+        self.tls_connections = OrderedDict()
 
     @staticmethod
     def host(value):
@@ -34,7 +36,7 @@ class TransportDiagnostics:
             return '/v10/profile/<user>'
         return path if (re.fullmatch(r'/(?:node/)?v\d+/status', path)
             or re.fullmatch(r'/public/v\d+/metadata(?:/servers)?', path)
-            or path == '/v2/centrifugo/connection/websocket') else None
+            or path in ('/v2/centrifugo/connection/websocket', '/v3/pay_action/do')) else None
 
     def socket_endpoint(self, flow):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
@@ -99,6 +101,7 @@ class TransportDiagnostics:
             method = flow.request.method
             self.http_events[flow.id] = dict(host=host, path=path,
                 method=method if method in ('GET', 'POST', 'OPTIONS', 'HEAD') else '<other>',
+                sequence=flow.metadata.get('ios_sequence'), requestAtUtc=utc_now(),
                 started=self.clock(), ended=None, status=None, mocked=False)
             while len(self.http_events) > 128:
                 self.http_events.popitem(last=False)
@@ -134,18 +137,44 @@ class TransportDiagnostics:
             result['backendDelay'] = delay
         return result
 
-    def response(self, flow):
+    @classmethod
+    def candidates(cls, response):
+        """仅保留公开 staging 候选域名，不导出 IP、任意字段或错误正文。"""
+        if not response or response.status_code != 200 or len(response.content or b'') > 256 * 1024:
+            return {}
+        try:
+            body = response.json()
+        except (ValueError, UnicodeDecodeError):
+            return {}
+        if not isinstance(body, dict) or body.get('ok') is not True or not isinstance(body.get('result'), dict):
+            return {}
+        servers = body['result'].get('servers')
+        if not isinstance(servers, (dict, list)):
+            return {}
+        hosts = sorted({host for host in servers if cls.host(host) != '<other>'})
+        return {'candidateHosts': hosts[:128], 'candidateHostsTruncated': len(hosts) > 128}
+
+    def response(self, flow, hook='response'):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
         if host != '<other>' and path:
+            for side, conn in (('client', flow.client_conn), ('server', flow.server_conn)):
+                if self.tls_connections.get(conn.id) == side:
+                    flow.metadata['ios_tls_failure_side'] = side
+            details = dict(observationHook=hook, **outcome(flow))
+            flow.metadata['ios_http_outcome'] = details
             self.responses[(host, path, flow.response.status_code if flow.response else 0)] += 1
             event = self.http_events.get(flow.id)
             if event is not None:
                 event.update(ended=self.clock(), status=flow.response.status_code if flow.response else 0,
+                    completedAtUtc=utc_now(), **details,
                     mocked=flow.metadata.get('ios_mocked') is True, transportError=bool(flow.error),
                     source='visual-node-exclusion' if flow.metadata.get('visual_node_excluded') is True
-                        else 'fixture' if flow.metadata.get('ios_mocked') is True else 'upstream')
+                        else 'fixture' if flow.metadata.get('ios_mocked') is True
+                        else 'proxy-error' if flow.error and flow.response is None else 'upstream')
                 if path == '/node/v1/status':
                     event.update(self.health(flow.response))
+                elif path in ('/public/v12/metadata/servers', '/public/v13/metadata/servers'):
+                    event.update(self.candidates(flow.response))
                 elif path == '/v10/profile/<user>' and flow.response:
                     # 仅记录字段是否存在，不保留用户身份、头像地址、昵称或错误正文。
                     try:
@@ -167,6 +196,11 @@ class TransportDiagnostics:
         address = getattr(server, 'address', None)
         host = getattr(client, 'sni', None) or (address[0] if address else None)
         self.failures[(kind, self.host(host))] += 1
+        conn = client if kind == 'client' else server
+        if conn is not None and getattr(conn, 'id', None) is not None:
+            self.tls_connections[conn.id] = kind
+            while len(self.tls_connections) > 128:
+                self.tls_connections.popitem(last=False)
 
     def snapshot(self):
         now = self.clock()

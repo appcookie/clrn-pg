@@ -158,8 +158,9 @@ export class NativeDevice {
       && (selector.clickable === undefined || !selector.clickable || /Button|Link|Cell/.test(node.clazz))
       && (selector.scrollable === undefined || !selector.scrollable || /ScrollView|CollectionView|Table/.test(node.clazz));
   }
-  async info(selector: NativeSelector): Promise<NativeNode> {
-    const node = (await this.nodes()).find(item => this.matches(item, selector));
+  /** 仅在没有界面操作的连续检查间显式传递快照，不跨操作缓存控件。 */
+  async info(selector: NativeSelector, snapshot?: NativeNode[]): Promise<NativeNode> {
+    const node = (snapshot ?? await this.nodes()).find(item => this.matches(item, selector));
     if (!node) throw new ElementNotFound(`找不到原生控件：${JSON.stringify(selector)}`);
     return node;
   }
@@ -250,18 +251,15 @@ export class NativeDevice {
             this.driver.request('GET', this.driver.path(`/element/${id}/rect`)),
             this.driver.request('GET', this.driver.path(`/element/${id}/attribute/label`)),
           ]);
-        if (typeof displayed !== 'boolean' || !rect
-          || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
-          throw new Error(`短时提示缺少真实可见性或位置属性：${res}`);
-        }
-        if (displayed !== true || rect.width <= 0 || rect.height <= 0) { cachedId = undefined; return null; }
+        assertTransientGeometry(displayed, rect, res);
+        if (transientHidden(displayed, rect)) { cachedId = undefined; return null; }
         cachedId = id;
-        return { res, text: typeof text === 'string' ? text : undefined, bounds: {
+        return { res, text: transientText(text), bounds: {
           x: Math.round(rect.x * this.scale.x), y: Math.round(rect.y * this.scale.y),
           width: Math.round(rect.width * this.scale.x), height: Math.round(rect.height * this.scale.y),
         } };
       } catch (error) {
-        if (['stale element reference', 'no such element'].includes((error as { code?: string }).code || '')) {
+        if (missingTransientElement(error)) {
           cachedId = undefined;
           return null;
         }
@@ -270,10 +268,15 @@ export class NativeDevice {
     };
   }
   async wait(selector: NativeSelector, options: { timeout?: number; state?: 'gone' | 'visible' } = {}) {
+    await this.waitSnapshot(selector, options);
+  }
+  /** 返回满足条件的那次观测，供后续无界面操作的检查显式复用。 */
+  async waitSnapshot(selector: NativeSelector, options: { timeout?: number; state?: 'gone' | 'visible' } = {}) {
     const deadline = Date.now() + (options.timeout ?? this.timeout);
     do {
-      const found = (await this.nodes()).find(node => this.matches(node, selector));
-      if (options.state === 'gone' ? !found : found) return;
+      const nodes = await this.nodes();
+      const found = nodes.find(node => this.matches(node, selector));
+      if (options.state === 'gone' ? !found : found) return nodes;
       await delay(250);
     } while (Date.now() < deadline);
     throw new ElementNotFound(`等待控件${options.state === 'gone' ? '消失' : '出现'}超时：${JSON.stringify(selector)}`);
@@ -407,4 +410,22 @@ export class NativeDevice {
       await this.driver.request('POST', this.driver.path(`/element/${this.lastInput}/value`), { text });
     },
   };
+}
+
+function assertTransientGeometry(displayed: unknown, rect: Bounds, res: string) {
+  if (typeof displayed !== 'boolean' || !rect
+    || ![rect.x, rect.y, rect.width, rect.height].every(Number.isFinite)) {
+    throw new Error(`短时提示缺少真实可见性或位置属性：${res}`);
+  }
+}
+function transientHidden(displayed: unknown, rect: Bounds) {
+  return displayed !== true || rect.width <= 0 || rect.height <= 0;
+}
+
+function missingTransientElement(error: unknown) {
+  return ['stale element reference', 'no such element'].includes((error as { code?: string }).code || '');
+}
+
+function transientText(text: unknown) {
+  return typeof text === 'string' ? text : undefined;
 }

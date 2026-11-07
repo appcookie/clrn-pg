@@ -9,6 +9,7 @@ const theme = node('drawer-menu-item-theme', 40);
 const drawerExit = node('drawer-menu-item-exit', 70);
 const panel = node('game-settings-card-theme-simple', 100);
 const connecting = node('connection', 200, 'Connecting...');
+const menuVisible = state => state === 'table' ? [menu] : state === 'drawer' ? [theme, drawerExit] : [panel];
 
 test('菜单录屏已展开侧栏时，重连遮罩退去后才确认真实菜单', async () => {
   let connectionReads = 0, menuReads = 0, fullReads = 0, taps = 0;
@@ -63,7 +64,7 @@ test('menu navigation retries the UI tap only after reconnect leaves the drawer 
 
 test('menu navigation does not repeat a successful tap', async () => {
   let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
-  const visible = () => state === 'table' ? [menu] : state === 'drawer' ? [theme, drawerExit] : [panel];
+  const visible = () => menuVisible(state);
   const device = {
     ...focusedMenuDevice(() => { fullTreeReads++; return visible(); }, () => { rich = true; }),
     inputObservation: async names => {
@@ -118,10 +119,8 @@ test('menu navigation reopens once when reconnect after the menu tap leaves the 
 
 test('menu navigation checks the live tree when a focused query misses an open drawer', async () => {
   let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
-  const visible = () => state === 'table' ? [menu]
-    : state === 'drawer' ? [theme, drawerExit] : [panel];
+  const visible = () => menuVisible(state);
   const device = {
-    ...focusedMenuDevice(() => { fullTreeReads++; return visible(); }, () => { rich = true; }),
     inputObservation: async names => {
       assert.ok(rich);
       const targets = Array.isArray(names) ? names : names ? [names] : [];
@@ -130,6 +129,7 @@ test('menu navigation checks the live tree when a focused query misses an open d
       if (state === 'drawer' && targets.includes(drawerExit.res)) return [];
       return visible().filter(item => targets.includes(item.res));
     },
+    ...focusedMenuDevice(() => { fullTreeReads++; return visible(); }, () => { rich = true; }),
     input: { tap: async ({ x }) => {
       if (x === 20) state = 'drawer';
       else if (x === 50) { themeTaps++; state = themeTaps === 1 ? 'drawer' : 'panel'; }

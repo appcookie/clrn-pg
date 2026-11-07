@@ -6,6 +6,7 @@ import { expect, type TestInfo } from '@playwright/test';
 import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameConnectionState, gameReady, gameReadyCurrent,
   gameGone, gameGoneCurrent, gameNodes } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
+import { withRecordedLeaderboardEvidence } from './leaderboard-entrance';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
@@ -14,7 +15,6 @@ import { seatGuideMotionBounds } from './game-masks';
 import { gameMaskPoint } from './game-mask-point';
 import { nativeReviewPanelBounds, nativeChatPanelBounds } from './animation-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
-
 
 type Capture = (state: string) => Promise<void>;
 
@@ -147,11 +147,80 @@ export async function closeAnimatedGameMask(device: AndroidDevice, game: 'texas-
  */
 export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', capture: Capture,
   animationInfo?: TestInfo, phase: 'all' | 'first' | 'middle' | 'second' = 'all'): Promise<void> {
+  const captureConnected = connectedCapture(device, capture);
   await gameReady(device, game === 'texas-holdem' ? 'texas-holdem-room-name-text' : 'zhajinhua-text-room-name', 'TestRoom');
+  if (phase !== 'second') {
+    if (phase !== 'middle') {
+      await captureInitialPanels(device, game, captureConnected, capture, animationInfo);
+      // 德州牌型说明后，后续面板用独立房间采样。
+      if (endsAfterCardRank(game, phase)) return;
+      if (game === 'zhajinhua') await captureGameRule(device, game, animationInfo);
+      // 拼三张首组在规则出入场后结束；主题、设置、买入及续费由独立中组
+      // 完整执行，避免13次原片处理累计超过单例90分钟预算。
+      if (phase === 'first') return;
+    }
+    await captureMenuPanels(device, game, captureConnected, animationInfo);
+    if (game === 'zhajinhua') await waitAfterMenuPanels(device);
+    if (phase === 'middle') return;
+  }
+  await captureRemainingPanels(device, game, capture, animationInfo);
+}
+
+/**
+ * 两种玩法共用卡牌主题、牌桌背景和开关操作，维持同样的原生验证。
+ * @param device - 专用模拟器连接。
+ * @param capture - 当前玩法的共享状态截图入口。
+ * @param animationInfo - 德州录屏分段的测试附件入口。
+ */
+export async function captureGameThemes(device: AndroidDevice, capture: Capture,
+  animationInfo?: TestInfo): Promise<void> {
+  await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
+  for (const theme of ['four-color', 'four-color-two', 'realistic']) {
+    const selectTheme = () => gameTapCurrent(device, `game-settings-card-theme-${theme}`);
+    if (theme === 'four-color' && animationInfo && animationRecordOnly) {
+      // The themes shard compares static screenshots and must also publish a
+      // real native MP4 for the 25-group recording gallery.
+      await captureNativeTransition(device, 'texas-holdem-theme-four-color', animationInfo,
+        { x: 0, y: 0, ...device.screenSize }, selectTheme);
+    } else await selectTheme();
+    await capture(`theme_${theme.replaceAll('-', '_')}`);
+  }
+  await gameTapCurrent(device, 'game-settings-card-theme-simple');
+  await closeThemeSettings(device);
+  for (const background of ['blue', 'purple', 'black']) {
+    await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
+    await gameTapCurrent(device, `game-settings-background-${background}`);
+    await closeThemeSettings(device);
+    await capture(`table_${background}`);
+  }
+  await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
+  await gameTapCurrent(device, 'game-settings-background-green');
+  await closeThemeSettings(device);
+  await gameMenu(device, 'settings', 'game-settings-popup-container');
+  let count = 0;
+  for (const name of ['sound-effect', 'vibrate', 'player-voice', 'show-card', 'operation-time', 'see-remain-card', 'shake-avatar']) {
+    const selector = { res: `game-settings-switch-${name}` };
+    const current = (await gameNodes(device)).find(node => node.res === selector.res);
+    if (!current) continue;
+    // The checked query can take longer than its poll timeout after a valid tap.
+    // The final native screenshot compares each visible switch position.
+    if (!current.checked) {
+      await tap(device, selector.res, false, undefined, undefined, bounds => ({
+        x: Math.round(bounds.x + bounds.height / 2),
+        y: Math.round(bounds.y + bounds.height / 2),
+      }));
+    }
+    count++;
+  }
+  expect(count).toBeGreaterThanOrEqual(4);
+  await capture('settings_enabled');
+}
+
+function connectedCapture(device: AndroidDevice, capture: Capture): Capture {
   /** 仅房间重连遮罩打断静态截图时重试同一状态，仍须通过原有逐像素断言。
    * @param state - 当前共用截图状态。
    */
-  const captureConnected = async (state: string) => {
+  return async (state: string) => {
     for (let attempt = 0; attempt < 2; attempt++) {
       await gameConnected(device, 2_000);
       try { await capture(state); return; }
@@ -162,114 +231,110 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
       }
     }
   };
-  if (phase !== 'second') {
-    if (phase !== 'middle') {
-      await capture('waiting_table');
-      if (animationInfo) {
-        const arrows = (await gameNodes(device)).filter(node => node.res?.startsWith('seat-guide-')
-          && node.bounds.width > 0 && node.bounds.height > 0);
-        expect(arrows, '九个空座箭头必须分别可见').toHaveLength(9);
-        await captureMovingKeyframes(device, `${game}-seat-guides`, animationInfo,
-          arrows.map(node => seatGuideMotionBounds(node.bounds)));
-      }
-      await animateGamePanel(device, game, 'drawer-menu', 'menu-button',
-        screenBounds(device, { x: 120, y: 300, width: 180, height: 500 }), animationInfo, 'enter',
-        game === 'zhajinhua' ? 'videoFrames' : 'motionFrames', [], undefined,
-        game === 'texas-holdem' ? [
-          'texas-holdem-drawer-menu-enter-early-phase.png',
-          'texas-holdem-drawer-menu-enter-late-phase.png',
-        ] : []);
-      if (animationInfo && game === 'texas-holdem') await waitForRecordedDrawerMenu(device);
-      else await gameReady(device, 'drawer-menu-item-exit');
-      await capture('menu');
-      await animateGamePanel(device, game, 'card-rank', 'drawer-menu-item-card_rank',
-        screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'enter', 'videoFrames');
-      await gameReady(device, 'card-rank-list');
-      await captureConnected('card_rank');
-      if ((await gameNodes(device)).some(node => node.res === 'card-rank-popup-close')) {
-        await animateGamePanel(device, game, 'card-rank', 'card-rank-popup-close',
-          screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'exit', 'videoFrames', [], undefined,
-          game === 'texas-holdem' ? ['texas-holdem-card-rank-exit-late-phase.png'] : []);
-      }
-      else await closeAnimatedGameMask(device, game, 'card-rank', 'card-rank-list',
-        screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo);
-      // 德州牌型说明后的房间重连偶尔持续不恢复；后续面板用新建的独立房间采样。
-      if (game === 'texas-holdem' && phase === 'first') return;
-      if (game === 'zhajinhua') {
-        await tap(device, 'menu-button');
-        await animateGamePanel(device, game, 'game-rule', 'drawer-menu-item-game_rule',
-          screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo);
-        await gameReady(device, 'game-rule-popup');
-        await animateGamePanel(device, game, 'game-rule', 'game-rule-popup-close-button',
-          screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo, 'exit', 'videoFrames', [], async () => {
-            // 背景房间连接提示可能在面板退场后出现；终点须等它确实消失。
-            await setTimeout(1_000);
-            await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-              { timeout: 30_000 }).toBe(false);
-          });
-        await gameGone(device, 'game-rule-popup');
-      }
-      // 拼三张首组在规则出入场后结束；主题、设置、买入及续费由独立中组
-      // 完整执行，避免13次原片处理累计超过单例90分钟预算。
-      if (phase === 'first') return;
-    }
-    for (const [state, ready, close] of [
-      ['theme', 'game-settings-card-theme-simple', 'game-settings-close-button'],
-      ['settings', 'game-settings-popup-container', 'game-settings-close-button'],
-      ['buy_in', 'buy-in-title', 'buy-in-close-button'],
-      ['renew', 'renew-popup-close-button', 'renew-popup-close-button'],
-    ]) {
-      // 重连遮罩会短暂盖住菜单按钮；等真实牌桌恢复后再点击下一项。
-      await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-        { timeout: 45_000 }).toBe(false);
-      await tap(device, 'menu-button');
-      await gameReady(device, `drawer-menu-item-${state}`);
-      const renewalReady = state === 'renew' && animationInfo ? async () => {
-        await expect.poll(async () => (await gameReady(device, 'renew-popup-remain-diamond')).text?.trim(),
-          { timeout: 45_000 }).toBe(presentation.balance);
-        await expect.poll(async () => Number((await gameReady(device, 'renew-popup-spend-diamond')).text?.trim()),
-          { timeout: 45_000 }).toBeGreaterThan(0);
-      } : undefined;
-      await animateGamePanel(device, game, state, `drawer-menu-item-${state}`,
-        screenBounds(device, { x: 110, y: 360, width: 480, height: 500 }), animationInfo, 'enter',
-        game === 'zhajinhua' || (game === 'texas-holdem' && ['theme', 'buy_in'].includes(state))
-          ? 'videoFrames' : 'motionFrames', [], renewalReady);
-      await gameGone(device, 'drawer-menu-item-exit');
-      await gameReady(device, ready);
-      if (state === 'renew') {
-        // 关闭按钮先于异步余额和续费价格出现，初始的两个 0 不能作为业务就绪。
-        await expect.poll(async () => (await gameReady(device, 'renew-popup-remain-diamond')).text?.trim(),
-          { timeout: 45_000 }).toBe(presentation.balance);
-        await expect.poll(async () => Number((await gameReady(device, 'renew-popup-spend-diamond')).text?.trim()),
-          { timeout: 45_000 }).toBeGreaterThan(0);
-      }
-      await captureConnected(state);
-      const exitReady = game === 'zhajinhua' && state === 'buy_in' && animationInfo ? async () => {
-        // 房间重连提示会独立于买入面板入退场；终点等其消失后再与牌桌基准比较。
-        await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-          { timeout: 45_000 }).toBe(false);
-      } : undefined;
-      await animateGamePanel(device, game, state, close,
-        screenBounds(device, { x: 110, y: 360, width: 480, height: 500 }), animationInfo, 'exit',
-        game === 'zhajinhua' || (game === 'texas-holdem' && state === 'settings')
-          ? 'videoFrames' : 'motionFrames', [], exitReady);
-      await gameGone(device, ready);
-    }
-    if (game === 'zhajinhua') {
-      // 续费面板结束后房间可能独立重连；排行榜起点必须是稳定牌桌。
-      await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-        { timeout: 45_000 }).toBe(false);
+}
+
+async function captureInitialPanels(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', captureConnected: Capture, capture: Capture, animationInfo?: TestInfo): Promise<void> {
+  await capture('waiting_table');
+  if (animationInfo) {
+    const arrows = (await gameNodes(device)).filter(node => node.res?.startsWith('seat-guide-')
+      && node.bounds.width > 0 && node.bounds.height > 0);
+    expect(arrows, '九个空座箭头必须分别可见').toHaveLength(9);
+    await captureMovingKeyframes(device, `${game}-seat-guides`, animationInfo,
+      arrows.map(node => seatGuideMotionBounds(node.bounds)));
+  }
+  await animateGamePanel(device, game, 'drawer-menu', 'menu-button',
+    screenBounds(device, { x: 120, y: 300, width: 180, height: 500 }), animationInfo, 'enter',
+    game === 'zhajinhua' ? 'videoFrames' : 'motionFrames', [], undefined,
+    game === 'texas-holdem' ? [
+      'texas-holdem-drawer-menu-enter-early-phase.png',
+      'texas-holdem-drawer-menu-enter-late-phase.png',
+    ] : []);
+  if (animationInfo && game === 'texas-holdem') await waitForRecordedDrawerMenu(device);
+  else await gameReady(device, 'drawer-menu-item-exit');
+  await capture('menu');
+  await animateGamePanel(device, game, 'card-rank', 'drawer-menu-item-card_rank',
+    screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'enter', 'videoFrames');
+  await gameReady(device, 'card-rank-list');
+  await captureConnected('card_rank');
+  if ((await gameNodes(device)).some(node => node.res === 'card-rank-popup-close')) {
+    await animateGamePanel(device, game, 'card-rank', 'card-rank-popup-close',
+      screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'exit', 'videoFrames', [], undefined,
+      game === 'texas-holdem' ? ['texas-holdem-card-rank-exit-late-phase.png'] : []);
+  }
+  else await closeAnimatedGameMask(device, game, 'card-rank', 'card-rank-list',
+    screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo);
+}
+
+async function captureGameRule(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', animationInfo?: TestInfo): Promise<void> {
+  await tap(device, 'menu-button');
+  await animateGamePanel(device, game, 'game-rule', 'drawer-menu-item-game_rule',
+    screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo);
+  await gameReady(device, 'game-rule-popup');
+  await animateGamePanel(device, game, 'game-rule', 'game-rule-popup-close-button',
+    screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo, 'exit', 'videoFrames', [], async () => {
+      // 背景房间连接提示可能在面板退场后出现；终点须等它确实消失。
       await setTimeout(1_000);
       await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-        { timeout: 45_000 }).toBe(false);
-    }
-    if (phase === 'middle') return;
+        { timeout: 30_000 }).toBe(false);
+    });
+  await gameGone(device, 'game-rule-popup');
+}
+
+async function captureMenuPanels(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', capture: Capture, animationInfo?: TestInfo): Promise<void> {
+  for (const [state, ready, close] of [
+    ['theme', 'game-settings-card-theme-simple', 'game-settings-close-button'],
+    ['settings', 'game-settings-popup-container', 'game-settings-close-button'],
+    ['buy_in', 'buy-in-title', 'buy-in-close-button'],
+    ['renew', 'renew-popup-close-button', 'renew-popup-close-button'],
+  ]) {
+    await captureMenuPanel(device, game, state, ready, close, capture, animationInfo);
   }
+}
+
+async function captureMenuPanel(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
+  state: string, ready: string, close: string, captureConnected: Capture, animationInfo?: TestInfo): Promise<void> {
+  // 重连遮罩会短暂盖住菜单按钮；等真实牌桌恢复后再点击下一项。
+  await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
+    { timeout: 45_000 }).toBe(false);
+  await tap(device, 'menu-button');
+  await gameReady(device, `drawer-menu-item-${state}`);
+  const renewalReady = state === 'renew' && animationInfo ? () => waitForRenewal(device) : undefined;
+  await animateGamePanel(device, game, state, `drawer-menu-item-${state}`,
+    screenBounds(device, { x: 110, y: 360, width: 480, height: 500 }), animationInfo, 'enter',
+    menuSamplingMethod(game, state, 'enter'), [], renewalReady);
+  await gameGone(device, 'drawer-menu-item-exit');
+  await gameReady(device, ready);
+  if (state === 'renew') await waitForRenewal(device);
+  await captureConnected(state);
+  const exitReady = game === 'zhajinhua' && state === 'buy_in' && animationInfo ? async () => {
+    // 房间重连提示会独立于买入面板入退场；终点等其消失后再与牌桌基准比较。
+    await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
+      { timeout: 45_000 }).toBe(false);
+  } : undefined;
+  await animateGamePanel(device, game, state, close,
+    screenBounds(device, { x: 110, y: 360, width: 480, height: 500 }), animationInfo, 'exit',
+    menuSamplingMethod(game, state, 'exit'), [], exitReady);
+  await gameGone(device, ready);
+}
+
+async function waitForRenewal(device: AndroidDevice): Promise<void> {
+  await expect.poll(async () => (await gameReady(device, 'renew-popup-remain-diamond')).text?.trim(),
+    { timeout: 45_000 }).toBe(presentation.balance);
+  await expect.poll(async () => Number((await gameReady(device, 'renew-popup-spend-diamond')).text?.trim()),
+    { timeout: 45_000 }).toBeGreaterThan(0);
+}
+
+async function captureRemainingPanels(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', capture: Capture, animationInfo?: TestInfo): Promise<void> {
   await animateGamePanel(device, game, 'leaderboard',
     game === 'texas-holdem' ? 'texas-holdem-leaderboard-button' : 'zhajinhua-learder-borard-button',
     screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
-  await gameReady(device, 'public-leader-board-empty');
-  await gameGone(device, 'public-leader-board-loading');
+  const assertLeaderboardReady = async () => {
+    await gameReady(device, 'public-leader-board-empty');
+    await gameGone(device, 'public-leader-board-loading');
+  };
+  if (game === 'zhajinhua' && animationInfo)
+    await withRecordedLeaderboardEvidence(device, animationInfo, assertLeaderboardReady);
+  else await assertLeaderboardReady();
   await capture('leaderboard');
   await closeAnimatedGameMask(device, game, 'leaderboard', 'public-leader-board-container',
     screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
@@ -328,54 +393,23 @@ export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 
   await captureGameThemes(device, capture);
 }
 
-/**
- * 两种玩法共用卡牌主题、牌桌背景和开关操作，维持同样的原生验证。
- * @param device - 专用模拟器连接。
- * @param capture - 当前玩法的共享状态截图入口。
- * @param animationInfo - 德州录屏分段的测试附件入口。
- */
-export async function captureGameThemes(device: AndroidDevice, capture: Capture,
-  animationInfo?: TestInfo): Promise<void> {
-  await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-  for (const theme of ['four-color', 'four-color-two', 'realistic']) {
-    const selectTheme = () => gameTapCurrent(device, `game-settings-card-theme-${theme}`);
-    if (theme === 'four-color' && animationInfo && animationRecordOnly) {
-      // The themes shard compares static screenshots and must also publish a
-      // real native MP4 for the 25-group recording gallery.
-      await captureNativeTransition(device, 'texas-holdem-theme-four-color', animationInfo,
-        { x: 0, y: 0, ...device.screenSize }, selectTheme);
-    } else await selectTheme();
-    await capture(`theme_${theme.replaceAll('-', '_')}`);
-  }
-  await gameTapCurrent(device, 'game-settings-card-theme-simple');
-  await closeThemeSettings(device);
-  for (const background of ['blue', 'purple', 'black']) {
-    await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-    await gameTapCurrent(device, `game-settings-background-${background}`);
-    await closeThemeSettings(device);
-    await capture(`table_${background}`);
-  }
-  await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-  await gameTapCurrent(device, 'game-settings-background-green');
-  await closeThemeSettings(device);
-  await gameMenu(device, 'settings', 'game-settings-popup-container');
-  let count = 0;
-  for (const name of ['sound-effect', 'vibrate', 'player-voice', 'show-card', 'operation-time', 'see-remain-card', 'shake-avatar']) {
-    const selector = { res: `game-settings-switch-${name}` };
-    const current = (await gameNodes(device)).find(node => node.res === selector.res);
-    if (!current) continue;
-    // The checked query can take longer than its poll timeout after a valid tap.
-    // The final native screenshot compares each visible switch position.
-    if (!current.checked) {
-      await tap(device, selector.res, false, undefined, undefined, bounds => ({
-        x: Math.round(bounds.x + bounds.height / 2),
-        y: Math.round(bounds.y + bounds.height / 2),
-      }));
-    }
-    count++;
-  }
-  expect(count).toBeGreaterThanOrEqual(4);
-  await capture('settings_enabled');
+async function waitAfterMenuPanels(device: AndroidDevice): Promise<void> {
+  // 续费面板结束后房间可能独立重连；排行榜起点必须是稳定牌桌。
+  await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
+    { timeout: 45_000 }).toBe(false);
+  await setTimeout(1_000);
+  await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
+    { timeout: 45_000 }).toBe(false);
+}
+
+function menuSamplingMethod(game: string, state: string, phase: 'enter' | 'exit'): 'videoFrames' | 'motionFrames' {
+  if (game === 'zhajinhua') return 'videoFrames';
+  const videoStates = phase === 'enter' ? ['theme', 'buy_in'] : ['settings'];
+  return game === 'texas-holdem' && videoStates.includes(state) ? 'videoFrames' : 'motionFrames';
+}
+
+function endsAfterCardRank(game: string, phase: string): boolean {
+  return game === 'texas-holdem' && phase === 'first';
 }
 
 /** 只有定向查询和完整树都确认侧栏未展开时，才重新点击菜单。 */

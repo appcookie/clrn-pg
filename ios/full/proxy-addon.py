@@ -182,7 +182,7 @@ class IosVisualProxy:
         self.transport.tls_failure('server', data)
 
     def error(self, flow):
-        self.transport.response(flow)
+        self.transport.response(flow, hook='error')
         self.observer.response(flow)
 
     def done(self):
@@ -210,14 +210,14 @@ class IosVisualProxy:
             if flow.request.headers.get('X-E2E-Control-Token') != os.environ['MITMPROXY_CONTROL_TOKEN']:
                 flow.response = http.Response.make(403, b'Forbidden')
             else:
-                flow.response = http.Response.make(200, json.dumps(self.transport.snapshot()).encode(),
+                flow.response = http.Response.make(200, json.dumps(self.transport_snapshot()).encode(),
                     {'Content-Type': 'application/json'})
             return
-        self.transport.request(flow)
         if self.observer.control(flow):
             return
         if is_staging(flow.request.host):
             self.observer.request(flow)
+        self.transport.request(flow)
         try:
             club_search_response = self.club_search_fixture.response_for(flow.request)
             if club_search_response is not None:
@@ -403,7 +403,7 @@ class IosVisualProxy:
         if flow.request.method == 'CONNECT':
             return
         # 39580516924 的真实重连在 Node 夹具查询中等待约10秒后触发应用超时。
-        # 这些端点没有 Web 夹具，直接透传；上面的启动暂缓、节点排除和故障
+        # 这些端点没有 Web 夹具，直接透传；上面的显式启动暂缓和故障
         # 注入仍先执行。录像像素分析不能阻塞健康检查或 WebSocket 握手。
         if is_staging(flow.request.host) and path in {
                 '/node/v1/status', '/public/v12/metadata/servers',
@@ -413,11 +413,7 @@ class IosVisualProxy:
         request = urllib.request.Request(os.environ['IOS_FIXTURE_URL'], data=payload,
             headers={'Content-Type': 'application/json',
                      'Authorization': os.environ['IOS_FIXTURE_TOKEN']})
-        self.transport.fixture_started(flow)
-        try:
-            result = await asyncio.to_thread(self.fixture_response, request)
-        finally:
-            self.transport.fixture_finished(flow)
+        result = await self.fetch_fixture(flow, request)
         if result is None:
             return
         if result.get('aborted'):
@@ -426,6 +422,17 @@ class IosVisualProxy:
         flow.response = http.Response.make(result.get('status', 200),
             result.get('body', '').encode(),
             {'Content-Type': result.get('contentType', 'application/json')})
+
+    async def fetch_fixture(self, flow, request):
+        self.transport.fixture_started(flow)
+        try:
+            return await asyncio.to_thread(self.fixture_response, request)
+        except Exception:
+            # Preserve the original failure; export only its local bridge origin.
+            flow.metadata['ios_fixture_failure'] = True
+            raise
+        finally:
+            self.transport.fixture_finished(flow)
 
     @staticmethod
     def fixture_response(request):
@@ -450,6 +457,20 @@ class IosVisualProxy:
                 'coin': 100 if currency == 'coin' else 0,
                 'diamond': 5 if currency == 'currency_diamond' else 0,
                 'energy': 10 if currency == 'energy' else 0}}}}
+
+    def transport_snapshot(self):
+        """区分连接仍活跃和当前房间已订阅，只导出计数，不导出房间或玩家身份。"""
+        snapshot = self.transport.snapshot()
+        if self.game_session and self.game_session.room:
+            from replay_control import replay_readiness
+            game = self.game_session.game_type
+            replay = self.game.texas if game == 'texas_holdem' else self.game.replay
+            try:
+                snapshot['roomSubscription'] = replay_readiness(
+                    replay, game, self.game_session.room['roomId'])
+            except ValueError:
+                snapshot['roomSubscription'] = {'unavailable': True}
+        return snapshot
 
 
 addons = [IosVisualProxy()]
