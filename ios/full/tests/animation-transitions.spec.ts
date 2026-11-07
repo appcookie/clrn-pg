@@ -1,6 +1,6 @@
 import { screenPoint } from '../screen-geometry';
 import { screenBounds } from '../screen-geometry';
-import { expect, test } from '@playwright/test';
+import { expect, test, type TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from '../native-device';
 import { compareScreenshot, launchApplication, waitForHall } from '../device';
 import { captureNativeTransition } from '../animation-transition';
@@ -194,8 +194,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         screenBounds(device, { x: 100, y: 420, width: 520, height: 200 }), pressRoomsTab);
       await device.wait({ res: 'club-rooms-empty-title' });
     } catch (error) {
-      if (device) await captureFailure(device, testInfo);
-      throw error;
+      await rethrowWithCapture(device, testInfo, error);
     } finally { await device?.close(); }
   });
 });
@@ -232,8 +231,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
         [], [], 0, 'videoFrames', undefined,
         () => device!.wait({ res: 'select-game-category-text' }, { state: 'gone' }));
     } catch (error) {
-      if (device) await captureFailure(device, testInfo);
-      throw error;
+      await rethrowWithCapture(device, testInfo, error);
     } finally { await device?.close(); }
   });
 });
@@ -276,3 +274,10 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
     } finally { await device?.close(); }
   }, false, false, false, false, true);
 });
+
+/** 失败时仍保存同一设备的诊断，并传播原始错误。 */
+async function rethrowWithCapture(device: AndroidDevice | undefined, testInfo: TestInfo,
+  error: unknown): Promise<never> {
+  if (device) await captureFailure(device, testInfo);
+  throw error;
+}

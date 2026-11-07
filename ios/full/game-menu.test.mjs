@@ -65,9 +65,7 @@ test('menu navigation does not repeat a successful tap', async () => {
   let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
   const visible = () => state === 'table' ? [menu] : state === 'drawer' ? [theme, drawerExit] : [panel];
   const device = {
-    screenSize: { width: 1178, height: 2556 },
-    nodes: async () => { fullTreeReads++; return visible(); },
-    prepareTransientCapture: async () => { rich = true; },
+    ...focusedMenuDevice(() => { fullTreeReads++; return visible(); }, () => { rich = true; }),
     inputObservation: async names => {
       assert.ok(rich, 'focused XCTest observation requires response attributes');
       return visible().filter(item =>
@@ -123,9 +121,7 @@ test('menu navigation checks the live tree when a focused query misses an open d
   const visible = () => state === 'table' ? [menu]
     : state === 'drawer' ? [theme, drawerExit] : [panel];
   const device = {
-    screenSize: { width: 1178, height: 2556 },
-    nodes: async () => { fullTreeReads++; return visible(); },
-    prepareTransientCapture: async () => { rich = true; },
+    ...focusedMenuDevice(() => { fullTreeReads++; return visible(); }, () => { rich = true; }),
     inputObservation: async names => {
       assert.ok(rich);
       const targets = Array.isArray(names) ? names : names ? [names] : [];
@@ -161,3 +157,11 @@ test('theme close retries once only when the live tree still contains the same p
   assert.equal(taps, 2);
   assert.equal(open, false);
 });
+
+function focusedMenuDevice(readNodes, prepare) {
+  return {
+    screenSize: { width: 1178, height: 2556 },
+    nodes: async () => readNodes(),
+    prepareTransientCapture: async () => { prepare(); },
+  };
+}

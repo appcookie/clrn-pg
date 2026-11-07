@@ -152,8 +152,7 @@ export async function assertVisual(bytes: Buffer, name: string, testInfo: TestIn
   comparisonExclusions: ScreenshotBounds[] = []) {
   const mode = process.env.IOS_VISUAL_MODE || 'smoke';
   if (!['smoke', 'reference', 'compare'].includes(mode)) throw new Error(`未知视觉模式：${mode}`);
-  if (name.includes('..') || name.startsWith('/')) throw new Error('视觉产物名称不能越界。');
-  const filename = name.endsWith('.png') ? name : `${name}.png`;
+  const filename = visualFilename(name);
   await testInfo.attach(filename, { body: bytes, contentType: 'image/png' });
   if (comparisonExclusions.length) await testInfo.attach(`${filename}-exclusions`, {
     body: JSON.stringify(comparisonExclusions), contentType: 'application/json',
@@ -165,10 +164,7 @@ export async function assertVisual(bytes: Buffer, name: string, testInfo: TestIn
     writeFileSync(baseline!, bytes);
     writeFileSync(resolve(baselineRoot, 'build-info.json'), JSON.stringify(readVerifiedBuild(), null, 2));
   } else if (mode === 'compare') {
-    if (!existsSync(baseline!)) throw new Error(`缺少已审查基准：${baseline}`);
-    const comparison = comparePixels(readFileSync(baseline!), bytes, 12, comparisonExclusions);
-    if (!comparison.matches && comparison.diff) await testInfo.attach(`${filename}-diff`, { body: comparison.diff, contentType: 'image/png' });
-    expect(comparison.matches, `${filename} 变化比例 ${comparison.changedRatio}`).toBe(true);
+    await compareVisualBaseline(baseline!, bytes, filename, testInfo, comparisonExclusions);
   }
 }
 /** 截图来源与有效区域在采集前确定；稳定后只比较一次当前基准，失败不得换源或追加排除区。 */
@@ -194,4 +190,18 @@ export async function compareScreenshot(device: NativeDevice, name: string, test
   }).toPass({ timeout: 30_000, intervals: [transientState ? 100 : 500] });
   if (masks.length) await testInfo.attach(`${name}-original`, { body: original, contentType: 'image/png' });
   await assertVisual(result, name, testInfo, comparisonExclusions);
+}
+
+/** 比较已审查基准并保留差异附件和严格匹配断言。 */
+async function compareVisualBaseline(baseline: string, bytes: Buffer, filename: string,
+  testInfo: TestInfo, comparisonExclusions: ScreenshotBounds[]) {
+  if (!existsSync(baseline)) throw new Error(`缺少已审查基准：${baseline}`);
+  const comparison = comparePixels(readFileSync(baseline), bytes, 12, comparisonExclusions);
+  if (!comparison.matches && comparison.diff) await testInfo.attach(`${filename}-diff`, { body: comparison.diff, contentType: 'image/png' });
+  expect(comparison.matches, `${filename} 变化比例 ${comparison.changedRatio}`).toBe(true);
+}
+
+function visualFilename(name: string): string {
+  if (name.includes('..') || name.startsWith('/')) throw new Error('视觉产物名称不能越界。');
+  return name.endsWith('.png') ? name : `${name}.png`;
 }
