@@ -84,7 +84,7 @@ test('静态country从导航就绪到截图遮罩只读一次AX，传递原始�
   const device = {
     screenSize: country.screenSize,
     nodes: async () => { if (opened) { countryReads++; return readyNodes; } return [tab, entry]; },
-    wait: async ({ res }) => assert.ok([tab.res, entry.res].includes(res)),
+    waitSnapshot: async ({ res }) => { assert.ok([tab.res, entry.res].includes(res)); return [tab, entry]; },
     info: async ({ res }) => { assert.ok([tab.res, entry.res].includes(res)); return res === tab.res ? tab : entry; },
     input: { tap: async ({ x }) => { if (x > 200) opened = true; } },
   };

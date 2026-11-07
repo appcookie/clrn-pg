@@ -58,4 +58,3 @@ pictures.set(
     .toBuffer()
 );
 export const picture = (scale = 0) => pictures.get(scale);
-

@@ -182,7 +182,7 @@ class IosVisualProxy:
         self.transport.tls_failure('server', data)
 
     def error(self, flow):
-        self.transport.response(flow)
+        self.transport.response(flow, hook='error')
         self.observer.response(flow)
 
     def done(self):
@@ -213,11 +213,11 @@ class IosVisualProxy:
                 flow.response = http.Response.make(200, json.dumps(self.transport_snapshot()).encode(),
                     {'Content-Type': 'application/json'})
             return
-        self.transport.request(flow)
         if self.observer.control(flow):
             return
         if is_staging(flow.request.host):
             self.observer.request(flow)
+        self.transport.request(flow)
         try:
             club_search_response = self.club_search_fixture.response_for(flow.request)
             if club_search_response is not None:
@@ -413,11 +413,7 @@ class IosVisualProxy:
         request = urllib.request.Request(os.environ['IOS_FIXTURE_URL'], data=payload,
             headers={'Content-Type': 'application/json',
                      'Authorization': os.environ['IOS_FIXTURE_TOKEN']})
-        self.transport.fixture_started(flow)
-        try:
-            result = await asyncio.to_thread(self.fixture_response, request)
-        finally:
-            self.transport.fixture_finished(flow)
+        result = await self.fetch_fixture(flow, request)
         if result is None:
             return
         if result.get('aborted'):
@@ -426,6 +422,17 @@ class IosVisualProxy:
         flow.response = http.Response.make(result.get('status', 200),
             result.get('body', '').encode(),
             {'Content-Type': result.get('contentType', 'application/json')})
+
+    async def fetch_fixture(self, flow, request):
+        self.transport.fixture_started(flow)
+        try:
+            return await asyncio.to_thread(self.fixture_response, request)
+        except Exception:
+            # Preserve the original failure; export only its local bridge origin.
+            flow.metadata['ios_fixture_failure'] = True
+            raise
+        finally:
+            self.transport.fixture_finished(flow)
 
     @staticmethod
     def fixture_response(request):

@@ -112,7 +112,8 @@ class NativeNodeTests(unittest.IsolatedAsyncioTestCase):
                     fixture.assert_not_called()
                 events = addon.transport.snapshot()['httpEvents']
                 self.assertTrue(events)
-                self.assertTrue(all(not event['mocked'] and event['source'] == 'upstream' for event in events))
+                self.assertTrue(all(not event['mocked'] and event['source'] ==
+                    ('proxy-error' if event['transportError'] else 'upstream') for event in events))
                 self.assertTrue(all(event['fixtureElapsedMs'] is None for event in events))
                 health = [event for event in events if event['path'] == '/node/v1/status']
                 self.assertTrue(any(event.get('backendDelay') == 1065 for event in health))
