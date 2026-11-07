@@ -6,6 +6,7 @@ import { iosScenarios } from '../scenarios';
 import { captureNativeTransition } from '../animation-transition';
 import { matchingModalBounds, matchingModalMotionMasks } from '../animation-region';
 import { captureFailure } from '../diagnostics';
+import { MatchingTrace } from '../matching-diagnostics';
 import { assertBrandFade, clickNode, launchBrandPixelBounds } from '../web-animation-parity';
 import { recordNativeVideoFrames } from '../video-frames';
 import { launchArtworkTemplate } from '../launch-artwork';
@@ -73,26 +74,44 @@ if (enabled('social', 'en')) test('hall matching modal records its native entran
   annotation: source('visual/animations/application.spec.ts', 'hall matching spinner modal enter and exit'),
 }, async ({}, info) => {
   test.setTimeout(1_200_000);
-  await withIosProxy(async () => {
+  await withIosProxy(async proxy => {
     const device = await launchApplication();
+    const trace = new MatchingTrace(proxy, info);
     try {
       await waitForHall(device); await signIn(device); await tap(device, 'hall-tab');
-      await tap(device, 'match-game-item-texas_holdem-tourists'); await device.wait({ res: 'game-matching-loading-view' });
+      await trace.save('before-matching');
+      await trace.input('prepare-join', 'match-game-item-texas_holdem-tourists',
+        observe => tap(device, 'match-game-item-texas_holdem-tourists', observe));
+      await trace.modal('prepare-join', 'visible', () => device.wait({ res: 'game-matching-loading-view' }));
       const nodes = await device.nodes();
       const region = matchingModalBounds(nodes, device.screenSize);
       const masks = matchingModalMotionMasks(nodes, device.screenSize);
-      await tap(device, 'quick-start-room-cancel'); await device.wait({ res: 'game-matching-loading-view' }, { state: 'gone' });
+      try {
+        await trace.input('prepare-cancel', 'quick-start-room-cancel',
+          observe => tap(device, 'quick-start-room-cancel', observe));
+        await trace.modal('prepare-cancel', 'gone', () => device.wait({ res: 'game-matching-loading-view' }, { state: 'gone' }));
+      } finally { await trace.save('prepare-cancel'); }
       // Read the native entry before recording; a slow full tree query during
       // recording otherwise produces hundreds of idle frames before the click.
       const entry = await device.info({ res: 'match-game-item-texas_holdem-tourists' });
+      const entryObservedUtc = new Date().toISOString();
       expect(entry.enabled).toBe(true);
       await captureNativeTransition(device, 'hall-matching-modal-enter', info, region,
-        () => device.input.tap({ x: entry.bounds.x + entry.bounds.width / 2, y: entry.bounds.y + entry.bounds.height / 2 }),
+        () => trace.input('recorded-join', 'match-game-item-texas_holdem-tourists', async observe => {
+          const point = { x: entry.bounds.x + entry.bounds.width / 2, y: entry.bounds.y + entry.bounds.height / 2 };
+          observe({ target: entry, point, observedAtUtc: entryObservedUtc,
+            connectionUi: { connecting: null, timeout: null } });
+          await device.input.tap(point);
+        }),
         masks, [], 0, 'videoFrames', undefined,
-        () => device.wait({ res: 'game-matching-loading-view' }));
-      await tap(device, 'quick-start-room-cancel'); await device.wait({ res: 'game-matching-loading-view' }, { state: 'gone' });
+        () => trace.modal('recorded-join', 'visible', () => device.wait({ res: 'game-matching-loading-view' })));
+      try {
+        await trace.input('recorded-cancel', 'quick-start-room-cancel',
+          observe => tap(device, 'quick-start-room-cancel', observe));
+        await trace.modal('recorded-cancel', 'gone', () => device.wait({ res: 'game-matching-loading-view' }, { state: 'gone' }));
+      } finally { await trace.save('recorded-cancel'); }
     } catch (error) { await captureFailure(device, info); throw error; }
-    finally { await device.close(); }
+    finally { await trace.save('final'); await device.close(); }
   }, false, true);
 });
 

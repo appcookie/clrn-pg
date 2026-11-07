@@ -6,6 +6,7 @@ import math
 import re
 from time import monotonic
 from urllib.parse import urlsplit
+from matching_diagnostics import MatchingDiagnostics
 from http_failure import outcome, utc_now
 
 
@@ -20,6 +21,7 @@ class TransportDiagnostics:
         self.socket_errors = Counter()
         self.socket_closes = Counter()
         self.http_events = OrderedDict()
+        self.matching = MatchingDiagnostics(clock)
         self.tls_connections = OrderedDict()
 
     @staticmethod
@@ -48,12 +50,15 @@ class TransportDiagnostics:
             # The key stays internal so reconnects are distinct without
             # retaining the flow/body or exporting its identity.
             self.sockets[flow.id] = dict(endpoint=endpoint, opened=self.clock(), ended=None,
-                lastActivity=None, clientToServer=None, serverToClient=None)
+                lastActivity=None, clientToServer=None, serverToClient=None,
+                connection=len(self.sockets) + 1)
 
     def websocket_message(self, flow):
         endpoint = self.socket_endpoint(flow)
         if not endpoint or not flow.websocket or not flow.websocket.messages:
             return
+        state = self.sockets.get(flow.id)
+        self.matching.websocket_message(flow, state['connection'] if state else None)
         message = flow.websocket.messages[-1]
         if message.injected:
             return
@@ -81,6 +86,7 @@ class TransportDiagnostics:
         endpoint = self.socket_endpoint(flow)
         if not endpoint or not flow.websocket:
             return
+        self.matching.websocket_end(flow)
         state = self.sockets.get(flow.id)
         if state and state['ended'] is not None:
             return
@@ -96,6 +102,8 @@ class TransportDiagnostics:
 
     def request(self, flow):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
+        if host != '<other>':
+            self.matching.http_request(flow)
         if host != '<other>' and path:
             self.requests[(host, path)] += 1
             method = flow.request.method
@@ -156,6 +164,8 @@ class TransportDiagnostics:
 
     def response(self, flow, hook='response'):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
+        if host != '<other>':
+            self.matching.http_response(flow)
         if host != '<other>' and path:
             for side, conn in (('client', flow.client_conn), ('server', flow.server_conn)):
                 if self.tls_connections.get(conn.id) == side:
@@ -207,6 +217,7 @@ class TransportDiagnostics:
         ago = lambda value: round(max(0, now - value) * 1000) if value is not None else None
         return {
             'sampledAtUtc': datetime.now(timezone.utc).isoformat(),
+            'matchingRpc': self.matching.snapshot(),
             'requests': [{'host': host, 'path': path, 'count': count}
                 for (host, path), count in sorted(self.requests.items())],
             'responses': [{'host': host, 'path': path, 'status': status, 'count': count}
@@ -224,6 +235,7 @@ class TransportDiagnostics:
             'websocket': {
                 'opened': len(self.sockets),
                 'connections': [{'host': state['endpoint'][0], 'path': state['endpoint'][1],
+                    'connection': state['connection'],
                     'state': 'closed' if state['ended'] is not None else 'open',
                     'openedAgoMs': ago(state['opened']), 'closedAgoMs': ago(state['ended']),
                     # mitmproxy's message hook exposes data messages, not raw

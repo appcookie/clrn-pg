@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { panelNodes, picture } from './profile-animation-fixture.mjs';
+import { screen, panelNodes, picture } from './profile-animation-fixture.mjs';
 import { profileReadiness, waitForProfileReadiness } from './profile-readiness.ts';
 import { captureNativeTransition } from './animation-transition.ts';
 
@@ -32,7 +32,7 @@ test('原失败记录的完整可见树确认百场统计100与真实钱包', ()
   assert.throws(() => profileReadiness(outside, actual.screen), /首行必须位于当前列表/);
 });
 
-const screen = { width: 120, height: 180 };
+
 for (const profile of ['own-profile', 'opponent-profile-1', 'opponent-profile-2']) {
   test(`${profile} 录后严格语义，不打断录制且继续拒绝只有首尾的硬切`, async () => {
     const oldMode = process.env.IOS_VISUAL_MODE;

@@ -77,6 +77,7 @@ PR 和 master push 默认以 `compare` 运行三语言游客静态截图，以�
 
 完整回归失败时，先打开 Actions 运行首页的「iOS 完整回归失败原因」摘要；其中列出失败分片、具体用例的首条错误和测试证据入口。完整堆栈、截图及录像仍保存在对应分片的产物中。
 
+匹配取消另存 `matching-diagnostics-*` 脱敏点击回执与 join/quit RPC 时间线，区分驱动返回、弹窗断言、真实响应和代理注入。固定包的应用回调及内部连接状态仍标为未知；字段、观测边界与 #21 证据记录见 [匹配取消诊断](docs/issue-21-matching-diagnostics.md)。
 真实建房失败保留 HTTP 200 与业务 ok=true 的断言，不自动重放 POST。安全传输诊断包含建房请求序号、无参数路径、时间、响应归属及固定失败类别；HTTP 0 与界面 502 的区别、证据缺口及恢复条件见 [#22 调查记录](docs/issue-22-investigation.md)。
 
 手动 `group=quarantined` 可只重跑隔离的 5 组，`group=animations` 可运行完整清单的旧动画断言作为诊断，两者都不作为 PR 门禁。`group=all` 包括其他业务和功能测试。静态截图基准继续保留审查来源和 SHA-256；缺少静态基准会在分配 macOS runner 前失败。录屏供人工观看，不自动批准新动画基准。

@@ -4,9 +4,9 @@ import type { NativeDevice as AndroidDevice } from './native-device';
 import { setTimeout } from 'node:timers/promises';
 import { expect, type TestInfo } from '@playwright/test';
 import { gameTap as tap, gameTapCurrent, gameConnected, gameConnectedCurrent, gameConnectionState, gameReady, gameReadyCurrent,
-  gameGone, gameGoneCurrent, gameNodes } from './game-controls';
+  gameGone, gameGoneCurrent, gameNodes, gameConnectedObservation } from './game-controls';
 import { animateGamePanel } from './game-panel-animation';
-import { withRecordedLeaderboardEvidence } from './leaderboard-entrance';
+import { recordLeaderboardEntrance, withRecordedLeaderboardEvidence } from './leaderboard-entrance';
 import presentation from '../../visual/fixtures/account-presentation.json' with { type: 'json' };
 import { captureMovingKeyframes } from './loop-keyframes';
 import { captureNativeTransition } from './animation-transition';
@@ -15,6 +15,7 @@ import { seatGuideMotionBounds } from './game-masks';
 import { gameMaskPoint } from './game-mask-point';
 import { nativeReviewPanelBounds, nativeChatPanelBounds } from './animation-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
+
 
 type Capture = (state: string) => Promise<void>;
 
@@ -34,6 +35,19 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
   // A full accessibility tree costs tens of seconds on a populated table;
   // the focused query still verifies two live bounds and the connection state.
   await gameTapCurrent(device, 'menu-button');
+  await gameConnectedCurrent(device, 2_000);
+  const drawerMarkers = [`drawer-menu-item-${item}`, 'drawer-menu-item-exit'];
+  const drawer = await device.inputObservation(drawerMarkers);
+  if (gameConnectionState(drawer).connecting || !drawer.some(node => drawerMarkers.includes(node.res || ''))) {
+    // 41739214761: the Menu tap left the connected table visible with no
+    // drawer. Confirm that state in the live tree before retrying once;
+    // a focused-query miss must never toggle an already-open drawer shut.
+    const { nodes } = await gameConnectedObservation(device);
+    if (!nodes.some(node => drawerMarkers.includes(node.res || ''))
+      && nodes.some(node => node.res === 'menu-button' && node.visible !== false && node.enabled)) {
+      await gameTapCurrent(device, 'menu-button');
+    }
+  }
   await gameTapCurrent(device, `drawer-menu-item-${item}`);
   // 39725551167: a room reconnect covered the still-open drawer just after
   // its Theme tap. Absence under Connecting is not drawer exit.
@@ -73,6 +87,24 @@ export async function closeThemeSettings(device: AndroidDevice): Promise<void> {
     '主题面板仍在时关闭按钮必须可点击').toBe(true);
   await gameTapCurrent(device, 'game-settings-close-button');
   await gameGone(device, 'game-settings-card-theme-simple');
+}
+
+/** Retry an idempotent background selection once when its static baseline fails. */
+export async function captureTableBackground(device: AndroidDevice, background: string, capture: Capture): Promise<void> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
+    await gameTapCurrent(device, `game-settings-background-${background}`);
+    await closeThemeSettings(device);
+    try {
+      await capture(`table_${background}`);
+      return;
+    } catch (error) {
+      // CI 41663618101 retained purple after selecting black. The retry
+      // must pass the same reviewed baseline; unrelated failures propagate.
+      if (attempt || !(error instanceof Error)
+        || !error.message.includes(`pre-game-table-${background}.png 变化比例`)) throw error;
+    }
+  }
 }
 
 /**
@@ -145,23 +177,33 @@ export async function closeAnimatedGameMask(device: AndroidDevice, game: 'texas-
  */
 export async function gamePreGame(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', capture: Capture,
   animationInfo?: TestInfo, phase: 'all' | 'first' | 'middle' | 'second' = 'all'): Promise<void> {
-  const captureConnected = connectedCapture(device, capture);
   await gameReady(device, game === 'texas-holdem' ? 'texas-holdem-room-name-text' : 'zhajinhua-text-room-name', 'TestRoom');
+  /** 仅房间重连遮罩打断静态截图时重试同一状态，仍须通过原有逐像素断言。
+   * @param state - 当前共用截图状态。
+   */
+  const captureConnected = async (state: string) => {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      await gameConnected(device, 2_000);
+      try { await capture(state); return; }
+      catch (error) {
+        const reconnecting = (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || ''));
+        const visualFailure = /页面像素必须保持稳定|变化比例/.test(String(error));
+        if (attempt || !reconnecting || !visualFailure) throw error;
+      }
+    }
+  };
   if (phase !== 'second') {
     if (phase !== 'middle') {
-      await captureInitialPanels(device, game, captureConnected, capture, animationInfo);
-      // 德州牌型说明后，后续面板用独立房间采样。
-      if (endsAfterCardRank(game, phase)) return;
-      if (game === 'zhajinhua') await captureGameRule(device, game, animationInfo);
-      // 拼三张首组在规则出入场后结束；主题、设置、买入及续费由独立中组
-      // 完整执行，避免13次原片处理累计超过单例90分钟预算。
-      if (phase === 'first') return;
+      if (await capturePreGameOpening(device, game, capture, captureConnected, animationInfo, phase)) return;
     }
-    await captureMenuPanels(device, game, captureConnected, animationInfo);
-    if (game === 'zhajinhua') await waitAfterMenuPanels(device);
+
+    await capturePreGameMenus(device, game, captureConnected, animationInfo);
     if (phase === 'middle') return;
   }
-  await captureRemainingPanels(device, game, capture, animationInfo);
+  await capturePreGameLeaderboard(device, game, capture, animationInfo);
+  await capturePreGamePanels(device, game, capture, animationInfo);
+  if (game === 'texas-holdem') return;
+  await captureGameThemes(device, capture);
 }
 
 /**
@@ -186,10 +228,7 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture,
   await gameTapCurrent(device, 'game-settings-card-theme-simple');
   await closeThemeSettings(device);
   for (const background of ['blue', 'purple', 'black']) {
-    await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-    await gameTapCurrent(device, `game-settings-background-${background}`);
-    await closeThemeSettings(device);
-    await capture(`table_${background}`);
+    await captureTableBackground(device, background, capture);
   }
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
   await gameTapCurrent(device, 'game-settings-background-green');
@@ -214,94 +253,91 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture,
   await capture('settings_enabled');
 }
 
-function connectedCapture(device: AndroidDevice, capture: Capture): Capture {
-  /** 仅房间重连遮罩打断静态截图时重试同一状态，仍须通过原有逐像素断言。
-   * @param state - 当前共用截图状态。
-   */
-  return async (state: string) => {
-    for (let attempt = 0; attempt < 2; attempt++) {
-      await gameConnected(device, 2_000);
-      try { await capture(state); return; }
-      catch (error) {
-        const reconnecting = (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || ''));
-        const visualFailure = /页面像素必须保持稳定|变化比例/.test(String(error));
-        if (attempt || !reconnecting || !visualFailure) throw error;
-      }
-    }
-  };
-}
-
-async function captureInitialPanels(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', captureConnected: Capture, capture: Capture, animationInfo?: TestInfo): Promise<void> {
-  await capture('waiting_table');
-  if (animationInfo) {
-    const arrows = (await gameNodes(device)).filter(node => node.res?.startsWith('seat-guide-')
-      && node.bounds.width > 0 && node.bounds.height > 0);
-    expect(arrows, '九个空座箭头必须分别可见').toHaveLength(9);
-    await captureMovingKeyframes(device, `${game}-seat-guides`, animationInfo,
-      arrows.map(node => seatGuideMotionBounds(node.bounds)));
+async function capturePreGameOpening(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
+  capture: Capture, captureConnected: Capture, animationInfo: TestInfo | undefined, phase: string) {
+  await capturePreGameDrawer(device, game, capture, captureConnected, animationInfo);
+  // 德州牌型说明后的房间重连偶尔持续不恢复；后续面板用新建的独立房间采样。
+  if (game === 'texas-holdem' && phase === 'first') return true;
+  if (game === 'zhajinhua') {
+    await tap(device, 'menu-button');
+    await animateGamePanel(device, game, 'game-rule', 'drawer-menu-item-game_rule',
+      screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo);
+    await gameReady(device, 'game-rule-popup');
+    await animateGamePanel(device, game, 'game-rule', 'game-rule-popup-close-button',
+      screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo, 'exit', 'videoFrames', [], async () => {
+        // 背景房间连接提示可能在面板退场后出现；终点须等它确实消失。
+        await setTimeout(1_000);
+        await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
+          { timeout: 30_000 }).toBe(false);
+      });
+    await gameGone(device, 'game-rule-popup');
   }
-  await animateGamePanel(device, game, 'drawer-menu', 'menu-button',
-    screenBounds(device, { x: 120, y: 300, width: 180, height: 500 }), animationInfo, 'enter',
-    game === 'zhajinhua' ? 'videoFrames' : 'motionFrames', [], undefined,
-    game === 'texas-holdem' ? [
-      'texas-holdem-drawer-menu-enter-early-phase.png',
-      'texas-holdem-drawer-menu-enter-late-phase.png',
-    ] : []);
-  if (animationInfo && game === 'texas-holdem') await waitForRecordedDrawerMenu(device);
-  else await gameReady(device, 'drawer-menu-item-exit');
-  await capture('menu');
-  await animateGamePanel(device, game, 'card-rank', 'drawer-menu-item-card_rank',
-    screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'enter', 'videoFrames');
-  await gameReady(device, 'card-rank-list');
-  await captureConnected('card_rank');
-  if ((await gameNodes(device)).some(node => node.res === 'card-rank-popup-close')) {
-    await animateGamePanel(device, game, 'card-rank', 'card-rank-popup-close',
-      screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'exit', 'videoFrames', [], undefined,
-      game === 'texas-holdem' ? ['texas-holdem-card-rank-exit-late-phase.png'] : []);
-  }
-  else await closeAnimatedGameMask(device, game, 'card-rank', 'card-rank-list',
-    screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo);
+  // 拼三张首组在规则出入场后结束；主题、设置、买入及续费由独立中组
+  // 完整执行，避免13次原片处理累计超过单例90分钟预算。
+  if (phase === 'first') return true;
+  return false;
 }
 
-async function captureGameRule(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', animationInfo?: TestInfo): Promise<void> {
-  await tap(device, 'menu-button');
-  await animateGamePanel(device, game, 'game-rule', 'drawer-menu-item-game_rule',
-    screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo);
-  await gameReady(device, 'game-rule-popup');
-  await animateGamePanel(device, game, 'game-rule', 'game-rule-popup-close-button',
-    screenBounds(device, { x: 130, y: 330, width: 460, height: 610 }), animationInfo, 'exit', 'videoFrames', [], async () => {
-      // 背景房间连接提示可能在面板退场后出现；终点须等它确实消失。
-      await setTimeout(1_000);
-      await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-        { timeout: 30_000 }).toBe(false);
-    });
-  await gameGone(device, 'game-rule-popup');
-}
-
-async function captureMenuPanels(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', capture: Capture, animationInfo?: TestInfo): Promise<void> {
+async function capturePreGameMenus(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
+  captureConnected: Capture, animationInfo?: TestInfo) {
   for (const [state, ready, close] of [
     ['theme', 'game-settings-card-theme-simple', 'game-settings-close-button'],
     ['settings', 'game-settings-popup-container', 'game-settings-close-button'],
     ['buy_in', 'buy-in-title', 'buy-in-close-button'],
     ['renew', 'renew-popup-close-button', 'renew-popup-close-button'],
   ]) {
-    await captureMenuPanel(device, game, state, ready, close, capture, animationInfo);
+    await capturePreGameMenu(device, game, state, ready, close, captureConnected, animationInfo);
+  }
+  if (game === 'zhajinhua') {
+    // 续费面板结束后房间可能独立重连；排行榜起点必须是稳定牌桌。
+    await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
+      { timeout: 45_000 }).toBe(false);
+    await setTimeout(1_000);
+    await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
+      { timeout: 45_000 }).toBe(false);
   }
 }
 
-async function captureMenuPanel(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
-  state: string, ready: string, close: string, captureConnected: Capture, animationInfo?: TestInfo): Promise<void> {
+async function waitForRenewal(device: AndroidDevice) {
+  // 关闭按钮先于异步余额和续费价格出现，初始的两个 0 不能作为业务就绪。
+  await expect.poll(async () => (await gameReady(device, 'renew-popup-remain-diamond')).text?.trim(),
+    { timeout: 45_000 }).toBe(presentation.balance);
+  await expect.poll(async () => Number((await gameReady(device, 'renew-popup-spend-diamond')).text?.trim()),
+    { timeout: 45_000 }).toBeGreaterThan(0);
+}
+
+/** 未生效的主题点击仅在完整树证明侧栏仍开着时重录一次，保留两次原片。 */
+export async function recordThemeEntrance(device: AndroidDevice, record: () => Promise<void>): Promise<void> {
+  await record();
+  await gameConnected(device, 1_000);
+  const nodes = await gameNodes(device);
+  if (!gameConnectionState(nodes).connecting
+    && nodes.some(node => node.res === 'drawer-menu-item-exit')
+    && !nodes.some(node => node.res === 'game-settings-card-theme-simple')) {
+    await record();
+  }
+  await gameGone(device, 'drawer-menu-item-exit');
+  await gameReady(device, 'game-settings-card-theme-simple');
+}
+
+async function capturePreGameMenu(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
+  state: string, ready: string, close: string, captureConnected: Capture, animationInfo?: TestInfo) {
   // 重连遮罩会短暂盖住菜单按钮；等真实牌桌恢复后再点击下一项。
   await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
     { timeout: 45_000 }).toBe(false);
   await tap(device, 'menu-button');
   await gameReady(device, `drawer-menu-item-${state}`);
   const renewalReady = state === 'renew' && animationInfo ? () => waitForRenewal(device) : undefined;
-  await animateGamePanel(device, game, state, `drawer-menu-item-${state}`,
+  const recordEntrance = () => animateGamePanel(device, game, state, `drawer-menu-item-${state}`,
     screenBounds(device, { x: 110, y: 360, width: 480, height: 500 }), animationInfo, 'enter',
     menuSamplingMethod(game, state, 'enter'), [], renewalReady);
-  await gameGone(device, 'drawer-menu-item-exit');
-  await gameReady(device, ready);
+  if (game === 'texas-holdem' && state === 'theme' && animationInfo) {
+    await recordThemeEntrance(device, recordEntrance);
+  } else {
+    await recordEntrance();
+    await gameGone(device, 'drawer-menu-item-exit');
+    await gameReady(device, ready);
+  }
   if (state === 'renew') await waitForRenewal(device);
   await captureConnected(state);
   const exitReady = game === 'zhajinhua' && state === 'buy_in' && animationInfo ? async () => {
@@ -315,27 +351,8 @@ async function captureMenuPanel(device: AndroidDevice, game: 'texas-holdem' | 'z
   await gameGone(device, ready);
 }
 
-async function waitForRenewal(device: AndroidDevice): Promise<void> {
-  await expect.poll(async () => (await gameReady(device, 'renew-popup-remain-diamond')).text?.trim(),
-    { timeout: 45_000 }).toBe(presentation.balance);
-  await expect.poll(async () => Number((await gameReady(device, 'renew-popup-spend-diamond')).text?.trim()),
-    { timeout: 45_000 }).toBeGreaterThan(0);
-}
-
-async function captureRemainingPanels(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua', capture: Capture, animationInfo?: TestInfo): Promise<void> {
-  await animateGamePanel(device, game, 'leaderboard',
-    game === 'texas-holdem' ? 'texas-holdem-leaderboard-button' : 'zhajinhua-learder-borard-button',
-    screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
-  const assertLeaderboardReady = async () => {
-    await gameReady(device, 'public-leader-board-empty');
-    await gameGone(device, 'public-leader-board-loading');
-  };
-  if (game === 'zhajinhua' && animationInfo)
-    await withRecordedLeaderboardEvidence(device, animationInfo, assertLeaderboardReady);
-  else await assertLeaderboardReady();
-  await capture('leaderboard');
-  await closeAnimatedGameMask(device, game, 'leaderboard', 'public-leader-board-container',
-    screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
+async function capturePreGamePanels(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
+  capture: Capture, animationInfo?: TestInfo) {
   await animateGamePanel(device, game, 'game-record', 'game-record-button',
     screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), animationInfo, 'enter', 'videoFrames', [],
     async () => { await gameReady(device, 'review-board-description-text'); });
@@ -387,25 +404,60 @@ async function captureRemainingPanels(device: AndroidDevice, game: 'texas-holdem
   await capture('buy_in_applications');
   await closeAnimatedGameMask(device, game, 'buy-in-applications', 'buy-in-application-list',
     screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
-  if (game === 'texas-holdem') return;
-  await captureGameThemes(device, capture);
 }
 
-async function waitAfterMenuPanels(device: AndroidDevice): Promise<void> {
-  // 续费面板结束后房间可能独立重连；排行榜起点必须是稳定牌桌。
-  await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-    { timeout: 45_000 }).toBe(false);
-  await setTimeout(1_000);
-  await expect.poll(async () => (await gameNodes(device)).some(node => /Connecting\.\.\./.test(node.text || '')),
-    { timeout: 45_000 }).toBe(false);
+async function capturePreGameDrawer(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
+  capture: Capture, captureConnected: Capture, animationInfo?: TestInfo) {
+  await capture('waiting_table');
+  if (animationInfo) {
+    const arrows = (await gameNodes(device)).filter(node => node.res?.startsWith('seat-guide-')
+      && node.bounds.width > 0 && node.bounds.height > 0);
+    expect(arrows, '九个空座箭头必须分别可见').toHaveLength(9);
+    await captureMovingKeyframes(device, `${game}-seat-guides`, animationInfo,
+      arrows.map(node => seatGuideMotionBounds(node.bounds)));
+  }
+  await animateGamePanel(device, game, 'drawer-menu', 'menu-button',
+    screenBounds(device, { x: 120, y: 300, width: 180, height: 500 }), animationInfo, 'enter',
+    game === 'zhajinhua' ? 'videoFrames' : 'motionFrames', [], undefined,
+    game === 'texas-holdem' ? [
+      'texas-holdem-drawer-menu-enter-early-phase.png',
+      'texas-holdem-drawer-menu-enter-late-phase.png',
+    ] : []);
+  if (animationInfo && game === 'texas-holdem') await waitForRecordedDrawerMenu(device);
+  else await gameReady(device, 'drawer-menu-item-exit');
+  await capture('menu');
+  await animateGamePanel(device, game, 'card-rank', 'drawer-menu-item-card_rank',
+    screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'enter', 'videoFrames');
+  await gameReady(device, 'card-rank-list');
+  await captureConnected('card_rank');
+  if ((await gameNodes(device)).some(node => node.res === 'card-rank-popup-close')) {
+    await animateGamePanel(device, game, 'card-rank', 'card-rank-popup-close',
+      screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo, 'exit', 'videoFrames', [], undefined,
+      game === 'texas-holdem' ? ['texas-holdem-card-rank-exit-late-phase.png'] : []);
+  }
+  else await closeAnimatedGameMask(device, game, 'card-rank', 'card-rank-list',
+    screenBounds(device, { x: 110, y: 400, width: 440, height: 600 }), animationInfo);
 }
 
-function menuSamplingMethod(game: string, state: string, phase: 'enter' | 'exit'): 'videoFrames' | 'motionFrames' {
-  if (game === 'zhajinhua') return 'videoFrames';
-  const videoStates = phase === 'enter' ? ['theme', 'buy_in'] : ['settings'];
-  return game === 'texas-holdem' && videoStates.includes(state) ? 'videoFrames' : 'motionFrames';
+async function capturePreGameLeaderboard(device: AndroidDevice, game: 'texas-holdem' | 'zhajinhua',
+  capture: Capture, animationInfo?: TestInfo) {
+  const open = () => animateGamePanel(device, game, 'leaderboard',
+    game === 'texas-holdem' ? 'texas-holdem-leaderboard-button' : 'zhajinhua-learder-borard-button',
+    screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
+  const assertLeaderboardReady = async () => {
+    await gameReady(device, 'public-leader-board-empty');
+    await gameGone(device, 'public-leader-board-loading');
+  };
+  if (game === 'zhajinhua' && animationInfo) {
+    await recordLeaderboardEntrance(device, open,
+      () => withRecordedLeaderboardEvidence(device, animationInfo, assertLeaderboardReady));
+  } else { await open(); await assertLeaderboardReady(); }
+  await capture('leaderboard');
+  await closeAnimatedGameMask(device, game, 'leaderboard', 'public-leader-board-container',
+    screenBounds(device, { x: 110, y: 400, width: 470, height: 450 }), animationInfo);
 }
 
-function endsAfterCardRank(game: string, phase: string): boolean {
-  return game === 'texas-holdem' && phase === 'first';
+function menuSamplingMethod(game: 'texas-holdem' | 'zhajinhua', state: string, phase: 'enter' | 'exit') {
+  const texasVideo = phase === 'enter' ? ['theme', 'buy_in'].includes(state) : state === 'settings';
+  return game === 'zhajinhua' || texasVideo ? 'videoFrames' : 'motionFrames';
 }

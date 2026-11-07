@@ -128,3 +128,80 @@ test('theme close retries once only when the live tree still contains the same p
   assert.equal(taps, 2);
   assert.equal(open, false);
 });
+
+
+import { captureTableBackground } from './game-pregame.ts';
+
+test('background selection retries a missed setting once and preserves baseline failures', async () => {
+  const background = node('game-settings-background-black', 130);
+  const close = node('game-settings-close-button', 160);
+  let state = 'table', selections = 0, captures = 0;
+  const visible = () => state === 'table' ? [menu]
+    : state === 'drawer' ? [theme, drawerExit] : [panel, background, close];
+  const device = {
+    screenSize: { width: 1178, height: 2556 },
+    nodes: async () => visible(),
+    prepareTransientCapture: async () => {},
+    inputObservation: async names => visible().filter(item =>
+      (Array.isArray(names) ? names : [names]).includes(item.res)),
+    input: { tap: async ({ x }) => {
+      if (x === 20) state = 'drawer';
+      else if (x === 50) state = 'panel';
+      else if (x === 140) selections++;
+      else if (x === 170) state = 'table';
+      else throw new Error(`unexpected tap ${x}`);
+    } },
+  };
+  const mismatch = new Error('en-signed-in-zhajinhua-pre-game-table-black.png 变化比例 0.91');
+  await captureTableBackground(device, 'black', async name => {
+    assert.equal(name, 'table_black');
+    if (++captures === 1) throw mismatch;
+  });
+  assert.equal(selections, 2);
+  assert.equal(captures, 2);
+  captures = 0;
+  await assert.rejects(captureTableBackground(device, 'black', async () => {
+    captures++;
+    throw mismatch;
+  }), error => error === mismatch);
+  assert.equal(captures, 2, 'a persistent visual regression must fail after one retry');
+  captures = 0;
+  const transport = new Error('device disconnected');
+  await assert.rejects(captureTableBackground(device, 'black', async () => {
+    captures++;
+    throw transport;
+  }), error => error === transport);
+  assert.equal(captures, 1, 'unrelated errors must propagate immediately');
+});
+
+for (const missedTap of [false, true]) {
+  test(`menu opening confirms the live drawer before retrying: missed tap ${missedTap}`, async () => {
+    let state = 'table', menuTaps = 0, themeTaps = 0, fullReads = 0;
+    const visible = () => state === 'table' ? [menu]
+      : state === 'drawer' ? [menu, theme, drawerExit] : [panel];
+    const device = {
+      screenSize: { width: 1178, height: 2556 },
+      prepareTransientCapture: async () => {},
+      nodes: async () => { fullReads++; return visible(); },
+      inputObservation: async names => {
+        const targets = Array.isArray(names) ? names : [names];
+        // A focused miss alone cannot justify another Menu tap.
+        if (Array.isArray(names) && names.includes(theme.res)) return [];
+        return visible().filter(item => targets.includes(item.res));
+      },
+      input: { tap: async ({ x }) => {
+        if (x === 20) {
+          menuTaps++;
+          if (!missedTap || menuTaps === 2) state = state === 'drawer' ? 'table' : 'drawer';
+        } else if (x === 50) { themeTaps++; state = 'panel'; }
+        else throw new Error(`unexpected tap ${x}`);
+      } },
+    };
+    await gameMenu(device, 'theme', panel.res);
+    assert.equal(menuTaps, missedTap ? 2 : 1);
+    assert.equal(themeTaps, 1);
+    assert.equal(state, 'panel');
+    assert.ok(fullReads >= 1);
+  });
+}
+

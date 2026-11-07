@@ -32,7 +32,7 @@ function fixture(snapshots, tapError) {
 }
 
 test('排行榜稳定入口两份当前观测后只点击一次，回执不代表应用成功', async () => {
-  const f = fixture([[{ ...target, text: 'private-player-name', children: [timeout] }]]);
+  const f = fixture([[{ ...target, text: '私密昵称', children: [timeout] }]]);
   await tapRecordedLeaderboard(f.device, f.info);
   assert.equal(f.taps.length, 1);
   assert.equal(f.taps[0].reads, 2);
@@ -46,7 +46,7 @@ test('排行榜稳定入口两份当前观测后只点击一次，回执不代�
   assert.deepEqual(evidence.observations.at(-1).targets[0], {
     resource, visible: true, enabled: true, bounds: target.bounds,
   });
-  assert.equal(JSON.stringify(evidence).includes('private-player-name'), false);
+  assert.equal(JSON.stringify(evidence).includes('私密昵称'), false);
   assert.equal(JSON.stringify(evidence).includes('children'), false);
 });
 
@@ -64,7 +64,7 @@ test('排行榜预热后重连必须恢复并重新确认稳定位置，不能�
   assert.ok(Date.parse(evidence.tapRequestedUtc) - Date.parse(evidence.preparationStartedUtc) >= 1390);
 });
 
-test('排行榜disabled或隐藏目标不能贡献稳定样本，恢复可用后仅点击一次', async () => {
+test('排行榜禁用或隐藏目标不能贡献稳定样本，恢复可用后仅点击一次', async () => {
   for (const first of [{ ...target, enabled: false }, { ...target, visible: false }]) {
     const f = fixture([[first], [target]]);
     await tapRecordedLeaderboard(f.device, f.info);
@@ -73,17 +73,17 @@ test('排行榜disabled或隐藏目标不能贡献稳定样本，恢复可用后
   }
 });
 
-test('排行榜任一样本连接超时、重复目标或查询错误都0tap，保留未发出回执', async () => {
-  for (const bad of [[target, timeout], [timeout], [target, target], new Error('private-driver-error')]) {
+test('排行榜任一样本连接超时、重复目标或查询错误都不得点击，保留未发出回执', async () => {
+  for (const bad of [[target, timeout], [timeout], [target, target], new Error('私密驱动错误')]) {
     for (const second of [false, true]) {
       const f = fixture(second ? [[target], bad] : [bad]);
       await assert.rejects(tapRecordedLeaderboard(f.device, f.info),
-        /Connection Timeout|唯一可见目标|private-driver-error/);
+        /Connection Timeout|唯一可见目标|私密驱动错误/);
       assert.equal(f.taps.length, 0);
       assert.equal(f.input().driverReceipt, 'not-requested');
       assert.equal(f.input().tapRequestedUtc, undefined);
       assert.equal(f.input().driverReturnedUtc, undefined);
-      assert.equal(JSON.stringify(f.input()).includes('private-driver-error'), false);
+      assert.equal(JSON.stringify(f.input()).includes('私密驱动错误'), false);
       if (Array.isArray(bad) && bad.includes(timeout))
         assert.equal(f.input().observations.at(-1).connection.timeoutVisible, true);
     }
@@ -95,7 +95,7 @@ test('排行榜越过屏幕的落点禁止发出输入；实际驱动错误不�
   await assert.rejects(tapRecordedLeaderboard(offscreen.device, offscreen.info), /真实屏幕内/);
   assert.equal(offscreen.taps.length, 0);
   assert.equal(offscreen.input().driverReceipt, 'not-requested');
-  const failure = new Error('tap transport failed');
+  const failure = new Error('点击传输失败');
   const f = fixture([[target]], failure);
   await assert.rejects(tapRecordedLeaderboard(f.device, f.info), error => error === failure);
   assert.equal(f.taps.length, 1);
@@ -144,7 +144,7 @@ test('录后原有可见性断言成功或失败都先于清理保存面板语�
       assert.equal(asserted, true);
       assert.deepEqual(markers, ['public-leader-board-container', 'public-leader-board-empty',
         'public-leader-board-loading']);
-      return failed ? [connecting] : [{ ...target, res: 'public-leader-board-empty', text: 'private-text' }];
+      return failed ? [connecting] : [{ ...target, res: 'public-leader-board-empty', text: '私密文字' }];
     };
     const result = withRecordedLeaderboardEvidence(f.device, f.info, async () => {
       asserted = true;
@@ -155,7 +155,7 @@ test('录后原有可见性断言成功或失败都先于清理保存面板语�
     const evidence = f.attachments.get('zhajinhua-leaderboard-enter-semantics');
     assert.equal(evidence.assertionsPassed, !failed);
     assert.equal(evidence.observation.connection.connecting, failed);
-    assert.equal(JSON.stringify(evidence).includes('private-text'), false);
+    assert.equal(JSON.stringify(evidence).includes('私密文字'), false);
     assert.equal(f.taps.length, 0);
   }
 });
@@ -163,7 +163,7 @@ test('录后原有可见性断言成功或失败都先于清理保存面板语�
 test('录后诊断驱动错误保留原断言失败；断言成功时也不能吞掉诊断错误', async () => {
   for (const failed of [false, true]) {
     const f = fixture([]);
-    const assertion = new Error('missing panel'), driver = new Error('diagnostic source failed');
+    const assertion = new Error('缺少面板'), driver = new Error('诊断查询失败');
     f.device.inputObservation = async () => { throw driver; };
     await assert.rejects(withRecordedLeaderboardEvidence(f.device, f.info, async () => {
       if (failed) throw assertion;
@@ -171,4 +171,35 @@ test('录后诊断驱动错误保留原断言失败；断言成功时也不能�
     assert.equal(f.attachments.get('zhajinhua-leaderboard-enter-semantics').observationFailed, true);
     assert.equal(f.taps.length, 0);
   }
+});
+
+for (const state of ['unchanged', 'loading', 'connecting', 'timeout', 'different-page', 'driver-error']) {
+  test(`排行榜录后未就绪：${state} 只允许原牌桌重录一次`, async () => {
+    const { recordLeaderboardEntrance } = await import('./leaderboard-entrance.ts');
+    const error = new Error('public-leader-board-empty 应可见且连接正常');
+    const table = [target, { ...target, res: 'zhajinhua-start-room-timer-button' }];
+    const states = {
+      unchanged: table, loading: [...table, { ...target, res: 'public-leader-board-loading' }],
+      connecting: [...table, connecting], timeout: [...table, timeout], 'different-page': [],
+    };
+    let recordings = 0, assertions = 0;
+    const device = { screenSize: { width: 120, height: 180 }, nodes: async () => {
+      if (state === 'driver-error') throw new Error('driver failed');
+      return states[state];
+    } };
+    const run = () => recordLeaderboardEntrance(device, async () => { recordings++; }, async () => {
+      if (++assertions === 1 || state !== 'unchanged') throw error;
+    });
+    if (state === 'unchanged') { await run(); assert.equal(recordings, 2); }
+    else { await assert.rejects(run); assert.equal(recordings, 1); }
+  });
+}
+test('第二次排行榜入场仍未就绪时保留失败', async () => {
+  const { recordLeaderboardEntrance } = await import('./leaderboard-entrance.ts');
+  let recordings = 0;
+  const error = new Error('public-leader-board-empty 应可见且连接正常');
+  await assert.rejects(recordLeaderboardEntrance({ screenSize: { width: 120, height: 180 },
+    nodes: async () => [target, { ...target, res: 'zhajinhua-start-room-timer-button' }] },
+  async () => { recordings++; }, async () => { throw error; }), error);
+  assert.equal(recordings, 2);
 });

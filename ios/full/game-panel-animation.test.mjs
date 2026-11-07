@@ -338,3 +338,20 @@ test('只有连接spinner运动而资料硬切时，不能冒充profile的真实
     else process.env.IOS_VISUAL_MODE = previous;
   }
 });
+
+test('德州菜单入场在录屏中使用定向查询，避免重连期间反复读取整树', async () => {
+  const menu = { ...button, res: 'menu-button' };
+  let recording = false, reads = 0, taps = 0;
+  const device = {
+    screenSize: screen,
+    prepareTransientCapture: async () => { assert.equal(recording, true); },
+    nodes: async () => { throw new Error('菜单入场不应读取完整牌桌树'); },
+    inputObservation: async () => ++reads <= 2 ? [menu, connecting] : [menu],
+    input: { tap: async point => { taps++; assert.deepEqual(point, { x: 25, y: 40 }); } },
+  };
+  await animateGamePanel(device, 'texas-holdem', 'drawer-menu', menu.res, menu.bounds,
+    { attach: async () => {} }, 'enter', 'motionFrames', [], undefined, [],
+    async (_d, _n, _i, _r, trigger) => { recording = true; await trigger(); });
+  assert.equal(taps, 1);
+  assert.ok(reads >= 6, '重连恢复后必须重新取得稳定的入口位置');
+});

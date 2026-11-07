@@ -17,6 +17,7 @@ import { gameReady } from '../game-controls';
 import { waitAbsent } from '../native-state';
 import { captureMovingKeyframes } from '../loop-keyframes';
 import { matchingSpinnerRegion } from '../animation-region';
+import { MatchingTrace } from '../matching-diagnostics';
 
 if (!(!['all', 'guest'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('native launch artwork and staging notice appear on a real app start', async ({}, testInfo) => {
@@ -127,8 +128,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('hall matching spinner animates while the real waiting dialog is visible', async ({}, testInfo) => {
 
   test.setTimeout(1_200_000);
-  await withAndroidProxy(async () => {
+  await withAndroidProxy(async proxy => {
     let device: AndroidDevice | undefined;
+    const trace = new MatchingTrace(proxy, testInfo);
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
       await waitForHall(device);
@@ -137,8 +139,10 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       expect(hall).toBeDefined();
       await navigateScenario(device, hall!);
       const masks = await screenshotMasks(device, hall!);
-      await tap(device, 'match-game-item-texas_holdem-tourists');
-      await device.wait({ res: 'game-matching-loading-view' });
+      await trace.save('before-matching');
+      await trace.input('spinner-join', 'match-game-item-texas_holdem-tourists',
+        observe => tap(device!, 'match-game-item-texas_holdem-tourists', observe));
+      await trace.modal('spinner-join', 'visible', () => device!.wait({ res: 'game-matching-loading-view' }));
       const nodes = await device.nodes();
       const countdown = nodes.find(node => node.res === 'game-matching-countdown-text')!;
       const spinner = matchingSpinnerRegion(nodes, device.screenSize);
@@ -153,13 +157,17 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         { takeScreenshot: capture, timeoutMs: 4_000 });
       await captureMovingKeyframes(device, 'hall-matching-spinner', testInfo,
         [spinner], 2);
-      await compareScreenshot(device, 'en-hall-matching', testInfo, masks, undefined, capture);
-      await tap(device, 'quick-start-room-cancel');
-      await waitAbsent(device, { res: 'game-matching-loading-view' });
+      // 静态页面沿用 XCTest 截图通道；Simulator 原片仍用于上面的旋转与录像证据。
+      await compareScreenshot(device, 'en-hall-matching', testInfo, masks);
+      try {
+        await trace.input('spinner-cancel', 'quick-start-room-cancel',
+          observe => tap(device!, 'quick-start-room-cancel', observe));
+        await trace.modal('spinner-cancel', 'gone', () => waitAbsent(device!, { res: 'game-matching-loading-view' }));
+      } finally { await trace.save('spinner-cancel'); }
     } catch (error) {
       if (device) await captureFailure(device, testInfo);
       throw error;
-    } finally { await device?.close(); }
+    } finally { await trace.save('final'); await device?.close(); }
   }, false, true);
 });
 
@@ -168,9 +176,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
 
   test.setTimeout(1_200_000);
   await withAndroidProxy(async () => {
-    let device: AndroidDevice | undefined;
-    try {
-      device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+    await withAnimationDevice(testInfo, async device => {
       await waitForHall(device);
       await signIn(device);
       const club = androidScenarios('en', 'social').find(scenario => scenario.pageLabel === 'signed_in_club');
@@ -193,10 +199,7 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'club-rooms-empty-enter', testInfo,
         screenBounds(device, { x: 100, y: 420, width: 520, height: 200 }), pressRoomsTab);
       await device.wait({ res: 'club-rooms-empty-title' });
-    } catch (error) {
-      if (device) await captureFailure(device, testInfo);
-      throw error;
-    } finally { await device?.close(); }
+    });
   });
 });
 
@@ -205,9 +208,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
 
   test.setTimeout(1_200_000);
   await withAndroidProxy(async () => {
-    let device: AndroidDevice | undefined;
-    try {
-      device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+    await withAnimationDevice(testInfo, async device => {
       device.nativeVideoBackend = 'xctest';
       await waitForHall(device);
       await signIn(device);
@@ -231,10 +232,7 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
       await captureNativeTransition(device, 'game-picker-exit', testInfo, region, pressBackdrop,
         [], [], 0, 'videoFrames', undefined,
         () => device!.wait({ res: 'select-game-category-text' }, { state: 'gone' }));
-    } catch (error) {
-      if (device) await captureFailure(device, testInfo);
-      throw error;
-    } finally { await device?.close(); }
+    });
   });
 });
 
@@ -276,3 +274,15 @@ if (!(!['all', 'rooms'].includes(process.env.IOS_GROUP || 'all')
     } finally { await device?.close(); }
   }, false, false, false, false, true);
 });
+
+async function withAnimationDevice(testInfo: Parameters<typeof captureFailure>[1],
+  run: (device: AndroidDevice) => Promise<void>): Promise<void> {
+  let device: AndroidDevice | undefined;
+  try {
+    device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
+    await run(device);
+  } catch (error) {
+    if (device) await captureFailure(device, testInfo);
+    throw error;
+  } finally { await device?.close(); }
+}

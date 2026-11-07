@@ -228,43 +228,6 @@
     "format": "python",
     "locations": [
       {
-        "file": "ios/full/proxy-addon.py",
-        "start": {
-          "column": 21,
-          "line": 118,
-          "position": 5641
-        },
-        "end": {
-          "column": 30,
-          "line": 128,
-          "position": 6272
-        }
-      },
-      {
-        "file": "ios/full/proxy-addon.py",
-        "start": {
-          "column": 25,
-          "line": 148,
-          "position": 7588
-        },
-        "end": {
-          "column": 30,
-          "line": 158,
-          "position": 8219
-        }
-      }
-    ],
-    "tokens": 118,
-    "lines": 11,
-    "fragment": "304d6d2201dd5ae449bdbbdbaed16de1bfc2d2d62bcab9c488827207a06ec1cc",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "python",
-    "locations": [
-      {
         "file": "visual/cases/game-record/mitmproxy/addon.py",
         "start": {
           "column": 4,
@@ -1367,43 +1330,6 @@
     "tokens": 74,
     "lines": 8,
     "fragment": "b46751774e94cf3f6129ef7928da0d441401ba3ddae171297c4e4ae1da4d219f",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "typescript",
-    "locations": [
-      {
-        "file": "ios/full/tests/animation-transitions.spec.ts",
-        "start": {
-          "column": 57,
-          "line": 195,
-          "position": 11463
-        },
-        "end": {
-          "column": 56,
-          "line": 204,
-          "position": 11738
-        }
-      },
-      {
-        "file": "ios/full/tests/animation-transitions.spec.ts",
-        "start": {
-          "column": 83,
-          "line": 233,
-          "position": 13817
-        },
-        "end": {
-          "column": 56,
-          "line": 242,
-          "position": 14092
-        }
-      }
-    ],
-    "tokens": 77,
-    "lines": 10,
-    "fragment": "a6e528b7e061052bd4477f6be369981ff3ff4954523647f49cdd7ed29e45e32d",
     "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
   },
   {
@@ -3421,36 +3347,6 @@
     "rule": "C901",
     "message": "`normalize` is too complex (14 > 10)",
     "anchor": "5b5a9b2817946ab78281e65643f15dca86d39be886878c41190a9f1a2376a973",
-    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
-  },
-  {
-    "tool": "ruff",
-    "file": "ios/full/proxy-addon.py",
-    "line": 116,
-    "column": 9,
-    "rule": "C901",
-    "message": "`websocket_message` is too complex (16 > 10)",
-    "anchor": "c936ec5a7bac14a94a49aad941b9361475d12c6d28526b84652158fe422daea1",
-    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
-  },
-  {
-    "tool": "ruff",
-    "file": "ios/full/proxy-addon.py",
-    "line": 191,
-    "column": 15,
-    "rule": "C901",
-    "message": "`request` is too complex (15 > 10)",
-    "anchor": "5495d068f027d1ec83e09f501f1be125b14aae8391f9ee0df71ac0fd3835da87",
-    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
-  },
-  {
-    "tool": "ruff",
-    "file": "ios/full/proxy-addon.py",
-    "line": 242,
-    "column": 15,
-    "rule": "C901",
-    "message": "`route_request` is too complex (44 > 10)",
-    "anchor": "346cf4861fe923e62cbe2c33e45c1d5c544f8d57a66c17193fac902973ae0e18",
     "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
   },
   {

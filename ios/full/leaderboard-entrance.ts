@@ -1,11 +1,34 @@
 // #23：只记录原生单次输入与录后可见状态，不把驱动回执当作应用处理成功。
 import type { TestInfo } from '@playwright/test';
 import type { NativeDevice } from './native-device';
-import { gameTapCurrent, type NativeNode } from './game-controls';
+import { gameConnectionState, gameNodes, gameTapCurrent, type NativeNode } from './game-controls';
 
 export const zhajinhuaLeaderboardButton = 'zhajinhua-learder-borard-button';
 const panelMarkers = ['public-leader-board-container', 'public-leader-board-empty',
   'public-leader-board-loading'];
+
+/** Re-record once only after a missed entrance leaves the connected table unchanged. */
+export async function recordLeaderboardEntrance(device: NativeDevice, open: () => Promise<void>,
+  ready: () => Promise<void>): Promise<void> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await open();
+    try { await ready(); return; }
+    catch (error) {
+      if (attempt || !(error instanceof Error)
+        || !error.message.includes('public-leader-board-empty 应可见且连接正常')) throw error;
+      const nodes = await gameNodes(device);
+      if (!unchangedPreGameTable(nodes)) throw error;
+      console.info('排行榜入场后仍在无遮挡开局前牌桌，重新录制一次真实入口点击。');
+    }
+  }
+}
+function unchangedPreGameTable(nodes: NativeNode[]): boolean {
+  if (gameConnectionState(nodes).connecting) return false;
+  const overlays = [...panelMarkers, 'screen-mask-touch-to-close', 'popup-content-container', 'common-alert-message'];
+  if (nodes.some(node => node.clazz === 'XCUIElementTypeAlert' || overlays.includes(node.res || ''))) return false;
+  return [zhajinhuaLeaderboardButton, 'zhajinhua-start-room-timer-button']
+    .every(res => nodes.some(node => node.res === res && node.visible !== false && node.enabled));
+}
 const utc = () => new Date().toISOString();
 const connection = (nodes: NativeNode[]) => ({
   connecting: nodes.some(node => node.visible !== false && /Connecting\.\.\./.test(node.text || '')),
