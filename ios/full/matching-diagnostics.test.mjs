@@ -16,7 +16,7 @@ function fixture({ driverError, commandError } = {}) {
     return { matchingRpc: { events: [], pending: [] } };
   } }, { attach: async (name, { body }) => attachments.set(name, JSON.parse(body)) });
   const device = { screenSize: { width: 300, height: 600 },
-    wait: async () => {}, info: async () => button,
+    wait: async () => {}, waitSnapshot: async () => [button], info: async () => button,
     nodes: async () => [button, { ...button, res: 'private-account', text: 'Connecting...' }],
     input: { tap: async point => { taps.push(point); if (driverError) throw driverError; } } };
   return { attachments, taps, trace, device };

@@ -1932,31 +1932,11 @@
   {
     "tool": "eslint",
     "file": "ios/full/game-room.ts",
-    "line": 107,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'createGameRoom' has a complexity of 13. Maximum allowed is 10.",
-    "anchor": "749130ab3ee24458174a2cb75d6681257e79c1d6b8f245f105f364365e16f0ad",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/game-room.ts",
     "line": 21,
     "column": 8,
     "rule": "complexity",
     "message": "Async function 'submitGameRoom' has a complexity of 12. Maximum allowed is 10.",
     "anchor": "cd1b37ff6370df5d103a6d1393d02e6841a7c68230dc00ffeb67d18805e9261b",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/game-room.ts",
-    "line": 62,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'openGameRoomForm' has a complexity of 15. Maximum allowed is 10.",
-    "anchor": "5d0e9f5ad31fbca2e30e0df8d8d2db06a09af7694e05a201d23a3f73574a0359",
     "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
   },
   {
@@ -2082,31 +2062,11 @@
   {
     "tool": "eslint",
     "file": "ios/full/native-device.ts",
-    "line": 236,
-    "column": 21,
-    "rule": "complexity",
-    "message": "Async arrow function has a complexity of 17. Maximum allowed is 10.",
-    "anchor": "96c1cc2d6eab2afd3b6515cdf53ee894b4cc890d91a3f33888b35e53d337982e",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/native-device.ts",
     "line": 51,
     "column": 3,
     "rule": "complexity",
     "message": "Function 'visit' has a complexity of 16. Maximum allowed is 10.",
     "anchor": "b29eb72a6a4da34c7918e8aa279cfa1a89303b0131c7024bf270eaf9e196e492",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/navigation.ts",
-    "line": 16,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'reveal' has a complexity of 21. Maximum allowed is 10.",
-    "anchor": "ce49bc7900b1231078ba1bafea6d70e2b3ca8982e0d69460b839675e720a671c",
     "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
   },
   {
@@ -3378,16 +3338,6 @@
     "message": "禁止在 JS/TS 中新增网络响应伪造入口 fulfill；响应实现应放在 Python 代理层。",
     "anchor": "4c2b2730df912d8fdf80183fe1deb413d17d6d0a53b01d753d3f6c06a636d6b3",
     "reason": "基线共享 Web 视觉网络响应夹具/原生适配器；待迁往 Python 代理，禁止新增或修改此入口。"
-  },
-  {
-    "tool": "ruff",
-    "file": "ios/full/network_observer.py",
-    "line": 90,
-    "column": 9,
-    "rule": "C901",
-    "message": "`control` is too complex (14 > 10)",
-    "anchor": "5d62add86206fe8bfbaf31e566191e979b275b412a0787b75afa7592656cf823",
-    "reason": "基线 Python 代理或单元测试复杂函数；待对应协议流程迁移时消除。"
   },
   {
     "tool": "ruff",

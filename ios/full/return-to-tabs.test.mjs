@@ -39,6 +39,10 @@ test('关闭分支保持优先级，每次动作刷新状态并执行原有gone�
         assert.equal(found, false, '关闭后必须检查当前状态，不能复用动作前树');
       } else assert.equal(found, true);
     },
+    waitSnapshot: async selector => {
+      assert.ok(current().some(item => item.res === selector.res));
+      return current();
+    },
     input: {
       tap: async point => {
         const expected = ['tooltip-finish-button', 'close-button', 'cancel-button', 'picker-backdrop'][stage];

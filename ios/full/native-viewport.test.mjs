@@ -33,7 +33,7 @@ test('英文语言入口右侧溢出3px时点击可见中心；要求完整显�
   const points = [];
   const device = {
     screenSize: { width: screen.width, height: screen.height },
-    nodes: async () => [root, button], wait: async () => {}, hideKeyboard: async () => {},
+    nodes: async () => [root, button], waitSnapshot: async () => [root, button], hideKeyboard: async () => {},
     info: async selector => {
       if (selector.res === button.res) return button;
       throw Object.assign(new Error('missing'), { code: 'no such element' });
@@ -61,7 +61,7 @@ test('通用tap先在真实祖先内滑动，再以新布局位置点击；不�
   const tree = stagingTree(), events = [];
   const device = {
     screenSize: { width: screen.width, height: screen.height },
-    wait: async () => {}, nodes: async () => tree.nodes, hideKeyboard: async () => {},
+    waitSnapshot: async () => tree.nodes, nodes: async () => tree.nodes, hideKeyboard: async () => {},
     info: async selector => {
       const found = tree.nodes.find(node => node.res === selector.res);
       if (!found) throw Object.assign(new Error('missing'), { code: 'no such element' });
@@ -106,6 +106,7 @@ test('繁体游客登录弹窗按实际原生modal和准确文案就绪，不滚
     screenSize: { width: screen.width, height: screen.height },
     nodes: async () => visible.filter(item => item.visible), info: async selector => lookup(selector),
     wait: async selector => { queries.push(selector); lookup(selector); }, hideKeyboard: async () => {},
+    waitSnapshot: async selector => { queries.push(selector); lookup(selector); return visible.filter(item => item.visible); },
     input: { swipe: async () => { throw new Error('不应滚动隐藏的大厅'); } },
   };
   const scenario = { visualReadySelector: '[data-testid="game-matching-sign-in-popup"]', readyText: message.text };

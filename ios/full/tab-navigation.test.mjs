@@ -109,7 +109,7 @@ for (const message of ['timeout of 10000ms exceeded', 'Authentication failed']) 
     let retried = 0, tabTaps = 0;
     const device = {
       screenSize: { width: 1178, height: 2556 },
-      wait: async () => {}, hideKeyboard: async () => {},
+      wait: async () => {}, waitSnapshot: async () => retried ? [tab] : [hidden, tab, alert], hideKeyboard: async () => {},
       info: async selector => {
         if (selector.res === 'settings-tab') return tab;
         throw Object.assign(new Error('missing'), { code: 'no such element' });
