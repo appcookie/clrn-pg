@@ -76,6 +76,34 @@ class ResponseOverrideTests(unittest.TestCase):
             self.assertFalse(patch_profiles(request, 'self', profiles))
             self.assertEqual(request.response.content, original)
 
+    def test_missing_current_profile_preserves_bytes_and_reports_contract_change(self):
+        request = flow('https://api.shafayouxi.org/v10/profile/users', 'PUT',
+                       b'{"users":["self","virtual"]}')
+        profiles = {'virtual': {'nickname': 'Opponent'}}
+        self.assertTrue(prepare_profiles(request, 'self', profiles))
+        request.response = http.Response.make(200, b'{"ok":true,"result":{"virtual":{}}}')
+        original = request.response.raw_content
+        with self.assertLogs(level='WARNING') as diagnostics:
+            self.assertFalse(patch_profiles(request, 'self', profiles))
+        self.assertIn('response contract changed at /v10/profile/users', diagnostics.output[0])
+        self.assertEqual(request.response.raw_content, original)
+
+    def test_profile_routes_invalid_ids_and_other_accounts_pass_through(self):
+        for identity, method, path, users in (
+            (None, 'PUT', '/v10/profile/users', ['self', 'virtual']),
+            ('', 'PUT', '/v10/profile/users', ['self', 'virtual']),
+            ('self', 'GET', '/v10/profile/users', ['self', 'virtual']),
+            ('self', 'PUT', '/v10/profile/other', ['self', 'virtual']),
+            ('self', 'PUT', '/v10/profile/users', ['other', 'virtual']),
+        ):
+            request = flow('https://api.shafayouxi.org' + path, method,
+                           json.dumps({'users': users}).encode())
+            request.response = http.Response.make(200, b'{"ok":true,"result":{"self":{}}}')
+            original = (request.request.content, request.response.raw_content)
+            self.assertFalse(prepare_profiles(request, identity, {'virtual': {}}))
+            self.assertFalse(patch_profiles(request, identity, {'virtual': {}}))
+            self.assertEqual((request.request.content, request.response.raw_content), original)
+
 
 if __name__ == '__main__':
     unittest.main()

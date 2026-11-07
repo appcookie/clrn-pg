@@ -11,9 +11,10 @@ repos:
         pass_filenames: false
         require_serial: true
       - id: python-static
-        name: Python syntax (read only)
+        name: Python syntax and scoped complexity (read only)
         entry: npm run check:python:static
-        language: system
-        files: '\.py$|^(?:package(?:-lock)?\.json|requirements-dev\.txt|\.pre-commit-config\.yaml)$|(?:^|/)requirements[^/]*\.txt$|^\.github/workflows/.*\.ya?ml$'
+        language: python
+        additional_dependencies: [radon==6.0.1, ruff==0.15.12]
+        files: '\.py$|^(?:package(?:-lock)?\.json|requirements-dev\.txt|ruff\.toml|\.pre-commit-config\.yaml)$|(?:^|/)requirements[^/]*\.txt$|^\.github/workflows/.*\.ya?ml$'
         pass_filenames: false
         require_serial: true

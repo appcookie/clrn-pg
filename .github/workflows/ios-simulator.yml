@@ -45,7 +45,8 @@ jobs:
         run: |
           python -m venv .venv-pre-commit
           .venv-pre-commit/bin/python -m pip install -r requirements-dev.txt
-          .venv-pre-commit/bin/pre-commit run --all-files
+          . .venv-pre-commit/bin/activate
+          pre-commit run --all-files
           .venv-pre-commit/bin/python scripts/test-pre-commit.py
       - run: npm run check
       - name: 核对公开 iOS Release

@@ -1,0 +1,1011 @@
+{
+  "issue": "https://github.com/appcookie/clrn-pg/issues/47",
+  "baselineCommit": "6e805337e8ce7809290e9e00fc2bb5c99dce17a3",
+  "measurement": {
+    "radon": "6.0.1",
+    "no_assert": true,
+    "nestedDefinitions": "measured independently, including lambdas"
+  },
+  "summary": {
+    "beforeE2EFunctions": 39,
+    "beforeE2EViolations": 12,
+    "beforeE2EMaximum": 12,
+    "afterE2EFunctions": 81,
+    "afterE2EMaximum": 3,
+    "afterAllScopedFunctions": 109,
+    "afterViolations": 0
+  },
+  "functions": [
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.__init__",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 34,
+      "afterLine": 34,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.configure_scenario",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 56,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.control",
+      "before": 9,
+      "after": 2,
+      "beforeLine": 41,
+      "afterLine": 41,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.control_authorized",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 47,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.delay_first_hall_request",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 119,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.inject_fault",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 104,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.is_fault_candidate",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 110,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.matches_fault",
+      "before": 3,
+      "after": 3,
+      "beforeLine": 74,
+      "afterLine": 87,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.mock_existing_username",
+      "before": 3,
+      "after": 3,
+      "beforeLine": 67,
+      "afterLine": 80,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.request",
+      "before": 9,
+      "after": 3,
+      "beforeLine": 81,
+      "afterLine": 94,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.set_scenario",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 67,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.should_inject",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 114,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "NetworkFaults.status",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 72,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/network_faults.py",
+      "function": "json_response",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 20,
+      "afterLine": 20,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "connection_count",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 38,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "diagnostic_counts",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 65,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "live_room_counts",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 30,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "matching_channels",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 26,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "owns_room",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 22,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "replay_error",
+      "before": 4,
+      "after": 2,
+      "beforeLine": 39,
+      "afterLine": 70,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "replay_readiness",
+      "before": 10,
+      "after": 3,
+      "beforeLine": 18,
+      "afterLine": 54,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "requested_room",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 61,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "room_readiness",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 43,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/replay_control.py",
+      "function": "valid_room_id",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 18,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "change_response",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 37,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "is_staging",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 8,
+      "afterLine": 8,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "merge_profile",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 118,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "patch_profile_response",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 122,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "patch_profile_response.change",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 126,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "patch_profiles",
+      "before": 12,
+      "after": 3,
+      "beforeLine": 64,
+      "afterLine": 136,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "patch_profiles.change",
+      "before": 4,
+      "after": null,
+      "beforeLine": 79,
+      "afterLine": null,
+      "limit": 3,
+      "movedTo": "patch_profile_response.change"
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "patch_result",
+      "before": 9,
+      "after": 3,
+      "beforeLine": 12,
+      "afterLine": 47,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "patch_version",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 36,
+      "afterLine": 59,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "patch_version.change",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 37,
+      "afterLine": 60,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "prepare_profile_users",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 84,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "prepare_profiles",
+      "before": 10,
+      "after": 3,
+      "beforeLine": 45,
+      "afterLine": 97,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "profile_request",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 72,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "requested_profile_users",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 111,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "require_result",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 23,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "response_result",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 16,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "select_profiles",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 107,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "successful_response",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 12,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "valid_identity",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 68,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "valid_profile_users",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 78,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/response_overrides.py",
+      "function": "write_response",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 30,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.configure",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 30,
+      "afterLine": 30,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.setUp",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 26,
+      "afterLine": 26,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_control_requires_token_and_valid_scenario",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 38,
+      "afterLine": 38,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_control_status_and_unknown_routes_preserve_counts",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 47,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_delay_does_not_block_control_or_unrelated_requests",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 63,
+      "afterLine": 98,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_delay_does_not_block_control_or_unrelated_requests.delay",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 68,
+      "afterLine": 103,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_hall_delays_only_first_request_and_clear_restores_forwarding",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 47,
+      "afterLine": 82,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_invalid_scenario_payload_never_changes_state_or_counters",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 64,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_login_and_club_are_scoped_to_staging_and_matching_paths",
+      "before": 3,
+      "after": 3,
+      "beforeLine": 86,
+      "afterLine": 121,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_login_keeps_existing_user_branch_without_counting_it_as_a_fault",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 106,
+      "afterLine": 141,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_nonkillable_fault_still_counts_interception",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 74,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_visual_mode_passes_all_candidates_and_health_to_upstream",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 123,
+      "afterLine": 158,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "NetworkFaultTests.test_visual_preflight_passes_through_for_all_nodes",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 150,
+      "afterLine": 185,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_network_faults.py",
+      "function": "flow",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 13,
+      "afterLine": 13,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_replay_control.py",
+      "function": "ReplayControlTests.check_invalid_rooms",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 33,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_replay_control.py",
+      "function": "ReplayControlTests.test_errors_have_fixed_codes_utc_and_counts_without_untrusted_content",
+      "before": 3,
+      "after": 3,
+      "beforeLine": 35,
+      "afterLine": 56,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_replay_control.py",
+      "function": "ReplayControlTests.test_multiple_connections_count_only_matching_live_room_channels",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 38,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_replay_control.py",
+      "function": "ReplayControlTests.test_only_live_server_confirmed_exact_room_channels_are_ready",
+      "before": 4,
+      "after": 3,
+      "beforeLine": 13,
+      "afterLine": 13,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides.py",
+      "function": "ResponseOverrideTests.test_missing_current_profile_preserves_bytes_and_reports_contract_change",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 79,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides.py",
+      "function": "ResponseOverrideTests.test_mixed_profiles_keep_current_account_real_and_only_add_requested_virtual_players",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 58,
+      "afterLine": 58,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides.py",
+      "function": "ResponseOverrideTests.test_profile_routes_invalid_ids_and_other_accounts_pass_through",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 91,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides.py",
+      "function": "ResponseOverrideTests.test_version_errors_or_contract_changes_preserve_original_bytes",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 33,
+      "afterLine": 33,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides.py",
+      "function": "ResponseOverrideTests.test_version_keeps_new_fields_and_does_not_recreate_removed_fields",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 48,
+      "afterLine": 48,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides.py",
+      "function": "ResponseOverrideTests.test_version_override_preserves_servers_compression_headers_and_unknown_fields",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 19,
+      "afterLine": 19,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides.py",
+      "function": "ResponseOverrideTests.version_response",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 11,
+      "afterLine": 11,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.check_addon",
+      "before": 7,
+      "after": 1,
+      "beforeLine": 69,
+      "afterLine": 71,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.check_live_responses",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 112,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.check_startup_deadline",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 99,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.decode_body",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 148,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.fetch",
+      "before": 4,
+      "after": 3,
+      "beforeLine": 123,
+      "afterLine": 137,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.stop_proxy",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 104,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.test_all_addons_preserve_live_upstream_responses",
+      "before": 2,
+      "after": 2,
+      "beforeLine": 52,
+      "afterLine": 54,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "LiveOverrideTests.wait_for_proxy",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 88,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "Upstream.do_GET",
+      "before": 4,
+      "after": 2,
+      "beforeLine": 25,
+      "afterLine": 25,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "Upstream.do_OPTIONS",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 42,
+      "afterLine": 44,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "Upstream.log_message",
+      "before": 1,
+      "after": 1,
+      "beforeLine": 47,
+      "afterLine": 49,
+      "limit": 3
+    },
+    {
+      "file": "e2e/mitmproxy/test_response_overrides_integration.py",
+      "function": "Upstream.response_body",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 36,
+      "limit": 3
+    },
+    {
+      "file": "scripts/check-python-static.py",
+      "function": "main",
+      "before": 5,
+      "after": 5,
+      "beforeLine": 9,
+      "afterLine": 9,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "Definitions.__init__",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 39,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "Definitions.visit_ClassDef",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 43,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "Definitions.visit_FunctionDef",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 48,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "LocalComplexity.visit_FunctionDef",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 22,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "check",
+      "before": null,
+      "after": 5,
+      "beforeLine": null,
+      "afterLine": 92,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "complexity",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 30,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "measure",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 60,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "scan",
+      "before": null,
+      "after": 5,
+      "beforeLine": null,
+      "afterLine": 80,
+      "limit": 6
+    },
+    {
+      "file": "scripts/python_complexity.py",
+      "function": "scoped_paths",
+      "before": null,
+      "after": 5,
+      "beforeLine": null,
+      "afterLine": 68,
+      "limit": 6
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.assert_entry",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 43,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.run_entry",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 39,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.setUp",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 23,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_asserts_use_radon_no_assert_semantics",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 81,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_check_returns_nonzero_for_violation",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 123,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_empty_e2e_scope_cannot_hide_behind_checker_functions",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 114,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_empty_scan_fails",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 109,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_invalid_syntax_in_adjacent_helper_fails",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 96,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_lambdas_in_defaults_decorators_and_callbacks_cannot_bypass_gate",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 72,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_missing_dependency_fails",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 104,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_missing_required_source_fails",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 100,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_nested_callbacks_and_classes_are_measured_independently",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 61,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_radon_decision_rules_cover_match_except_else_and_comprehensions",
+      "before": null,
+      "after": 3,
+      "beforeLine": null,
+      "afterLine": 87,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_syntax_failure_is_not_reported_as_success",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 119,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_test_support_three_passes_four_fails_despite_suppression",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 49,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.test_tool_six_passes_seven_fails",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 55,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "ComplexityGateTests.write",
+      "before": null,
+      "after": 1,
+      "beforeLine": null,
+      "afterLine": 34,
+      "limit": 3
+    },
+    {
+      "file": "scripts/test_python_complexity.py",
+      "function": "branch_source",
+      "before": null,
+      "after": 2,
+      "beforeLine": null,
+      "afterLine": 16,
+      "limit": 3
+    }
+  ]
+}

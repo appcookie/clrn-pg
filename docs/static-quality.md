@@ -10,6 +10,7 @@
 npm ci
 python3 -m venv e2e/.venv
 e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
+. e2e/.venv/bin/activate
 npm run check:all
 ```
 
@@ -93,3 +94,53 @@ node scripts/measure-quality.mjs
 在 Node.js 24.14.0 / Python 3.12.0 下，`npm ci`、虚拟环境创建及 requirements 安装成功。按上述临时副本命令重测原始提交，文件数、复杂度/嵌套统计、依赖违规及重复报告与保存的初始记录一致。当前树的 `check:static`、Ruff 门禁、六组 JS 静态负例和两组 Python 负例通过，无新增违规；类型检查通过。独立执行 `test:ios:collect` 收集到 13 个文件、184 项测试，仅证明用例可收集。
 
 完整 `npm run check` **未通过**：499 项原有 JS 单测中 479 项通过，20 项在监听 `127.0.0.1` 时被沙箱以 `EPERM` 拒绝。完整 `npm run check:python` **未通过**：第一目录 26 项通过，下一目录的 15 项中有一项本地 HTTP 集成测试在 `bind` 时触发 `PermissionError`，因此后续目录及观察器集成测试尚未执行。保留原有检查和断言，交由宿主在允许本地端口的环境运行全部固定检查。本轮没有原生设备运行、新提交 CI、截图或录像通过证据。
+
+
+## E2E 代理范围门禁（#47）
+
+仅对 `e2e/mitmproxy/**/*.py`（含新增的相邻辅助模块）采用函数复杂度 ≤3；文件无 test 后缀也不改变
+测试支持分类。`scripts/test_python_complexity.py` 同样上限 3；独立静态工具
+`scripts/python_complexity.py`、`scripts/check-python-static.py` 上限 6。没有扩大或更新历史豁免，
+本范围在 `legacy.json` 中没有待删除的 Ruff C901 条目，其他目录保持原有门禁。
+
+`python_complexity.py` 使用固定 Radon 6.0.1 的决策点规则和 `no_assert=True`，按 AST 分别计算
+每个函数、异步函数、方法和 lambda，嵌套定义不累加到外层，所有嵌套定义仍单独受检。
+源码只读取、解析、编译，不导入或执行；注释不影响扫描，必需源文件缺失、依赖缺失、解析失败和
+E2E 空扫描均非零退出。范围内仍执行 Ruff 0.15.12 C901，工具上限 6，使用 `--ignore-noqa`。
+
+`npm run check:python:e2e` 接在原有 `check:python:static` 中，沿用 `python-static` hook、
+`check:python` 以及两个原有 CI 工作流。CI 显式激活静态环境，完整 Python 检查使用代理虚拟环境。
+门禁单测由既有 `check-python.mjs` 的目录循环运行，没有另建流水线。
+
+[逐函数前后报告](../quality/e2e-python-complexity.json) 以 `6e80533` 为基线，覆盖原范围每个函数、
+新拆分的实现和检查工具；新增项的 before 为 null，迁出的嵌套回调保留旧名称记录并注明新位置。
+原范围 39 个函数中有 12 个超过 3，最高 12；重构后范围全部 ≤3，检查工具全部 ≤6。
+
+本次只执行下列定向验证，没有运行 `check:all` 或完整测试套件。环境为 Python 3.12.12、
+mitmproxy 12.2.3、Node.js 24.14.0。命令在仓库根目录执行：
+
+```sh
+. e2e/.venv/bin/activate
+npm run check:python:static
+python -B scripts/python_complexity.py --report
+python -B scripts/test_python_complexity.py -v
+python -B scripts/test-pre-commit.py
+python -B -m unittest discover -s e2e/mitmproxy -p 'test_*.py' -v
+python -B -m unittest discover -s visual/cases/texas-holdem/mitmproxy -p test_addon.py -v
+python -B -m unittest discover -s visual/cases/zhajinhua/mitmproxy -p test_addon.py -v
+python -B -m unittest discover -s visual/cases/game-record/mitmproxy -p test_addon.py -v
+python -B -m unittest discover -s ios/full -p test_node_passthrough.py -v
+node --test quality/python.test.mjs
+node scripts/quality-check.mjs ruff
+```
+
+代理目录 20 项、调用方定向回归 28 项、门禁负例 13 项、真实提交 hook 回归 9 项、原有 Python
+静态负例 2 项通过。负例覆盖测试 3 通过/4 失败、工具 6 通过/7 失败、嵌套异步回调、局部类、
+lambda（含默认参数和装饰器）、新增辅助模块、禁用注释、解析失败、依赖缺失和空扫描。
+真实临时 Git 提交验证 4/7 被阻断、修正为 3/6 后允许提交，以及失败时 HEAD/暂存区/工作区保持不变。
+
+代理目录集成测试实际启动 5 个 mitmdump 入口并连接本机 HTTP 上游，保留真实请求、错误状态、
+响应头、未知字段、所有节点和 OPTIONS 断言；单测保留 12 秒异步延迟参数及控制接口不阻塞断言，
+并补充控制路由、非法场景保留计数、不可 kill 流、多个房间/连接计数和本人资料缺失的回归。
+本次是行为保持重构，没有修改代理协议、原生交互、动画或视觉基准。上述本机运行不等于
+真实设备或 Staging 场景通过；本次没有执行设备场景或产生新的固定构建运行证据。
