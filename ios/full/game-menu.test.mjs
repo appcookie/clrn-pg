@@ -85,6 +85,39 @@ test('menu navigation does not repeat a successful tap', async () => {
   assert.equal(fullTreeReads, 0, 'healthy menu navigation only needs focused native observations');
 });
 
+test('menu navigation reopens once when reconnect after the menu tap leaves the table closed', async () => {
+  let state = 'table', menuTaps = 0, themeTaps = 0, connectionReads = 0, fullTreeReads = 0;
+  const visible = () => state === 'table' ? [menu]
+    : state === 'connecting' ? [connecting] : state === 'drawer' ? [theme, drawerExit] : [panel];
+  const device = {
+    screenSize: { width: 1178, height: 2556 },
+    prepareTransientCapture: async () => {},
+    nodes: async () => {
+      fullTreeReads++;
+      assert.equal(state, 'table', 'reopening requires a live observation of the closed table');
+      return visible();
+    },
+    inputObservation: async names => {
+      if (state === 'connecting' && ++connectionReads >= 2) state = 'table';
+      const targets = Array.isArray(names) ? names : names ? [names] : [];
+      return visible().filter(item => targets.includes(item.res) || item === connecting);
+    },
+    input: { tap: async ({ x }) => {
+      if (x === 20) {
+        menuTaps++;
+        if (menuTaps === 2) assert.equal(fullTreeReads, 1, 'confirm the closed drawer before repeating the menu tap');
+        state = menuTaps === 1 ? 'connecting' : 'drawer';
+      } else if (x === 50) { themeTaps++; state = 'panel'; }
+      else throw new Error(`unexpected tap ${x}`);
+    } },
+  };
+  await gameMenu(device, 'theme', panel.res);
+  assert.equal(menuTaps, 2);
+  assert.equal(themeTaps, 1);
+  assert.equal(state, 'panel');
+  assert.equal(fullTreeReads, 1);
+});
+
 test('menu navigation checks the live tree when a focused query misses an open drawer', async () => {
   let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
   const visible = () => state === 'table' ? [menu]

@@ -34,6 +34,18 @@ export async function gameMenu(device: AndroidDevice, item: string, ready: strin
   // A full accessibility tree costs tens of seconds on a populated table;
   // the focused query still verifies two live bounds and the connection state.
   await gameTapCurrent(device, 'menu-button');
+  await gameConnectedCurrent(device, 2_000);
+  const drawer = await device.inputObservation([`drawer-menu-item-${item}`, 'drawer-menu-item-exit']);
+  if (!gameConnectionState(drawer).connecting && !drawer.some(node => node.res?.startsWith('drawer-menu-item-'))) {
+    // 40853312777: reconnect around the menu tap left the blue table with
+    // no drawer. Confirm that state in the live tree before reopening once.
+    const current = await gameNodes(device);
+    if (!gameConnectionState(current).connecting
+      && current.some(node => node.res === 'menu-button' && node.enabled)
+      && !current.some(node => node.res?.startsWith('drawer-menu-item-') || node.res === ready)) {
+      await gameTapCurrent(device, 'menu-button');
+    }
+  }
   await gameTapCurrent(device, `drawer-menu-item-${item}`);
   // 39725551167: a room reconnect covered the still-open drawer just after
   // its Theme tap. Absence under Connecting is not drawer exit.
