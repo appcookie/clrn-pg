@@ -41,10 +41,10 @@ test('截图稳定性允许 0.5% 内的连续绘制抖动，并使用最终比�
   try {
     await compareScreenshot({}, '比例边界稳定性', {
       attach: async name => attachments.push(name),
-    }, [], async () => {}, async () => {
+    }, { transientState: async () => {}, takeScreenshot: async () => {
       if (++screenshots > 10) throw new Error('0.5% 内的抖动不应反复重置稳定计时');
       return picture(screenshots % 2 === 0 ? 50 : 0);
-    }, [], [{ x: 100, y: 0, width: 100, height: 100 }]);
+    }, comparisonExclusions: [{ x: 100, y: 0, width: 100, height: 100 }] });
     assert.ok(screenshots >= 3);
     assert.ok(attachments.includes('比例边界稳定性.png'));
   } finally {

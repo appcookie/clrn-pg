@@ -154,43 +154,6 @@
     "format": "javascript",
     "locations": [
       {
-        "file": "ios/full/game-menu.test.mjs",
-        "start": {
-          "column": 55,
-          "line": 64,
-          "position": 2815
-        },
-        "end": {
-          "column": 20,
-          "line": 72,
-          "position": 3254
-        }
-      },
-      {
-        "file": "ios/full/game-menu.test.mjs",
-        "start": {
-          "column": 86,
-          "line": 88,
-          "position": 3942
-        },
-        "end": {
-          "column": 20,
-          "line": 97,
-          "position": 4385
-        }
-      }
-    ],
-    "tokens": 108,
-    "lines": 9,
-    "fragment": "a6a6f1f2dd8fae740d6914a79d8da18c30600049af19b81737b5a5ddfbec768b",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "javascript",
-    "locations": [
-      {
         "file": "ios/full/profile-zoom.test.mjs",
         "start": {
           "column": 61,
@@ -1375,43 +1338,6 @@
     "format": "typescript",
     "locations": [
       {
-        "file": "ios/full/tests/animation-transitions.spec.ts",
-        "start": {
-          "column": 57,
-          "line": 195,
-          "position": 11463
-        },
-        "end": {
-          "column": 56,
-          "line": 204,
-          "position": 11738
-        }
-      },
-      {
-        "file": "ios/full/tests/animation-transitions.spec.ts",
-        "start": {
-          "column": 83,
-          "line": 233,
-          "position": 13817
-        },
-        "end": {
-          "column": 56,
-          "line": 242,
-          "position": 14092
-        }
-      }
-    ],
-    "tokens": 77,
-    "lines": 10,
-    "fragment": "a6e528b7e061052bd4477f6be369981ff3ff4954523647f49cdd7ed29e45e32d",
-    "reason": "基线已有重复片段（含单测和协议夹具）；保留覆盖，待对应行为维护时消除。"
-  },
-  {
-    "tool": "duplicates",
-    "rule": "jscpd",
-    "format": "typescript",
-    "locations": [
-      {
         "file": "ios/full/texas-action-start.ts",
         "start": {
           "column": 70,
@@ -1762,36 +1688,6 @@
     "message": "Async function 'waitForCountryPicker' has a complexity of 17. Maximum allowed is 10.",
     "anchor": "e82743ae9bd49b5ac503a29660b1a726052c8ed63b7d26a5773ca77ca479b4ae",
     "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/device.ts",
-    "line": 151,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'assertVisual' has a complexity of 13. Maximum allowed is 10.",
-    "anchor": "fe5f28d2f52ae54e7a1bfc272ece8698450ef36d00c26974a31900acbe53cd95",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/device.ts",
-    "line": 171,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'compareScreenshot' has a complexity of 16. Maximum allowed is 10.",
-    "anchor": "f34b231a6624e9f9edb12baea510dc991f310103563c4b440ce38546ac52a12d",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/device.ts",
-    "line": 203,
-    "column": 9,
-    "rule": "max-depth",
-    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
-    "anchor": "401baedb98d2c1c476c10981218e336e0caea5ad18bfd57bc275ed11cd98ed26",
-    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
   },
   {
     "tool": "eslint",

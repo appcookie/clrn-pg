@@ -86,7 +86,7 @@ export function recordSnapshots(device: AndroidDevice, scenario: VisualScenario,
         }
       }
       await compareScreenshot(device, `${scenario.locale}-${scenario.pageLabel.replaceAll('_', '-')}-${state.replaceAll('_', '-')}`,
-        testInfo, masks, assertLoading);
+        testInfo, { masks, transientState: assertLoading });
     },
     /** 检查所有声明的状态确实执行。 */
     complete: () => expect(index).toBe(states.length),

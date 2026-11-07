@@ -16,7 +16,7 @@ if (group === 'all' || group === 'social') {
     await signIn(application.device);
     const { backgroundBanner, readySnapshot } = await navigateScenario(application.device, scenario);
     const masks = await screenshotMasks(application.device, scenario, backgroundBanner, readySnapshot);
-    await compareScreenshot(application.device, `${locale}-signed-in-club-rooms-populated`, testInfo, masks);
+    await compareScreenshot(application.device, `${locale}-signed-in-club-rooms-populated`, testInfo, { masks });
     const status = await application.proxy.command<{ requests: Record<string, number> }>('native/club-rooms');
     for (const path of ['/v10/club', '/v10/clubs', '/v2/building/rooms']) {
       if (!(status.requests[path] > 0)) {

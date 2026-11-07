@@ -9,6 +9,7 @@ const theme = node('drawer-menu-item-theme', 40);
 const drawerExit = node('drawer-menu-item-exit', 70);
 const panel = node('game-settings-card-theme-simple', 100);
 const connecting = node('connection', 200, 'Connecting...');
+const menuVisible = state => state === 'table' ? [menu] : state === 'drawer' ? [theme, drawerExit] : [panel];
 
 test('菜单录屏已展开侧栏时，重连遮罩退去后才确认真实菜单', async () => {
   let connectionReads = 0, menuReads = 0, fullReads = 0, taps = 0;
@@ -63,11 +64,9 @@ test('menu navigation retries the UI tap only after reconnect leaves the drawer 
 
 test('menu navigation does not repeat a successful tap', async () => {
   let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
-  const visible = () => state === 'table' ? [menu] : state === 'drawer' ? [theme, drawerExit] : [panel];
+  const visible = () => menuVisible(state);
   const device = {
-    screenSize: { width: 1178, height: 2556 },
-    nodes: async () => { fullTreeReads++; return visible(); },
-    prepareTransientCapture: async () => { rich = true; },
+    ...focusedMenuDevice(() => { fullTreeReads++; return visible(); }, () => { rich = true; }),
     inputObservation: async names => {
       assert.ok(rich, 'focused XCTest observation requires response attributes');
       return visible().filter(item =>
@@ -85,14 +84,43 @@ test('menu navigation does not repeat a successful tap', async () => {
   assert.equal(fullTreeReads, 0, 'healthy menu navigation only needs focused native observations');
 });
 
-test('menu navigation checks the live tree when a focused query misses an open drawer', async () => {
-  let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
+test('menu navigation reopens once when reconnect after the menu tap leaves the table closed', async () => {
+  let state = 'table', menuTaps = 0, themeTaps = 0, connectionReads = 0, fullTreeReads = 0;
   const visible = () => state === 'table' ? [menu]
-    : state === 'drawer' ? [theme, drawerExit] : [panel];
+    : state === 'connecting' ? [connecting] : state === 'drawer' ? [theme, drawerExit] : [panel];
   const device = {
     screenSize: { width: 1178, height: 2556 },
-    nodes: async () => { fullTreeReads++; return visible(); },
-    prepareTransientCapture: async () => { rich = true; },
+    prepareTransientCapture: async () => {},
+    nodes: async () => {
+      fullTreeReads++;
+      assert.equal(state, 'table', 'reopening requires a live observation of the closed table');
+      return visible();
+    },
+    inputObservation: async names => {
+      if (state === 'connecting' && ++connectionReads >= 2) state = 'table';
+      const targets = Array.isArray(names) ? names : names ? [names] : [];
+      return visible().filter(item => targets.includes(item.res) || item === connecting);
+    },
+    input: { tap: async ({ x }) => {
+      if (x === 20) {
+        menuTaps++;
+        if (menuTaps === 2) assert.equal(fullTreeReads, 1, 'confirm the closed drawer before repeating the menu tap');
+        state = menuTaps === 1 ? 'connecting' : 'drawer';
+      } else if (x === 50) { themeTaps++; state = 'panel'; }
+      else throw new Error(`unexpected tap ${x}`);
+    } },
+  };
+  await gameMenu(device, 'theme', panel.res);
+  assert.equal(menuTaps, 2);
+  assert.equal(themeTaps, 1);
+  assert.equal(state, 'panel');
+  assert.equal(fullTreeReads, 1);
+});
+
+test('menu navigation checks the live tree when a focused query misses an open drawer', async () => {
+  let state = 'table', themeTaps = 0, rich = false, fullTreeReads = 0;
+  const visible = () => menuVisible(state);
+  const device = {
     inputObservation: async names => {
       assert.ok(rich);
       const targets = Array.isArray(names) ? names : names ? [names] : [];
@@ -101,6 +129,7 @@ test('menu navigation checks the live tree when a focused query misses an open d
       if (state === 'drawer' && targets.includes(drawerExit.res)) return [];
       return visible().filter(item => targets.includes(item.res));
     },
+    ...focusedMenuDevice(() => { fullTreeReads++; return visible(); }, () => { rich = true; }),
     input: { tap: async ({ x }) => {
       if (x === 20) state = 'drawer';
       else if (x === 50) { themeTaps++; state = themeTaps === 1 ? 'drawer' : 'panel'; }
@@ -128,3 +157,11 @@ test('theme close retries once only when the live tree still contains the same p
   assert.equal(taps, 2);
   assert.equal(open, false);
 });
+
+function focusedMenuDevice(readNodes, prepare) {
+  return {
+    screenSize: { width: 1178, height: 2556 },
+    nodes: async () => readNodes(),
+    prepareTransientCapture: async () => { prepare(); },
+  };
+}
