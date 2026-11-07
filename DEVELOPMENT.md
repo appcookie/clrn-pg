@@ -28,18 +28,25 @@ Git 不会把本地 hook 复制到新克隆；每次克隆都要安装。虚拟�
 | Hook | 触发文件 | 执行命令 |
 | --- | --- | --- |
 | `typecheck` | JS/TS（含 c/m 前缀、JSX/TSX）、JSON、根 pre-commit 配置、Actions 工作流 | `npm run typecheck` |
-| `python-static` | Python、任意目录的 `requirements*.txt`、根 package/lock、pre-commit 配置、Actions 工作流 | `npm run check:python:static` |
+| `python-static` | Python、任意目录的 `requirements*.txt`、根 package/lock、`ruff.toml`、pre-commit 配置、Actions 工作流 | `npm run check:python:static` |
 
-两个 hook 都用 `language: system`，复用当前 npm/Python 环境，不下载单独的 hook 环境；
+TypeScript hook 使用当前 npm 环境；Python hook 使用 pre-commit 管理的独立 Python 环境，
+其中固定安装 Radon 和 Ruff，避免 PATH 中的其他版本影响检查。首次运行会安装这些依赖。
 `pass_filenames: false`、`require_serial: true` 确保每个匹配的全项目检查只执行一次。
 仅改 Markdown、PNG 或 MP4 时没有匹配的 hook；手动 `--all-files` 会检查全仓库。
 TypeScript 的实际源码范围由现有 `tsconfig.json` 决定。
 
-完整 `check:python` 先运行独立的语法检查，再运行 Ruff、质量检查及各目录的 Python
+完整 `check:python` 先运行语法及 E2E 范围复杂度检查，再运行既有 Ruff、质量检查及各目录的 Python
 单元测试和真实 mitmproxy 集成测试；集成测试需要代理依赖并监听本地端口。
 语法检查入口用标准库 `compile` 在内存中检查 Git 跟踪的全部
 Python 文件；支持编码声明，不导入/执行源码、不生成 `__pycache__`/`.pyc`，不检查未跟踪及
-忽略文件，已删除文件不再读取。这只是语法检查，不是 Ruff、类型检查或测试运行。
+忽略文件，已删除文件不再读取。
+同一静态入口接着执行 `check:python:e2e`：Radon 6.0.1 按 `no_assert=True` 独立计算普通/异步函数、
+方法和 lambda，嵌套定义不累加到外层。`e2e/mitmproxy` 下全部 Python（含新增/未跟踪的测试辅助模块）
+以及门禁的单测上限为 3；两个静态检查工具上限为 6，并执行范围内 Ruff C901 6。
+依赖缺失、解析失败、必需文件缺失和空扫描均阻断，禁用注释无效；全仓其他目录的原有预算不变。
+这些检查不导入/执行被扫描源码，不运行测试。逐函数测量和定向验证命令见
+[静态质量门禁的 #47 记录](docs/static-quality.md#e2e-代理范围门禁47)。
 
 Git 提交时 pre-commit 临时保存未暂存的跟踪文件差异，只检查暂存内容，结束后恢复；
 手动 `--all-files` 则检查当前工作文件。新增文件须先 `git add` 才纳入检查。
@@ -63,7 +70,7 @@ pre-commit 提示配置尚未暂存时，审查后暂存 `.pre-commit-config.yam
 部分暂存失败后先核对工作区与暂存区；pre-commit 报告的临时 patch 路径可用于恢复排查，
 不要使用 reset 或删除工作目录来处理检查失败。CI 不依赖开发者是否安装或跳过了本地 hook。
 
-升级时修改 `requirements-dev.txt` 中的精确版本，必要时同步配置中的最低版本，重新安装，
+升级时修改 `requirements-dev.txt` 中的精确版本，并同步 `.pre-commit-config.yaml` 中的 Radon/Ruff 版本，必要时同步配置中的最低版本，重新安装，
 执行全部 hook、下列回归和原有完整检查，并审查 CI。当前仅使用 local hooks，
 `pre-commit autoupdate` 不会升级框架或 npm/Python 检查规则。
 

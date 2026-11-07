@@ -44,6 +44,41 @@ class NetworkFaultTests(unittest.IsolatedAsyncioTestCase):
         await self.addon.request(malformed)
         self.assertEqual(malformed.response.status_code, 400)
 
+    async def test_control_status_and_unknown_routes_preserve_counts(self):
+        await self.configure("login-failure")
+        self.addon.intercepted_requests = 2
+        self.addon.proxied_requests = 3
+        self.addon.stabilized_requests = 4
+        status = flow("http://test-mitmproxy.invalid/status?sample=1", token="test-token")
+        await self.addon.request(status)
+        self.assertEqual(status.response.json(), {
+            "scenario": "login-failure", "interceptedRequests": 2,
+            "proxiedRequests": 3, "stabilizedRequests": 4,
+        })
+        for method, path in (("POST", "/status"), ("GET", "/scenario"), ("GET", "/unknown")):
+            request = flow("http://test-mitmproxy.invalid" + path, method, token="test-token")
+            await self.addon.request(request)
+            self.assertEqual(request.response.status_code, 404)
+        self.assertEqual((self.addon.intercepted_requests, self.addon.proxied_requests), (2, 3))
+
+    async def test_invalid_scenario_payload_never_changes_state_or_counters(self):
+        await self.configure("club-failure")
+        self.addon.intercepted_requests = 7
+        for body in (b"{", b"{}", b"[]", b'{"scenario":{}}', b'{"scenario":"unknown"}'):
+            request = flow("http://test-mitmproxy.invalid/scenario", "POST", body, "test-token")
+            await self.addon.request(request)
+            self.assertEqual(request.response.status_code, 400)
+            self.assertEqual(self.addon.scenario, "club-failure")
+            self.assertEqual(self.addon.intercepted_requests, 7)
+
+    async def test_nonkillable_fault_still_counts_interception(self):
+        await self.configure("login-failure")
+        request = flow("https://api.shafayouxi.org/public/v10/user/login/username/password", "POST")
+        request.live = False
+        await self.addon.request(request)
+        self.assertIsNone(request.error)
+        self.assertEqual(self.addon.intercepted_requests, 1)
+
     async def test_hall_delays_only_first_request_and_clear_restores_forwarding(self):
         await self.configure("hall-timeout")
         url = "https://64.kr-seoul.api.staging.laiwan.shafayouxi.com/public/v1/hall_matching/available.json"

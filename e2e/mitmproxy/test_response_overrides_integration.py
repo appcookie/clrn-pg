@@ -24,13 +24,7 @@ ROOT = Path(__file__).resolve().parents[2]
 class Upstream(BaseHTTPRequestHandler):
     def do_GET(self):
         url = urlsplit(self.path)
-        if url.path == METADATA_PATH:
-            servers = {PROXY_HOST: 'real-address', OTHER_HOST: 'another-address'}
-            if url.query == 'changed':
-                servers = {'new-node': 'new-address'}
-            body = {'ok': True, 'new_envelope': 42, 'result': {'servers': servers, 'new_field': True}}
-        else:
-            body = {'backend_delay': 37, 'server_load': 'normal', 'new_health': True}
+        body = self.response_body(url)
         status = 503 if url.query == 'failed' else 200
         self.send_response(status)
         self.send_header('Content-Type', 'application/json')
@@ -38,6 +32,14 @@ class Upstream(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Origin', 'https://app.test')
         self.end_headers()
         self.wfile.write(json.dumps(body).encode())
+
+    def response_body(self, url):
+        if url.path != METADATA_PATH:
+            return {'backend_delay': 37, 'server_load': 'normal', 'new_health': True}
+        servers = {PROXY_HOST: 'real-address', OTHER_HOST: 'another-address'}
+        if url.query == 'changed':
+            servers = {'new-node': 'new-address'}
+        return {'ok': True, 'new_envelope': 42, 'result': {'servers': servers, 'new_field': True}}
 
     def do_OPTIONS(self):
         self.send_response(204)
@@ -78,47 +80,59 @@ class LiveOverrideTests(unittest.TestCase):
                 '--set', 'flow_detail=0', '-s', str(ROOT / addon)],
                 env={**os.environ, 'MITMPROXY_CONTROL_TOKEN': 'offline-token'}, stdout=logs, stderr=logs)
             try:
-                deadline = time.monotonic() + 15
-                while True:
-                    try:
-                        status, _, _ = self.fetch(port, 'http://test-mitmproxy.invalid/status')
-                        self.assertEqual(status, 200)
-                        break
-                    except OSError:
-                        if process.poll() is not None or time.monotonic() >= deadline:
-                            logs.seek(0)
-                            self.fail('mitmdump startup failed: ' + logs.read().decode()[-2000:])
-                        time.sleep(0.1)
-                self.fetch(port, 'http://test-mitmproxy.invalid/scenario', 'POST', {'scenario': 'visual-stable'})
-                metadata = 'http://api.shafayouxi.org' + METADATA_PATH
-                status, headers, body = self.fetch(port, metadata)
-                self.assertEqual(status, 200)
-                self.assertEqual(body, {'ok': True, 'new_envelope': 42, 'result': {
-                    'servers': {PROXY_HOST: 'real-address', OTHER_HOST: 'another-address'}, 'new_field': True}})
-                self.assertEqual(headers['x-upstream'], 'real')
-                self.assertEqual(headers['access-control-allow-origin'], 'https://app.test')
-                self.assertEqual(self.fetch(port, metadata + '?failed')[0], 503)
-                self.assertEqual(self.fetch(port, metadata + '?changed')[2]['result']['servers'],
-                                 {'new-node': 'new-address'})
-                health = f'http://{PROXY_HOST}/node/v1/status'
-                self.assertEqual(self.fetch(port, health)[2], {
-                    'backend_delay': 37, 'server_load': 'normal', 'new_health': True})
-                self.assertEqual(self.fetch(port, health + '?failed')[0], 503)
-                alternate = f'http://{OTHER_HOST}/node/v1/status'
-                self.assertEqual(self.fetch(port, alternate)[2], {
-                    'backend_delay': 37, 'server_load': 'normal', 'new_health': True})
-                self.assertEqual(self.fetch(port, alternate + '?failed')[0], 503)
-                for url in (metadata, health, alternate):
-                    status, headers, _ = self.fetch(port, url, 'OPTIONS')
-                    self.assertEqual(status, 204)
-                    self.assertEqual(headers['x-upstream'], 'real-preflight')
+                self.wait_for_proxy(port, process, logs)
+                self.check_live_responses(port)
             finally:
-                process.terminate()
-                try:
-                    process.wait(timeout=5)
-                except subprocess.TimeoutExpired:
-                    process.kill()
-                    process.wait(timeout=5)
+                self.stop_proxy(process)
+
+    def wait_for_proxy(self, port, process, logs):
+        deadline = time.monotonic() + 15
+        while True:
+            try:
+                status, _, _ = self.fetch(port, 'http://test-mitmproxy.invalid/status')
+                self.assertEqual(status, 200)
+                return
+            except OSError:
+                self.check_startup_deadline(process, deadline, logs)
+                time.sleep(0.1)
+
+    def check_startup_deadline(self, process, deadline, logs):
+        if process.poll() is not None or time.monotonic() >= deadline:
+            logs.seek(0)
+            self.fail('mitmdump startup failed: ' + logs.read().decode()[-2000:])
+
+    def stop_proxy(self, process):
+        process.terminate()
+        try:
+            process.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.wait(timeout=5)
+
+    def check_live_responses(self, port):
+        self.fetch(port, 'http://test-mitmproxy.invalid/scenario', 'POST', {'scenario': 'visual-stable'})
+        metadata = 'http://api.shafayouxi.org' + METADATA_PATH
+        status, headers, body = self.fetch(port, metadata)
+        self.assertEqual(status, 200)
+        self.assertEqual(body, {'ok': True, 'new_envelope': 42, 'result': {
+            'servers': {PROXY_HOST: 'real-address', OTHER_HOST: 'another-address'}, 'new_field': True}})
+        self.assertEqual(headers['x-upstream'], 'real')
+        self.assertEqual(headers['access-control-allow-origin'], 'https://app.test')
+        self.assertEqual(self.fetch(port, metadata + '?failed')[0], 503)
+        self.assertEqual(self.fetch(port, metadata + '?changed')[2]['result']['servers'],
+                         {'new-node': 'new-address'})
+        health = f'http://{PROXY_HOST}/node/v1/status'
+        self.assertEqual(self.fetch(port, health)[2], {
+            'backend_delay': 37, 'server_load': 'normal', 'new_health': True})
+        self.assertEqual(self.fetch(port, health + '?failed')[0], 503)
+        alternate = f'http://{OTHER_HOST}/node/v1/status'
+        self.assertEqual(self.fetch(port, alternate)[2], {
+            'backend_delay': 37, 'server_load': 'normal', 'new_health': True})
+        self.assertEqual(self.fetch(port, alternate + '?failed')[0], 503)
+        for url in (metadata, health, alternate):
+            status, headers, _ = self.fetch(port, url, 'OPTIONS')
+            self.assertEqual(status, 204)
+            self.assertEqual(headers['x-upstream'], 'real-preflight')
 
     def fetch(self, port, url, method='GET', body=None):
         client = http.client.HTTPConnection('127.0.0.1', port, timeout=3)
@@ -127,9 +141,12 @@ class LiveOverrideTests(unittest.TestCase):
                            {'X-E2E-Control-Token': 'offline-token', 'Content-Type': 'application/json'})
             response = client.getresponse()
             raw = response.read()
-            return response.status, {key.lower(): value for key, value in response.getheaders()}, json.loads(raw) if raw else None
+            return response.status, {key.lower(): value for key, value in response.getheaders()}, self.decode_body(raw)
         finally:
             client.close()
+
+    def decode_body(self, raw):
+        return json.loads(raw) if raw else None
 
 
 if __name__ == '__main__':

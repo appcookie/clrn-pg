@@ -1,2 +1,4 @@
-# Hook framework only; proxy integration dependencies stay in e2e/mitmproxy/requirements.txt.
+# Static hook dependencies; proxy runtime dependencies stay in e2e/mitmproxy/requirements.txt.
 pre-commit==4.3.0
+radon==6.0.1
+ruff==0.15.12

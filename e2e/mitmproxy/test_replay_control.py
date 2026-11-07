@@ -28,9 +28,30 @@ class ReplayControlTests(unittest.TestCase):
             self.assertEqual(len(replay.subscriptions['live'][1]), 3, 'readiness never mutates channels')
             flow.websocket.timestamp_end = 1
             self.assertFalse(replay_readiness(replay, game, ROOM)['ready'])
-            for invalid in (None, {}, OTHER, ROOM + '#injection'):
-                with self.assertRaises(ValueError):
-                    replay_readiness(replay, game, invalid)
+            self.check_invalid_rooms(replay, game)
+
+    def check_invalid_rooms(self, replay, game):
+        for invalid in (None, {}, OTHER, ROOM + '#injection'):
+            with self.assertRaises(ValueError):
+                replay_readiness(replay, game, invalid)
+
+    def test_multiple_connections_count_only_matching_live_room_channels(self):
+        live = SimpleNamespace(websocket=SimpleNamespace(timestamp_end=None))
+        closed = SimpleNamespace(websocket=SimpleNamespace(timestamp_end=1))
+        replay = SimpleNamespace(room_id=None, subscriptions={
+            'confirmed': (live, {f'texas_holdem>{ROOM}#{SELF}', f'texas_holdem>{ROOM}#{OTHER}'}),
+            'pending': (live, set()),
+            'unrelated': (live, {f'texas_holdem>{OTHER}#{SELF}', f'zhajinhua>{ROOM}#{SELF}'}),
+            'closed': (closed, {f'texas_holdem>{ROOM}#{SELF}'}),
+        }, pending_subscriptions={
+            'pending': {1: f'texas_holdem>{ROOM}#{SELF}'},
+            'closed': {1: f'texas_holdem>{ROOM}#{SELF}'},
+        })
+        result = replay_readiness(replay, 'texas_holdem', ROOM)
+        self.assertEqual([result[key] for key in
+                          ('ready', 'liveConnections', 'confirmedSubscriptions', 'pendingSubscriptions')],
+                         [True, 2, 2, 1])
+        self.assertEqual(len(replay.pending_subscriptions['closed']), 1)
 
     def test_errors_have_fixed_codes_utc_and_counts_without_untrusted_content(self):
         replay = SimpleNamespace(room_id=ROOM, subscriptions={}, pending_subscriptions={})
