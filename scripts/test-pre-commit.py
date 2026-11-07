@@ -41,13 +41,17 @@ class PreCommitTests(unittest.TestCase):
         self.run_command("git", "config", "user.email", "pre-commit-fixture@example.invalid")
         self.run_command("git", "config", "commit.gpgsign", "false")
         for name in [".pre-commit-config.yaml", "package.json", "tsconfig.json",
-                     "scripts/check-python-static.py"]:
+                     "scripts/check-python-static.py", "eslint.config.mjs", "scripts/eslint-network-rule.mjs",
+                     "quality/texas-animation-scope.mjs", "quality/texas-animation.test.mjs",
+                     "scripts/check-texas-animation.mjs", "scripts/measure-texas-animation.mjs"]:
             target = self.repo / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, target)
         (self.repo / "node_modules").symlink_to(ROOT / "node_modules", target_is_directory=True)
         self.write(".gitignore", "node_modules/\nignored.py\n")
         self.write("ios/full/fixture.ts", "export const value: number = 1;\n")
+        self.write("ios/full/texas-action-region.ts", "export const value: number = 1;\n")
+        self.write("ios/full/texas-animation-fixture.ts", "export {};\n")
         self.write("fixture.py", "raise RuntimeError('syntax checks must never execute this')\n")
         self.write("README.md", "documentation\n")
         self.run_command("git", "add", ".")
@@ -101,7 +105,8 @@ class PreCommitTests(unittest.TestCase):
     def test_all_files_and_initial_commit_pass_once(self):
         result = self.run_command(sys.executable, "-m", "pre_commit", "run", "--all-files")
         for output in [result.stdout, self.initial_commit_output]:
-            for label in ["TypeScript typecheck", "Python syntax (read only)"]:
+            for label in ["TypeScript typecheck", "Python syntax (read only)",
+                          "Texas animation complexity (tests 3, tools 6)"]:
                 self.assertEqual(output.count(label), 1)
                 self.assertIn("Passed", next(line for line in output.splitlines() if label in line))
 
@@ -161,6 +166,32 @@ class PreCommitTests(unittest.TestCase):
                     self.assertEqual(output.count(label), 1)
                     line = next(line for line in output.splitlines() if label in line)
                     self.assertIn("Passed" if runs else "Skipped", line)
+
+    def test_texas_complexity_blocks_commit(self):
+        name = "ios/full/texas-action-region.ts"
+        self.write(name, "export function sample(value: number) { "
+                         "if (value === 0) return 0; if (value === 1) return 1; return 2; }\n")
+        self.run_command("git", "add", name)
+        self.assertIn("Texas animation complexity", self.commit(True))
+        self.write(name, "export function sample(value: number) { "
+                         "if (value === 0) return 0; if (value === 1) return 1; "
+                         "if (value === 2) return 2; return 3; }\n")
+        self.run_command("git", "add", name)
+        self.assertIn("complexity of 4", self.commit(False))
+        self.write(name, "export const value: number = 1;\n")
+        self.run_command("git", "add", name)
+        self.commit(True)
+
+    def test_texas_hook_trigger_scopes(self):
+        label = "Texas animation complexity (tests 3, tools 6)"
+        for name, runs in [("README.md", False), ("ios/full/fixture.ts", False),
+                           ("ios/full/texas-animation-fixture.ts", True)]:
+            with self.subTest(name=name):
+                self.write(name, (self.repo / name).read_text() + "\n")
+                self.run_command("git", "add", name)
+                output = self.commit(True)
+                line = next(line for line in output.splitlines() if label in line)
+                self.assertIn("Passed" if runs else "Skipped", line)
 
     def test_static_checker_handles_tracked_deletion(self):
         (self.repo / "fixture.py").unlink()

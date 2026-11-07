@@ -1,10 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { texasRaiseClockMasks, texasRaiseValueMask } from './texas-raise-masks.ts';
+import { pointInside } from './texas-animation-geometry.ts';
 
 const screen = { width: 1178, height: 2556 };
-const n = (res, bounds, children = [], text, clazz = 'XCUIElementTypeOther', visible = false) =>
-  ({ res, bounds, children, text, clazz, visible, enabled: true });
+const n = (res, bounds, children = [], ...presentation) => decorateNode({ res, bounds, children }, ...presentation);
+const decorateNode = (node, text, clazz = 'XCUIElementTypeOther', visible = false) =>
+  ({ ...node, text, clazz, visible, enabled: true });
 function fixture() {
   const value = n('raise-bet-display-text', { x: 749, y: 1521, width: 64, height: 60 }, [], '40', 'XCUIElementTypeStaticText');
   const image = n(undefined, { x: 662, y: 1503, width: 232, height: 99 }, [], undefined, 'XCUIElementTypeImage', true);
@@ -21,7 +23,7 @@ function fixture() {
     { x: 536, y: 1437, width: 40, height: 39 }, [], undefined, 'XCUIElementTypeImage');
   return { nodes: [root, clock, icon], root, clock, icon, value, image, thumb, ruler, rail, scale, cancel, confirm };
 }
-const covered = (masks, x, y) => masks.some(b => x >= b.x && x < b.x + b.width && y >= b.y && y < b.y + b.height);
+const covered = (masks, x, y) => masks.some(b => pointInside(b, x, y));
 test('加注端点和静态图只排除实际房间clock文字，隐藏native背景仍正确识别', () => {
   const f = fixture(), masks = texasRaiseClockMasks(f.nodes, screen);
   assert.deepEqual(masks.map(({ reason, ...b }) => b), [{ x: 584, y: 1434, width: 184, height: 45 }]);

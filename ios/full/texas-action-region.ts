@@ -1,5 +1,6 @@
 import { flattenNodes, type NativeNode } from './game-controls';
 import { playerCountdownNodes } from './game-countdown';
+import { overlaps, paddedRegion, withinScreen } from './texas-animation-geometry';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
 export const texasOperationMarkers = [
@@ -9,8 +10,6 @@ export const texasOperationMarkers = [
 ];
 const autoMarkers = ['Any Call', 'Check/Fold', 'Check'].map(key => `texas-holdem-auto-button-${key}`);
 const visible = (node: NativeNode) => node.visible !== false && node.bounds.width > 0 && node.bounds.height > 0;
-const overlaps = (a: ScreenshotBounds, b: ScreenshotBounds) => a.x < b.x + b.width && b.x < a.x + a.width
-  && a.y < b.y + b.height && b.y < a.y + a.height;
 function unique(nodes: NativeNode[], marker: string): NativeNode {
   const matches = nodes.filter(node => visible(node) && node.res === marker);
   if (matches.length !== 1) throw new Error(`必须有唯一完整可见原生控件：${marker}`);
@@ -18,12 +17,9 @@ function unique(nodes: NativeNode[], marker: string): NativeNode {
 }
 function union(nodes: NativeNode[], screen: { width: number; height: number }, padding = 4): ScreenshotBounds {
   const bounds = nodes.map(node => node.bounds);
-  if (!bounds.length || bounds.some(b => b.x < 0 || b.y < 0 || b.x + b.width > screen.width
-    || b.y + b.height > screen.height)) throw new Error('动画目标必须完整位于原生屏幕内');
-  const x = Math.max(0, Math.min(...bounds.map(b => b.x)) - padding);
-  const y = Math.max(0, Math.min(...bounds.map(b => b.y)) - padding);
-  return { x, y, width: Math.min(screen.width, Math.max(...bounds.map(b => b.x + b.width)) + padding) - x,
-    height: Math.min(screen.height, Math.max(...bounds.map(b => b.y + b.height)) + padding) - y };
+  if (![bounds.length > 0, bounds.every(b => withinScreen(b, screen))].every(Boolean))
+    throw new Error('动画目标必须完整位于原生屏幕内');
+  return paddedRegion(bounds, screen, padding);
 }
 export function texasOperationControls(nodes: NativeNode[]): NativeNode[] {
   return texasOperationMarkers.map(marker => unique(nodes, marker));
@@ -48,11 +44,18 @@ export function texasShortcutMotionBounds(before: NativeNode[], after: NativeNod
 /** Resolve the exact acting player's subtree: other seats can already show
  * the same action label and must never supply this animation's bounds. */
 export function texasPlayerAction(name: string, before: NativeNode[], after: NativeNode[]) {
-  const action = /^texas-player-action-(call|raise|check|fold)$/.exec(name)?.[1];
-  if (!action) throw new Error('未知德州玩家动作');
+  const action = playerActionName(name);
   const players = before.filter(node => visible(node) && /^texas-holdem-player-container-.+-operating$/.test(node.res || ''));
   if (players.length !== 1) throw new Error('玩家动作起点必须有唯一当前行动玩家');
-  const player = players[0], marker = `texas-holdem-player-action-${action}`;
+  return playerActionTarget(players[0], action, after);
+}
+function playerActionName(name: string) {
+  const action = /^texas-player-action-(call|raise|check|fold)$/.exec(name)?.[1];
+  if (!action) throw new Error('未知德州玩家动作');
+  return action;
+}
+function playerActionTarget(player: NativeNode, action: string, after: NativeNode[]) {
+  const marker = `texas-holdem-player-action-${action}`;
   if (flattenNodes(player).some(node => visible(node) && node.res === marker))
     throw new Error('目标玩家动作标签起点必须消失');
   const id = player.res!.replace(/-operating$/, '');
@@ -80,11 +83,15 @@ export function texasPlayerActionMotionBounds(name: string, before: NativeNode[]
 /** Endpoint-only timer exclusions, checked against the visible foreground
  * at that endpoint; raw intermediate frames retain every pixel. */
 export function texasActionClockMasks(nodes: NativeNode[]): ScreenshotMask[] {
-  const foreground = nodes.filter(node => visible(node) && (texasOperationMarkers.includes(node.res || '')
-    || /^texas-holdem-player-action-(call|raise|check|fold)$/.test(node.res || '')));
+  const foreground = nodes.filter(visible).filter(actionForeground);
   return playerCountdownNodes(nodes, 'texas-holdem').map(timer => {
     if (foreground.some(node => overlaps(timer.bounds, node.bounds)))
       throw new Error('倒计时端点遮罩不得覆盖可见动作或操作按钮');
     return { ...timer.bounds, reason: '仅端点比较排除原生玩家倒计时；动作前景和原始中途帧完整保留' };
   });
+}
+
+function actionForeground(node: NativeNode) {
+  const resource = node.res || '';
+  return texasOperationMarkers.includes(resource) || /^texas-holdem-player-action-(call|raise|check|fold)$/.test(resource);
 }
