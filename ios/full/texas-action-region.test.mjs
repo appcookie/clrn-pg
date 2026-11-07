@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
-import { PNG } from 'pngjs';
+import { operationImage } from './texas-animation-test-images.mjs';
 import { texasOperationMarkers, texasOperationRegion, texasShortcutMotionBounds,
   texasPlayerActionRegion, texasPlayerActionMotionBounds, texasActionClockMasks } from './texas-action-region.ts';
 import { captureNativeTransition, nativeTargetMotionEvidence } from './animation-transition.ts';
@@ -63,19 +63,7 @@ test('原始录像真实气泡/快捷筹码缩放通过，只有旧倒计时或�
   }
 });
 test('德州操作集成门禁要求新快捷筹码及每个主按钮真实中途帧，退旧按钮或单个硬切均失败', async () => {
-  const image = (phase, hardCut = false) => {
-    const png = new PNG(screen);
-    for (let i=0;i<png.data.length;i+=4) png.data.set([20,90,70,255],i);
-    const drawing = phase === 'start' ? auto : phase === 'removed' ? [] : controls;
-    for (const [index,control] of drawing.entries()) {
-      const b=control.bounds, factor=phase==='middle' && !(hardCut && index===5) ? .6 : 1;
-      const w=Math.round(b.width*factor),h=Math.round(b.height*factor);
-      const x0=b.x+Math.floor((b.width-w)/2),y0=b.y+Math.floor((b.height-h)/2);
-      for(let y=y0;y<y0+h;y++)for(let x=x0;x<x0+w;x++)
-        png.data.set(phase==='start'?[120,140,130,255]:[230,100+index*10,15,255],(y*screen.width+x)*4);
-    }
-    return PNG.sync.write(png);
-  };
+  const image = (phase, hardCut) => operationImage(screen, auto, controls, phase, hardCut);
   const start=image('start'),end=image('end'),previous=process.env.IOS_VISUAL_MODE;
   process.env.IOS_VISUAL_MODE='smoke';
   const run = middle => {
