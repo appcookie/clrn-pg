@@ -14,7 +14,8 @@
     "test:ios:full": "playwright test --config ios/full/playwright.config.ts",
     "check:python:static": "python3 scripts/check-python-static.py",
     "check:python": "npm run check:python:static && node scripts/quality-check.mjs ruff && node --test quality/python.test.mjs && node scripts/check-python.mjs",
-    "check:static": "node scripts/quality-check.mjs eslint dependencies duplicates && node --test quality/static.test.mjs",
+    "check:static": "npm run check:zhajinhua && node scripts/quality-check.mjs eslint dependencies duplicates && node --test quality/static.test.mjs",
+    "check:zhajinhua": "node scripts/check-zhajinhua-complexity.mjs && node --test quality/zhajinhua-complexity.test.mjs",
     "check:all": "npm run check && npm run check:python",
     "measure:quality": "node scripts/measure-quality.mjs"
   },
