@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { accurateBetEntrance, accurateBetPanel, accurateBetEndpointMasks,
   prepareAccurateBetEntrance, readyAccurateBetPanel } from './zhajinhua-accurate-bet.ts';
 import { zhajinhuaOperationMarkers } from './zhajinhua-operation-region.ts';
+import { solidImage, paintRectangle, withSmokeMode } from './zhajinhua-image-fixture.mjs';
 const screen = { width: 1178, height: 2556 };
 const node = (res, bounds) => ({ res, bounds, visible: true, enabled: true });
 const controls = zhajinhuaOperationMarkers.map((marker, index) => node(marker,
@@ -10,8 +11,8 @@ const controls = zhajinhuaOperationMarkers.map((marker, index) => node(marker,
 const panel = node('accurate-bet-popup-container', { x: 223, y: 854, width: 732, height: 848 });
 const mask = node('screen-mask-touch-to-close', { x: 0, y: 0, ...screen });
 
-test('精确加注各阶段使用新回合与新树；仅清理实际存在的上一弹窗，不重试动作', async () => {
-  for (const existing of [false, true]) {
+for (const existing of [false, true]) {
+  test(`精确加注各阶段使用新回合与新树；仅清理实际存在的上一弹窗，不重试动作 (existing=${existing})`, async () => {
     const calls = [], current = existing ? [panel, mask] : controls;
     let reads = 0;
     const device = { screenSize: screen, nodes: async () => { calls.push('tree'); return reads++ ? controls : current; },
@@ -21,7 +22,10 @@ test('精确加注各阶段使用新回合与新树；仅清理实际存在的�
     assert.equal(prepared.nodes, controls);
     assert.equal(prepared.button.res, 'zhajinhua-operation-accurate-bet-button');
     assert.ok(prepared.completedAt <= Date.now());
-  }
+  });
+}
+
+test('完整弹窗只观测一次，驱动异常立即传播', async () => {
   let reads = 0;
   const observed = await readyAccurateBetPanel({ screenSize: screen,
     nodes: async () => { reads++; return [panel, mask]; } });
@@ -56,21 +60,19 @@ test('入退场复用本阶段刚完成的观测，保留新截图和唯一动�
   const buttons = zhajinhuaOperationMarkers.map((marker, i) => node(marker,
     { x: 10 + i * 35, y: 450, width: 20, height: 30 }));
   const picture = scale => {
-    const png = new PNG(size);
-    for (let offset = 0; offset < png.data.length; offset += 4) png.data.set([20, 80, 50, 255], offset);
+    const png = solidImage(size, [20, 80, 50, 255]);
     const b = popup.bounds, width = Math.round(b.width * scale), height = Math.round(b.height * scale);
     const left = b.x + (b.width - width) / 2, top = b.y + (b.height - height) / 2;
-    for (let y = top; y < top + height; y++) for (let x = left; x < left + width; x++)
-      png.data.set(x % 10 < 2 ? [240, 240, 240, 255] : [230, 40, 60, 255], (y * size.width + x) * 4);
+    paintRectangle(png, { x: left, y: top, width, height },
+      x => x % 10 < 2 ? [240, 240, 240, 255] : [230, 40, 60, 255]);
     return PNG.sync.write(png);
   };
-  const previous = process.env.IOS_VISUAL_MODE;
-  process.env.IOS_VISUAL_MODE = 'smoke';
-  try {
-    for (const phase of ['enter', 'exit']) {
-      const before = picture(phase === 'enter' ? 0 : 1), after = picture(phase === 'enter' ? 1 : 0);
-      const beforeNodes = phase === 'enter' ? buttons : [popup, backdrop];
-      const afterNodes = phase === 'enter' ? [popup, backdrop] : buttons;
+  const phases = [
+    { phase: 'enter', before: picture(0), after: picture(1), beforeNodes: buttons, afterNodes: [popup, backdrop] },
+    { phase: 'exit', before: picture(1), after: picture(0), beforeNodes: [popup, backdrop], afterNodes: buttons },
+  ];
+  await withSmokeMode(async () => {
+    for (const { phase, before, after, beforeNodes, afterNodes } of phases) {
       let reads = 0, screenshots = 0, taps = 0;
       const device = { screenSize: size, nodes: async () => { reads++; return afterNodes; },
         nativeScreenshot: async () => screenshots++ ? after : before };
@@ -80,10 +82,7 @@ test('入退场复用本阶段刚完成的观测，保留新截图和唯一动�
         undefined, { nodes: beforeNodes, completedAt: Date.now() });
       assert.deepEqual({ reads, screenshots, taps }, { reads: 1, screenshots: 2, taps: 1 });
     }
-  } finally {
-    if (previous === undefined) delete process.env.IOS_VISUAL_MODE;
-    else process.env.IOS_VISUAL_MODE = previous;
-  }
+  });
 });
 
 test('Cancel后的原始disabled父层仍可定位入口，阻断alert立即拒绝而不消耗新回合', async () => {
