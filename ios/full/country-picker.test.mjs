@@ -74,6 +74,22 @@ test('sheet出现前只轮询缺少的真实控件，所有最终几何断言复
   assert.equal(device.calls.snapshots, 1);
 });
 
+test('列表标记已出现但行仍离屏时，等待可操作布局后才结束就绪检查', async () => {
+  const pendingRow = { ...row, bounds: { ...row.bounds, y: 3000 } };
+  const readyRow = { ...row };
+  const pendingList = { ...marker, children: [pendingRow] };
+  const readyList = { ...marker, children: [readyRow] };
+  const pending = [pendingList, pendingRow, back];
+  const ready = [readyList, readyRow, back];
+  let calls = 0;
+  const result = await waitForCountryPicker({
+    screenSize: { width: 1178, height: 2556 },
+    nodes: async () => ++calls === 1 ? pending : ready,
+  });
+  assert.equal(calls, 2);
+  assert.equal(result, ready);
+});
+
 test('静态country从导航就绪到截图遮罩只读一次AX，传递原始叶子引用，无隐式缓存', async () => {
   const country = deviceWith([marker, row]);
   const readyNodes = await country.nodes();
