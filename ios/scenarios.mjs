@@ -10,6 +10,8 @@ export const scenarios = [
 
 // The login scenario opens a child page; selecting Me must first prove the parent tab is ready.
 export const tabPages = Object.fromEntries(scenarios.filter(scenario => !scenario.clicks).map(scenario => [scenario.tab, scenario.ready]));
+// The hall sign-in button is below the initial viewport; tab readiness uses the visible content list.
+tabPages['hall-tab'] = 'hall-content-list';
 
 export function selectScenarios(filter = '') {
   if (!filter) return scenarios;

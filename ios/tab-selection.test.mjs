@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { WebDriver } from './webdriver.mjs';
-import { tabPages } from './scenarios.mjs';
+import { scenarios, tabPages } from './scenarios.mjs';
 
 // The tab geometry, selected value and hidden alerts match run 42441832380's WDA source.
 function source(state) {
@@ -79,6 +79,24 @@ test('an already selected tab is accepted only with its ready page, without tapp
   await select();
   assert.equal(state.taps.length, 0);
   assert.ok(state.reads >= 2);
+});
+
+test('hall readiness uses visible content while its sign-in button is below the viewport (run 42509433345)', async () => {
+  assert.equal(tabPages['hall-tab'], 'hall-content-list');
+  assert.equal(scenarios.find(scenario => scenario.name === 'hall').ready, 'hall-sign-in-button');
+  const { state, select } = fixture();
+  state.selected = 'hall-tab';
+  state.ready = [];
+  state.overlay = `<XCUIElementTypeOther type="XCUIElementTypeOther" name="hall-content-list"
+    visible="true" x="0" y="97" width="393" height="672"/>
+    <XCUIElementTypeOther type="XCUIElementTypeOther" name="hall-sign-in-button"
+    visible="false" x="140" y="870" width="393" height="46"/>`;
+  await select('hall-tab');
+  assert.equal(state.taps.length, 0);
+  assert.deepEqual(state.events.at(-1).ready, ['hall-tab']);
+  state.overlay = state.overlay.replace('visible="true"', 'visible="false"');
+  await assert.rejects(select('hall-tab'), /标签布局或原页面未就绪/);
+  assert.equal(state.taps.length, 0);
 });
 
 test('selection without destination content must fail rather than retry the selected tab', async () => {
