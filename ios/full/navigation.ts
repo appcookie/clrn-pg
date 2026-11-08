@@ -311,6 +311,8 @@ async function finishScenarioNavigation(device: NativeDevice, scenario: VisualSc
   if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
   await waitAbsent(device, { res: 'alert-message-text' });
   await device.hideKeyboard();
+  // Run 42389420284 reached the input with the heading clipped above its scroll viewport.
+  if (scenario.pageLabel === 'login_username') await reveal(device, { res: 'signin-title-container' }, true);
 }
 
 async function resetScenarioScroll(device: NativeDevice) {
