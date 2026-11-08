@@ -120,7 +120,7 @@ test('missing ESLint dependencies cause a nonzero executable exit', t => {
 
 test('existing static and pre-commit entry points invoke this independent scope', () => {
   const pkg = JSON.parse(readFileSync(join(root, 'package.json')));
-  assert.match(pkg.scripts['check:static'], /^npm run check:zhajinhua &&/);
+  assert.match(pkg.scripts['check:static'], /^npm run check:texas-animation && npm run check:zhajinhua &&/);
   assert.match(pkg.scripts.check, /check:static/);
   assert.match(readFileSync(join(root, '.pre-commit-config.yaml'), 'utf8'), /entry: npm run check:zhajinhua/);
   assert.ok(testFiles.includes('quality/zhajinhua-complexity*.{js,mjs,cjs,jsx,ts,tsx,mts,cts}'));

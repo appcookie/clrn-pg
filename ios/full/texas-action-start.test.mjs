@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { PNG } from 'pngjs';
+import { paintRect } from './texas-animation-test-images.mjs';
 import { texasActionStart, compareTexasActionStart } from './texas-action-start.ts';
 import { captureNativeTransition, frameColorDistance } from './animation-transition.ts';
 
@@ -22,8 +23,8 @@ const geometry = (action = 'call') => {
   const label = node(`texas-holdem-player-action-${action}`, { x:146,y:1029,width:127,height:78 });
   return { before:[node(`${id}-operating`,player,[timer])], after:[node(id,player,[label])], timer, label };
 };
-const plan = (g = geometry(), name = 'texas-player-action-call', region = provenance.region, size = screen) =>
-  texasActionStart(name, g.before, g.after, size, region);
+const plan = (g = geometry(), name = 'texas-player-action-call', ...regionArgs) => planRegion(g, name, ...regionArgs);
+const planRegion = (g, name, region = provenance.region, size = screen) => texasActionStart(name, g.before, g.after, size, region);
 
 test('真实首帧倒计时变化只排除原生timer，保留像素归一化差2.47且原图不变', () => {
   const start = plan(), original = Buffer.from(frames.first);
@@ -59,10 +60,7 @@ test('错误气泡位置和文字仍被起点对齐及基准比较拦截', () =>
   const start=plan();
   for(const kind of ['wrong-position','wrong-text']) {
     const image=PNG.sync.read(frames.before);
-    for(let y=8;y<70;y++)for(let x=75;x<125;x++) {
-      const color=kind==='wrong-position'?[130,210,15,255]:[255,255,255,255];
-      image.data.set(color,(y*image.width+x)*4);
-    }
+    paintRect(image, { x: 75, y: 8, width: 50, height: 62 }, wrongBubbleColor(kind));
     const altered=PNG.sync.write(image),result=compareTexasActionStart(altered,frames.before,start);
     assert.ok(result.distance>10,kind);
     assert.equal(result.samePixels,false,kind);
@@ -102,3 +100,7 @@ test('真实原片气泡缩放通过完整capture，已有气泡首帧及硬切�
     await assert.rejects(run([source.first,source.first,source.end]),/目标本身必须有真实中间帧/);
   } finally { if(previous===undefined)delete process.env.IOS_VISUAL_MODE;else process.env.IOS_VISUAL_MODE=previous; }
 });
+
+function wrongBubbleColor(kind) {
+  return kind === 'wrong-position' ? [130, 210, 15, 255] : [255, 255, 255, 255];
+}

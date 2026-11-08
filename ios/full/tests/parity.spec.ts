@@ -15,6 +15,11 @@ for (const scenario of iosScenarios(locale, process.env.IOS_GROUP)
     }
     const { backgroundBanner, readySnapshot } = await navigateScenario(application.device, scenario);
     const masks = await screenshotMasks(application.device, scenario, backgroundBanner, readySnapshot);
-    await compareScreenshot(application.device, `${locale}-${scenario.pageLabel.replaceAll('_', '-')}`, testInfo, masks);
+    // Run 42390319854: XCTest omitted this WebView's body while the same
+    // run's Simulator capture retained it and passed the reviewed baseline.
+    const takeScreenshot = locale === 'zh-Hans' && scenario.pageLabel === 'login_user_agreement'
+      ? () => application.device.nativeScreenshot() : undefined;
+    await compareScreenshot(application.device, `${locale}-${scenario.pageLabel.replaceAll('_', '-')}`, testInfo, masks,
+      undefined, takeScreenshot);
   });
 }
