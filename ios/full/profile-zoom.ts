@@ -4,18 +4,18 @@ import type { NativeNode } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { nativeProfilePanelBounds } from './profile-region';
 import { decodeFrame, type FramePixels } from './native-frame';
+import { contains } from './zhajinhua-region-geometry';
 
 export type ProfileZoomLayout = {
   panel: ScreenshotBounds;
   close: ScreenshotBounds;
 };
-const contains = (a: ScreenshotBounds, b: ScreenshotBounds) =>
-  b.width > 0 &&
-  b.height > 0 &&
-  b.x >= a.x &&
-  b.y >= a.y &&
-  b.x + b.width <= a.x + a.width &&
-  b.y + b.height <= a.y + a.height;
+// The shared bounds predicate requires positive dimensions.
+// Its inclusive edges let a close icon touch the panel boundary.
+// Use the same check for both the native layout and image bounds.
+// Keep the historical finding locations stable while migrating this check.
+// The underlying containment behavior remains unchanged.
+
 /** Derive the entire card and its static close icon from the actual endpoint tree.
  * This static icon is independent of the asynchronously loaded avatar and statistics.
  */

@@ -3,6 +3,13 @@ default_stages: [pre-commit]
 repos:
   - repo: local
     hooks:
+      - id: zhajinhua-static
+        name: Zhajinhua animation complexity
+        entry: npm run check:zhajinhua
+        language: system
+        files: '^ios/full/zhajinhua-(?:accurate-bet|bet-region|card-region|operation-region|showdown|region-geometry|image-fixture).*\.(?:[cm]?[jt]sx?)$|^quality/zhajinhua-complexity.*\.(?:[cm]?[jt]sx?)$|^scripts/(?:check-zhajinhua-complexity|zhajinhua-complexity-scope)\.mjs$|^(?:eslint\.config\.mjs|package(?:-lock)?\.json|\.pre-commit-config\.yaml)$|^\.github/workflows/.*\.ya?ml$'
+        pass_filenames: false
+        require_serial: true
       - id: typecheck
         name: TypeScript typecheck
         entry: npm run typecheck

@@ -1,0 +1,4210 @@
+{
+  "issue": 46,
+  "sourceCommit": "6e805337e8ce7809290e9e00fc2bb5c99dce17a3",
+  "measurement": "ESLint classic complexity; max=0 reports each function separately, including callbacks, defaults, optional chains and short circuits.",
+  "versions": {
+    "eslint": "10.12.0",
+    "@typescript-eslint/parser": "8.71.1"
+  },
+  "summary": [
+    {
+      "file": "eslint.config.mjs",
+      "limit": 6,
+      "beforeFunctions": 0,
+      "beforeMaximum": 0,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 0,
+      "afterMaximum": 0,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "scripts/check-zhajinhua-complexity.mjs",
+      "limit": 6,
+      "beforeFunctions": 0,
+      "beforeMaximum": 0,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 2,
+      "afterMaximum": 4,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "scripts/zhajinhua-complexity-scope.mjs",
+      "limit": 6,
+      "beforeFunctions": 0,
+      "beforeMaximum": 0,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 0,
+      "afterMaximum": 0,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-accurate-bet.test.mjs",
+      "limit": 3,
+      "beforeFunctions": 32,
+      "beforeMaximum": 7,
+      "beforeAboveLimit": 3,
+      "afterFunctions": 35,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-accurate-bet.ts",
+      "limit": 3,
+      "beforeFunctions": 16,
+      "beforeMaximum": 8,
+      "beforeAboveLimit": 5,
+      "afterFunctions": 22,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-bet-region.test.mjs",
+      "limit": 3,
+      "beforeFunctions": 7,
+      "beforeMaximum": 2,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 7,
+      "afterMaximum": 2,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-bet-region.ts",
+      "limit": 3,
+      "beforeFunctions": 12,
+      "beforeMaximum": 6,
+      "beforeAboveLimit": 3,
+      "afterFunctions": 12,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-card-region.test.mjs",
+      "limit": 3,
+      "beforeFunctions": 10,
+      "beforeMaximum": 1,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 10,
+      "afterMaximum": 1,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-card-region.ts",
+      "limit": 3,
+      "beforeFunctions": 14,
+      "beforeMaximum": 8,
+      "beforeAboveLimit": 2,
+      "afterFunctions": 13,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-image-fixture.mjs",
+      "limit": 3,
+      "beforeFunctions": 0,
+      "beforeMaximum": 0,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 4,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-operation-region.test.mjs",
+      "limit": 3,
+      "beforeFunctions": 42,
+      "beforeMaximum": 10,
+      "beforeAboveLimit": 6,
+      "afterFunctions": 48,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-operation-region.ts",
+      "limit": 3,
+      "beforeFunctions": 28,
+      "beforeMaximum": 8,
+      "beforeAboveLimit": 10,
+      "afterFunctions": 37,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-region-geometry.ts",
+      "limit": 3,
+      "beforeFunctions": 0,
+      "beforeMaximum": 0,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 20,
+      "afterMaximum": 2,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown-endpoint.test.mjs",
+      "limit": 3,
+      "beforeFunctions": 28,
+      "beforeMaximum": 2,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 28,
+      "afterMaximum": 2,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown-endpoint.ts",
+      "limit": 3,
+      "beforeFunctions": 18,
+      "beforeMaximum": 11,
+      "beforeAboveLimit": 6,
+      "afterFunctions": 32,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown.test.mjs",
+      "limit": 3,
+      "beforeFunctions": 24,
+      "beforeMaximum": 14,
+      "beforeAboveLimit": 2,
+      "afterFunctions": 32,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown.ts",
+      "limit": 3,
+      "beforeFunctions": 33,
+      "beforeMaximum": 17,
+      "beforeAboveLimit": 10,
+      "afterFunctions": 54,
+      "afterMaximum": 3,
+      "afterAboveLimit": 0
+    },
+    {
+      "file": "quality/zhajinhua-complexity.test.mjs",
+      "limit": 3,
+      "beforeFunctions": 0,
+      "beforeMaximum": 0,
+      "beforeAboveLimit": 0,
+      "afterFunctions": 16,
+      "afterMaximum": 2,
+      "afterAboveLimit": 0
+    }
+  ],
+  "before": [
+    {
+      "file": "ios/full/zhajinhua-accurate-bet.ts",
+      "functions": [
+        {
+          "line": 14,
+          "column": 1,
+          "function": "Function 'assertNoBlockingAlert'",
+          "complexity": 2
+        },
+        {
+          "line": 15,
+          "column": 23,
+          "function": "Arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 20,
+          "column": 1,
+          "function": "Function 'visible'",
+          "complexity": 1
+        },
+        {
+          "line": 21,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 28,
+          "column": 8,
+          "function": "Function 'accurateBetEntrance'",
+          "complexity": 3
+        },
+        {
+          "line": 31,
+          "column": 23,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 32,
+          "column": 62,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 8,
+          "function": "Function 'accurateBetPanel'",
+          "complexity": 8
+        },
+        {
+          "line": 47,
+          "column": 1,
+          "function": "Async function 'observe'",
+          "complexity": 5
+        },
+        {
+          "line": 59,
+          "column": 8,
+          "function": "Async function 'prepareAccurateBetEntrance'",
+          "complexity": 2
+        },
+        {
+          "line": 65,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 69,
+          "column": 8,
+          "function": "Async function 'readyAccurateBetPanel'",
+          "complexity": 1
+        },
+        {
+          "line": 70,
+          "column": 32,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 76,
+          "column": 8,
+          "function": "Function 'accurateBetEndpointMasks'",
+          "complexity": 1
+        },
+        {
+          "line": 78,
+          "column": 57,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 85,
+          "column": 8,
+          "function": "Function 'assertAccurateBetRegion'",
+          "complexity": 5
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-accurate-bet.test.mjs",
+      "functions": [
+        {
+          "line": 7,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 8,
+          "column": 64,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 13,
+          "column": 53,
+          "function": "Async arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 17,
+          "column": 42,
+          "function": "Async method 'nodes'",
+          "complexity": 2
+        },
+        {
+          "line": 18,
+          "column": 16,
+          "function": "Async method 'tap'",
+          "complexity": 1
+        },
+        {
+          "line": 19,
+          "column": 72,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 5,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 53,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 14,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 42,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 37,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 40,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 41,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 44,
+          "column": 41,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 46,
+          "column": 82,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 50,
+          "column": 51,
+          "function": "Async arrow function",
+          "complexity": 7
+        },
+        {
+          "line": 56,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 58,
+          "column": 25,
+          "function": "Arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 75,
+          "column": 42,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 76,
+          "column": 9,
+          "function": "Async method 'nativeScreenshot'",
+          "complexity": 2
+        },
+        {
+          "line": 77,
+          "column": 82,
+          "function": "Async method 'attach'",
+          "complexity": 1
+        },
+        {
+          "line": 78,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 79,
+          "column": 49,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 89,
+          "column": 64,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 99,
+          "column": 55,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 100,
+          "column": 16,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 104,
+          "column": 7,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 109,
+          "column": 46,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 113,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 115,
+          "column": 22,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-bet-region.ts",
+      "functions": [
+        {
+          "line": 4,
+          "column": 1,
+          "function": "Function 'descendants'",
+          "complexity": 2
+        },
+        {
+          "line": 12,
+          "column": 8,
+          "function": "Function 'zhajinhuaBetRegion'",
+          "complexity": 6
+        },
+        {
+          "line": 14,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 17,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 19,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 21,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 26,
+          "column": 49,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 29,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 6
+        },
+        {
+          "line": 33,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 34,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 65,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 67,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-bet-region.test.mjs",
+      "functions": [
+        {
+          "line": 8,
+          "column": 1,
+          "function": "Function 'player'",
+          "complexity": 2
+        },
+        {
+          "line": 22,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 26,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 28,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-card-region.ts",
+      "functions": [
+        {
+          "line": 7,
+          "column": 8,
+          "function": "Function 'zhajinhuaCardRegions'",
+          "complexity": 3
+        },
+        {
+          "line": 9,
+          "column": 69,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 10,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 11,
+          "column": 33,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 15,
+          "column": 46,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 23,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 24,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 25,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 26,
+          "column": 66,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 68,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 8,
+          "function": "Function 'currentZhajinhuaCards'",
+          "complexity": 1
+        },
+        {
+          "line": 33,
+          "column": 64,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 8,
+          "function": "Function 'zhajinhuaSeeButton'",
+          "complexity": 2
+        },
+        {
+          "line": 40,
+          "column": 73,
+          "function": "Arrow function",
+          "complexity": 8
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-card-region.test.mjs",
+      "functions": [
+        {
+          "line": 5,
+          "column": 42,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 6,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 9,
+          "column": 35,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 11,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 18,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 19,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 20,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 21,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 23,
+          "column": 41,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-operation-region.ts",
+      "functions": [
+        {
+          "line": 14,
+          "column": 8,
+          "function": "Function 'visibleZhajinhuaOperationControls'",
+          "complexity": 1
+        },
+        {
+          "line": 15,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 19,
+          "column": 1,
+          "function": "Function 'mountedControls'",
+          "complexity": 2
+        },
+        {
+          "line": 20,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 23,
+          "column": 29,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 28,
+          "column": 8,
+          "function": "Function 'zhajinhuaOperationControls'",
+          "complexity": 6
+        },
+        {
+          "line": 34,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 8
+        },
+        {
+          "line": 38,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 39,
+          "column": 48,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 42,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 45,
+          "column": 47,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 46,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 53,
+          "column": 8,
+          "function": "Function 'zhajinhuaChallengeCancel'",
+          "complexity": 4
+        },
+        {
+          "line": 55,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 56,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 58,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 66,
+          "column": 8,
+          "function": "Async function 'readyZhajinhuaChallengeCancel'",
+          "complexity": 6
+        },
+        {
+          "line": 82,
+          "column": 8,
+          "function": "Function 'zhajinhuaOperationRegion'",
+          "complexity": 4
+        },
+        {
+          "line": 86,
+          "column": 23,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 88,
+          "column": 69,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 89,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 91,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 92,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 93,
+          "column": 73,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 94,
+          "column": 62,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 100,
+          "column": 8,
+          "function": "Function 'zhajinhuaOperationClockMasks'",
+          "complexity": 1
+        },
+        {
+          "line": 102,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 104,
+          "column": 31,
+          "function": "Arrow function",
+          "complexity": 4
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-operation-region.test.mjs",
+      "functions": [
+        {
+          "line": 9,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 14,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 18,
+          "column": 46,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 21,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 22,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 25,
+          "column": 30,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 56,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 56,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 41,
+          "column": 68,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 46,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 47,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 48,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 50,
+          "column": 62,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 52,
+          "column": 63,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 55,
+          "column": 60,
+          "function": "Async arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 59,
+          "column": 62,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 60,
+          "column": 41,
+          "function": "Arrow function",
+          "complexity": 10
+        },
+        {
+          "line": 78,
+          "column": 86,
+          "function": "Async arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 81,
+          "column": 31,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 84,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 86,
+          "column": 40,
+          "function": "Async method 'nodes'",
+          "complexity": 4
+        },
+        {
+          "line": 89,
+          "column": 8,
+          "function": "Async method 'nativeScreenshot'",
+          "complexity": 2
+        },
+        {
+          "line": 93,
+          "column": 76,
+          "function": "Async method 'attach'",
+          "complexity": 1
+        },
+        {
+          "line": 94,
+          "column": 35,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 95,
+          "column": 108,
+          "function": "Async arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 131,
+          "column": 67,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 136,
+          "column": 66,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 137,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 140,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 142,
+          "column": 29,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 143,
+          "column": 29,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 144,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 145,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 146,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 148,
+          "column": 60,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 151,
+          "column": 85,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 164,
+          "column": 50,
+          "function": "Async arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 168,
+          "column": 89,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 184,
+          "column": 47,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 188,
+          "column": 41,
+          "function": "Async arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 197,
+          "column": 81,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown-endpoint.ts",
+      "functions": [
+        {
+          "line": 5,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 6
+        },
+        {
+          "line": 7,
+          "column": 49,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 16,
+          "column": 8,
+          "function": "Function 'requireZhajinhuaShowdownPlayers'",
+          "complexity": 11
+        },
+        {
+          "line": 21,
+          "column": 42,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 24,
+          "column": 48,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 26,
+          "column": 43,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 27,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 29,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 7
+        },
+        {
+          "line": 31,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 55,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 25,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 41,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 43,
+          "column": 30,
+          "function": "Arrow function",
+          "complexity": 8
+        },
+        {
+          "line": 48,
+          "column": 59,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 49,
+          "column": 48,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 51,
+          "column": 32,
+          "function": "Arrow function",
+          "complexity": 7
+        },
+        {
+          "line": 53,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 3
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown-endpoint.test.mjs",
+      "functions": [
+        {
+          "line": 13,
+          "column": 22,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 14,
+          "column": 25,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 14,
+          "column": 53,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 14,
+          "column": 75,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 16,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 18,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 19,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 24,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 26,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 28,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 29,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 30,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 30,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 33,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 34,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 35,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 37,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 33,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 43,
+          "column": 22,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 45,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown.ts",
+      "functions": [
+        {
+          "line": 8,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 9,
+          "column": 59,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 11,
+          "column": 1,
+          "function": "Function 'one'",
+          "complexity": 2
+        },
+        {
+          "line": 23,
+          "column": 8,
+          "function": "Function 'zhajinhuaShowdownLayout'",
+          "complexity": 9
+        },
+        {
+          "line": 25,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 28,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 29,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 31,
+          "column": 58,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 32,
+          "column": 56,
+          "function": "Arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 33,
+          "column": 41,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 37,
+          "column": 46,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 46,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 30,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 40,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 44,
+          "column": 17,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 46,
+          "column": 23,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 48,
+          "column": 53,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 50,
+          "column": 57,
+          "function": "Arrow function",
+          "complexity": 7
+        },
+        {
+          "line": 54,
+          "column": 53,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 55,
+          "column": 23,
+          "function": "Arrow function",
+          "complexity": 4
+        },
+        {
+          "line": 59,
+          "column": 43,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 59,
+          "column": 88,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 60,
+          "column": 70,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 61,
+          "column": 56,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 66,
+          "column": 8,
+          "function": "Function 'compareShowdownStart'",
+          "complexity": 16
+        },
+        {
+          "line": 90,
+          "column": 1,
+          "function": "Function 'patchDistance'",
+          "complexity": 4
+        },
+        {
+          "line": 105,
+          "column": 8,
+          "function": "Async function 'showdownHorizontalEvidence'",
+          "complexity": 17
+        },
+        {
+          "line": 114,
+          "column": 54,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 116,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 151,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 151,
+          "column": 54,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 151,
+          "column": 86,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown.test.mjs",
+      "functions": [
+        {
+          "line": 19,
+          "column": 80,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 25,
+          "column": 51,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 30,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 77,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 79,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 33,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 34,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 46,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 41,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 43,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 48,
+          "column": 55,
+          "function": "Arrow function",
+          "complexity": 14
+        },
+        {
+          "line": 61,
+          "column": 50,
+          "function": "Async arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 75,
+          "column": 35,
+          "function": "Arrow function",
+          "complexity": 5
+        },
+        {
+          "line": 92,
+          "column": 49,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 93,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 103,
+          "column": 35,
+          "function": "Async method 'nodes'",
+          "complexity": 2
+        },
+        {
+          "line": 104,
+          "column": 5,
+          "function": "Async method 'nativeScreenshot'",
+          "complexity": 2
+        },
+        {
+          "line": 107,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 108,
+          "column": 8,
+          "function": "Async method 'attach'",
+          "complexity": 1
+        },
+        {
+          "line": 109,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 110,
+          "column": 43,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 112,
+          "column": 57,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 114,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    }
+  ],
+  "after": [
+    {
+      "file": "eslint.config.mjs",
+      "functions": []
+    },
+    {
+      "file": "scripts/check-zhajinhua-complexity.mjs",
+      "functions": [
+        {
+          "line": 9,
+          "column": 8,
+          "function": "Async function 'checkZhajinhuaComplexity'",
+          "complexity": 4
+        },
+        {
+          "line": 15,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "scripts/zhajinhua-complexity-scope.mjs",
+      "functions": []
+    },
+    {
+      "file": "ios/full/zhajinhua-accurate-bet.test.mjs",
+      "functions": [
+        {
+          "line": 8,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 9,
+          "column": 64,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 15,
+          "column": 78,
+          "function": "Async arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 18,
+          "column": 42,
+          "function": "Async method 'nodes'",
+          "complexity": 2
+        },
+        {
+          "line": 19,
+          "column": 16,
+          "function": "Async method 'tap'",
+          "complexity": 1
+        },
+        {
+          "line": 20,
+          "column": 72,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 28,
+          "column": 37,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 5,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 53,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 14,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 42,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 41,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 42,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 43,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 44,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 45,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 48,
+          "column": 41,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 50,
+          "column": 82,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 54,
+          "column": 51,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 60,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 62,
+          "column": 25,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 67,
+          "column": 9,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 74,
+          "column": 32,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 77,
+          "column": 42,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 78,
+          "column": 9,
+          "function": "Async method 'nativeScreenshot'",
+          "complexity": 2
+        },
+        {
+          "line": 79,
+          "column": 82,
+          "function": "Async method 'attach'",
+          "complexity": 1
+        },
+        {
+          "line": 80,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 81,
+          "column": 49,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 88,
+          "column": 64,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 98,
+          "column": 55,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 99,
+          "column": 16,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 103,
+          "column": 7,
+          "function": "Async method 'nodes'",
+          "complexity": 1
+        },
+        {
+          "line": 108,
+          "column": 46,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 112,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 114,
+          "column": 22,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-accurate-bet.ts",
+      "functions": [
+        {
+          "line": 15,
+          "column": 1,
+          "function": "Function 'assertNoBlockingAlert'",
+          "complexity": 2
+        },
+        {
+          "line": 16,
+          "column": 25,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 20,
+          "column": 1,
+          "function": "Function 'blockingAlert'",
+          "complexity": 2
+        },
+        {
+          "line": 24,
+          "column": 1,
+          "function": "Function 'blockingAlertContent'",
+          "complexity": 3
+        },
+        {
+          "line": 28,
+          "column": 1,
+          "function": "Function 'visible'",
+          "complexity": 1
+        },
+        {
+          "line": 29,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 30,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 8,
+          "function": "Function 'accurateBetEntrance'",
+          "complexity": 3
+        },
+        {
+          "line": 39,
+          "column": 23,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 40,
+          "column": 62,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 44,
+          "column": 8,
+          "function": "Function 'accurateBetPanel'",
+          "complexity": 2
+        },
+        {
+          "line": 54,
+          "column": 1,
+          "function": "Function 'assertUniquePanel'",
+          "complexity": 3
+        },
+        {
+          "line": 60,
+          "column": 1,
+          "function": "Function 'assertClickableMask'",
+          "complexity": 2
+        },
+        {
+          "line": 64,
+          "column": 1,
+          "function": "Async function 'retryObservation'",
+          "complexity": 3
+        },
+        {
+          "line": 69,
+          "column": 1,
+          "function": "Async function 'observe'",
+          "complexity": 3
+        },
+        {
+          "line": 81,
+          "column": 8,
+          "function": "Async function 'prepareAccurateBetEntrance'",
+          "complexity": 2
+        },
+        {
+          "line": 87,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 91,
+          "column": 8,
+          "function": "Async function 'readyAccurateBetPanel'",
+          "complexity": 1
+        },
+        {
+          "line": 92,
+          "column": 32,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 98,
+          "column": 8,
+          "function": "Function 'accurateBetEndpointMasks'",
+          "complexity": 1
+        },
+        {
+          "line": 100,
+          "column": 57,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 107,
+          "column": 8,
+          "function": "Function 'assertAccurateBetRegion'",
+          "complexity": 2
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-bet-region.test.mjs",
+      "functions": [
+        {
+          "line": 8,
+          "column": 1,
+          "function": "Function 'player'",
+          "complexity": 2
+        },
+        {
+          "line": 22,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 26,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 28,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-bet-region.ts",
+      "functions": [
+        {
+          "line": 5,
+          "column": 1,
+          "function": "Function 'descendants'",
+          "complexity": 2
+        },
+        {
+          "line": 13,
+          "column": 8,
+          "function": "Function 'zhajinhuaBetRegion'",
+          "complexity": 2
+        },
+        {
+          "line": 19,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 25,
+          "column": 1,
+          "function": "Function 'hasBetAmount'",
+          "complexity": 2
+        },
+        {
+          "line": 26,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 29,
+          "column": 1,
+          "function": "Function 'actingPlayer'",
+          "complexity": 3
+        },
+        {
+          "line": 30,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 33,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 38,
+          "column": 1,
+          "function": "Function 'betPanel'",
+          "complexity": 2
+        },
+        {
+          "line": 39,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 45,
+          "column": 1,
+          "function": "Function 'betCoin'",
+          "complexity": 2
+        },
+        {
+          "line": 48,
+          "column": 49,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-card-region.test.mjs",
+      "functions": [
+        {
+          "line": 5,
+          "column": 42,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 6,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 9,
+          "column": 35,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 11,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 18,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 19,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 20,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 21,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 23,
+          "column": 41,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-card-region.ts",
+      "functions": [
+        {
+          "line": 8,
+          "column": 8,
+          "function": "Function 'zhajinhuaCardRegions'",
+          "complexity": 3
+        },
+        {
+          "line": 10,
+          "column": 69,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 11,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 12,
+          "column": 33,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 17,
+          "column": 35,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 24,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 24,
+          "column": 56,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 8,
+          "function": "Function 'currentZhajinhuaCards'",
+          "complexity": 1
+        },
+        {
+          "line": 28,
+          "column": 64,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 34,
+          "column": 8,
+          "function": "Function 'zhajinhuaSeeButton'",
+          "complexity": 2
+        },
+        {
+          "line": 36,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 41,
+          "column": 1,
+          "function": "Function 'seeButton'",
+          "complexity": 2
+        },
+        {
+          "line": 45,
+          "column": 1,
+          "function": "Function 'eligibleSeeButton'",
+          "complexity": 3
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-image-fixture.mjs",
+      "functions": [
+        {
+          "line": 4,
+          "column": 8,
+          "function": "Function 'solidImage'",
+          "complexity": 2
+        },
+        {
+          "line": 10,
+          "column": 8,
+          "function": "Function 'paintRectangle'",
+          "complexity": 3
+        },
+        {
+          "line": 16,
+          "column": 8,
+          "function": "Function 'mapRgb'",
+          "complexity": 3
+        },
+        {
+          "line": 22,
+          "column": 8,
+          "function": "Async function 'withSmokeMode'",
+          "complexity": 2
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-operation-region.test.mjs",
+      "functions": [
+        {
+          "line": 10,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 15,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 19,
+          "column": 46,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 22,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 23,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 26,
+          "column": 30,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 56,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 37,
+          "column": 56,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 42,
+          "column": 68,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 47,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 48,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 49,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 51,
+          "column": 62,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 53,
+          "column": 63,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 56,
+          "column": 60,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 60,
+          "column": 62,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 61,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 68,
+          "column": 65,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 76,
+          "column": 62,
+          "function": "Async arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 79,
+          "column": 31,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 82,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 85,
+          "column": 40,
+          "function": "Async method 'nodes'",
+          "complexity": 3
+        },
+        {
+          "line": 89,
+          "column": 8,
+          "function": "Async method 'nativeScreenshot'",
+          "complexity": 2
+        },
+        {
+          "line": 93,
+          "column": 76,
+          "function": "Async method 'attach'",
+          "complexity": 1
+        },
+        {
+          "line": 94,
+          "column": 35,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 95,
+          "column": 108,
+          "function": "Async arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 106,
+          "column": 32,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 121,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 127,
+          "column": 67,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 132,
+          "column": 66,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 133,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 136,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 138,
+          "column": 29,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 139,
+          "column": 29,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 140,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 141,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 142,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 144,
+          "column": 60,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 147,
+          "column": 85,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 160,
+          "column": 50,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 164,
+          "column": 89,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 169,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 178,
+          "column": 47,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 182,
+          "column": 41,
+          "function": "Async arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 188,
+          "column": 81,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 195,
+          "column": 1,
+          "function": "Function 'controlScale'",
+          "complexity": 3
+        },
+        {
+          "line": 199,
+          "column": 1,
+          "function": "Function 'composeControls'",
+          "complexity": 2
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-operation-region.ts",
+      "functions": [
+        {
+          "line": 15,
+          "column": 8,
+          "function": "Function 'visibleZhajinhuaOperationControls'",
+          "complexity": 1
+        },
+        {
+          "line": 16,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 17,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 20,
+          "column": 1,
+          "function": "Function 'mountedControls'",
+          "complexity": 2
+        },
+        {
+          "line": 21,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 24,
+          "column": 54,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 28,
+          "column": 8,
+          "function": "Function 'zhajinhuaOperationControls'",
+          "complexity": 1
+        },
+        {
+          "line": 37,
+          "column": 47,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 38,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 44,
+          "column": 1,
+          "function": "Function 'operationControl'",
+          "complexity": 2
+        },
+        {
+          "line": 48,
+          "column": 1,
+          "function": "Function 'cancelParent'",
+          "complexity": 2
+        },
+        {
+          "line": 50,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 51,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 52,
+          "column": 16,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 55,
+          "column": 1,
+          "function": "Function 'fullScreenParent'",
+          "complexity": 3
+        },
+        {
+          "line": 59,
+          "column": 1,
+          "function": "Function 'sameSize'",
+          "complexity": 2
+        },
+        {
+          "line": 63,
+          "column": 1,
+          "function": "Function 'mountedEndpointControls'",
+          "complexity": 2
+        },
+        {
+          "line": 65,
+          "column": 29,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 68,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 71,
+          "column": 1,
+          "function": "Function 'endpointControls'",
+          "complexity": 3
+        },
+        {
+          "line": 79,
+          "column": 8,
+          "function": "Function 'zhajinhuaChallengeCancel'",
+          "complexity": 2
+        },
+        {
+          "line": 81,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 89,
+          "column": 8,
+          "function": "Async function 'readyZhajinhuaChallengeCancel'",
+          "complexity": 3
+        },
+        {
+          "line": 94,
+          "column": 1,
+          "function": "Async function 'observeChallengeCancel'",
+          "complexity": 3
+        },
+        {
+          "line": 103,
+          "column": 1,
+          "function": "Async function 'retryChallengeObservation'",
+          "complexity": 2
+        },
+        {
+          "line": 111,
+          "column": 8,
+          "function": "Function 'zhajinhuaOperationRegion'",
+          "complexity": 2
+        },
+        {
+          "line": 114,
+          "column": 69,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 115,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 123,
+          "column": 8,
+          "function": "Function 'zhajinhuaOperationClockMasks'",
+          "complexity": 1
+        },
+        {
+          "line": 125,
+          "column": 61,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 127,
+          "column": 31,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 132,
+          "column": 1,
+          "function": "Function 'challengeTargets'",
+          "complexity": 3
+        },
+        {
+          "line": 134,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 134,
+          "column": 76,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 135,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 140,
+          "column": 1,
+          "function": "Function 'assertOperationStart'",
+          "complexity": 3
+        },
+        {
+          "line": 143,
+          "column": 23,
+          "function": "Arrow function",
+          "complexity": 2
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-region-geometry.ts",
+      "functions": [
+        {
+          "line": 6,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 7,
+          "column": 82,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 9,
+          "column": 73,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 11,
+          "column": 70,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 13,
+          "column": 72,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 14,
+          "column": 64,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 15,
+          "column": 63,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 17,
+          "column": 57,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 18,
+          "column": 68,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 23,
+          "column": 8,
+          "function": "Function 'paddedRegion'",
+          "complexity": 1
+        },
+        {
+          "line": 24,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 25,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 26,
+          "column": 65,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 67,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 67,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 73,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 47,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 36,
+          "column": 8,
+          "function": "Function 'horizontallySpread'",
+          "complexity": 2
+        },
+        {
+          "line": 37,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 39,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown-endpoint.test.mjs",
+      "functions": [
+        {
+          "line": 13,
+          "column": 22,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 14,
+          "column": 25,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 14,
+          "column": 53,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 14,
+          "column": 75,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 16,
+          "column": 50,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 18,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 19,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 24,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 26,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 28,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 29,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 30,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 30,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 31,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 33,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 34,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 35,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 36,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 37,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 7,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 39,
+          "column": 33,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 43,
+          "column": 22,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 45,
+          "column": 20,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown-endpoint.ts",
+      "functions": [
+        {
+          "line": 6,
+          "column": 49,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 10,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 10,
+          "column": 67,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 11,
+          "column": 63,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 13,
+          "column": 1,
+          "function": "Function 'showdownPlayer'",
+          "complexity": 1
+        },
+        {
+          "line": 15,
+          "column": 32,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 16,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 19,
+          "column": 1,
+          "function": "Function 'showdownWrappers'",
+          "complexity": 2
+        },
+        {
+          "line": 20,
+          "column": 41,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 25,
+          "column": 1,
+          "function": "Function 'cardBounds'",
+          "complexity": 3
+        },
+        {
+          "line": 27,
+          "column": 14,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 27,
+          "column": 51,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 33,
+          "column": 83,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 1,
+          "function": "Function 'cardTypeText'",
+          "complexity": 3
+        },
+        {
+          "line": 42,
+          "column": 1,
+          "function": "Function 'requireCardType'",
+          "complexity": 1
+        },
+        {
+          "line": 44,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 45,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 49,
+          "column": 1,
+          "function": "Function 'crownImage'",
+          "complexity": 2
+        },
+        {
+          "line": 50,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 54,
+          "column": 1,
+          "function": "Function 'requireCrown'",
+          "complexity": 1
+        },
+        {
+          "line": 55,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 56,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 60,
+          "column": 1,
+          "function": "Function 'requireHiddenWinner'",
+          "complexity": 3
+        },
+        {
+          "line": 61,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 65,
+          "column": 1,
+          "function": "Function 'verifyPlayer'",
+          "complexity": 2
+        },
+        {
+          "line": 67,
+          "column": 46,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 70,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 70,
+          "column": 93,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 76,
+          "column": 1,
+          "function": "Function 'requireSpread'",
+          "complexity": 2
+        },
+        {
+          "line": 80,
+          "column": 1,
+          "function": "Function 'verifyVisibility'",
+          "complexity": 3
+        },
+        {
+          "line": 82,
+          "column": 58,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 91,
+          "column": 8,
+          "function": "Function 'requireZhajinhuaShowdownPlayers'",
+          "complexity": 3
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown.test.mjs",
+      "functions": [
+        {
+          "line": 20,
+          "column": 80,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 26,
+          "column": 51,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 30,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 32,
+          "column": 77,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 33,
+          "column": 79,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 34,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 35,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 37,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 40,
+          "column": 46,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 42,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 44,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 50,
+          "column": 10,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 51,
+          "column": 10,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 52,
+          "column": 10,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 55,
+          "column": 1,
+          "function": "Function 'drawCard'",
+          "complexity": 3
+        },
+        {
+          "line": 58,
+          "column": 38,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 61,
+          "column": 1,
+          "function": "Function 'drawCards'",
+          "complexity": 3
+        },
+        {
+          "line": 68,
+          "column": 66,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 69,
+          "column": 50,
+          "function": "Async arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 83,
+          "column": 35,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 85,
+          "column": 62,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 90,
+          "column": 99,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 98,
+          "column": 49,
+          "function": "Async arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 99,
+          "column": 19,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 109,
+          "column": 35,
+          "function": "Async method 'nodes'",
+          "complexity": 2
+        },
+        {
+          "line": 110,
+          "column": 5,
+          "function": "Async method 'nativeScreenshot'",
+          "complexity": 2
+        },
+        {
+          "line": 113,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 114,
+          "column": 8,
+          "function": "Async method 'attach'",
+          "complexity": 1
+        },
+        {
+          "line": 115,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 116,
+          "column": 43,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 118,
+          "column": 57,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 120,
+          "column": 36,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "ios/full/zhajinhua-showdown.ts",
+      "functions": [
+        {
+          "line": 10,
+          "column": 34,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 11,
+          "column": 1,
+          "function": "Function 'one'",
+          "complexity": 2
+        },
+        {
+          "line": 23,
+          "column": 8,
+          "function": "Function 'zhajinhuaShowdownLayout'",
+          "complexity": 3
+        },
+        {
+          "line": 25,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 28,
+          "column": 40,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 29,
+          "column": 37,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 31,
+          "column": 58,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 33,
+          "column": 55,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 37,
+          "column": 53,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 43,
+          "column": 1,
+          "function": "Function 'visibleWrappers'",
+          "complexity": 3
+        },
+        {
+          "line": 45,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 46,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 46,
+          "column": 54,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 51,
+          "column": 1,
+          "function": "Function 'wrapperCard'",
+          "complexity": 2
+        },
+        {
+          "line": 53,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 54,
+          "column": 44,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 55,
+          "column": 28,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 56,
+          "column": 56,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 61,
+          "column": 1,
+          "function": "Function 'assertCardCover'",
+          "complexity": 3
+        },
+        {
+          "line": 63,
+          "column": 67,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 67,
+          "column": 1,
+          "function": "Function 'cardLabel'",
+          "complexity": 2
+        },
+        {
+          "line": 68,
+          "column": 64,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 69,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 70,
+          "column": 18,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 73,
+          "column": 1,
+          "function": "Function 'assertLayoutBounds'",
+          "complexity": 2
+        },
+        {
+          "line": 74,
+          "column": 21,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 78,
+          "column": 1,
+          "function": "Function 'integerBounds'",
+          "complexity": 1
+        },
+        {
+          "line": 83,
+          "column": 8,
+          "function": "Function 'compareShowdownStart'",
+          "complexity": 3
+        },
+        {
+          "line": 95,
+          "column": 60,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 96,
+          "column": 65,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 97,
+          "column": 82,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 99,
+          "column": 1,
+          "function": "Function 'compareRow'",
+          "complexity": 3
+        },
+        {
+          "line": 106,
+          "column": 62,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 110,
+          "column": 1,
+          "function": "Function 'rgbDifference'",
+          "complexity": 2
+        },
+        {
+          "line": 116,
+          "column": 1,
+          "function": "Function 'patchDistance'",
+          "complexity": 3
+        },
+        {
+          "line": 126,
+          "column": 1,
+          "function": "Async function 'decodeFrames'",
+          "complexity": 2
+        },
+        {
+          "line": 135,
+          "column": 1,
+          "function": "Function 'assertMotionSize'",
+          "complexity": 2
+        },
+        {
+          "line": 136,
+          "column": 25,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 139,
+          "column": 1,
+          "function": "Function 'cardPatches'",
+          "complexity": 1
+        },
+        {
+          "line": 140,
+          "column": 32,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 145,
+          "column": 1,
+          "function": "Function 'channelContrast'",
+          "complexity": 3
+        },
+        {
+          "line": 154,
+          "column": 1,
+          "function": "Function 'requireContrast'",
+          "complexity": 2
+        },
+        {
+          "line": 155,
+          "column": 54,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 159,
+          "column": 1,
+          "function": "Function 'requirePatchEndpoints'",
+          "complexity": 3
+        },
+        {
+          "line": 165,
+          "column": 1,
+          "function": "Function 'bestPatch'",
+          "complexity": 3
+        },
+        {
+          "line": 175,
+          "column": 115,
+          "function": "Arrow function",
+          "complexity": 3
+        },
+        {
+          "line": 178,
+          "column": 1,
+          "function": "Async function 'cardCandidates'",
+          "complexity": 3
+        },
+        {
+          "line": 194,
+          "column": 8,
+          "function": "Async function 'showdownHorizontalEvidence'",
+          "complexity": 3
+        },
+        {
+          "line": 207,
+          "column": 39,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 207,
+          "column": 59,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 207,
+          "column": 93,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 211,
+          "column": 1,
+          "function": "Function 'assertTimerSize'",
+          "complexity": 2
+        },
+        {
+          "line": 215,
+          "column": 1,
+          "function": "Function 'assertStartSize'",
+          "complexity": 2
+        },
+        {
+          "line": 216,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    },
+    {
+      "file": "quality/zhajinhua-complexity.test.mjs",
+      "functions": [
+        {
+          "line": 12,
+          "column": 24,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 12,
+          "column": 64,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 13,
+          "column": 27,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 15,
+          "column": 1,
+          "function": "Async function 'lint'",
+          "complexity": 1
+        },
+        {
+          "line": 29,
+          "column": 71,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 38,
+          "column": 63,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 54,
+          "column": 99,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 66,
+          "column": 102,
+          "function": "Async arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 72,
+          "column": 1,
+          "function": "Function 'workspace'",
+          "complexity": 2
+        },
+        {
+          "line": 74,
+          "column": 14,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 82,
+          "column": 26,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 85,
+          "column": 83,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 100,
+          "column": 57,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 107,
+          "column": 66,
+          "function": "Arrow function",
+          "complexity": 1
+        },
+        {
+          "line": 113,
+          "column": 71,
+          "function": "Arrow function",
+          "complexity": 2
+        },
+        {
+          "line": 121,
+          "column": 86,
+          "function": "Arrow function",
+          "complexity": 1
+        }
+      ]
+    }
+  ],
+  "issueOriginalMeasurementCommit": "b748cb566ae8ebf6e2c9d3c49dedbf882d5266f1",
+  "note": "Before values were remeasured from the current local master sourceCommit, not copied from the issue historical measurement. Helpers and fixtures use limit 3 regardless of their filename suffix.",
+  "validation": [
+    {
+      "command": "npm run check:zhajinhua",
+      "result": "PASS: 18 scoped files; 32 gate tests, including 3/4 and 6/7 boundaries, nested callbacks, constructors, accessors, defaults, optional chains, short circuits, suppression comments, parse failures, empty scope and missing dependencies."
+    },
+    {
+      "command": "node --import tsx --test ios/full/zhajinhua-{accurate-bet,bet-region,card-region,operation-region,showdown-endpoint,showdown}.test.mjs ios/full/visual-comparison-policy.test.mjs",
+      "result": "PASS: 30 tests, preserving recorded fixture hashes, original pixels, motion thresholds, single actions, independent endpoint reads, driver errors and cleanup."
+    },
+    {
+      "command": "node --test --test-name-pattern='ESLint|migration inventory' quality/static.test.mjs",
+      "result": "PASS: 3 related existing static checks."
+    },
+    {
+      "command": "/tmp/clrn-issue46-precommit-venv/bin/python scripts/test-pre-commit.py PreCommitTests.test_all_files_and_initial_commit_pass_once PreCommitTests.test_trigger_scopes PreCommitTests.test_zhajinhua_complexity_blocks_and_fixed_source_commits",
+      "result": "PASS: 3 tests using real commits in temporary repositories; complexity 4 blocks commits with unchanged HEAD/index/files, fixed complexity 3 commits successfully. pre-commit 4.3.0 installed in an isolated temporary Python 3.12 venv."
+    },
+    {
+      "command": "node_modules/.bin/tsc --noEmit",
+      "result": "PASS"
+    },
+    {
+      "command": "IOS_GROUP=zhajinhua IOS_LOCALE=en node_modules/.bin/playwright test --config ios/full/playwright.config.ts --list --grep signed_in_zhajinhua_game_table",
+      "result": "PASS: 1 representative scenario collected; collection does not execute the native application."
+    },
+    {
+      "command": "node_modules/.bin/depcruise --config .dependency-cruiser.cjs --include-only '^ios/full/zhajinhua-(accurate-bet|bet-region|card-region|operation-region|showdown|region-geometry|image-fixture)|^scripts/(check-zhajinhua-complexity|zhajinhua-complexity-scope)|^quality/zhajinhua-complexity|^eslint.config' --output-type err-long ios/full/zhajinhua-accurate-bet.ts ios/full/zhajinhua-bet-region.ts ios/full/zhajinhua-card-region.ts ios/full/zhajinhua-operation-region.ts ios/full/zhajinhua-showdown-endpoint.ts ios/full/zhajinhua-showdown.ts ios/full/zhajinhua-region-geometry.ts ios/full/zhajinhua-image-fixture.mjs scripts/check-zhajinhua-complexity.mjs quality/zhajinhua-complexity.test.mjs",
+      "result": "PASS: 11 scoped modules, 9 dependencies, no violations."
+    },
+    {
+      "command": "collectDuplicates() and compareInventory() from scripts/quality-check.mjs",
+      "result": "PASS: no clones involving modified scoped files; after deleting the two resolved scoped clone entries the existing duplicate inventory has no additions or stale entries. Removed 9 resolved scoped ESLint entries; all 11 removals satisfy assertShrinking()."
+    },
+    {
+      "command": "git diff --check",
+      "result": "PASS"
+    }
+  ],
+  "nativeExecution": {
+    "executed": false,
+    "environmentCheck": "xcrun simctl list devices available",
+    "reason": "No available iOS Simulator devices. The fixed build representative scenario was collected and recorded native fixture unit checks passed; no new native/device run is claimed.",
+    "pinnedBuild": {
+      "environment": "staging",
+      "sha": "c3ff78c66c7aedd586a66c9b09e8849497565365",
+      "release_tag": "ios-staging-36-1-c3ff78c66c7a"
+    }
+  },
+  "fullTestSuiteExecuted": false
+}
