@@ -36,30 +36,43 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
     const { bounds } = await gameReady(device, resource);
     return () => device.input.tap({ x: Number(String(Math.round(bounds.x + bounds.width / 2))), y: Number(String(Math.round(bounds.y + bounds.height / 2))) });
   };
+  const applicationCases = [
+    { mode: 'pending', rows: 2, verify: async () => expect((await gameNodes(device))
+      .filter(node => node.res === 'buy-in-approved-applications-tab')).toHaveLength(2) },
+    { mode: 'resolved', rows: 3, verify: async () => expect((await gameNodes(device))
+      .filter(node => node.res === 'buy-in-application-status')).toHaveLength(3) },
+    { mode: 'more', rows: 2, verify: async () => expect((await gameReady(device, 'buy-in-application-list-more')).enabled).toBe(true) },
+  ] as const;
+  async function captureApplications() {
+    for (const { mode, rows, verify } of applicationCases) {
+      await proxy.command('texas/ui', { applications: mode });
+      await gameTap(device, 'buy-in-application-button');
+      await expect.poll(async () => {
+        // The filtered XCTest predicate can omit a visible row. Read the full
+        // native tree before accepting the row count for the static screenshot.
+        const nodes = await gameNodes(device);
+        expect(gameConnectionState(nodes).connecting).toBe(false);
+        return nodes.filter(node => node.res === 'buy-in-application-nickname').length;
+      }, { timeout: 90_000, intervals: [250] }).toBe(rows);
+      await verify();
+      await capture(`applications_${mode}`, [tableBackMasks[0], ...ownTurnMasks]);
+      await closeGameMask(device, 'buy-in-application-list');
+      // The list can become inaccessible during zoomOut before its touch mask
+      // unmounts. Require the actual blocker to disappear before the next tap.
+      await stableNativeObservation(() => device.transientMarker('screen-mask-touch-to-close'), (before, current) => {
+        expect(before, '申请面板关闭后触摸遮罩必须释放').toBeNull();
+        expect(current, '申请面板关闭后触摸遮罩必须持续消失').toBeNull();
+      }, { timeout: 45_000, interval: 250 });
+    }
+  }
+  async function triggerAlert(name: string, resource: string) {
+    if (animationInfo) await captureNativeTransition(device, name, animationInfo,
+      alertRegion, await press(resource), alertMasks, [], 0, 'videoFrames');
+    else await gameTap(device, resource);
+  }
   await restoreTexas(context);
   await device.prepareTransientCapture();
-  for (const mode of ['pending', 'resolved', 'more'] as const) {
-    await proxy.command('texas/ui', { applications: mode });
-    await gameTap(device, 'buy-in-application-button');
-    await expect.poll(async () => {
-      // The filtered XCTest predicate can omit a visible row. Read the full
-      // native tree before accepting the row count for the static screenshot.
-      const nodes = await gameNodes(device);
-      expect(gameConnectionState(nodes).connecting).toBe(false);
-      return nodes.filter(node => node.res === 'buy-in-application-nickname').length;
-    }, { timeout: 90_000, intervals: [250] }).toBe(mode === 'resolved' ? 3 : 2);
-    if (mode === 'pending') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-approved-applications-tab')).toHaveLength(2);
-    if (mode === 'resolved') expect((await gameNodes(device)).filter(node => node.res === 'buy-in-application-status')).toHaveLength(3);
-    if (mode === 'more') expect((await gameReady(device, 'buy-in-application-list-more')).enabled).toBe(true);
-    await capture(`applications_${mode}`, [tableBackMasks[0], ...ownTurnMasks]);
-    await closeGameMask(device, 'buy-in-application-list');
-    // The list can become inaccessible during zoomOut before its touch mask
-    // unmounts. Require the actual blocker to disappear before the next tap.
-    await stableNativeObservation(() => device.transientMarker('screen-mask-touch-to-close'), (before, current) => {
-      expect(before, '申请面板关闭后触摸遮罩必须释放').toBeNull();
-      expect(current, '申请面板关闭后触摸遮罩必须持续消失').toBeNull();
-    }, { timeout: 45_000, interval: 250 });
-  }
+  await captureApplications();
   await gameConnected(device, 2_000);
   const attachSettingsTree = async (phase: 'before' | 'after') => {
     if (!animationInfo) return;
@@ -82,9 +95,7 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
   await closeGameMask(device, 'in-game-chat-content-container', 'in-game-chat-mask');
   await proxy.command('texas/ui', { rpcError: 'retry' });
   await gameConnected(device);
-  if (animationInfo) await captureNativeTransition(device, 'texas-alert-retry-enter', animationInfo,
-    alertRegion, await press('texas-holdem-operation-button-call'), alertMasks, [], 0, 'videoFrames');
-  else await gameTap(device, 'texas-holdem-operation-button-call');
+  await triggerAlert('texas-alert-retry-enter', 'texas-holdem-operation-button-call');
   expect((await gameReady(device, 'common-alert-message')).text).toContain('Please retry');
   // 操作错误弹窗没有 buttonId；与 Web 一样按真实按钮文字校验和操作。
   await expect.poll(async () => (await gameNodes(device)).some(node => /^(Retry|重试|重試)$/.test(node.text || '')),
@@ -99,22 +110,16 @@ export async function texasPanelVariants(context: TexasContext): Promise<void> {
   await restoreTexas(context, {}, 'flop', true);
   await proxy.command('texas/ui', { rpcError: 'balance' });
   await texasEvents(context, [{ event: 'settlement', players: [{ player_id: self, net: 180, prize: 180, stack: 1180 }] }]);
-  if (animationInfo) await captureNativeTransition(device, 'texas-alert-balance-enter', animationInfo,
-    alertRegion, await press('texas-holdem-show-remain-community-card-button'), alertMasks, [], 0, 'videoFrames');
-  else await gameTap(device, 'texas-holdem-show-remain-community-card-button');
+  await triggerAlert('texas-alert-balance-enter', 'texas-holdem-show-remain-community-card-button');
   await gameReady(device, 'common-alert-button-go_to_mall');
   await capture('alert_insufficient_balance');
-  if (animationInfo) await captureNativeTransition(device, 'texas-alert-balance-exit', animationInfo,
-    alertRegion, await press('common-alert-button-cancel'), alertMasks, [], 0, 'videoFrames');
-  else await gameTap(device, 'common-alert-button-cancel');
+  await triggerAlert('texas-alert-balance-exit', 'common-alert-button-cancel');
   await proxy.command('texas/ui', { rpcError: 'auth' });
   await texasEvents(context, [{ event: 'new_game', game_id: 'visual-fixed-game', settings: { small_blind: 1, big_blind: 2, ante: 0 } }]);
   await restoreTexas(context);
   await gameGone(device, 'texas-holdem-show-hand-card-button');
   await gameGone(device, 'texas-holdem-show-remain-community-card-button');
-  if (animationInfo) await captureNativeTransition(device, 'texas-alert-auth-enter', animationInfo,
-    alertRegion, await press('texas-holdem-operation-button-call'), alertMasks, [], 0, 'videoFrames');
-  else await gameTap(device, 'texas-holdem-operation-button-call');
+  await triggerAlert('texas-alert-auth-enter', 'texas-holdem-operation-button-call');
   await gameReady(device, 'common-alert-button-quit');
   expect((await gameReady(device, 'common-alert-title')).text).toMatch(/^(身份验证失败|身份驗證失敗|Authentication failed)$/);
   await capture('alert_authentication_failed');

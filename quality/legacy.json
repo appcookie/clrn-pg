@@ -2270,76 +2270,6 @@
   },
   {
     "tool": "eslint",
-    "file": "ios/full/texas-action-region.test.mjs",
-    "line": 66,
-    "column": 42,
-    "rule": "complexity",
-    "message": "Arrow function has a complexity of 12. Maximum allowed is 10.",
-    "anchor": "730dfe4e09eb8ec6cc89b6ea9150b51a5669e2eb1a3148d2709e4c0c39c7a7ce",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-action-start.ts",
-    "line": 16,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Function 'texasActionStart' has a complexity of 14. Maximum allowed is 10.",
-    "anchor": "a48ffdf1169d25b6d47ce3b0a8fb24bde1b51ac28d74929877e174ca790c3d3a",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-action-start.ts",
-    "line": 44,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Function 'compareTexasActionStart' has a complexity of 16. Maximum allowed is 10.",
-    "anchor": "5c96d9e66c05cd75de9fd87de12fec74247551bfe041fc862989409b2a522470",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-action-start.ts",
-    "line": 57,
-    "column": 7,
-    "rule": "max-depth",
-    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
-    "anchor": "e674b24d02348c0c444318c89d744d50b668ac9fc85ecd7e54536a3329cf3d68",
-    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-action-start.ts",
-    "line": 58,
-    "column": 7,
-    "rule": "max-depth",
-    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
-    "anchor": "c8db06e4c40f09bb779c6ca110efa8f3db2bafc0b47f80f8db2867336969cf11",
-    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-card-region.ts",
-    "line": 31,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Function 'nativeOwnCardRegion' has a complexity of 17. Maximum allowed is 10.",
-    "anchor": "232fabfed12b542033eaaa17f60fad399526a4e45d72d2d294a4c496adfd41ad",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-card-region.ts",
-    "line": 7,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Function 'nativeCommunityCardRegion' has a complexity of 15. Maximum allowed is 10.",
-    "anchor": "3e9a4cd2609a4e960b5555a06f86d27b315e8b9e3f4f7708c1d13a4dd582b04e",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
     "file": "ios/full/texas-flows.ts",
     "line": 29,
     "column": 8,
@@ -2356,46 +2286,6 @@
     "rule": "complexity",
     "message": "Async function 'texasGameplay' has a complexity of 19. Maximum allowed is 10.",
     "anchor": "3866a858cf0439825b9c025ed0ce37b5b75ffef5d0b29bab70a912382967bbea",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-panel-variants.ts",
-    "line": 16,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'texasPanelVariants' has a complexity of 11. Maximum allowed is 10.",
-    "anchor": "eb1f16c094a8c34285c85939e8e7a491bf0c697cb8f39086f5c14ed78be5d384",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-panels.ts",
-    "line": 22,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Async function 'texasPanels' has a complexity of 14. Maximum allowed is 10.",
-    "anchor": "84529f913bb0dfbc961207018017b7814d5018d7902651e09b5b9d59e50255f8",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-raise-masks.ts",
-    "line": 20,
-    "column": 1,
-    "rule": "complexity",
-    "message": "Function 'thumbImage' has a complexity of 40. Maximum allowed is 10.",
-    "anchor": "f2b25f93752e4c5685edb585b18cc9f5c07532729a509a7ae392bf787495d7a0",
-    "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/texas-raise-masks.ts",
-    "line": 65,
-    "column": 8,
-    "rule": "complexity",
-    "message": "Function 'texasRaiseClockMasks' has a complexity of 20. Maximum allowed is 10.",
-    "anchor": "cf3adc738a0c9725ce9418989a18e3ae8850ce801fc99f494b14e07d758790ca",
     "reason": "基线已有复杂函数；保留现有断言及业务流程，待对应功能迁移时消除。"
   },
   {

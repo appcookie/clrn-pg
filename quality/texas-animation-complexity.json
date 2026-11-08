@@ -1,0 +1,6352 @@
+{
+  "algorithm": "ESLint classic (defaults, optional chains and short circuits included)",
+  "beforeRef": "6e805337e8ce7809290e9e00fc2bb5c99dce17a3",
+  "before": [
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 10,
+      "column": 58,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 16,
+      "column": 24,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 18,
+      "column": 21,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 19,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 22,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 23,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 24,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 25,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 33,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 40,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 41,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 44,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 45,
+      "column": 78,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 47,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 48,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 50,
+      "column": 54,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 54,
+      "column": 87,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 65,
+      "column": 58,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 66,
+      "column": 42,
+      "function": "Arrow function",
+      "complexity": 12,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 81,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 83,
+      "column": 37,
+      "function": "Async method 'nodes'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 84,
+      "column": 7,
+      "function": "Async method 'nativeScreenshot'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 85,
+      "column": 70,
+      "function": "Async method 'attach'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 86,
+      "column": 29,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 87,
+      "column": 43,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 6,
+      "column": 74,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 7,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 10,
+      "column": 65,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 11,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 12,
+      "column": 61,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 14,
+      "column": 1,
+      "function": "Function 'unique'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 15,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 19,
+      "column": 1,
+      "function": "Function 'union'",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 20,
+      "column": 33,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 21,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 23,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 24,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 25,
+      "column": 73,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 26,
+      "column": 62,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 28,
+      "column": 8,
+      "function": "Function 'texasOperationControls'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 29,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 31,
+      "column": 8,
+      "function": "Function 'texasOperationRegion'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 32,
+      "column": 24,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 34,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 35,
+      "column": 23,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 41,
+      "column": 8,
+      "function": "Function 'texasShortcutMotionBounds'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 43,
+      "column": 26,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 44,
+      "column": 16,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 50,
+      "column": 8,
+      "function": "Function 'texasPlayerAction'",
+      "complexity": 6,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 53,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 56,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 59,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 63,
+      "column": 8,
+      "function": "Function 'texasPlayerActionRegion'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 69,
+      "column": 8,
+      "function": "Function 'texasPlayerActionMotionBounds'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 75,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 82,
+      "column": 8,
+      "function": "Function 'texasActionClockMasks'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 83,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 5,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 85,
+      "column": 64,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 86,
+      "column": 30,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 11,
+      "column": 90,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 16,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 19,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 25,
+      "column": 109,
+      "function": "Arrow function",
+      "complexity": 5,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 28,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 41,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 42,
+      "column": 80,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 43,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 44,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 45,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 46,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 46,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 47,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 48,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 49,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 50,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 51,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 52,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 53,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 54,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 55,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 58,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 5,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 75,
+      "column": 51,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 78,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 84,
+      "column": 75,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 86,
+      "column": 31,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 89,
+      "column": 37,
+      "function": "Async method 'nodes'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 90,
+      "column": 7,
+      "function": "Async method 'nativeScreenshot'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 91,
+      "column": 70,
+      "function": "Async method 'attach'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 92,
+      "column": 27,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 93,
+      "column": 43,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 95,
+      "column": 53,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 97,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 9,
+      "column": 63,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 16,
+      "column": 8,
+      "function": "Function 'texasActionStart'",
+      "complexity": 14,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 20,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 23,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 26,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 44,
+      "column": 8,
+      "function": "Function 'compareTexasActionStart'",
+      "complexity": 16,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 7,
+      "column": 16,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 13,
+      "column": 58,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 16,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 21,
+      "column": 30,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 22,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 23,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 24,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 26,
+      "column": 47,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 30,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 31,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 32,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 33,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 35,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 7,
+      "column": 8,
+      "function": "Function 'nativeCommunityCardRegion'",
+      "complexity": 15,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 9,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 9,
+      "column": 81,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 31,
+      "column": 8,
+      "function": "Function 'nativeOwnCardRegion'",
+      "complexity": 17,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 33,
+      "column": 34,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 49,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 51,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 56,
+      "column": 85,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 11,
+      "column": 8,
+      "function": "Async function 'texasControlVariants'",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 27,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 37,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 38,
+      "column": 54,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 40,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 44,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 44,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 67,
+      "column": 103,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 80,
+      "column": 62,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 28,
+      "column": 8,
+      "function": "Async function 'texasHall'",
+      "complexity": 10,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 39,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 42,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 43,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 45,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 48,
+      "column": 56,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 63,
+      "column": 10,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 64,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 87,
+      "column": 107,
+      "function": "Async arrow function",
+      "complexity": 9,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 102,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 103,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 105,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 121,
+      "column": 36,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 133,
+      "column": 18,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 141,
+      "column": 68,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 142,
+      "column": 65,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 144,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 149,
+      "column": 59,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 160,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 169,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 175,
+      "column": 53,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 178,
+      "column": 14,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 183,
+      "column": 34,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 192,
+      "column": 93,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 195,
+      "column": 14,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 199,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 201,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 202,
+      "column": 18,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 211,
+      "column": 45,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 228,
+      "column": 8,
+      "function": "Async function 'texasHallVariants'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 234,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 242,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 242,
+      "column": 71,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 244,
+      "column": 57,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 276,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 277,
+      "column": 16,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 16,
+      "column": 8,
+      "function": "Async function 'texasPanelVariants'",
+      "complexity": 11,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 34,
+      "column": 42,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 37,
+      "column": 15,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 44,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 49,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 51,
+      "column": 74,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 52,
+      "column": 75,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 58,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 58,
+      "column": 113,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 64,
+      "column": 64,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 66,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 68,
+      "column": 18,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 90,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 90,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 97,
+      "column": 10,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 22,
+      "column": 8,
+      "function": "Async function 'texasPanels'",
+      "complexity": 14,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 54,
+      "column": 67,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 64,
+      "column": 80,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 79,
+      "column": 8,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 80,
+      "column": 26,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 94,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 94,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 99,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 133,
+      "column": 74,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 135,
+      "column": 14,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 149,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 149,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 151,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 153,
+      "column": 61,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 159,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 162,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 6,
+      "column": 95,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 8,
+      "column": 1,
+      "function": "Function 'fixture'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 24,
+      "column": 31,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 24,
+      "column": 47,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 25,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 27,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 31,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 43,
+      "column": 45,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 44,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 44,
+      "column": 42,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 45,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 45,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 46,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 46,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 47,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 47,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 48,
+      "column": 84,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 50,
+      "column": 55,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 52,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 59,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 60,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 60,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 61,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 61,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 62,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 63,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 64,
+      "column": 84,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 68,
+      "column": 1,
+      "function": "Async function 'recordedFixture'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 72,
+      "column": 73,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 74,
+      "column": 79,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 76,
+      "column": 78,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 84,
+      "column": 79,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 90,
+      "column": 56,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 93,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 93,
+      "column": 42,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 94,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 94,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 94,
+      "column": 76,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 95,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 95,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 96,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 96,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 97,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 98,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 99,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 100,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 101,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 101,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 102,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 103,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 103,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 104,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 110,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 114,
+      "column": 52,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 124,
+      "column": 78,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 126,
+      "column": 79,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 131,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 135,
+      "column": 50,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 140,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 147,
+      "column": 45,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 8,
+      "column": 61,
+      "function": "Arrow function",
+      "complexity": 6,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 10,
+      "column": 1,
+      "function": "Function 'descendants'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 12,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 18,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 20,
+      "column": 1,
+      "function": "Function 'thumbImage'",
+      "complexity": 40,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 22,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 31,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 32,
+      "column": 71,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 33,
+      "column": 67,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 65,
+      "column": 8,
+      "function": "Function 'texasRaiseClockMasks'",
+      "complexity": 20,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 67,
+      "column": 34,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 68,
+      "column": 33,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 80,
+      "column": 33,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 84,
+      "column": 54,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 88,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 10,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 92,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 93,
+      "column": 26,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 94,
+      "column": 47,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 96,
+      "column": 68,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 106,
+      "column": 8,
+      "function": "Function 'texasRaiseValueMask'",
+      "complexity": 6,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 109,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 110,
+      "column": 18,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 117,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 118,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 4,
+      "column": 60,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 12,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 16,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 21,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 8,
+      "column": 8,
+      "function": "Function 'texasRaiseControls'",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 9,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 12,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 18,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 9,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 19,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 32,
+      "column": 8,
+      "function": "Function 'texasRaiseRegion'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 34,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 35,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 36,
+      "column": 67,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 37,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 10,
+      "column": 8,
+      "function": "Async function 'texasRecordVariants'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 21,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 21,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 27,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 36,
+      "column": 8,
+      "function": "Async function 'texasOptionalPreGame'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 43,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 43,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 6,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 7,
+      "column": 53,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 16,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 20,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 21,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 22,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 23,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 27,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 10,
+      "column": 8,
+      "function": "Function 'texasShowdownRegion'",
+      "complexity": 6,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 12,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 13,
+      "column": 64,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 18,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 20,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 22,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 24,
+      "column": 59,
+      "function": "Arrow function",
+      "complexity": 5,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 28,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 28,
+      "column": 92,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 30,
+      "column": 21,
+      "function": "Arrow function",
+      "complexity": 6,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 36,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 36,
+      "column": 89,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 37,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 38,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 39,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 40,
+      "column": 75,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 41,
+      "column": 64,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 48,
+      "column": 8,
+      "function": "Function 'texasEffectEndpointMasks'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 51,
+      "column": 101,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 54,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 4,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 55,
+      "column": 73,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 10,
+      "column": 8,
+      "function": "Async function 'texasTableVariants'",
+      "complexity": 5,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 16,
+      "column": 46,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 17,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 18,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 21,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 29,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 36,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 36,
+      "column": 71,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 44,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 46,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 48,
+      "column": 55,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 63,
+      "column": 67,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 72,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    }
+  ],
+  "after": [
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 10,
+      "column": 58,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 16,
+      "column": 24,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 18,
+      "column": 21,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 19,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 22,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 23,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 24,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 25,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 33,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 40,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 41,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 44,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 45,
+      "column": 78,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 47,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 48,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 50,
+      "column": 54,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 54,
+      "column": 87,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 65,
+      "column": 58,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 66,
+      "column": 34,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 69,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 71,
+      "column": 37,
+      "function": "Async method 'nodes'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 72,
+      "column": 7,
+      "function": "Async method 'nativeScreenshot'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 73,
+      "column": 70,
+      "function": "Async method 'attach'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 74,
+      "column": 29,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.test.mjs",
+      "line": 75,
+      "column": 43,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 7,
+      "column": 74,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 8,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 11,
+      "column": 65,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 12,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 13,
+      "column": 1,
+      "function": "Function 'unique'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 14,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 18,
+      "column": 1,
+      "function": "Function 'union'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 19,
+      "column": 33,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 20,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 24,
+      "column": 8,
+      "function": "Function 'texasOperationControls'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 25,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 27,
+      "column": 8,
+      "function": "Function 'texasOperationRegion'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 28,
+      "column": 24,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 30,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 31,
+      "column": 23,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 37,
+      "column": 8,
+      "function": "Function 'texasShortcutMotionBounds'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 39,
+      "column": 26,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 40,
+      "column": 16,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 46,
+      "column": 8,
+      "function": "Function 'texasPlayerAction'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 48,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 52,
+      "column": 1,
+      "function": "Function 'playerActionName'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 57,
+      "column": 1,
+      "function": "Function 'playerActionTarget'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 59,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 62,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 66,
+      "column": 8,
+      "function": "Function 'texasPlayerActionRegion'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 72,
+      "column": 8,
+      "function": "Function 'texasPlayerActionMotionBounds'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 78,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 85,
+      "column": 8,
+      "function": "Function 'texasActionClockMasks'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 87,
+      "column": 64,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 88,
+      "column": 30,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-region.ts",
+      "line": 94,
+      "column": 1,
+      "function": "Function 'actionForeground'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 12,
+      "column": 90,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 17,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 20,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 26,
+      "column": 81,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 27,
+      "column": 73,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 29,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 42,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 43,
+      "column": 80,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 44,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 45,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 46,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 47,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 47,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 48,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 49,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 50,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 51,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 52,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 53,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 54,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 55,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 56,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 59,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 73,
+      "column": 51,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 76,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 82,
+      "column": 75,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 84,
+      "column": 31,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 87,
+      "column": 37,
+      "function": "Async method 'nodes'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 88,
+      "column": 7,
+      "function": "Async method 'nativeScreenshot'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 89,
+      "column": 70,
+      "function": "Async method 'attach'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 90,
+      "column": 27,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 91,
+      "column": 43,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 93,
+      "column": 53,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 95,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.test.mjs",
+      "line": 104,
+      "column": 1,
+      "function": "Function 'wrongBubbleColor'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 14,
+      "column": 8,
+      "function": "Function 'texasActionStart'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 28,
+      "column": 1,
+      "function": "Function 'actionTimer'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 29,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 37,
+      "column": 1,
+      "function": "Function 'validateTimer'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 45,
+      "column": 1,
+      "function": "Function 'pixelDifference'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 46,
+      "column": 57,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 47,
+      "column": 63,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 48,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 50,
+      "column": 1,
+      "function": "Function 'retainedPixels'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 64,
+      "column": 8,
+      "function": "Function 'compareTexasActionStart'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 74,
+      "column": 1,
+      "function": "Function 'startingActor'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-action-start.ts",
+      "line": 75,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 5,
+      "column": 8,
+      "function": "Function 'positiveSize'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 9,
+      "column": 8,
+      "function": "Function 'inside'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 14,
+      "column": 8,
+      "function": "Function 'contains'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 18,
+      "column": 8,
+      "function": "Function 'withinScreen'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 22,
+      "column": 8,
+      "function": "Function 'sameBounds'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 23,
+      "column": 61,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 26,
+      "column": 8,
+      "function": "Function 'overlaps'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 32,
+      "column": 8,
+      "function": "Function 'paddedRegion'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 33,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 34,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 35,
+      "column": 73,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 36,
+      "column": 62,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-geometry.ts",
+      "line": 39,
+      "column": 8,
+      "function": "Function 'pointInside'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 8,
+      "column": 8,
+      "function": "Function 'descendants'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 10,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 16,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 19,
+      "column": 8,
+      "function": "Function 'visibleRaiseRoot'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 22,
+      "column": 8,
+      "function": "Function 'rulerWithin'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 26,
+      "column": 8,
+      "function": "Function 'thumbImage'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 28,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 36,
+      "column": 1,
+      "function": "Function 'requireHiddenImage'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 39,
+      "column": 1,
+      "function": "Function 'hiddenEnabled'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 42,
+      "column": 1,
+      "function": "Function 'anonymousLeaf'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 45,
+      "column": 1,
+      "function": "Function 'supportedImage'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 50,
+      "column": 1,
+      "function": "Function 'validateHiddenRoot'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 55,
+      "column": 1,
+      "function": "Function 'validateWrapper'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 64,
+      "column": 1,
+      "function": "Function 'validateHiddenGeometry'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 70,
+      "column": 1,
+      "function": "Function 'validateHiddenImage'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 79,
+      "column": 1,
+      "function": "Function 'validateImageGeometry'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 88,
+      "column": 1,
+      "function": "Function 'scaleText'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 91,
+      "column": 1,
+      "function": "Function 'railSegment'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 95,
+      "column": 1,
+      "function": "Function 'rulerLeaf'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 98,
+      "column": 8,
+      "function": "Function 'rulerLeaves'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 99,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 100,
+      "column": 25,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 101,
+      "column": 26,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 105,
+      "column": 1,
+      "function": "Function 'imageWrapper'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 106,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-raise-tree.ts",
+      "line": 108,
+      "column": 1,
+      "function": "Function 'validateThumbChildren'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-test-images.mjs",
+      "line": 3,
+      "column": 8,
+      "function": "Function 'fillPNG'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-test-images.mjs",
+      "line": 6,
+      "column": 8,
+      "function": "Function 'paintRect'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-test-images.mjs",
+      "line": 10,
+      "column": 1,
+      "function": "Function 'drawingFor'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-test-images.mjs",
+      "line": 13,
+      "column": 1,
+      "function": "Function 'scaleFor'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-test-images.mjs",
+      "line": 16,
+      "column": 1,
+      "function": "Function 'hardCutButton'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-test-images.mjs",
+      "line": 19,
+      "column": 1,
+      "function": "Function 'buttonColor'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-animation-test-images.mjs",
+      "line": 22,
+      "column": 8,
+      "function": "Function 'operationImage'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 7,
+      "column": 16,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 13,
+      "column": 58,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 16,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 21,
+      "column": 30,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 22,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 23,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 24,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 26,
+      "column": 47,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 30,
+      "column": 38,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 31,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 32,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 33,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.test.mjs",
+      "line": 35,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 8,
+      "column": 8,
+      "function": "Function 'nativeCommunityCardRegion'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 10,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 10,
+      "column": 81,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 12,
+      "column": 31,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 25,
+      "column": 8,
+      "function": "Function 'nativeOwnCardRegion'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 27,
+      "column": 34,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 32,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 33,
+      "column": 19,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 34,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 36,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 40,
+      "column": 85,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 43,
+      "column": 1,
+      "function": "Function 'validateCommunityCard'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 50,
+      "column": 1,
+      "function": "Function 'ownCardCandidate'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 56,
+      "column": 1,
+      "function": "Function 'collectOwnCard'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 63,
+      "column": 1,
+      "function": "Function 'validateCardIdentity'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-card-region.ts",
+      "line": 66,
+      "column": 1,
+      "function": "Function 'validateOwnPair'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 11,
+      "column": 8,
+      "function": "Async function 'texasControlVariants'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 27,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 37,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 38,
+      "column": 54,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 40,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 44,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 44,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 67,
+      "column": 103,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 75,
+      "column": 1,
+      "function": "Async function 'captureAccurateRaise'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-control-variants.ts",
+      "line": 84,
+      "column": 62,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 28,
+      "column": 8,
+      "function": "Async function 'texasHall'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 49,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 59,
+      "column": 45,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 76,
+      "column": 8,
+      "function": "Async function 'texasHallVariants'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 82,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 90,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 90,
+      "column": 71,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 92,
+      "column": 57,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 124,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 125,
+      "column": 16,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 133,
+      "column": 1,
+      "function": "Async function 'openHallMenu'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 140,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 143,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 148,
+      "column": 1,
+      "function": "Async function 'retryHallMenu'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 150,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 152,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 155,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 161,
+      "column": 1,
+      "function": "Async function 'enableHallAutoRebuy'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 166,
+      "column": 10,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 167,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 171,
+      "column": 1,
+      "function": "Async function 'captureHeldAutoRebuy'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 193,
+      "column": 40,
+      "function": "Async arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 200,
+      "column": 105,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 213,
+      "column": 34,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 225,
+      "column": 16,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 233,
+      "column": 66,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 234,
+      "column": 63,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 236,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 241,
+      "column": 57,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 252,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 256,
+      "column": 1,
+      "function": "Async function 'waitAutoRebuyRequest'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 261,
+      "column": 1,
+      "function": "Async function 'autoRebuyRequestStep'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 266,
+      "column": 1,
+      "function": "Async function 'observedAutoRebuySwitch'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 269,
+      "column": 42,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 270,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 272,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 281,
+      "column": 1,
+      "function": "Function 'validateAutoRebuySwitch'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 286,
+      "column": 1,
+      "function": "Async function 'captureHallLeaderboard'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 288,
+      "column": 53,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 291,
+      "column": 14,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 296,
+      "column": 34,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 305,
+      "column": 93,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 308,
+      "column": 14,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 312,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 314,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 322,
+      "column": 1,
+      "function": "Function 'leaderboardNumber'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 323,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-hall.ts",
+      "line": 326,
+      "column": 1,
+      "function": "Function 'trailingNumber'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 16,
+      "column": 8,
+      "function": "Async function 'texasPanelVariants'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 34,
+      "column": 42,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 37,
+      "column": 15,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 40,
+      "column": 33,
+      "function": "Async method 'verify'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 41,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 42,
+      "column": 34,
+      "function": "Async method 'verify'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 43,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 44,
+      "column": 30,
+      "function": "Async method 'verify'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 46,
+      "column": 3,
+      "function": "Async function 'captureApplications'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 50,
+      "column": 34,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 55,
+      "column": 34,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 62,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 62,
+      "column": 115,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 68,
+      "column": 3,
+      "function": "Async function 'triggerAlert'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 77,
+      "column": 64,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 79,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 81,
+      "column": 18,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 101,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 101,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panel-variants.ts",
+      "line": 108,
+      "column": 10,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 22,
+      "column": 8,
+      "function": "Async function 'texasPanels'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 32,
+      "column": 1,
+      "function": "Async function 'capturePanelThemes'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 37,
+      "column": 1,
+      "function": "Async function 'captureVoiceRecords'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 59,
+      "column": 65,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 69,
+      "column": 78,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 81,
+      "column": 1,
+      "function": "Async function 'capturePanelInteractions'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 85,
+      "column": 8,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 93,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 93,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 98,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 132,
+      "column": 74,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 134,
+      "column": 14,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 148,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 148,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 150,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 152,
+      "column": 61,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 158,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 161,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 183,
+      "column": 1,
+      "function": "Async function 'captureChatBarrage'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-panels.ts",
+      "line": 184,
+      "column": 26,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 7,
+      "column": 57,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 8,
+      "column": 84,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 10,
+      "column": 1,
+      "function": "Function 'fixture'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 26,
+      "column": 31,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 26,
+      "column": 47,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 27,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 29,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 33,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 45,
+      "column": 45,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 46,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 46,
+      "column": 42,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 47,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 47,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 48,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 48,
+      "column": 37,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 49,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 49,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 50,
+      "column": 84,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 52,
+      "column": 55,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 54,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 61,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 62,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 62,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 63,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 63,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 64,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 65,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 66,
+      "column": 84,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 70,
+      "column": 1,
+      "function": "Async function 'recordedFixture'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 74,
+      "column": 73,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 76,
+      "column": 79,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 78,
+      "column": 78,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 86,
+      "column": 79,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 92,
+      "column": 56,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 95,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 95,
+      "column": 42,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 96,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 96,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 96,
+      "column": 76,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 97,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 97,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 98,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 98,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 99,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 100,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 101,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 102,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 103,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 103,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 104,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 105,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 105,
+      "column": 44,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 106,
+      "column": 7,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 112,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 116,
+      "column": 52,
+      "function": "Async arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 126,
+      "column": 78,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 128,
+      "column": 79,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 133,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 137,
+      "column": 50,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 142,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.test.mjs",
+      "line": 149,
+      "column": 45,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 12,
+      "column": 8,
+      "function": "Function 'texasRaiseClockMasks'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 21,
+      "column": 1,
+      "function": "Function 'protectRaiseForeground'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 23,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 26,
+      "column": 47,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 28,
+      "column": 68,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 38,
+      "column": 8,
+      "function": "Function 'texasRaiseValueMask'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 41,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 42,
+      "column": 18,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 47,
+      "column": 77,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 52,
+      "column": 1,
+      "function": "Function 'overlapsSlot'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 54,
+      "column": 26,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 56,
+      "column": 1,
+      "function": "Function 'validateValueSlot'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 61,
+      "column": 1,
+      "function": "Function 'validateSlotBesideRuler'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 64,
+      "column": 1,
+      "function": "Function 'roomClockBounds'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 65,
+      "column": 34,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 66,
+      "column": 33,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-masks.ts",
+      "line": 72,
+      "column": 1,
+      "function": "Function 'validateClock'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 4,
+      "column": 60,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 12,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 16,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.test.mjs",
+      "line": 21,
+      "column": 22,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 9,
+      "column": 8,
+      "function": "Function 'texasRaiseControls'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 10,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 13,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 19,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 26,
+      "column": 8,
+      "function": "Function 'texasRaiseRegion'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 28,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 29,
+      "column": 52,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 30,
+      "column": 67,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 31,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 35,
+      "column": 1,
+      "function": "Function 'raiseControl'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 36,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 42,
+      "column": 1,
+      "function": "Function 'validateControl'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-raise-region.ts",
+      "line": 45,
+      "column": 1,
+      "function": "Function 'validateButtons'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 10,
+      "column": 8,
+      "function": "Async function 'texasRecordVariants'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 21,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 21,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 27,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 36,
+      "column": 8,
+      "function": "Async function 'texasOptionalPreGame'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 43,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-record-variants.ts",
+      "line": 43,
+      "column": 69,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 6,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 7,
+      "column": 53,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 16,
+      "column": 43,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 20,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 21,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 22,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 23,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.test.mjs",
+      "line": 27,
+      "column": 40,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 11,
+      "column": 8,
+      "function": "Function 'texasShowdownRegion'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 13,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 14,
+      "column": 64,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 22,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 22,
+      "column": 89,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 23,
+      "column": 36,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 31,
+      "column": 8,
+      "function": "Function 'texasEffectEndpointMasks'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 34,
+      "column": 101,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 37,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 43,
+      "column": 1,
+      "function": "Function 'showdownClock'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 47,
+      "column": 1,
+      "function": "Function 'validClockText'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 50,
+      "column": 1,
+      "function": "Function 'selfPlayer'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 54,
+      "column": 1,
+      "function": "Function 'showdownCard'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 59,
+      "column": 1,
+      "function": "Function 'showdownCards'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 60,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 62,
+      "column": 53,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 63,
+      "column": 17,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 66,
+      "column": 35,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 66,
+      "column": 86,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 68,
+      "column": 1,
+      "function": "Function 'validateShowdownBounds'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-showdown-region.ts",
+      "line": 69,
+      "column": 21,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 10,
+      "column": 8,
+      "function": "Async function 'texasTableVariants'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 16,
+      "column": 46,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 17,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 18,
+      "column": 20,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 21,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 29,
+      "column": 46,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 36,
+      "column": 32,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 36,
+      "column": 71,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 44,
+      "column": 30,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 46,
+      "column": 32,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 48,
+      "column": 55,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 52,
+      "column": 67,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 61,
+      "column": 48,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 72,
+      "column": 1,
+      "function": "Function 'validateSidePots'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "ios/full/texas-table-variants.ts",
+      "line": 73,
+      "column": 31,
+      "function": "Arrow function",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 12,
+      "column": 1,
+      "function": "Function 'write'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 17,
+      "column": 1,
+      "function": "Function 'workspace'",
+      "complexity": 3,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 19,
+      "column": 14,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 27,
+      "column": 1,
+      "function": "Function 'branches'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 28,
+      "column": 60,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 30,
+      "column": 1,
+      "function": "Function 'ordinaryFunction'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 33,
+      "column": 1,
+      "function": "Function 'runGate'",
+      "complexity": 2,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 36,
+      "column": 1,
+      "function": "Function 'assertBlocked'",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 43,
+      "column": 84,
+      "function": "Async arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 48,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 48,
+      "column": 76,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 53,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 72,
+      "column": 101,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 82,
+      "column": 47,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 88,
+      "column": 86,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "quality/texas-animation.test.mjs",
+      "line": 94,
+      "column": 51,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 3
+    },
+    {
+      "file": "scripts/check-texas-animation.mjs",
+      "line": 7,
+      "column": 8,
+      "function": "Async function 'lintTexasAnimation'",
+      "complexity": 2,
+      "limit": 6
+    },
+    {
+      "file": "scripts/check-texas-animation.mjs",
+      "line": 11,
+      "column": 8,
+      "function": "Async function 'checkTexasAnimation'",
+      "complexity": 4,
+      "limit": 6
+    },
+    {
+      "file": "scripts/check-texas-animation.mjs",
+      "line": 16,
+      "column": 27,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 13,
+      "column": 1,
+      "function": "Function 'functionMeasurements'",
+      "complexity": 2,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 15,
+      "column": 41,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 15,
+      "column": 89,
+      "function": "Arrow function",
+      "complexity": 2,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 20,
+      "column": 1,
+      "function": "Async function 'measure'",
+      "complexity": 2,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 28,
+      "column": 1,
+      "function": "Function 'previousSources'",
+      "complexity": 1,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 30,
+      "column": 28,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 30,
+      "column": 50,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 31,
+      "column": 15,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 33,
+      "column": 49,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 6
+    },
+    {
+      "file": "scripts/measure-texas-animation.mjs",
+      "line": 39,
+      "column": 39,
+      "function": "Arrow function",
+      "complexity": 1,
+      "limit": 6
+    }
+  ]
+}
