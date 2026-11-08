@@ -15,6 +15,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PreCommitTests(unittest.TestCase):
+    partial_sources = [
+        ("fixture.py", "value = 2\n", "def partial_error(:\n", "SyntaxError"),
+        ("ios/full/fixture.ts", "export const value: number = 2;\n",
+         "export const value: number = 'wrong';\n", "TS2322"),
+    ]
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="clrn-pre-commit-")
         self.addCleanup(self.temporary.cleanup)
@@ -163,25 +169,30 @@ class PreCommitTests(unittest.TestCase):
         self.run_command("git", "add", "ios/full/fixture.ts")
         self.commit(True)
 
-    def test_unstaged_python_error_is_restored_after_staged_success(self):
-        self.write("fixture.py", "value = 2\n")
-        self.run_command("git", "add", "fixture.py")
-        self.write("fixture.py", "def unstaged_error(:\n")
+    def test_unstaged_errors_are_restored_after_staged_success(self):
         self.write("untracked.py", "def untracked_error(:\n")
         self.write("ignored.py", "def ignored_error(:\n")
-        self.assertIn("Restored changes", self.commit(True))
-        self.assertEqual(self.run_command("git", "show", "HEAD:fixture.py").stdout, "value = 2\n")
-        self.assertIn(" M fixture.py", self.run_command("git", "status", "--porcelain").stdout)
+        for name, valid, invalid, _ in self.partial_sources:
+            with self.subTest(name=name):
+                self.write(name, valid)
+                self.run_command("git", "add", name)
+                self.write(name, invalid)
+                self.assertIn("Restored changes", self.commit(True))
+                self.assertEqual(self.run_command("git", "show", f"HEAD:{name}").stdout, valid)
+                self.assertIn(f" M {name}", self.run_command("git", "status", "--porcelain").stdout)
 
-    def test_unstaged_fix_is_restored_after_staged_failure(self):
-        self.write("fixture.py", "def staged_error(:\n")
-        self.run_command("git", "add", "fixture.py")
-        self.write("fixture.py", "value = 'unstaged fix'\n")
-        output = self.commit(False)
-        self.assertIn("SyntaxError", output)
-        self.assertIn("Restored changes", output)
-        self.run_command("git", "add", "fixture.py")
-        self.commit(True)
+    def test_unstaged_fixes_are_restored_after_staged_failure(self):
+        for name, valid, invalid, diagnostic in self.partial_sources:
+            with self.subTest(name=name):
+                self.write(name, invalid)
+                self.run_command("git", "add", name)
+                self.write(name, valid)
+                output = self.commit(False)
+                self.assertIn(diagnostic, output)
+                self.assertIn(name, output)
+                self.assertIn("Restored changes", output)
+                self.run_command("git", "add", name)
+                self.commit(True)
 
     def test_trigger_scopes(self):
         for name, ts, python in [("README.md", False, False),

@@ -346,9 +346,11 @@ async function finishScenarioNavigation(device: NativeDevice, scenario: VisualSc
   if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
   await waitAbsent(device, { res: 'alert-message-text' });
   await device.hideKeyboard();
-  // Run 42441963327 captured the username form scrolled past its welcome
-  // heading after revealing the input. Restore the reviewed top-of-form view.
-  if (scenario.pageLabel === 'login_username') await resetScenarioScroll(device);
+  if (scenario.pageLabel === 'login_username') {
+    // Restore the top-of-form view and verify the heading is fully visible.
+    await resetScenarioScroll(device);
+    await reveal(device, { res: 'signin-title-container' }, true);
+  }
 }
 
 async function resetScenarioScroll(device: NativeDevice) {
