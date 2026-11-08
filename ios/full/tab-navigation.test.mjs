@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { selectGuestSettingsTab } from './navigation.ts';
+import { selectGuestSettingsTab, selectHallTab } from './navigation.ts';
 
 const node = (res, bounds, extra = {}) => ({ res, clazz: 'XCUIElementTypeOther', visible: true,
   enabled: true, children: [], bounds, ...extra });
@@ -16,6 +16,21 @@ function fixture(snapshots) {
   const options = { timeout: 0, tapTab: async () => { taps++; } };
   return { device, options, taps: () => taps };
 }
+
+test('搜索场景仅在已观测的 Club 页重试大厅点击，并确认目标页', async () => {
+  const hallTab = node('hall-tab', { x: 470, y: 2307, width: 238, height: 147 });
+  const club = [node('Club', { x: 542, y: 195, width: 151, height: 81 }, { text: 'Club' }), hallTab];
+  for (const snapshots of [[hall], [club, hall]]) {
+    const f = fixture(snapshots);
+    await selectHallTab(f.device, f.options);
+    assert.equal(f.taps(), snapshots.length);
+  }
+  for (const snapshots of [[club], [[hallTab]], [[...club, node('alert-message-text', full)]]]) {
+    const f = fixture(snapshots);
+    await assert.rejects(selectHallTab(f.device, f.options), /未显示大厅|错误弹窗/);
+    assert.equal(f.taps(), snapshots[0] === club ? 2 : 1);
+  }
+});
 
 test('首次标签点击已进入真实我的页时不重试', async () => {
   const f = fixture([settings]);

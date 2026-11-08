@@ -176,9 +176,44 @@ export async function revealScenarioReady(device: NativeDevice, scenario: Pick<V
   await reveal(device, selector);
 }
 export type NavigationResult = { backgroundBanner?: ScreenshotBounds; readySnapshot?: NativeNode[] };
+function hallSwitchBlocker(node: NativeNode): boolean {
+  return /^(XCUIElementTypeAlert|XCUIElementTypeKeyboard|XCUIElementTypeSheet)$/.test(node.clazz)
+    || /^(alert-message-text|popup-content-container|confirm-pop-up-image-background|html-render)$/.test(node.res || '');
+}
+function assertHallRetry(attempt: number, clubTitle: boolean, actionableTab: boolean): void {
+  if (attempt === 1 || !clubTitle || !actionableTab) throw new Error('点击大厅标签后未显示大厅');
+}
+/** Confirm the hall before scrolling; run 42441963327 remained on Club. */
+export async function selectHallTab(device: NativeDevice,
+  { timeout = 5000, tapTab = () => tap(device, 'hall-tab') }: { timeout?: number; tapTab?: () => Promise<void> } = {}) {
+  const visible = (nodes: NativeNode[], node: NativeNode) => {
+    const geometry = nativeViewport(nodes, node, { x: 0, y: 0, ...device.screenSize });
+    return geometry.node.visible !== false && geometry.visibleBounds.width > 0 && geometry.visibleBounds.height > 0;
+  };
+  for (let attempt = 0; attempt < 2; attempt++) {
+    await tapTab();
+    const deadline = Date.now() + timeout;
+    let nodes: NativeNode[];
+    do {
+      nodes = await device.nodes();
+      if (nodes.some(node => hallSwitchBlocker(node) && visible(nodes, node))) {
+        throw new Error('切换大厅时出现错误弹窗、键盘或模态页面');
+      }
+      if (nodes.some(node => node.res === 'hall-content-list' && visible(nodes, node))) return;
+      if (Date.now() >= deadline) break;
+      await delay(200);
+    } while (true);
+    // Retry only the observed Club-to-hall failure, with an actionable tab.
+    const clubTitle = nodes.some(node => /^(Club|俱乐部|俱樂部)$/.test(node.text || '')
+      && node.bounds.y < device.screenSize.height * 0.12 && visible(nodes, node));
+    const tab = nodes.find(node => node.res === 'hall-tab' && node.enabled && visible(nodes, node));
+    assertHallRetry(attempt, clubTitle, !!tab);
+  }
+}
 export async function navigateScenario(device: NativeDevice, scenario: VisualScenario): Promise<NavigationResult> {
   await returnToTabs(device);
-  await tap(device, scenario.tabTestId || 'hall-tab');
+  if (scenario.pageLabel === 'search_sign_in_prompt') await selectHallTab(device);
+  else await tap(device, scenario.tabTestId || 'hall-tab');
   await resetScenarioScroll(device);
   let filled = false;
   let backgroundBanner: ScreenshotBounds | undefined;
@@ -311,6 +346,9 @@ async function finishScenarioNavigation(device: NativeDevice, scenario: VisualSc
   if (scenario.waitForLoading) await waitAbsent(device, { clazz: 'XCUIElementTypeActivityIndicator' });
   await waitAbsent(device, { res: 'alert-message-text' });
   await device.hideKeyboard();
+  // Run 42441963327 captured the username form scrolled past its welcome
+  // heading after revealing the input. Restore the reviewed top-of-form view.
+  if (scenario.pageLabel === 'login_username') await resetScenarioScroll(device);
 }
 
 async function resetScenarioScroll(device: NativeDevice) {
