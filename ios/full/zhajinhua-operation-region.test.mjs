@@ -6,6 +6,7 @@ import { PNG } from 'pngjs';
 import { zhajinhuaOperationMarkers, zhajinhuaOperationRegion, zhajinhuaOperationClockMasks,
   zhajinhuaOperationControls, zhajinhuaChallengeCancel, readyZhajinhuaChallengeCancel } from './zhajinhua-operation-region.ts';
 import { captureNativeTransition, nativeTargetMotionEvidence } from './animation-transition.ts';
+import { solidImage, paintRectangle, mapRgb, withSmokeMode } from './zhajinhua-image-fixture.mjs';
 const node = (res, bounds) => ({ res, bounds, visible: true, clazz: 'XCUIElementTypeOther' });
 const actualBounds = [
   [206, 1626, 136, 162], [416, 1626, 136, 162], [626, 1626, 136, 162], [836, 1626, 136, 162],
@@ -57,25 +58,22 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
   const positions = [[50, 50, 35, 30], [115, 50, 35, 30], [180, 50, 35, 30], [245, 50, 35, 30],
     [150, 140, 50, 50], [50, 220, 50, 50], [250, 220, 50, 50], [320, 300, 35, 35], [20, 300, 35, 30]];
   const nodes = positions.map(([x, y, width, height], index) => node(zhajinhuaOperationMarkers[index], { x, y, width, height }));
-  const picture = (phase, hardCut = -1) => {
-    const png = new PNG(size);
-    for (let offset = 0; offset < png.data.length; offset += 4) png.data.set([20, 90, 70, 255], offset);
+  const picture = (phase, hardCut) => {
+    const png = solidImage(size, [20, 90, 70, 255]);
     if (!phase) return PNG.sync.write(png);
     for (const [index, { bounds }] of nodes.entries()) {
-      const factor = phase === 'middle' && hardCut !== index ? .6 : 1;
+      const factor = controlScale(phase, hardCut, index);
       const width = Math.round(bounds.width * factor), height = Math.round(bounds.height * factor);
       const left = bounds.x + Math.floor((bounds.width - width) / 2), top = bounds.y + Math.floor((bounds.height - height) / 2);
-      for (let y = top; y < top + height; y++) for (let x = left; x < left + width; x++) {
+      paintRectangle(png, { x: left, y: top, width, height }, x => {
         const icon = Math.abs(x - left - width / 2) < 3;
-        png.data.set(icon ? [240, 240, 240, 255] : [230, 100 + index * 10, 15, 255], (y * size.width + x) * 4);
-      }
+        return icon ? [240, 240, 240, 255] : [230, 100 + index * 10, 15, 255];
+      });
     }
     return PNG.sync.write(png);
   };
   const before = picture(), after = picture('end');
-  const previous = process.env.IOS_VISUAL_MODE;
-  process.env.IOS_VISUAL_MODE = 'smoke';
-  const run = async (middle, axGrouped = false, reuse = false, skipEndpoint = false) => {
+  const run = async (middle, axGrouped, reuse, skipEndpoint) => {
     let observations = 0, screenshots = 0, triggers = 0, decoded = false;
     const grouped = [{ ...node('zhajinhua-cancel-challenge-choosing', { x:0,y:0,...size }), enabled:false,
       children:nodes.map(item => ({ ...item, visible:false, enabled:true })) }];
@@ -83,9 +81,11 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
       {...node('zhajinhua-cancel-challenge-choosing',{x:0,y:0,...size}),enabled:true},
       ...Array.from({length:4},(_,i)=>node('challenge_player_selector',{x:20+i*40,y:10,width:20,height:20})),
     ] } : undefined;
+    const endpoint = axGrouped ? grouped : nodes;
     const device = { screenSize: size, nodes: async () => {
       assert.equal(decoded, false, '解码后回合已结束，必须使用录屏刚停止时的独立观测');
-      return observations++ || reuse ? axGrouped ? grouped : nodes : [];
+      if (observations++ || reuse) return endpoint;
+      return [];
     }, nativeScreenshot: async () => {
       assert.equal(decoded, false, '独立终点截图不能等待长时间解码');
       return screenshots++ ? after : before;
@@ -103,7 +103,7 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
       undefined,prepared);
     return { observations,screenshots,triggers };
   };
-  try {
+  await withSmokeMode(async () => {
     await run(picture('middle'));
     await run(picture('middle'), true);
     assert.deepEqual(await run(picture('middle'), true, true), { observations:1,screenshots:2,triggers:1 });
@@ -118,13 +118,9 @@ test('九个操作控件必须分别采到真实局部变化，AX容器disabled�
       delayBounds.x, delayBounds.y);
     await assert.rejects(run([picture('middle', 8), PNG.sync.write(lateDelay)], true), /真实入场窗口/);
     const dimmer = PNG.sync.read(before);
-    for (let offset = 0; offset < dimmer.data.length; offset += 4)
-      for (let channel = 0; channel < 3; channel++) dimmer.data[offset + channel] = Math.round(dimmer.data[offset + channel] * .8);
+    mapRgb(dimmer, value => Math.round(value * .8));
     await assert.rejects(run(PNG.sync.write(dimmer), true), /真实局部中间态/);
-  } finally {
-    if (previous === undefined) delete process.env.IOS_VISUAL_MODE;
-    else process.env.IOS_VISUAL_MODE = previous;
-  }
+  });
 });
 
 const fixture = new URL('./fixtures/zhajinhua-cancel-motion/', import.meta.url);
@@ -170,9 +166,7 @@ test('真实9控件录像中间帧保留，截图色偏导致的静态尾帧和�
     // Synthetic negative only: a screenshot color shift must not turn an
     // unchanged raw-video endpoint into evidence of structural animation.
     const shifted = PNG.sync.read(frames.end);
-    for (let offset = 0; offset < shifted.data.length; offset += 4)
-      for (let channel = 0; channel < 3; channel++)
-        shifted.data[offset + channel] = Math.min(255, shifted.data[offset + channel] + 35);
+    mapRgb(shifted, value => Math.min(255, value + 35));
     const screenshotEnd = PNG.sync.write(shifted);
     const old = await nativeTargetMotionEvidence(frames.start, screenshotEnd, [frames.end]);
     assert.equal(old.candidates.length, 1, `${control.marker}: negative exercises the old color-shift gap`);
@@ -190,13 +184,21 @@ test('9区域一次解码与逐区域裁图的原始像素完全一致', async (
   const provenance = JSON.parse(readFileSync(new URL('provenance.json', fixture)));
   for (const phase of ['start', 'middle', 'end']) {
     const screen = new PNG({ width: 1178, height: 2556 });
-    for (const control of provenance.controls) {
-      const picture = PNG.sync.read(readFileSync(new URL(control.images[phase].file, fixture)));
-      PNG.bitblt(picture, screen, 0, 0, picture.width, picture.height, control.bounds.x, control.bounds.y);
-    }
+    composeControls(provenance.controls, screen, phase);
     const bytes = PNG.sync.write(screen), bounds = provenance.controls.map(item => item.bounds);
     const batched = await cropNativeRegions(bytes, bounds);
     for (const [index, region] of bounds.entries())
       assert.deepEqual(batched[index], await cropNativeFrame(bytes, region), `${phase}/${index}`);
   }
 });
+
+function controlScale(phase, hardCut, index) {
+  return phase === 'middle' && hardCut !== index ? .6 : 1;
+}
+
+function composeControls(controls, screen, phase) {
+  for (const control of controls) {
+    const picture = PNG.sync.read(readFileSync(new URL(control.images[phase].file, fixture)));
+    PNG.bitblt(picture, screen, 0, 0, picture.width, picture.height, control.bounds.x, control.bounds.y);
+  }
+}

@@ -41,7 +41,9 @@ class PreCommitTests(unittest.TestCase):
         self.run_command("git", "config", "user.email", "pre-commit-fixture@example.invalid")
         self.run_command("git", "config", "commit.gpgsign", "false")
         for name in [".pre-commit-config.yaml", "package.json", "tsconfig.json",
-                     "scripts/check-python-static.py"]:
+                     "scripts/check-python-static.py", "eslint.config.mjs",
+                     "scripts/eslint-network-rule.mjs", "scripts/check-zhajinhua-complexity.mjs",
+                     "scripts/zhajinhua-complexity-scope.mjs", "quality/zhajinhua-complexity.test.mjs"]:
             target = self.repo / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, target)
@@ -161,6 +163,21 @@ class PreCommitTests(unittest.TestCase):
                     self.assertEqual(output.count(label), 1)
                     line = next(line for line in output.splitlines() if label in line)
                     self.assertIn("Passed" if runs else "Skipped", line)
+
+    def test_zhajinhua_complexity_blocks_and_fixed_source_commits(self):
+        name = "ios/full/zhajinhua-showdown-fixture.ts"
+        self.write(name, "export function fixture(x: number) {\n"
+                         "  if (x === 0) return 0;\n"
+                         "  if (x === 1) return 1;\n"
+                         "  if (x === 2) return 2;\n}\n")
+        self.run_command("git", "add", name)
+        output = self.commit(False)
+        self.assertIn("Maximum allowed is 3", output)
+        self.write(name, "export function fixture(x: number) {\n"
+                         "  if (x === 0) return 0;\n"
+                         "  if (x === 1) return 1;\n}\n")
+        self.run_command("git", "add", name)
+        self.commit(True)
 
     def test_static_checker_handles_tracked_deletion(self):
         (self.repo / "fixture.py").unlink()
