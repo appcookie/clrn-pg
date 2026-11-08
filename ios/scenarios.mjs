@@ -8,6 +8,9 @@ export const scenarios = [
   { name: 'login', tab: 'settings-tab', clicks: ['sign-in-button'], ready: 'username-or-email-sign-in-button' },
 ];
 
+// The login scenario opens a child page; selecting Me must first prove the parent tab is ready.
+export const tabPages = Object.fromEntries(scenarios.filter(scenario => !scenario.clicks).map(scenario => [scenario.tab, scenario.ready]));
+
 export function selectScenarios(filter = '') {
   if (!filter) return scenarios;
   const expression = new RegExp(filter);
