@@ -70,6 +70,10 @@ export async function texasControlVariants(context: TexasContext): Promise<void>
   });
   await gameReady(device, 'raise-bet-display-text', '520');
   await gameTap(device, 'raise-bet-cancel-button');
+  await captureAccurateRaise(context);
+}
+async function captureAccurateRaise(context: TexasContext) {
+  const { device, capture } = context;
   await gameTap(device, 'texas-holdem-operation-accurate-bet-button');
   for (const digit of [1, 2, 3]) await gameTap(device, `texas-holdem-operation-accurate-bet-number-button-${digit}`);
   await gameReady(device, 'accurate-bet-value-text', '123');
