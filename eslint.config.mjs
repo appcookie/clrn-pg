@@ -1,5 +1,6 @@
 import tsParser from '@typescript-eslint/parser';
 import { noNetworkFabrication } from './scripts/eslint-network-rule.mjs';
+import { testFiles, toolFiles } from './scripts/zhajinhua-complexity-scope.mjs';
 
 export default [{
   ignores: ['**/node_modules/**', '**/.venv/**', '**/.appium/**', '**/__pycache__/**', '.git/**', '.cache/**',
@@ -20,4 +21,10 @@ export default [{
   // and integration tests have no exception.
   files: ['ios/full/network-routes.test.mjs', 'ios/full/network-observer.test.ts'],
   rules: { 'architecture/no-network-fabrication': 'off' },
+}, {
+  files: toolFiles,
+  rules: { complexity: ['error', { max: 6, variant: 'classic' }] },
+}, {
+  files: testFiles,
+  rules: { complexity: ['error', { max: 3, variant: 'classic' }] },
 }];

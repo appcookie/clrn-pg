@@ -5,6 +5,7 @@ import type { ScreenshotMask, ScreenshotBounds } from './screenshot';
 import { visibleMasks } from './game-masks';
 import { gameMaskPoint } from './game-mask-point';
 import { zhajinhuaOperationControls } from './zhajinhua-operation-region';
+import { inside, positiveSize, screenBounds } from './zhajinhua-region-geometry';
 
 const panelMarker = 'accurate-bet-popup-container';
 const buttonMarker = 'zhajinhua-operation-accurate-bet-button';
@@ -12,14 +13,21 @@ type Screen = { width: number; height: number };
 class AccurateBetBlockedError extends Error {}
 
 function assertNoBlockingAlert(nodes: NativeNode[]): void {
-  if (nodes.some(node => node.visible !== false && (node.res === 'common-alert-message'
-    || node.clazz === 'XCUIElementTypeAlert' || /Connection Timeout/i.test(node.text || ''))))
+  if (nodes.filter(node => node.visible !== false).some(blockingAlert))
     throw new AccurateBetBlockedError('精确加注阶段出现阻断错误弹窗；不能等待或重试动画掩盖错误');
 }
 
+function blockingAlert(node: NativeNode): boolean {
+  return node.res === 'common-alert-message' || blockingAlertContent(node);
+}
+
+function blockingAlertContent(node: NativeNode): boolean {
+  return node.clazz === 'XCUIElementTypeAlert' || /Connection Timeout/i.test(node.text || '');
+}
+
 function visible(nodes: NativeNode[], marker: string): NativeNode[] {
-  return nodes.filter(node => node.res === marker && node.visible !== false
-    && node.bounds.width > 0 && node.bounds.height > 0);
+  return nodes.filter(node => node.res === marker && node.visible !== false)
+    .filter(node => positiveSize(node.bounds));
 }
 
 /** One completed observation proves the panel is absent and the full operation
@@ -36,12 +44,26 @@ export function accurateBetEntrance(nodes: NativeNode[], screen: Screen): GameNo
 export function accurateBetPanel(nodes: NativeNode[], screen: Screen) {
   assertNoBlockingAlert(nodes);
   const panels = visible(nodes, panelMarker), masks = visible(nodes, 'screen-mask-touch-to-close');
-  if (panels.length !== 1 || masks.length !== 1 || masks[0].enabled === false)
-    throw new Error('精确加注必须有唯一真实弹窗和可点击关闭遮罩');
+  assertUniquePanel(panels, masks);
   const b = panels[0].bounds;
-  if (b.x < 0 || b.y < 0 || b.x + b.width > screen.width || b.y + b.height > screen.height)
+  if (!inside(b, screenBounds(screen)))
     throw new Error('精确加注弹窗必须完整位于屏幕内');
   return { panel: panels[0], close: gameMaskPoint(masks[0].bounds, b, screen) };
+}
+
+function assertUniquePanel(panels: NativeNode[], masks: NativeNode[]): void {
+  if (panels.length !== 1 || masks.length !== 1)
+    throw new Error('精确加注必须有唯一真实弹窗和可点击关闭遮罩');
+  assertClickableMask(masks[0]);
+}
+
+function assertClickableMask(mask: NativeNode): void {
+  if (mask.enabled === false) throw new Error('精确加注必须有唯一真实弹窗和可点击关闭遮罩');
+}
+
+async function retryObservation(error: unknown, deadline: number): Promise<void> {
+  if (error instanceof AccurateBetBlockedError || Date.now() >= deadline) throw error;
+  await delay(250);
 }
 
 async function observe<T>(device: NativeDevice, validate: (nodes: NativeNode[]) => T) {
@@ -49,7 +71,7 @@ async function observe<T>(device: NativeDevice, validate: (nodes: NativeNode[]) 
   for (;;) {
     const nodes = await device.nodes();
     try { return { ...validate(nodes), nodes, completedAt: Date.now() }; }
-    catch (error) { if (error instanceof AccurateBetBlockedError || Date.now() >= deadline) throw error; await delay(250); }
+    catch (error) { await retryObservation(error, deadline); }
   }
 }
 
@@ -87,6 +109,6 @@ export function assertAccurateBetRegion(nodes: NativeNode[], screen: Screen, reg
   const left = Math.max(0, Math.floor(b.x) - 4), top = Math.max(0, Math.floor(b.y) - 4);
   const right = Math.min(screen.width, Math.ceil(b.x + b.width) + 4);
   const bottom = Math.min(screen.height, Math.ceil(b.y + b.height) + 4);
-  if (region.x > left || region.y > top || region.x + region.width < right || region.y + region.height < bottom)
+  if (!inside({ x: left, y: top, width: right - left, height: bottom - top }, region))
     throw new Error('精确加注截图区域必须覆盖完整原生弹窗及四像素绘制边缘');
 }

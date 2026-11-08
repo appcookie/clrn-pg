@@ -9,6 +9,7 @@ import { animationRegion } from './animation-region.ts';
 import { cropMotionRegion } from './motion-regions.ts';
 import { captureNativeTransition } from './animation-transition.ts';
 
+import { solidImage, paintRectangle } from './zhajinhua-image-fixture.mjs';
 const root=new URL('./fixtures/zhajinhua-showdown/',import.meta.url);
 const source=JSON.parse(readFileSync(new URL('provenance.json',root)));
 const nativeBytes=readFileSync(new URL('native-state.json',root));
@@ -45,19 +46,26 @@ test('真实失败原片字体加载和静态尾段都不能代替第二/三张�
 
 // Synthetic unit-only card identities validate the displacement detector;
 // they are not native positive evidence and are never baseline candidates.
-const drawing=(shifts,hidden=false,identities=[0,1,2])=>{
-  const p=new PNG({width:layout.region.width,height:layout.region.height});
-  for(let i=0;i<p.data.length;i+=4)p.data.set([20,90,70,255],i);
-  if(!hidden)for(const [index,b] of layout.cards.entries()){
-    for(let y=0;y<b.height;y++)for(let x=0;x<b.width;x++){
-      const identity=identities[index],stripe=((x*7+y*11+identity*17)%37)<16;
-      const color=identity===0?[stripe?230:50,30,40,255]:identity===1?[30,stripe?240:40,50,255]:[35,45,stripe?230:40,255];
-      const targetX=b.x-layout.region.x+x-(shifts[index]||0),targetY=b.y-layout.region.y+y;
-      p.data.set(color,(targetY*p.width+targetX)*4);
-    }
-  }
-  return PNG.sync.write(p);
-};
+const cardColors = [
+  stripe => [stripe ? 230 : 50, 30, 40, 255],
+  stripe => [30, stripe ? 240 : 40, 50, 255],
+  stripe => [35, 45, stripe ? 230 : 40, 255],
+];
+
+function drawCard(png, bounds, shift, identity) {
+  const target = { ...bounds, x: bounds.x - layout.region.x - (shift || 0), y: bounds.y - layout.region.y };
+  const color = cardColors[identity] || cardColors[2];
+  paintRectangle(png, target, (x, y) => color(((x - target.x) * 7 + (y - target.y) * 11 + identity * 17) % 37 < 16));
+}
+
+function drawCards(shifts, hidden, identities) {
+  const png = solidImage(layout.region, [20, 90, 70, 255]);
+  if (!hidden) for (const [index, bounds] of layout.cards.entries())
+    drawCard(png, bounds, shifts[index], identities[index]);
+  return PNG.sync.write(png);
+}
+
+const drawing = (shifts, hidden = false, identities = [0, 1, 2]) => drawCards(shifts, hidden, identities);
 test('算法要求两张牌各自的牌面水平位移，静止、只动一张或错误牌跨位必须拒绝',async()=>{
   const first=drawing([],true),end=drawing([0,0,0]);
   const positive=await showdownHorizontalEvidence(first,end,[first,drawing([0,20,40]),end],[1],layout);
@@ -74,17 +82,15 @@ test('算法要求两张牌各自的牌面水平位移，静止、只动一张�
 
 test('起点倒计时排除不改原图，牌型超差仍失败且终点不遮',()=>{
   const original=Buffer.from(images.first),p=PNG.sync.read(images.first),b=layout.timer,r=layout.region;
-  for(let y=b.y-r.y;y<b.y-r.y+b.height;y++)for(let x=b.x-r.x;x<b.x-r.x+b.width;x++)
-    p.data.set([255,0,0,255],(y*p.width+x)*4);
+  paintRectangle(p, { ...b, x: b.x - r.x, y: b.y - r.y }, () => [255, 0, 0, 255]);
   const compared=compareShowdownStart(PNG.sync.write(p),images.first,layout);
   assert.equal(compared.distance,0);assert.equal(compared.samePixels,true);
   assert.deepEqual(images.first,original);
   // 牌型仍处于比较范围；让完整牌型明显变化，不能被倒计时排除或比例门槛放过。
-  for(let y=layout.label.y-r.y;y<layout.label.y-r.y+layout.label.height;y++)
-    for(let x=layout.label.x-r.x;x<layout.label.x-r.x+layout.label.width;x++) {
-      const offset=(y*p.width+x)*4;
-      p.data[offset]=(p.data[offset]+128)%256;
-    }
+  paintRectangle(p, { ...layout.label, x: layout.label.x - r.x, y: layout.label.y - r.y }, (x, y) => {
+    const offset = (y * p.width + x) * 4;
+    return [(p.data[offset] + 128) % 256, ...p.data.subarray(offset + 1, offset + 4)];
+  });
   assert.equal(compareShowdownStart(PNG.sync.write(p),images.first,layout).samePixels,false);
   assert.ok(compareShowdownStart(images.first,images.end,layout).distance>10);
 });
