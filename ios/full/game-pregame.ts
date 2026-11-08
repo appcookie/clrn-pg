@@ -194,7 +194,7 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture,
     await capture(`table_${background}`);
   }
   await gameMenu(device, 'theme', 'game-settings-card-theme-simple');
-  await gameTapCurrent(device, 'game-settings-background-green');
+  await restoreGreenTable(device);
   await closeThemeSettings(device);
   await gameMenu(device, 'settings', 'game-settings-popup-container');
   let count = 0;
@@ -214,6 +214,25 @@ export async function captureGameThemes(device: AndroidDevice, capture: Capture,
   }
   expect(count).toBeGreaterThanOrEqual(4);
   await capture('settings_enabled');
+}
+
+/** 恢复绿色后再关闭主题面板；原生色块禁用表示该颜色已选中。 */
+export async function restoreGreenTable(device: AndroidDevice): Promise<void> {
+  const green = 'game-settings-background-green';
+  await gameTapCurrent(device, green);
+  const nodes = await gameNodes(device);
+  const selected = nodes.find(node => node.res === green);
+  expect(selected, '恢复颜色后绿色选项必须仍可见').toBeDefined();
+  if (selected!.enabled) {
+    // 42392661879 点击绿色后仍拍到黑桌；只有完整树确认黑色仍选中、
+    // 绿色仍可点击且没有重连遮挡，才重新定位并补点这次可逆选择。
+    expect(gameConnectionState(nodes).connecting).toBe(false);
+    expect(nodes.some(node => node.res === 'game-settings-background-black' && node.enabled === false),
+      '补点恢复颜色前，黑色必须仍是当前选项').toBe(true);
+    await tap(device, green);
+  }
+  await expect.poll(async () => (await gameNodes(device)).find(node => node.res === green)?.enabled,
+    { message: '关闭主题面板前必须确认绿色已选中', timeout: 30_000 }).toBe(false);
 }
 
 function connectedCapture(device: AndroidDevice, capture: Capture): Capture {

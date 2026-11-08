@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { closeThemeSettings, gameMenu, waitForRecordedDrawerMenu } from './game-pregame.ts';
+import { closeThemeSettings, gameMenu, restoreGreenTable, waitForRecordedDrawerMenu } from './game-pregame.ts';
 
 const bounds = x => ({ x, y: 100, width: 20, height: 20 });
 const node = (res, x, text = '') => ({ res, text, bounds: bounds(x), enabled: true, visible: true });
@@ -165,3 +165,38 @@ function focusedMenuDevice(readNodes, prepare) {
     prepareTransientCapture: async () => { prepare(); },
   };
 }
+
+test('恢复绿色只在完整树确认黑色仍选中时补点，并确认绿色选中', async () => {
+  const green = node('game-settings-background-green', 10);
+  const black = node('game-settings-background-black', 40);
+  let taps = 0, selected = 'black';
+  const visible = () => [
+    { ...green, enabled: selected !== 'green' },
+    { ...black, enabled: selected !== 'black' },
+  ];
+  const device = {
+    ...focusedMenuDevice(visible, () => {}),
+    inputObservation: async () => visible(),
+    input: { tap: async () => { if (++taps === 2) selected = 'green'; } },
+  };
+  await restoreGreenTable(device);
+  assert.equal(taps, 2);
+  assert.equal(selected, 'green');
+  taps = 0;
+  selected = 'black';
+  device.input.tap = async () => { taps++; selected = 'green'; };
+  await restoreGreenTable(device);
+  assert.equal(taps, 1, '已成功的颜色选择不得重复点击');
+});
+
+test('恢复绿色遇到重连时保留失败，不补点颜色', async () => {
+  let taps = 0;
+  const green = node('game-settings-background-green', 10);
+  const device = {
+    ...focusedMenuDevice(() => [green, connecting], () => {}),
+    inputObservation: async () => [green],
+    input: { tap: async () => { taps++; } },
+  };
+  await assert.rejects(restoreGreenTable(device));
+  assert.equal(taps, 1);
+});
