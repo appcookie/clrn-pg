@@ -47,18 +47,7 @@ export async function texasTableVariants(context: TexasContext): Promise<void> {
   }, { timeout: 30_000 }).toEqual(pots.map(String));
   const items = (await gameNodes(device)).filter(node => /^texas_holdem_side_pot_\d+$/.test(node.res || ''));
   expect(items).toHaveLength(pots.length);
-  for (const [index, item] of items.entries()) {
-    const bounds = item.bounds;
-    expect(bounds.x).toBeGreaterThanOrEqual(container.x);
-    expect(bounds.y).toBeGreaterThanOrEqual(container.y);
-    expect(bounds.x + bounds.width).toBeLessThanOrEqual(container.x + container.width);
-    expect(bounds.y + bounds.height).toBeLessThanOrEqual(container.y + container.height);
-    if (index % 2 === 1) {
-      expect(bounds.y).toBe(items[index - 1].bounds.y);
-      expect(bounds.x).toBeGreaterThanOrEqual(items[index - 1].bounds.x + items[index - 1].bounds.width);
-    }
-    if (index >= 2) expect(bounds.y).toBeGreaterThanOrEqual(items[index - 2].bounds.y + items[index - 2].bounds.height);
-  }
+  validateSidePots(items, container);
   await capture('full_table_multiple_pots');
   await texasEvents(context, Array.from({ length: 4 }, (_, index) => ({ event: 'stand_up',
     player_id: `00000000-0000-4000-8000-${String(index + 5).padStart(12, '0')}` })));
@@ -78,4 +67,19 @@ export async function texasTableVariants(context: TexasContext): Promise<void> {
   await gameGone(device, 'drawer-menu-item-renew');
   await gameReady(device, 'drawer-menu-item-exit');
   await capture('guest_menu');
+}
+
+function validateSidePots(items: import('./game-controls').NativeNode[], container: import('./screenshot').ScreenshotBounds) {
+  items.forEach((item, index) => {
+    const bounds = item.bounds;
+    expect(bounds.x).toBeGreaterThanOrEqual(container.x);
+    expect(bounds.y).toBeGreaterThanOrEqual(container.y);
+    expect(bounds.x + bounds.width).toBeLessThanOrEqual(container.x + container.width);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(container.y + container.height);
+    if (index % 2 === 1) {
+      expect(bounds.y).toBe(items[index - 1].bounds.y);
+      expect(bounds.x).toBeGreaterThanOrEqual(items[index - 1].bounds.x + items[index - 1].bounds.width);
+    }
+    if (index >= 2) expect(bounds.y).toBeGreaterThanOrEqual(items[index - 2].bounds.y + items[index - 2].bounds.height);
+  });
 }

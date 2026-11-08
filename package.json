@@ -15,8 +15,9 @@
     "check:python:static": "python3 scripts/check-python-static.py && npm run check:python:e2e",
     "check:python:e2e": "python3 -B scripts/python_complexity.py && python3 -m ruff check --config ruff.toml --config lint.mccabe.max-complexity=6 --ignore-noqa --no-cache e2e/mitmproxy scripts/python_complexity.py scripts/check-python-static.py scripts/test_python_complexity.py",
     "check:python": "npm run check:python:static && node scripts/quality-check.mjs ruff && node --test quality/python.test.mjs && node scripts/check-python.mjs",
-    "check:static": "npm run check:zhajinhua && node scripts/quality-check.mjs eslint dependencies duplicates && node --test quality/static.test.mjs",
+    "check:texas-animation": "node scripts/check-texas-animation.mjs && node --test quality/texas-animation.test.mjs",
     "check:zhajinhua": "node scripts/check-zhajinhua-complexity.mjs && node --test quality/zhajinhua-complexity.test.mjs",
+    "check:static": "npm run check:texas-animation && npm run check:zhajinhua && node scripts/quality-check.mjs eslint dependencies duplicates && node --test quality/static.test.mjs",
     "check:all": "npm run check && npm run check:python",
     "measure:quality": "node scripts/measure-quality.mjs"
   },

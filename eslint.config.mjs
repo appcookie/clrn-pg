@@ -1,4 +1,5 @@
 import tsParser from '@typescript-eslint/parser';
+import { texasAnimationFiles, texasAnimationTools } from './quality/texas-animation-scope.mjs';
 import { noNetworkFabrication } from './scripts/eslint-network-rule.mjs';
 import { testFiles, toolFiles } from './scripts/zhajinhua-complexity-scope.mjs';
 
@@ -16,6 +17,12 @@ export default [{
     'max-depth': ['error', 3],
     'architecture/no-network-fabrication': 'error',
   },
+}, {
+  files: texasAnimationTools,
+  rules: { complexity: ['error', { max: 6, variant: 'classic' }] },
+}, {
+  files: texasAnimationFiles,
+  rules: { complexity: ['error', { max: 3, variant: 'classic' }] },
 }, {
   // These adapter unit tests verify the response bridge itself; ordinary spec
   // and integration tests have no exception.

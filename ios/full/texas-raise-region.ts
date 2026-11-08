@@ -1,5 +1,6 @@
 import type { NativeNode } from './game-controls';
 import type { ScreenshotBounds } from './screenshot';
+import { contains } from './texas-animation-geometry';
 
 /** Fabric marks the slider descendants hidden although the current popup and
  * its confirm/cancel buttons are visible. Scope these controls to that popup;
@@ -15,16 +16,9 @@ export function texasRaiseControls(nodes: NativeNode[]) {
     return [node, ...(node.children || []).flatMap(visit)];
   };
   const all = visit(root);
-  const control = (id: string) => {
-    const matches = all.filter(node => node.res === id);
-    if (matches.length !== 1) throw new Error(`加注面板必须有唯一控件 ${id}`);
-    const node = matches[0], b = node.bounds, a = root.bounds;
-    if (node.enabled === false || b.width <= 0 || b.height <= 0 || b.x < a.x || b.y < a.y
-      || b.x + b.width > a.x + a.width || b.y + b.height > a.y + a.height) throw new Error(`加注控件不可用 ${id}`);
-    return node;
-  };
+  const control = (id: string) => raiseControl(all, root, id);
   const cancel = control('raise-bet-cancel-button'), confirm = control('raise-bet-confirm-button');
-  if (cancel.visible === false || confirm.visible === false) throw new Error('加注确认和取消按钮必须可见');
+  validateButtons(cancel, confirm);
   return { slider: control('raise-bet-slider'), thumb: control('sliderThumb'),
     value: control('raise-bet-display-text'), cancel, confirm };
 }
@@ -36,4 +30,18 @@ export function texasRaiseRegion(nodes: NativeNode[], screen: { width: number; h
   const right = Math.min(screen.width, Math.max(...controls.map(n => n.bounds.x + n.bounds.width)) + 4);
   const bottom = Math.min(screen.height, Math.max(...controls.map(n => n.bounds.y + n.bounds.height)) + 4);
   return { x, y, width: right - x, height: bottom - y };
+}
+
+function raiseControl(all: NativeNode[], root: NativeNode, id: string) {
+  const matches = all.filter(node => node.res === id);
+  if (matches.length !== 1) throw new Error(`加注面板必须有唯一控件 ${id}`);
+  const node = matches[0];
+  validateControl(node, root, id);
+  return node;
+}
+function validateControl(node: NativeNode, root: NativeNode, id: string) {
+  if (node.enabled === false || !contains(root.bounds, node.bounds)) throw new Error(`加注控件不可用 ${id}`);
+}
+function validateButtons(cancel: NativeNode, confirm: NativeNode) {
+  if (cancel.visible === false || confirm.visible === false) throw new Error('加注确认和取消按钮必须可见');
 }

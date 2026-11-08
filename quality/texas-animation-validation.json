@@ -1,0 +1,91 @@
+{
+  "issue": 45,
+  "base": "6e805337e8ce7809290e9e00fc2bb5c99dce17a3",
+  "fullTestSuiteRun": false,
+  "versions": {
+    "eslint": "10.12.0",
+    "@typescript-eslint/parser": "8.71.1"
+  },
+  "complexity": {
+    "beforeFunctions": 342,
+    "beforeOverLimit": 35,
+    "afterSupportFunctions": 438,
+    "afterToolFunctions": 13,
+    "afterOverLimit": 0,
+    "supportMaximum": 3,
+    "toolMaximum": 4,
+    "report": "quality/texas-animation-complexity.json",
+    "reproduce": "node scripts/measure-texas-animation.mjs 6e805337e8ce7809290e9e00fc2bb5c99dce17a3 > quality/texas-animation-complexity.json"
+  },
+  "inventoryRemoved": {
+    "eslint": 11,
+    "duplicates": 2,
+    "newOrExpandedExemptions": 0
+  },
+  "checks": [
+    {
+      "command": "npm run check:texas-animation",
+      "status": "passed",
+      "files": 26,
+      "negativeAndBoundaryTests": 21
+    },
+    {
+      "command": "node --import tsx --test ios/full/texas-action-region.test.mjs ios/full/texas-action-start.test.mjs ios/full/texas-card-region.test.mjs ios/full/texas-raise-masks.test.mjs ios/full/texas-raise-region.test.mjs ios/full/texas-showdown-region.test.mjs",
+      "status": "passed",
+      "tests": 26
+    },
+    {
+      "command": "node --import tsx --test ios/full/visual-comparison-policy.test.mjs",
+      "status": "passed",
+      "tests": 2
+    },
+    {
+      "command": "npx tsc --noEmit",
+      "status": "passed"
+    },
+    {
+      "command": ".cache/issue45-pre-commit/bin/python scripts/test-pre-commit.py PreCommitTests.test_texas_complexity_blocks_commit",
+      "status": "passed",
+      "tests": 1
+    },
+    {
+      "command": ".cache/issue45-pre-commit/bin/python scripts/test-pre-commit.py PreCommitTests.test_texas_hook_trigger_scopes",
+      "status": "passed",
+      "tests": 1
+    },
+    {
+      "command": "node scripts/quality-check.mjs eslint dependencies duplicates",
+      "status": "passed",
+      "added": 0,
+      "stale": 0
+    },
+    {
+      "command": "IOS_GROUP=texas npx playwright test --config ios/full/playwright.config.ts tests/games.spec.ts --list --grep 'signed_in_texas_(game|controls|hall|panels|panel_variants|table_states|records_v2|optional_pre_game)'",
+      "status": "collected",
+      "tests": 10
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "nativeAttempt": {
+    "command": "IOS_GROUP=texas IOS_VISUAL_MODE=compare npx playwright test --config ios/full/playwright.config.ts tests/games.spec.ts --grep 'signed_in_texas_hall$' --workers 1 --reporter=line",
+    "status": "blocked-before-native-execution",
+    "expectedBuild": {
+      "environment": "staging",
+      "sha": "c3ff78c66c7aedd586a66c9b09e8849497565365",
+      "release_tag": "ios-staging-36-1-c3ff78c66c7a"
+    },
+    "actualBuildLaunched": false,
+    "reason": "ios/full/system-proxy.mjs:22 only permits system proxy configuration on ephemeral GitHub-hosted macOS runners; the local representative run exited nonzero at this guard.",
+    "runtimeValidationComplete": false
+  },
+  "preserved": {
+    "visualBaselines": true,
+    "visualThresholds": true,
+    "retryBudgets": true,
+    "rawVideoPixels": true,
+    "requestAndCleanupSemantics": true
+  }
+}
