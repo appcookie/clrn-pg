@@ -7,6 +7,7 @@ import re
 from time import monotonic
 from urllib.parse import urlsplit
 from http_failure import outcome, utc_now
+from room_protocol_diagnostics import RoomProtocolDiagnostics
 
 
 class TransportDiagnostics:
@@ -48,7 +49,8 @@ class TransportDiagnostics:
             # The key stays internal so reconnects are distinct without
             # retaining the flow/body or exporting its identity.
             self.sockets[flow.id] = dict(endpoint=endpoint, opened=self.clock(), ended=None,
-                lastActivity=None, clientToServer=None, serverToClient=None)
+                lastActivity=None, clientToServer=None, serverToClient=None,
+                roomProtocol=RoomProtocolDiagnostics())
 
     def websocket_message(self, flow):
         endpoint = self.socket_endpoint(flow)
@@ -71,6 +73,10 @@ class TransportDiagnostics:
                 frame = json.loads(line)
             except (ValueError, UnicodeDecodeError):
                 continue
+            try:
+                state['roomProtocol'].observe(frame, message.from_client, self.clock())
+            except Exception:
+                pass  # Read-only diagnostics must never affect the original message or test result.
             if not isinstance(frame, dict) or not isinstance(frame.get('error'), dict):
                 continue
             code = frame['error'].get('code')
@@ -231,6 +237,7 @@ class TransportDiagnostics:
                     'lastDataMessageAgoMs': ago(state['lastActivity']),
                     'lastClientMessageAgoMs': ago(state['clientToServer']),
                     'lastServerMessageAgoMs': ago(state['serverToClient']),
+                    'roomProtocol': state['roomProtocol'].snapshot(now),
                     'close': state.get('close')}
                     for state in self.sockets.values()],
                 'messages': [{'host': host, 'path': path, 'direction': direction,

@@ -320,3 +320,45 @@ class TransportTests(unittest.TestCase):
         self.assertEqual([item['state'] for item in result['websocket']['connections']], ['closed', 'open'])
         self.assertEqual(result['responses'][0]['status'], 503)
         self.assertNotIn('private', json.dumps(result))
+
+    def test_room_protocol_is_correlated_redacted_bounded_and_read_only(self):
+        diagnostics = TransportDiagnostics(clock=lambda: 10)
+        socket = self.socket_flow()
+        diagnostics.websocket_start(socket)
+        frames = [
+            (True, {'id': 1, 'method': 1, 'params': {'channel': 'zhajinhua>private-room#private-user'}}),
+            (False, {'id': 1, 'result': {'private': 'private-result'}}),
+            (True, {'id': 2, 'method': 9, 'params': {'data': {
+                'path': '/v10/zhajinhua/room/00000000-0000-4000-8000-000000000001/player/alive',
+                'json': {'private': 'private-body'}}}}),
+            (False, {'id': 2, 'result': {'data': {'ok': False, 'error': 'private-error'}}}),
+            (False, {'result': {'type': 3, 'channel': 'zhajinhua>private-room#private-user'}}),
+        ]
+        for from_client, frame in frames:
+            msg = self.message(socket, json.dumps(frame).encode(), from_client=from_client)
+            before = msg.get_state()
+            diagnostics.websocket_message(socket)
+            self.assertEqual(msg.get_state(), before)
+        events = diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']
+        self.assertEqual([event['kind'] for event in events],
+                         ['subscribe', 'subscribe', 'alive', 'alive', 'server-unsubscribe'])
+        self.assertFalse(events[1]['protocolError'])
+        self.assertFalse(events[3]['applicationOk'])
+        self.assertNotIn('private', json.dumps(events))
+        self.assertNotIn('00000000', json.dumps(events))
+        for _ in range(70):
+            msg = self.message(socket, json.dumps(frames[0][1]).encode(), from_client=True)
+            diagnostics.websocket_message(socket)
+        self.assertEqual(len(diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']), 64)
+
+    def test_room_protocol_diagnostic_error_does_not_mutate_or_reject_message(self):
+        diagnostics = TransportDiagnostics()
+        socket = self.socket_flow()
+        diagnostics.websocket_start(socket)
+        protocol = diagnostics.sockets[socket.id]['roomProtocol']
+        msg = self.message(socket, b'{"id":1,"error":{"code":2500}}')
+        before = msg.get_state()
+        with patch.object(protocol, 'observe', side_effect=RuntimeError('private-diagnostic-error')):
+            diagnostics.websocket_message(socket)
+        self.assertEqual(msg.get_state(), before)
+        self.assertEqual(diagnostics.snapshot()['websocket']['protocolErrors'][0]['code'], 2500)
