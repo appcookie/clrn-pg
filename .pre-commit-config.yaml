@@ -24,3 +24,10 @@ repos:
         files: '\.py$|^(?:package(?:-lock)?\.json|requirements-dev\.txt|\.pre-commit-config\.yaml)$|(?:^|/)requirements[^/]*\.txt$|^\.github/workflows/.*\.ya?ml$'
         pass_filenames: false
         require_serial: true
+      - id: texas-animation-complexity
+        name: Texas animation complexity (tests 3, tools 6)
+        entry: npm run check:texas-animation
+        language: system
+        files: '^ios/full/texas-(?:action-region|action-start|card-region|control-variants|hall|panel-variants|panels|raise-masks|raise-region|record-variants|showdown-region|table-variants|animation).*\.[cm]?[jt]sx?$|^(?:eslint\.config\.mjs|quality/texas-animation.*|scripts/(?:check|measure)-texas-animation\.mjs|package(?:-lock)?\.json|\.pre-commit-config\.yaml|\.github/workflows/.*\.ya?ml)$'
+        pass_filenames: false
+        require_serial: true

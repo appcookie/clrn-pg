@@ -13,6 +13,12 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class PreCommitTests(unittest.TestCase):
+    partial_sources = [
+        ("fixture.py", "value = 2\n", "def partial_error(:\n", "SyntaxError"),
+        ("ios/full/fixture.ts", "export const value: number = 2;\n",
+         "export const value: number = 'wrong';\n", "TS2322"),
+    ]
+
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix="clrn-pre-commit-")
         self.addCleanup(self.temporary.cleanup)
@@ -41,15 +47,19 @@ class PreCommitTests(unittest.TestCase):
         self.run_command("git", "config", "user.email", "pre-commit-fixture@example.invalid")
         self.run_command("git", "config", "commit.gpgsign", "false")
         for name in [".pre-commit-config.yaml", "package.json", "tsconfig.json",
-                     "scripts/check-python-static.py", "eslint.config.mjs",
-                     "scripts/eslint-network-rule.mjs", "scripts/check-zhajinhua-complexity.mjs",
-                     "scripts/zhajinhua-complexity-scope.mjs", "quality/zhajinhua-complexity.test.mjs"]:
+                     "scripts/check-python-static.py", "eslint.config.mjs", "scripts/eslint-network-rule.mjs",
+                     "quality/texas-animation-scope.mjs", "quality/texas-animation.test.mjs",
+                     "scripts/check-texas-animation.mjs", "scripts/measure-texas-animation.mjs",
+                     "scripts/check-zhajinhua-complexity.mjs", "scripts/zhajinhua-complexity-scope.mjs",
+                     "quality/zhajinhua-complexity.test.mjs"]:
             target = self.repo / name
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / name, target)
         (self.repo / "node_modules").symlink_to(ROOT / "node_modules", target_is_directory=True)
         self.write(".gitignore", "node_modules/\nignored.py\n")
         self.write("ios/full/fixture.ts", "export const value: number = 1;\n")
+        self.write("ios/full/texas-action-region.ts", "export const value: number = 1;\n")
+        self.write("ios/full/texas-animation-fixture.ts", "export {};\n")
         self.write("fixture.py", "raise RuntimeError('syntax checks must never execute this')\n")
         self.write("README.md", "documentation\n")
         self.run_command("git", "add", ".")
@@ -103,7 +113,8 @@ class PreCommitTests(unittest.TestCase):
     def test_all_files_and_initial_commit_pass_once(self):
         result = self.run_command(sys.executable, "-m", "pre_commit", "run", "--all-files")
         for output in [result.stdout, self.initial_commit_output]:
-            for label in ["TypeScript typecheck", "Python syntax (read only)"]:
+            for label in ["TypeScript typecheck", "Python syntax (read only)",
+                          "Texas animation complexity (tests 3, tools 6)"]:
                 self.assertEqual(output.count(label), 1)
                 self.assertIn("Passed", next(line for line in output.splitlines() if label in line))
 
@@ -125,25 +136,30 @@ class PreCommitTests(unittest.TestCase):
         self.run_command("git", "add", "ios/full/fixture.ts")
         self.commit(True)
 
-    def test_unstaged_python_error_is_restored_after_staged_success(self):
-        self.write("fixture.py", "value = 2\n")
-        self.run_command("git", "add", "fixture.py")
-        self.write("fixture.py", "def unstaged_error(:\n")
+    def test_unstaged_errors_are_restored_after_staged_success(self):
         self.write("untracked.py", "def untracked_error(:\n")
         self.write("ignored.py", "def ignored_error(:\n")
-        self.assertIn("Restored changes", self.commit(True))
-        self.assertEqual(self.run_command("git", "show", "HEAD:fixture.py").stdout, "value = 2\n")
-        self.assertIn(" M fixture.py", self.run_command("git", "status", "--porcelain").stdout)
+        for name, valid, invalid, _ in self.partial_sources:
+            with self.subTest(name=name):
+                self.write(name, valid)
+                self.run_command("git", "add", name)
+                self.write(name, invalid)
+                self.assertIn("Restored changes", self.commit(True))
+                self.assertEqual(self.run_command("git", "show", f"HEAD:{name}").stdout, valid)
+                self.assertIn(f" M {name}", self.run_command("git", "status", "--porcelain").stdout)
 
-    def test_unstaged_fix_is_restored_after_staged_failure(self):
-        self.write("fixture.py", "def staged_error(:\n")
-        self.run_command("git", "add", "fixture.py")
-        self.write("fixture.py", "value = 'unstaged fix'\n")
-        output = self.commit(False)
-        self.assertIn("SyntaxError", output)
-        self.assertIn("Restored changes", output)
-        self.run_command("git", "add", "fixture.py")
-        self.commit(True)
+    def test_unstaged_fixes_are_restored_after_staged_failure(self):
+        for name, valid, invalid, diagnostic in self.partial_sources:
+            with self.subTest(name=name):
+                self.write(name, invalid)
+                self.run_command("git", "add", name)
+                self.write(name, valid)
+                output = self.commit(False)
+                self.assertIn(diagnostic, output)
+                self.assertIn(name, output)
+                self.assertIn("Restored changes", output)
+                self.run_command("git", "add", name)
+                self.commit(True)
 
     def test_trigger_scopes(self):
         for name, ts, python in [("README.md", False, False),
@@ -163,6 +179,32 @@ class PreCommitTests(unittest.TestCase):
                     self.assertEqual(output.count(label), 1)
                     line = next(line for line in output.splitlines() if label in line)
                     self.assertIn("Passed" if runs else "Skipped", line)
+
+    def test_texas_complexity_blocks_commit(self):
+        name = "ios/full/texas-action-region.ts"
+        self.write(name, "export function sample(value: number) { "
+                         "if (value === 0) return 0; if (value === 1) return 1; return 2; }\n")
+        self.run_command("git", "add", name)
+        self.assertIn("Texas animation complexity", self.commit(True))
+        self.write(name, "export function sample(value: number) { "
+                         "if (value === 0) return 0; if (value === 1) return 1; "
+                         "if (value === 2) return 2; return 3; }\n")
+        self.run_command("git", "add", name)
+        self.assertIn("complexity of 4", self.commit(False))
+        self.write(name, "export const value: number = 1;\n")
+        self.run_command("git", "add", name)
+        self.commit(True)
+
+    def test_texas_hook_trigger_scopes(self):
+        label = "Texas animation complexity (tests 3, tools 6)"
+        for name, runs in [("README.md", False), ("ios/full/fixture.ts", False),
+                           ("ios/full/texas-animation-fixture.ts", True)]:
+            with self.subTest(name=name):
+                self.write(name, (self.repo / name).read_text() + "\n")
+                self.run_command("git", "add", name)
+                output = self.commit(True)
+                line = next(line for line in output.splitlines() if label in line)
+                self.assertIn("Passed" if runs else "Skipped", line)
 
     def test_zhajinhua_complexity_blocks_and_fixed_source_commits(self):
         name = "ios/full/zhajinhua-showdown-fixture.ts"
