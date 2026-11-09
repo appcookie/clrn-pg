@@ -114,6 +114,8 @@ class IosVisualProxy:
         self.transport.websocket_start(flow)
 
     def websocket_message(self, flow):
+        from room_subscription_diagnostics import observe
+        observe(self, flow)
         self.transport.websocket_message(flow)
         if self.slot and flow.websocket:
             self.slot_websocket_message(flow)
@@ -123,6 +125,8 @@ class IosVisualProxy:
             self.game.websocket_message(flow)
 
     def websocket_end(self, flow):
+        from room_subscription_diagnostics import observe
+        observe(self, flow, ended=True)
         self.transport.websocket_end(flow)
         if self.game:
             self.game.websocket_end(flow)
@@ -246,6 +250,9 @@ class IosVisualProxy:
             try:
                 snapshot['roomSubscription'] = replay_readiness(
                     replay, game, self.game_session.room['roomId'])
+                if game == 'texas_holdem':
+                    from room_subscription_diagnostics import snapshot as subscription_snapshot
+                    snapshot['roomSubscription'].update(subscription_snapshot(self))
             except ValueError:
                 snapshot['roomSubscription'] = {'unavailable': True}
         return snapshot
