@@ -1,4 +1,4 @@
-"""Bounded Zhajinhua protocol evidence; never export IDs, channels, paths or bodies."""
+"""Bounded room protocol evidence; never export IDs, channels, paths or bodies."""
 from collections import OrderedDict, deque
 import re
 
@@ -7,13 +7,13 @@ def request_kind(frame):
     params = frame.get('params')
     if not isinstance(params, dict):
         return None
-    if frame.get('method') in (1, 2) and str(params.get('channel', '')).startswith('zhajinhua>'):
+    if frame.get('method') in (1, 2) and str(params.get('channel', '')).startswith(('zhajinhua>', 'texas_holdem>')):
         return 'subscribe' if frame['method'] == 1 else 'unsubscribe'
     data = params.get('data')
     if frame.get('method') != 9 or not isinstance(data, dict):
         return None
     path = data.get('path')
-    if not isinstance(path, str) or not re.fullmatch(r'/v\d+/zhajinhua/room/[0-9a-f-]{36}/.+', path, re.I):
+    if not isinstance(path, str) or not re.fullmatch(r'/v\d+/(?:zhajinhua|texas_holdem)/room/[0-9a-f-]{36}/.+', path, re.I):
         return None
     return 'alive' if path.endswith('/player/alive') else 'room-rpc'
 
@@ -51,7 +51,7 @@ class RoomProtocolDiagnostics:
             self.events.append(event)
         result = frame.get('result')
         if (isinstance(result, dict) and result.get('type') == 3
-                and str(result.get('channel', '')).startswith('zhajinhua>')):
+                and str(result.get('channel', '')).startswith(('zhajinhua>', 'texas_holdem>'))):
             self.events.append(dict(kind='server-unsubscribe', stage='push', at=now))
 
     def snapshot(self, now):

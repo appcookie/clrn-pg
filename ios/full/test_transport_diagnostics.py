@@ -322,17 +322,25 @@ class TransportTests(unittest.TestCase):
         self.assertNotIn('private', json.dumps(result))
 
     def test_room_protocol_is_correlated_redacted_bounded_and_read_only(self):
+        for game in ('zhajinhua', 'texas_holdem'):
+            with self.subTest(game=game):
+                self.assert_room_protocol_evidence(game)
+
+    def assert_room_protocol_evidence(self, game):
         diagnostics = TransportDiagnostics(clock=lambda: 10)
         socket = self.socket_flow()
         diagnostics.websocket_start(socket)
         frames = [
-            (True, {'id': 1, 'method': 1, 'params': {'channel': 'zhajinhua>private-room#private-user'}}),
+            (True, {'id': 1, 'method': 1, 'params': {'channel': f'{game}>private-room#private-user'}}),
             (False, {'id': 1, 'result': {'private': 'private-result'}}),
             (True, {'id': 2, 'method': 9, 'params': {'data': {
-                'path': '/v10/zhajinhua/room/00000000-0000-4000-8000-000000000001/player/alive',
+                'path': f'/v10/{game}/room/00000000-0000-4000-8000-000000000001/player/alive',
                 'json': {'private': 'private-body'}}}}),
             (False, {'id': 2, 'result': {'data': {'ok': False, 'error': 'private-error'}}}),
-            (False, {'result': {'type': 3, 'channel': 'zhajinhua>private-room#private-user'}}),
+            (True, {'id': 3, 'method': 9, 'params': {'data': {
+                'path': f'/v10/{game}/room/00000000-0000-4000-8000-000000000001/private-action'}}}),
+            (False, {'id': 3, 'error': {'code': 100, 'message': 'private-error'}}),
+            (False, {'result': {'type': 3, 'channel': f'{game}>private-room#private-user'}}),
         ]
         for from_client, frame in frames:
             msg = self.message(socket, json.dumps(frame).encode(), from_client=from_client)
@@ -341,9 +349,10 @@ class TransportTests(unittest.TestCase):
             self.assertEqual(msg.get_state(), before)
         events = diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']
         self.assertEqual([event['kind'] for event in events],
-                         ['subscribe', 'subscribe', 'alive', 'alive', 'server-unsubscribe'])
+                         ['subscribe', 'subscribe', 'alive', 'alive', 'room-rpc', 'room-rpc', 'server-unsubscribe'])
         self.assertFalse(events[1]['protocolError'])
         self.assertFalse(events[3]['applicationOk'])
+        self.assertTrue(events[5]['protocolError'])
         self.assertNotIn('private', json.dumps(events))
         self.assertNotIn('00000000', json.dumps(events))
         for _ in range(70):
