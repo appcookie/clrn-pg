@@ -1685,16 +1685,6 @@
   {
     "tool": "eslint",
     "file": "ios/full/device.ts",
-    "line": 45,
-    "column": 23,
-    "rule": "max-depth",
-    "message": "Blocks are nested too deeply (4). Maximum allowed is 3.",
-    "anchor": "a8cba0cbfaedb3e39c4ed7a12666673a03ae8c26efe653344cf2568a7843a928",
-    "reason": "基线已有嵌套；保留原检查路径，待对应功能迁移时消除。"
-  },
-  {
-    "tool": "eslint",
-    "file": "ios/full/device.ts",
     "line": 62,
     "column": 8,
     "rule": "complexity",

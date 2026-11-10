@@ -3,8 +3,22 @@
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { loadavg } from 'node:os';
+import { setTimeout as delay } from 'node:timers/promises';
 
 const execute = promisify(execFile);
+// Run only after startup fails, never during animation sampling. Process counts
+// distinguish a busy runner from accumulated test tools without exposing args.
+export async function reportSimulatorFailure(udid, query = execute) {
+  try {
+    const simulator = await inspectSimulator(udid, query);
+    const { stdout } = await query('ps', ['-axo', 'comm='], { timeout: 5000, maxBuffer: 1024 * 1024 })
+      .catch(() => ({ stdout: undefined }));
+    const names = (stdout || '').trim().split('\n').map(line => line.trim().split('/').at(-1));
+    const processes = stdout === undefined ? { unavailable: true } : Object.fromEntries(['node', 'xcodebuild', 'simctl', 'Simulator', 'SimulatorTrampoline']
+      .map(name => [name, names.filter(value => value === name).length]));
+    console.error('[iOS simulator startup failure]', JSON.stringify({ ...simulator, loadAverage: loadavg(), processes }));
+  } catch { /* Preserve the original boot/status-bar failure. */ }
+}
 const phases = [
   ['server-start', /Welcome to Appium/],
   ['driver-load-start', /Attempting to load driver xcuitest/],
@@ -124,4 +138,19 @@ export function startupDiagnostics(child) {
     },
   };
   return diagnostics;
+}
+
+/** Keep the exact operation result or exception; inspect only after failure. */
+export async function withSimulatorFailure(udid, action, query = execute) {
+  try { return await action(); }
+  catch (error) { await reportSimulatorFailure(udid, query); throw error; }
+}
+
+/** Startup readiness only: preserve the status assertion and per-request deadline. */
+export async function waitForAppium(server, driver, pause = delay) {
+  for (let attempt = 0; ; attempt++) {
+    if (server.exitCode !== null) throw new Error(`Appium 启动失败：${server.exitCode}`);
+    try { await driver.request('GET', '/status', undefined, 5000); return; }
+    catch (error) { if (attempt >= 359) throw error; await pause(500); }
+  }
 }

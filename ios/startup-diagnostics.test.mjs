@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
-import { startupDiagnostics, simulatorStartupTrace, inspectSimulator } from './startup-diagnostics.mjs';
+import { startupDiagnostics, simulatorStartupTrace, inspectSimulator, reportSimulatorFailure } from './startup-diagnostics.mjs';
 
 test('startup diagnostics retain lifecycle events across chunks without raw output', async t => {
   const child = Object.assign(new EventEmitter(), { pid: 123, exitCode: null, signalCode: null });
@@ -107,4 +107,53 @@ test('simulator discovery distinguishes missing devices from query failures with
     assert.equal(result.simulatorPresent, undefined);
     assert.ok(!JSON.stringify(result).includes('SECRET'));
   }
+});
+
+
+test('simulator failure evidence exports only fixed process counts and preserves failures', async t => {
+  const logs = [];
+  t.mock.method(console, 'error', (...args) => logs.push(args));
+  const udid = '00000000-0000-4000-8000-000000000001';
+  const query = async command => ({ stdout: command === 'xcrun'
+    ? JSON.stringify({ devices: { runtime: [{ udid, state: 'Shutdown', name: 'SECRET' }] } })
+    : '/private/SECRET/node\n/usr/bin/xcodebuild\n/usr/bin/xcodebuild\n/private/SECRET/other\n' });
+  await reportSimulatorFailure(udid, query);
+  const report = JSON.parse(logs[0][1]);
+  assert.equal(report.simulatorState, 'Shutdown');
+  assert.deepEqual(report.processes, { node: 1, xcodebuild: 2, simctl: 0, Simulator: 0, SimulatorTrampoline: 0 });
+  assert.ok(!JSON.stringify(logs).includes('SECRET'));
+  t.mock.method(console, 'error', () => { throw new Error('output unavailable'); });
+  await reportSimulatorFailure(udid, query);
+  await reportSimulatorFailure(udid, async () => { throw new Error('inspection unavailable'); });
+});
+
+test('Appium readiness survives slow live startup but still requires a successful status', async () => {
+  let polls = 0, pauses = 0;
+  const { waitForAppium } = await import('./startup-diagnostics.mjs');
+  await waitForAppium({ exitCode: null }, { request: async (...args) => {
+    assert.deepEqual(args, ['GET', '/status', undefined, 5000]);
+    if (++polls < 250) throw new Error('ECONNREFUSED');
+  } }, async ms => { assert.equal(ms, 500); pauses++; });
+  assert.equal(polls, 250);
+  assert.equal(pauses, 249);
+});
+
+test('Appium readiness preserves exhaustion error and stops on server exit', async () => {
+  const { waitForAppium } = await import('./startup-diagnostics.mjs');
+  const original = new Error('original status failure');
+  let polls = 0;
+  const driver = { request: async () => { polls++; throw original; } };
+  await assert.rejects(waitForAppium({ exitCode: null }, driver, async () => {}), error => error === original);
+  assert.equal(polls, 360);
+  await assert.rejects(waitForAppium({ exitCode: 1 }, driver), /Appium 启动失败/);
+  assert.equal(polls, 360);
+});
+
+
+test('simulator diagnostics keep the same operation result and exception', async () => {
+  const { withSimulatorFailure } = await import('./startup-diagnostics.mjs');
+  const original = new Error('original status-bar error');
+  const unavailable = async () => { throw new Error('diagnostic unavailable'); };
+  assert.equal(await withSimulatorFailure('unused', () => 42, unavailable), 42);
+  await assert.rejects(withSimulatorFailure('unused', () => { throw original; }, unavailable), error => error === original);
 });

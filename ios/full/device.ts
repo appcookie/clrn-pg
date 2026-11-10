@@ -12,7 +12,7 @@ import { comparePixels } from '../visual.mjs';
 import { NativeDevice } from './native-device';
 import { maskScreenshot, type ScreenshotMask, type ScreenshotBounds } from './screenshot';
 import { baselinePath, baselineRoot } from './baseline-path.mjs';
-import { startupDiagnostics } from '../startup-diagnostics.mjs';
+import { startupDiagnostics, waitForAppium } from '../startup-diagnostics.mjs';
 export { applicationId };
 export const artifacts = artifactDirectory;
 let appPromise: Promise<string> | undefined;
@@ -39,11 +39,11 @@ async function acquireServer() {
   const diagnostics = startupDiagnostics(server); server.stdout!.on('data', diagnostics.output);
   const url = `http://127.0.0.1:${port}`, driver = new WebDriver(url);
   try {
-    for (let attempt = 0; ; attempt++) {
-      if (server.exitCode !== null) throw new Error(`Appium 启动失败：${server.exitCode}`);
-      try { await driver.request('GET', '/status', undefined, 5000); break; }
-      catch (error) { if (attempt >= 119) throw error; await delay(500); }
-    }
+    // 42797337726: the live listener appeared at 100.8 s, after the old
+    // status budget expired. Use the smoke runner's 360-poll allowance.
+    await waitForAppium(
+      server, driver,
+    );
   } catch (error) { await diagnostics.report('appium-status', process.env.IOS_SIMULATOR_UDID); server.kill('SIGKILL'); throw error; }
   appium = { server, url, users: 1, diagnostics };
   return appium;
