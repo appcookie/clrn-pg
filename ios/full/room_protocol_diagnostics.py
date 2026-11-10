@@ -14,7 +14,9 @@ def request_kind(frame):
         return None
     path = data.get('path')
     if not isinstance(path, str) or not re.fullmatch(r'/v\d+/(?:zhajinhua|texas_holdem)/room/[0-9a-f-]{36}/.+', path, re.I):
-        return None
+        # A leaderboard connection can stall outside the room RPC contract.
+        # Correlate all other method-9 replies without exporting their paths.
+        return 'rpc'
     return 'alive' if path.endswith('/player/alive') else 'room-rpc'
 
 

@@ -371,3 +371,21 @@ class TransportTests(unittest.TestCase):
             diagnostics.websocket_message(socket)
         self.assertEqual(msg.get_state(), before)
         self.assertEqual(diagnostics.snapshot()['websocket']['protocolErrors'][0]['code'], 2500)
+
+    def test_non_room_rpc_reply_is_correlated_without_exporting_path_or_identity(self):
+        diagnostics = TransportDiagnostics(clock=lambda: 10)
+        socket = self.socket_flow()
+        diagnostics.websocket_start(socket)
+        frames = [(True, {'id': 987654, 'method': 9, 'params': {'data': {
+            'path': '/private-user/leaderboard?token=private-token', 'body': 'private-body'}}}),
+            (False, {'id': 987654, 'result': {'data': {'ok': True, 'result': 'private-result'}}})]
+        for from_client, frame in frames:
+            msg = self.message(socket, json.dumps(frame).encode(), from_client=from_client)
+            before = msg.get_state()
+            diagnostics.websocket_message(socket)
+            self.assertEqual(msg.get_state(), before)
+        events = diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']
+        self.assertEqual(events, [dict(kind='rpc', stage='request', agoMs=0),
+            dict(kind='rpc', stage='response', protocolError=False, applicationOk=True, agoMs=0)])
+        self.assertNotIn('private', json.dumps(events))
+        self.assertNotIn('987654', json.dumps(events))

@@ -16,6 +16,7 @@ export class WebDriver {
     // 直接使用 Node HTTP，让一个明确的 deadline 覆盖响应头和响应体。
     const url = new URL(`${this.server}${path}`);
     const bytes = body === undefined ? undefined : JSON.stringify(body);
+    const started = Date.now();
     const { status, payload } = await new Promise((resolve, reject) => {
       const request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, {
         method, headers: { 'Content-Type': 'application/json', ...(bytes === undefined ? {} : { 'Content-Length': Buffer.byteLength(bytes) }) },
@@ -31,6 +32,16 @@ export class WebDriver {
       });
       request.on('error', reject);
       request.end(bytes);
+    }).catch(error => {
+      // Transport errors have no useful command stack (run 42735484012).
+      // Never print the URL, session/element IDs, body or driver error text.
+      try {
+        const command = method === 'DELETE' && /^\/session\/[^/]+$/.test(path) ? 'delete-session'
+          : path.endsWith('/source') ? 'source' : path.endsWith('/execute/sync') ? 'execute' : 'other';
+        console.error('[iOS WebDriver transport failure]', JSON.stringify({ command,
+          startedAtUtc: new Date(started).toISOString(), elapsedMs: Date.now() - started, timeoutMs: timeout }));
+      } catch { /* Diagnostics must preserve the original failure. */ }
+      throw error;
     });
     if (status < 200 || status >= 300 || payload.value?.error) {
       const error = new Error(payload.value?.message || `WebDriver ${method} ${path}: HTTP ${status}`);

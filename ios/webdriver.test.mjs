@@ -4,6 +4,27 @@ import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { WebDriver } from './webdriver.mjs';
 
+test('清理超时诊断不泄露会话或请求，诊断失败仍保留原始 AbortError', async t => {
+  const server = createServer(() => {});
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
+  const output = [];
+  const log = t.mock.method(console, 'error', (...args) => output.push(args));
+  try {
+    const driver = new WebDriver(`http://127.0.0.1:${server.address().port}`);
+    const request = () => driver.request('DELETE', '/session/private-session', { secret: 'private-body' }, 20);
+    await assert.rejects(request(), { name: 'AbortError', code: 'ABORT_ERR' });
+    assert.equal(output.length, 1);
+    const evidence = JSON.parse(output[0][1]);
+    assert.equal(evidence.command, 'delete-session');
+    assert.equal(evidence.timeoutMs, 20);
+    assert.ok(evidence.elapsedMs >= 0);
+    assert.ok(Number.isFinite(Date.parse(evidence.startedAtUtc)));
+    assert.doesNotMatch(JSON.stringify(output), /private|127\.0\.0\.1/);
+    log.mock.mockImplementation(() => { throw new Error('diagnostic failed'); });
+    await assert.rejects(request(), { name: 'AbortError', code: 'ABORT_ERR' });
+  } finally { server.closeAllConnections(); server.close(); }
+});
+
 test('标签切换发送中心触摸并等待原生选中状态，不依赖 click 的成功响应', async () => {
   const driver = new WebDriver();
   driver.session = 'test-session';
