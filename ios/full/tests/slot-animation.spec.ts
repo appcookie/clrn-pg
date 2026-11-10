@@ -22,6 +22,7 @@ import { slotBackgroundMasks, slotHeadReference, verifySlotHeadGeometry } from '
 import { animationRecordOnly } from '../record-only';
 import { pressVerifiedSlotSpin } from '../slot-spin';
 import { pressSlotBanner } from '../slot-banner';
+import { recentModalWarnings } from '../modal-diagnostics';
 
 if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
     || (process.env.IOS_LOCALE || 'en') !== 'en')) test('三个原生老虎机滚轮与各类奖励均由真实旋转响应驱动动画', async ({}, testInfo) => {
@@ -136,7 +137,16 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       expect(final.spins, '能量不足由第四次旋转请求触发').toBe(4);
       await waitAbsent(device, { res: 'spin-button' });
     } catch (error) {
-      if (device) await captureFailure(device, testInfo);
+      if (device) {
+        await captureFailure(device, testInfo, () => proxy.command('native/transport')).catch(() => {});
+        try {
+          const state = await proxy.command<{ spins: number; noEnergy: boolean; currency: string }>('android/slot');
+          await testInfo.attach('slot-failure-state', { body: JSON.stringify({
+            spins: state.spins, noEnergy: state.noEnergy, currency: state.currency,
+            modalWarnings: await recentModalWarnings(device.udid).catch(() => ({ unavailable: true })),
+          }), contentType: 'application/json' });
+        } catch {}
+      }
       throw error;
     } finally { await device?.close(); }
   }, false, false, true);

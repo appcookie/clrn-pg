@@ -1,4 +1,5 @@
 import { safeNativeTree } from './diagnostics';
+import { renewalMarkerEvidence } from './panel-diagnostics';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import presentation from '../../visual/fixtures/game-presentation.json' with { type: 'json' };
 import type { TestInfo } from '@playwright/test';
@@ -16,7 +17,6 @@ import { playerCountdownNodes } from './game-countdown';
 import { modalBackgroundMasks } from './modal-background-masks';
 import { texasRaiseClockMasks } from './texas-raise-masks';
 import { capturePredictionResult } from './prediction-result';
-
 /**
  * 使原生控件边界及绘制余量落到实际截图的整数像素。
  * @param bounds - 原生控件边界。
@@ -54,14 +54,19 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     const observedPanels = (snapshot: typeof nodes) => foregroundPanels(snapshot, device.screenSize)
       .map(node => ({ marker: /^(?:texas-holdem-player-action-|texas-holdem-shortcut-raise-button-|zhajinhua-shortcut-raise-)/
         .test(node.res || '') ? node.res : '[container]', bounds: node.bounds, visible: node.visible }));
-    const observations = [{ utc: new Date().toISOString(), panels: observedPanels(nodes), recovered: initialObservation.recovered }];
+    const evidence = (snapshot: typeof nodes, recovered: boolean, queryMs: number) => ({
+      utc: new Date().toISOString(), panels: observedPanels(snapshot), recovered, queryMs,
+      renewalMarkers: renewalMarkerEvidence(snapshot),
+    });
+    const observations = [evidence(nodes, initialObservation.recovered, 0)];
     let recovered = false;
     try {
       nodes = await stableNativeObservation(async () => {
+        const started = Date.now();
         const observation = await gameConnectedObservation(device);
         recovered = observation.recovered;
         const current = observation.nodes;
-        observations.push({ utc: new Date().toISOString(), panels: observedPanels(current), recovered });
+        observations.push(evidence(current, recovered, Date.now() - started));
         return current;
       }, (before, current) => {
         expect(foregroundPanels(current, device.screenSize).map(node => node.bounds),
@@ -71,7 +76,7 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
     } finally {
       await testInfo.attach(`${name}-foreground-observations`, {
         body: JSON.stringify(observations), contentType: 'application/json',
-      });
+      }).catch(() => {});
     }
   }
   if (expectedAlertMarker) expect(nodes.some(node => node.res === expectedAlertMarker), '目标业务提示必须可见').toBe(true);

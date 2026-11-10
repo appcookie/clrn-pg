@@ -214,6 +214,8 @@ export async function signIn(device: NativeDevice, username = process.env.VISUAL
   await tap(device, 'settings-tab');
   await tap(device, 'sign-in-button');
   await tap(device, 'username-or-email-sign-in-button');
+  // 导航点击返回时表单可能仍在入场；fill 的单次查询不提供就绪等待。
+  await reveal(device, { res: 'username-input' });
   await device.fill({ res: 'username-input' }, username);
   await device.hideKeyboard();
   await reveal(device, { res: 'password-input' });

@@ -163,14 +163,14 @@ async function connectedObservation(device: AndroidDevice, stableMs = 0,
   const initial = await observe();
   if (!gameConnectionState(initial).connecting && !stableMs) return { nodes: initial, recovered: false };
   let availableSince = 0;
-  let nodes = initial;
-  await expect.poll(async () => {
-    nodes = await observe();
+  let nodes = initial; const diagnostic = reportReadinessDiagnostic('room-connection');
+  await diagnostic.wait(async () => { await expect.poll(async () => { const started = Date.now();
+    nodes = await observe(); diagnostic.record(nodes, Date.now() - started);
     const { connecting } = gameConnectionState(nodes);
     if (connecting) availableSince = 0;
     else if (!availableSince) availableSince = Date.now();
     return !connecting && Date.now() - availableSince >= Math.max(1_000, stableMs);
-  }, { timeout: 120_000, intervals: [250] }).toBe(true);
+  }, { timeout: 120_000, intervals: [250] }).toBe(true); });
   return { nodes, recovered: true };
 }
 
@@ -264,11 +264,13 @@ export function reportReadinessDiagnostic(resource: string) {
   const samples: unknown[] = [];
   return {
     record(nodes: NativeNode[], queryMs: number) {
-      if (resource !== 'report-field-input') return;
+      if (!['report-field-input', 'drawer-menu-item-exit', 'room-connection'].includes(resource)) return;
       try {
         samples.push({ completedUtc: new Date().toISOString(), queryMs,
           targetPresent: nodes.some(node => node.res === resource),
           reportVisible: nodes.some(node => node.res === 'report-popup-title'),
+          menuPresent: nodes.some(node => node.res === 'menu-button'),
+          drawerPresent: nodes.some(node => node.res === 'drawer-menu-item-exit'),
           connecting: nodes.some(node => /Connecting\.\.\./.test(node.text || '')),
           timeoutVisible: nodes.some(node => /Connection Timeout/i.test(node.text || '')) });
         if (samples.length > 16) samples.shift();
@@ -277,7 +279,7 @@ export function reportReadinessDiagnostic(resource: string) {
     async wait(task: () => Promise<void>) {
       try { await task(); }
       catch (error) {
-        try { if (samples.length) console.error('[report readiness]', JSON.stringify(samples)); } catch {}
+        try { if (samples.length) console.error(`[${resource} readiness]`, JSON.stringify(samples)); } catch {}
         throw error;
       }
     },

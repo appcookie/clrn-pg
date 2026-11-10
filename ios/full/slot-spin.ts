@@ -11,7 +11,10 @@ export async function pressVerifiedSlotSpin(device: NativeDevice, readSpins: () 
   // Use the same full native layout source as the three successful reward spins.
   // Predicate queries can miss this reopened panel; do not mix their geometry
   // with a fallback XML snapshot in the stable pair.
-  await gameTap(device, 'spin-button');
+  await gameTap(device, 'spin-button', false, point => {
+    try { console.log('[slot empty spin input]', JSON.stringify({
+      requestedUtc: new Date().toISOString(), point, screen: device.screenSize })); } catch {}
+  });
   const deadline = Date.now() + timeoutMs;
   do {
     const spins = await readSpins();
