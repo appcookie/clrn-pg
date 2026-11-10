@@ -389,3 +389,24 @@ class TransportTests(unittest.TestCase):
                          ['matching-join', 'matching-quit', 'matching-keep_waiting'])
         self.assertNotIn('private', json.dumps(events))
         self.assertEqual(diagnostics.path('/v1/hall_matching/private-user'), None)
+
+    def test_user_settings_timeout_is_observed_without_room_or_payload(self):
+        diagnostics = TransportDiagnostics(clock=lambda: 10)
+        room = '00000000-0000-4000-8000-000000000001'
+        request = flow(f'/v10/texas_holdem/room/{room}/user_settings?token=private-query',
+                       'PUT', {'secret': 'private-body'})
+        before = request.request.get_state()
+        diagnostics.request(request)
+        pending = diagnostics.snapshot()['httpEvents'][0]
+        self.assertIsNone(pending['status'])
+        request.error = Error('connection timed out')
+        diagnostics.response(request, hook='error')
+        event = diagnostics.snapshot()['httpEvents'][0]
+        self.assertEqual(event['path'], '/v10/texas_holdem/room/<room>/user_settings')
+        self.assertEqual(event['method'], 'PUT')
+        self.assertEqual(event['status'], 0)
+        self.assertTrue(event['transportError'])
+        self.assertEqual(request.request.get_state(), before)
+        for secret in (room, 'private-query', 'private-body'):
+            self.assertNotIn(secret, json.dumps(diagnostics.snapshot()))
+        self.assertIsNone(diagnostics.path(f'/v10/texas_holdem/room/{room}/private-action'))

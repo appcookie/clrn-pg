@@ -39,7 +39,7 @@ IOS_SIMULATOR_UDID=<专用模拟器 UUID> npm run test:ios
 
 ## CI
 
-`ios-simulator.yml` 是无需自定义 Secrets 的基础冒烟工作流。PR、master 推送还会执行 `ios-full.yml` 的静态截图比较和当前未隔离的 20 组录屏；其余 5 组列在 [隔离目录](ios/full/quarantined/README.md)，不计为通过。其中登录场景需要下文列出的测试账号 Secrets。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
+`ios-simulator.yml` 保留为无需自定义 Secrets 的手动冒烟入口。PR、master 推送统一执行 `ios-full.yml`，在一个 Linux job 中完成公共检查，再分配 App、德州、拼三张三个 macOS runner；原 Staging 冒烟已并入 App。仍执行静态截图比较和当前未隔离的 20 组录屏；其余 5 组列在 [隔离目录](ios/full/quarantined/README.md)，不计为通过。其中登录场景需要下文列出的测试账号 Secrets。固定 macOS 15 / Xcode 16.4 / iPhone 16 / iOS 18.5，避免自动选设备造成基准漂移。截图、MP4、帧序列、日志、报告和 reference 产物保存 30 天；长期基准需审查后入库。手动运行可选择模式和页面过滤条件。
 
 扩展页面见 `ios/scenarios.mjs`；更新应用只需修改部署记录，不需要修改业务代码。
 
@@ -54,7 +54,7 @@ npm run check:python  # 先安装 e2e/mitmproxy/requirements.txt 到 e2e/.venv
 
 `check` 还会执行 ESLint 复杂度/嵌套与网络伪造规则、dependency-cruiser 架构检查及 jscpd 新增重复门禁；`check:python` 包含 Ruff C901。统一入口为 `npm run check:all`。固定版本、实测基线、精确历史迁移清单和临时负例见 [静态质量门禁](docs/static-quality.md)，这些静态结果不代表真实设备运行通过。
 
-完整原生测试通过「iOS 完整回归」工作流运行。每个 job 明确一个 `IOS_GROUP`，全量模式拆成三语言、业务组和牌桌分片。代理仅允许 GitHub 托管临时 macOS runner，保存并恢复系统代理；本机默认拒绝更改日常网络。
+完整原生测试通过「iOS 完整回归」工作流运行。每个逻辑分组以独立进程明确 `IOS_GROUP`、语言、过滤条件、功能分片及账号，在所属业务 runner 内顺序执行。分组失败后仍清理、归档并继续后续分组，最终任一分组未通过均阻断。代理仅允许 GitHub 托管临时 macOS runner，保存并恢复系统代理；本机默认拒绝更改日常网络。
 
 正常视觉场景（含德州、拼三张、战绩及登录态采集）由应用根据真实节点列表和健康结果动态选线。
 v12 数组、v13 字典、所有节点健康响应及 CORS 预检完整透传；不固定首尔 64、不把其他节点改成 503，
@@ -71,9 +71,9 @@ v12 数组、v13 字典、所有节点健康响应及 CORS 预检完整透传；
 结合每例结束时保存的 `native/transport` 脱敏候选域名、健康来源和实际 WebSocket 连接诊断，
 以及本轮截图、录像和构建身份核对；节点地址、查询参数、凭据及业务正文不会写入该诊断。
 
-游客组每种语言拆成两个 job：`pages` 执行 18 个页面，`startup` 执行启动页及认证截图用例。英语 21 项、简中 20 项、繁中 20 项；独立动画清单有 25 组，其中 20 组进入当前 PR 录屏分片。整体最多并行 10 个 job，每个 job 仍只启动一个模拟器。
+游客组每种语言保留两个逻辑分组：`pages` 执行 18 个页面，`startup` 执行启动页及认证截图用例。英语 21 项、简中 20 项、繁中 20 项；独立动画清单有 25 组，其中 20 组进入当前 PR 录屏分片。正常自动回归共 27 个逻辑分组（含 Staging），在三个 macOS job 内顺序执行。每台公共工具只安装一次；分组切换清理进程、代理及模拟器状态。App / 德州 / 拼三张的 job 上限分别为 330 / 210 / 240 分钟。完整调度及待完成的实测验收见 [三台 runner 验证说明](docs/ios-ci-runner-validation.md)。
 
-普通功能组的 54 例使用 Playwright 原生分片分成 5 个任务（11 / 11 / 11 / 11 / 10 例），各自分配账号槽位。仅该组开启按测试分片，每个任务仍以一个执行进程顺序运行；多账号用例按需创建额外的独立模拟器。账号较少时，相同账号的任务通过账号锁排队。创建、交互和弱网组保持原有独立任务。
+普通功能组的 54 例使用 Playwright 原生分片分成 5 个任务（11 / 11 / 11 / 11 / 10 例），在 App runner 中复用该 job 持有的账号。仅该组开启按测试分片，每个任务仍以一个执行进程顺序运行；多账号用例按需创建额外的独立模拟器。每个业务 job 全程持有单个账号锁，各登录分组执行前重新准备账号；账号较少时，共享账号的 job 排队。创建、交互和弱网组保持原有独立测试进程。
 
 游客组不需要凭据。登录组需要仓库 Secret `CLRN_IOS_CI_TEST_ACCOUNTS`（至少一个独立 iOS 测试账号），以及余额准备/创建数据所需的 `TESTING_API_TOKEN`。账号池格式为 `{"accounts":[{"username":"clrnciios001","password":"实际密码","status":"ready"}]}`；只配置确实已创建的账号，禁止借用 Web/Android 并发占用的账号。账号级排队锁保证同一账号不会被多个 job 同时使用。
 

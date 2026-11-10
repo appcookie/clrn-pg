@@ -48,8 +48,8 @@ test('functional五片账号槽位独立稳定，少量账号只复用已配置�
   const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
   assert.match(workflow, /group: ios-account-\$\{\{ matrix\.account \|\|/);
   assert.match(workflow, /queue: max/);
-  assert.match(workflow, /IOS_PLAYWRIGHT_SHARD: \$\{\{ matrix\.playwrightShard \}\}/);
-  assert.match(workflow, /args\+=\(--shard "\$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1\)/);
+  assert.match(readFileSync(new URL('./ios-ci-native.mjs', import.meta.url), 'utf8'), /group\.playwrightShard/);
+  assert.match(readFileSync(new URL('./ios-ci-native.mjs', import.meta.url), 'utf8'), /'--fully-parallel', '--workers', '1'/);
 });
 
 test('手动俱乐部搜索采图只调度一个用例，PR 事件不能缩减功能组', async () => {
@@ -179,8 +179,8 @@ test('guest每语言18页独立于动画录屏，实际21/20/20项跨两片恰�
   assert.equal(first.locale, 'en');
   assert.equal(first.shard, 'startup');
   const workflow = readFileSync(new URL('../.github/workflows/ios-full.yml', import.meta.url), 'utf8');
-  assert.match(workflow, /max-parallel: 10/);
-  assert.match(workflow, /github\.run_id, matrix\.group, matrix\.locale, matrix\.shard/);
+  assert.match(workflow, /max-parallel: 3/);
+  assert.match(workflow, /github\.run_id, matrix\.business, github\.run_attempt/);
 });
 test('凭据接受任意非空ready独立iOS子池，拒绝原仓库账号或损坏Secret且不泄露正文', () => {
   const accounts = ciAccounts.map(username => ({ username, password: 'fake-password', status: 'ready' }));

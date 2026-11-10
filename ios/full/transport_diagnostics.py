@@ -35,6 +35,8 @@ class TransportDiagnostics:
         path = urlsplit(value).path
         if re.fullmatch(r'/v10/profile/[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}', path):
             return '/v10/profile/<user>'
+        if re.fullmatch(r'/v10/texas_holdem/room/[0-9a-f-]{36}/user_settings', path, re.I):
+            return '/v10/texas_holdem/room/<room>/user_settings'
         return path if (re.fullmatch(r'/(?:node/)?v\d+/status', path)
             or re.fullmatch(r'/public/v\d+/metadata(?:/servers)?', path)
             or path in ('/v2/centrifugo/connection/websocket', '/v3/pay_action/do')) else None
@@ -110,7 +112,7 @@ class TransportDiagnostics:
             self.requests[(host, path)] += 1
             method = flow.request.method
             self.http_events[flow.id] = dict(host=host, path=path,
-                method=method if method in ('GET', 'POST', 'OPTIONS', 'HEAD') else '<other>',
+                method=method if method in ('GET', 'POST', 'PUT', 'OPTIONS', 'HEAD') else '<other>',
                 sequence=flow.metadata.get('ios_sequence'), requestAtUtc=utc_now(),
                 started=self.clock(), ended=None, status=None, mocked=False)
             while len(self.http_events) > 128:

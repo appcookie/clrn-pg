@@ -88,11 +88,11 @@ export function keyboardDismissTarget(nodes: NativeNode[]): NativeNode | undefin
     && node.clazz === 'XCUIElementTypeButton' && /^(Done|完成|完畢)$/.test(node.text || ''));
   if (done) return done;
   const interactive = new Set(nodes.filter(node => /Button|Link|Cell|TextField|TextView|Keyboard|StatusBar/.test(node.clazz)).flatMap(descendants));
-  return nodes.find(node => node.visible && node.enabled && node.clazz === 'XCUIElementTypeStaticText'
-    // The native sign-in navigation bar exposes an empty StaticText before
-    // the form heading. Tapping that placeholder cannot dismiss the keyboard.
+  return nodes.filter(node => node.visible && node.enabled && node.clazz === 'XCUIElementTypeStaticText'
+    // Ignore the empty sign-in navigation title; tapping it cannot dismiss the keyboard.
     && !!node.text?.trim() && !interactive.has(node) && node.bounds.y >= 0
-    && node.bounds.y + node.bounds.height < keyboard.bounds.y);
+    && node.bounds.y + node.bounds.height < keyboard.bounds.y)
+    .sort((a, b) => Number(b.res === 'staging-confirmation-instructions') - Number(a.res === 'staging-confirmation-instructions'))[0];
 }
 
 export class NativeDevice {

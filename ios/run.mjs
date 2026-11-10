@@ -9,7 +9,7 @@ import { WebDriver } from './webdriver.mjs';
 import { applicationId, readVerifiedBuild } from './release.mjs';
 import { selectScenarios, tabPages } from './scenarios.mjs';
 import { extractSimulator } from './extract-simulator.mjs';
-
+import { withSimulatorFailure } from './startup-diagnostics.mjs';
 const mode = process.env.IOS_VISUAL_MODE || 'smoke';
 if (!['smoke', 'reference', 'compare'].includes(mode)) throw new Error('IOS_VISUAL_MODE 应为 smoke、reference 或 compare。');
 const selectedScenarios = selectScenarios(process.env.IOS_FILTER);
@@ -23,8 +23,8 @@ const simulator = devices.devices[runtime]?.find(device => device.udid === udid)
 if (!simulator || !simulator.isAvailable) throw new Error(`找不到可用的指定模拟器：${udid}`);
 if (simulator.state !== 'Booted') execFileSync('xcrun', ['simctl', 'boot', udid]);
 execFileSync('xcrun', ['simctl', 'bootstatus', udid, '-b'], { stdio: 'inherit', timeout: 180_000 });
-execFileSync('xcrun', ['simctl', 'status_bar', udid, 'override', '--time', '9:41', '--batteryState', 'charged',
-  '--batteryLevel', '100', '--wifiBars', '3', '--cellularBars', '4']);
+await withSimulatorFailure(udid, () => execFileSync('xcrun', ['simctl', 'status_bar', udid, 'override', '--time', '9:41', '--batteryState', 'charged',
+  '--batteryLevel', '100', '--wifiBars', '3', '--cellularBars', '4']));
 const results = resolve('ios/artifacts/results');
 const profile = `${simulator.deviceTypeIdentifier}-${runtime}`.replace(/[^a-zA-Z0-9.-]/g, '_');
 const snapshots = resolve('ios/snapshots', profile);
