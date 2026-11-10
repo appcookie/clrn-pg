@@ -13,9 +13,10 @@ def request_kind(frame):
     if frame.get('method') != 9 or not isinstance(data, dict):
         return None
     path = data.get('path')
-    if not isinstance(path, str) or not re.fullmatch(r'/v\d+/(?:zhajinhua|texas_holdem)/room/[0-9a-f-]{36}/.+', path, re.I):
-        # A leaderboard connection can stall outside the room RPC contract.
-        # Correlate all other method-9 replies without exporting their paths.
+    if path in ('/v1/hall_matching/join', '/v1/hall_matching/quit', '/v1/hall_matching/keep_waiting'):
+        return 'matching-' + path.rsplit('/', 1)[-1]
+    if not isinstance(path, str) or not re.fullmatch(r'/?v\d+/(?:zhajinhua|texas_holdem)/room/[0-9a-f-]{36}/.+', path, re.I):
+        # Correlate other method-9 replies without exporting their paths.
         return 'rpc'
     return 'alive' if path.endswith('/player/alive') else 'room-rpc'
 

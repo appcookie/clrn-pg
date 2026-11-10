@@ -3,8 +3,8 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
 import { selectTab } from './tab-selection.mjs';
+import { inputRequestTiming } from './input-request-diagnostics.mjs';
 const elementKey = 'element-6066-11e4-a52e-4f735466cecf';
-
 export class WebDriver {
   constructor(server = 'http://127.0.0.1:4723') {
     this.server = server;
@@ -17,6 +17,7 @@ export class WebDriver {
     const url = new URL(`${this.server}${path}`);
     const bytes = body === undefined ? undefined : JSON.stringify(body);
     const started = Date.now();
+    const observed = inputRequestTiming(method, path);
     const { status, payload } = await new Promise((resolve, reject) => {
       const request = (url.protocol === 'https:' ? httpsRequest : httpRequest)(url, {
         method, headers: { 'Content-Type': 'application/json', ...(bytes === undefined ? {} : { 'Content-Length': Buffer.byteLength(bytes) }) },
@@ -24,13 +25,14 @@ export class WebDriver {
       }, response => {
         const chunks = [];
         response.on('data', chunk => chunks.push(chunk));
-        response.on('error', reject);
+        response.on('error', error => { observed('transport-error'); reject(error); });
         response.on('end', () => {
+          observed(response.statusCode);
           try { resolve({ status: response.statusCode, payload: JSON.parse(Buffer.concat(chunks).toString('utf8')) }); }
           catch (error) { reject(error); }
         });
       });
-      request.on('error', reject);
+      request.on('error', error => { observed('transport-error'); reject(error); });
       request.end(bytes);
     }).catch(error => {
       // Transport errors have no useful command stack (run 42735484012).

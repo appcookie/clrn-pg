@@ -1,4 +1,4 @@
-# 完整原生测试按业务组隔离；游客无需凭据，完整矩阵使用独立 iOS 测试账号。
+# 保留逻辑分组，在 App、德州、拼三张三个 runner 内顺序执行。
 name: iOS 完整回归
 on:
   pull_request:
@@ -38,15 +38,36 @@ env:
 jobs:
   plan:
     runs-on: ubuntu-latest
+    env:
+      QUALITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
     outputs:
-      matrix: ${{ steps.select.outputs.matrix }}
-      run_native: ${{ steps.select.outputs.run_native }}
+      matrix: ${{ steps.bundle.outputs.matrix }}
+      run_native: ${{ steps.bundle.outputs.run_native }}
       preflight: ${{ steps.preflight.outcome }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+          cache: npm
+      - run: npm ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: 提交前静态检查（与本地共用配置）
+        run: |
+          python -m venv .venv-pre-commit
+          .venv-pre-commit/bin/python -m pip install -r requirements-dev.txt
+          . .venv-pre-commit/bin/activate
+          pre-commit run --all-files
+          .venv-pre-commit/bin/python scripts/test-pre-commit.py
+      - run: |
+          python -m venv e2e/.venv
+          e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
+      - run: npm run check
+      - run: PATH="$PWD/e2e/.venv/bin:$PATH" npm run check:python
       - id: plan
         env:
           CI_IOS_GROUP: ${{ inputs.group }}
@@ -61,9 +82,6 @@ jobs:
             echo 'PR 和 master push 比较三语言游客及未隔离牌局静态截图，采集未隔离组录屏；隔离清单见 ios/full/quarantined/。' >> "$GITHUB_STEP_SUMMARY"
           fi
           node scripts/plan-ci-accounts.mjs ios
-      - name: 安装基准预检依赖
-        if: inputs.mode == 'compare' || github.event_name != 'workflow_dispatch'
-        run: npm ci
       - name: compare 基准预检
         id: preflight
         if: inputs.mode == 'compare' || github.event_name != 'workflow_dispatch'
@@ -78,57 +96,55 @@ jobs:
           IOS_BASELINE_PREFLIGHT_OUTCOME: ${{ steps.preflight.outcome == 'skipped' && 'success' || steps.preflight.outcome }}
           IOS_REFERENCE_CASES: ${{ steps.preflight.outputs.reference_cases }}
         run: node ios/full/select-ci-matrix.mjs
+      - name: 核对公开 iOS Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node ios/download-release.mjs --simulator
+      - name: 合并逻辑分组为三个业务 runner
+        id: bundle
+        env:
+          IOS_CI_MATRIX: ${{ steps.select.outputs.matrix }}
+          IOS_INCLUDE_STAGING: ${{ github.event_name != 'workflow_dispatch' }}
+          CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
+        run: node scripts/ios-ci-plan.mjs
+  # Preserve existing required check contexts; expensive checks run only in plan.
   proxy-check:
+    needs: plan
+    if: always()
     runs-on: ubuntu-latest
-    env:
-      QUALITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: npm ci
-      - name: 提交前静态检查（与本地共用配置）
-        run: |
-          python -m venv .venv-pre-commit
-          .venv-pre-commit/bin/python -m pip install -r requirements-dev.txt
-          . .venv-pre-commit/bin/activate
-          pre-commit run --all-files
-          .venv-pre-commit/bin/python scripts/test-pre-commit.py
-      - run: |
-          python -m venv e2e/.venv
-          e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
-      - run: npm run check:static
-      - run: PATH="$PWD/e2e/.venv/bin:$PATH" npm run check:python
+      - env:
+          RESULT: ${{ needs.plan.result }}
+        run: test "$RESULT" = success
+  check:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'iOS diagnostic checks' || 'check' }}
+    needs: plan
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          RESULT: ${{ needs.plan.result }}
+        run: test "$RESULT" = success
   native:
     needs: [plan, proxy-check]
     if: needs.plan.outputs.run_native == 'true'
     strategy:
       fail-fast: false
-      max-parallel: 10
+      max-parallel: 3
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     concurrency:
-      group: ios-account-${{ matrix.account || format('{0}-{1}-{2}-{3}', github.run_id, matrix.group, matrix.locale, matrix.shard) }}
+      group: ios-account-${{ matrix.account || format('{0}-{1}-{2}', github.run_id, matrix.business, github.run_attempt) }}
       queue: max
     runs-on: macos-15
-    timeout-minutes: ${{ matrix.animation == 'animation-20' && 135 || 120 }}
+    timeout-minutes: ${{ matrix.timeout }}
     name: ${{ matrix.label }}
     env:
       DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
       APPIUM_HOME: ${{ github.workspace }}/.appium
       IOS_SIMULATOR_UDID: ''
-      IOS_GROUP: ${{ matrix.group }}
-      IOS_LOCALE: ${{ matrix.locale }}
-      IOS_VISUAL_MODE: ${{ matrix.mode || inputs.mode || 'compare' }}
-      IOS_ANIMATION_RECORD_ONLY: ${{ matrix.recordOnly && '1' || '0' }}
-      CLRN_CI_ACCOUNT: ${{ matrix.account }}
+      IOS_VISUAL_MODE: ${{ inputs.mode || 'compare' }}
       CLRN_IOS_ACCOUNT_LOCK: ${{ matrix.account }}
+      IOS_BUSINESS_PLAN: ${{ toJSON(matrix) }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -148,123 +164,64 @@ jobs:
           brew install ffmpeg
           python -m venv e2e/.venv
           e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
-      - name: 在独占锁内准备测试账号
-        if: matrix.account != ''
-        env:
-          CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
-          TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
-        run: node scripts/configure-ci-account.mjs
       - name: 创建专用模拟器
         run: |
           udid=$(xcrun simctl create clrn-full com.apple.CoreSimulator.SimDeviceType.iPhone-16 com.apple.CoreSimulator.SimRuntime.iOS-18-5)
           echo "IOS_SIMULATOR_UDID=$udid" >> "$GITHUB_ENV"
-      - name: 执行原生业务与静态截图，采集动画录屏
+      - name: 顺序执行全部逻辑分组，失败后清理并继续
         id: native_test
         env:
+          CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
-          IOS_FILTER: ${{ matrix.filter }}
-          IOS_PLAYWRIGHT_SHARD: ${{ matrix.playwrightShard }}
-        run: |
-          args=(--grep "$IOS_FILTER")
-          if [ -n "$IOS_PLAYWRIGHT_SHARD" ]; then
-            # 按测试均衡分片；每个 runner 仍只有一个 worker，顺序执行用例。
-            args+=(--shard "$IOS_PLAYWRIGHT_SHARD" --fully-parallel --workers 1)
-          fi
-          npm run test:ios:full -- "${args[@]}"
+        run: node scripts/run-ios-business.mjs
       - name: 恢复 runner 代理设置
         if: always()
         run: node ios/full/system-proxy.mjs restore
-      - name: 校验本轮游客截图并导出可浏览原图
-        if: matrix.group == 'guest' && !matrix.animation
-        env:
-          IOS_SHARD: ${{ matrix.shard }}
-        run: node ios/full/screenshot-evidence.mjs ios/artifacts ios/artifacts/current-screenshots "$IOS_LOCALE" "$IOS_SHARD"
-      - name: 发布本轮截图与录像
-        if: matrix.group == 'guest' && !matrix.animation
-        id: screenshots
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-current-screenshots-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
-          retention-days: 30
-          if-no-files-found: error
-          path: ios/artifacts/current-screenshots/
-      - name: 截图入口
-        if: matrix.group == 'guest' && !matrix.animation
-        env:
-          SCREENSHOTS_URL: ${{ steps.screenshots.outputs.artifact-url }}
-        run: |
-          node --input-type=module <<'NODE'
-          import { appendFileSync, readFileSync } from 'node:fs';
-          const manifest = JSON.parse(readFileSync('ios/artifacts/current-screenshots/manifest.json', 'utf8'));
-          appendFileSync(process.env.GITHUB_STEP_SUMMARY,
-            `### 本轮游客截图 · ${manifest.locale} · ${manifest.shard}\n\n` +
-            `${manifest.passedTests} 项测试通过，${manifest.screenshots} 张预期原图齐全。\n\n` +
-            `[下载截图与录像](${process.env.SCREENSHOTS_URL})，解压后打开 index.html；v1/ 为统一截图目录，manifest.json 记录本轮来源和 SHA-256。\n\n` +
-            `这是本轮实际采集结果，尚未批准为基准。未隔离动画组由独立分片录制视频供人工观看；暂未运行的组见 ios/full/quarantined/，动画效果断言待 React Native #7056。\n`);
-          NODE
-      - name: 校验本轮录屏存在且文件有效
-        if: matrix.animation
-        env:
-          ANIMATION_CASE: ${{ matrix.animation }}
-          ANIMATION_PART: ${{ matrix.animationPart }}
-        run: node ios/full/animation-gate.mjs ios/artifacts/full-results/report.json "$ANIMATION_CASE"
-      - name: 导出本轮视频与关键帧（含失败运行）
-        if: always() && hashFiles('ios/artifacts/full-results/report.json') != '' && hashFiles('ios/artifacts/release/build-info.json') != ''
-        run: node ios/full/video-evidence.mjs ios/artifacts ios/artifacts/video-evidence
-      - name: 发布可回看的视频证据
-        if: always() && hashFiles('ios/artifacts/video-evidence/manifest.json') != ''
-        id: videos
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-video-evidence-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}-${{ github.run_attempt }}
-          retention-days: 30
-          if-no-files-found: error
-          path: ios/artifacts/video-evidence/
-      - name: 录屏观看入口
-        if: matrix.recordOnly && steps.videos.outputs.artifact-url != ''
-        env:
-          VIDEOS_URL: ${{ steps.videos.outputs.artifact-url }}
-          ANIMATION_CASE: ${{ matrix.animation }}
-        run: |
-          echo "### $ANIMATION_CASE 动画录屏" >> "$GITHUB_STEP_SUMMARY"
-          echo "[下载录屏]($VIDEOS_URL)，解压后打开 index.html 直接观看。动画效果由 React Native #7056 后续验证。" >> "$GITHUB_STEP_SUMMARY"
-      - name: 保存测试产物
+      - name: 保存各组报告、截图、录像、构建身份及候选
         if: always()
         id: test_artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ios-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
+          name: ios-business-${{ matrix.business }}-${{ github.run_id }}-${{ github.run_attempt }}
           retention-days: 30
           if-no-files-found: error
           path: |
+            ios/artifacts/business/
             ios/artifacts/full-results/
             ios/artifacts/full-report/
+            ios/artifacts/results/
             ios/artifacts/release/build-info.json
-      - name: 保存待审查的视觉基准候选
-        if: success() && env.IOS_VISUAL_MODE == 'reference'
+      - name: 保存分组状态和失败摘要供总门禁汇总
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ios-reference-candidates-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_id }}
+          name: ios-ci-result-${{ matrix.business }}-${{ github.run_id }}
+          overwrite: true
           retention-days: 30
           if-no-files-found: error
-          path: ios/snapshots/v1/
+          path: |
+            ios/artifacts/business/${{ matrix.business }}/results.json
+            ios/artifacts/business/${{ matrix.business }}/summary.md
+      - name: 分组证据入口
+        if: always() && steps.test_artifacts.outputs.artifact-url != ''
+        env:
+          ARTIFACT_URL: ${{ steps.test_artifacts.outputs.artifact-url }}
+        run: echo "[下载本业务全部分组证据]($ARTIFACT_URL)，解压后按分组打开 index.html 或报告。" >> "$GITHUB_STEP_SUMMARY"
       - name: 删除专用模拟器
         if: always() && env.IOS_SIMULATOR_UDID != ''
         run: xcrun simctl delete "$IOS_SIMULATOR_UDID"
-      - name: 将失败原因写入运行摘要
-        if: failure()
-        env:
-          CI_LABEL: ${{ matrix.label }}
-          CI_TEST_STEP: ${{ steps.native_test.outcome }}
-          CI_ARTIFACT_URL: ${{ steps.test_artifacts.outputs.artifact-url }}
-        run: node ios/full/ci-failure-summary.mjs job
-      - name: 保存失败摘要供总门禁汇总
-        if: failure() && hashFiles('ios/artifacts/ci-failure/summary.md') != ''
-        uses: actions/upload-artifact@v4
-        with:
-          name: ios-ci-failure-${{ matrix.group }}-${{ matrix.locale }}-${{ matrix.shard }}-${{ github.run_attempt }}
-          retention-days: 30
-          path: ios/artifacts/ci-failure/summary.md
+  simulator:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'iOS Staging diagnostics' || 'simulator' }}
+    # The old Staging required context now reflects the merged App execution.
+    needs: [plan, native]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          PLAN: ${{ needs.plan.result }}
+          PREFLIGHT: ${{ needs.plan.outputs.preflight == 'skipped' && github.event_name == 'workflow_dispatch' && 'success' || needs.plan.outputs.preflight }}
+          NATIVE: ${{ needs.native.result }}
+        run: test "$PLAN" = success && test "$PREFLIGHT" = success && test "$NATIVE" = success
   screenshot-video-gate:
     # GitHub treats skipped checks as successful. Manual diagnostics must never
     # publish the same check context as the required PR/master aggregate.
@@ -272,15 +229,29 @@ jobs:
     if: always() && github.event_name != 'workflow_dispatch'
     needs: [plan, proxy-check, native]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - name: 汇集失败分片的简短摘要
-        if: needs.native.result != 'success'
+        if: needs.plan.outputs.run_native == 'true'
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          pattern: ios-ci-failure-*-${{ github.run_attempt }}
+          pattern: ios-ci-result-*-${{ github.run_id }}
           path: ci-failures
+      - name: 核对全部必须执行的分组结果
+        if: needs.plan.outputs.run_native == 'true'
+        env:
+          IOS_BUSINESS_MATRIX: ${{ needs.plan.outputs.matrix }}
+        run: node scripts/verify-ios-business.mjs
+      - name: 记录三个业务 job 的排队、初始化、测试和总耗时
+        if: always() && needs.plan.outputs.run_native == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/ios-ci-timing.mjs
       - name: 显示失败原因和证据入口
         if: needs.plan.result != 'success' || needs.plan.outputs.preflight != 'success' || needs.proxy-check.result != 'success' || needs.native.result != 'success'
         env:
