@@ -12,7 +12,7 @@ import { comparePixels } from '../visual.mjs';
 import { NativeDevice } from './native-device';
 import { maskScreenshot, type ScreenshotMask, type ScreenshotBounds } from './screenshot';
 import { baselinePath, baselineRoot } from './baseline-path.mjs';
-
+import { startupDiagnostics } from '../startup-diagnostics.mjs';
 export { applicationId };
 export const artifacts = artifactDirectory;
 let appPromise: Promise<string> | undefined;
@@ -23,7 +23,7 @@ export async function simulatorAppPath(): Promise<string> {
   return appPath;
 }
 let nextDevice = 0;
-let appium: { server: ChildProcess; url: string; users: number } | undefined;
+let appium: { server: ChildProcess; url: string; users: number; diagnostics: ReturnType<typeof startupDiagnostics> } | undefined;
 async function freePort() {
   const server = createServer();
   await new Promise<void>((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
@@ -34,18 +34,18 @@ async function freePort() {
 async function acquireServer() {
   if (appium) { appium.users++; return appium; }
   const port = await freePort();
-  const server = spawn(resolve('node_modules/.bin/appium'), ['--address', '127.0.0.1', '--port', String(port), '--log-level', 'warn'],
-    { env: { ...process.env, APPIUM_HOME: resolve('.appium') }, stdio: ['ignore', 'ignore', 'inherit'] });
-  const url = `http://127.0.0.1:${port}`;
-  const driver = new WebDriver(url);
+  const server = spawn(resolve('node_modules/.bin/appium'), ['--address', '127.0.0.1', '--port', String(port), '--log-level', 'debug:warn'],
+    { env: { ...process.env, APPIUM_HOME: resolve('.appium') }, stdio: ['ignore', 'pipe', 'inherit'] });
+  const diagnostics = startupDiagnostics(server); server.stdout!.on('data', diagnostics.output);
+  const url = `http://127.0.0.1:${port}`, driver = new WebDriver(url);
   try {
     for (let attempt = 0; ; attempt++) {
       if (server.exitCode !== null) throw new Error(`Appium 启动失败：${server.exitCode}`);
       try { await driver.request('GET', '/status', undefined, 5000); break; }
       catch (error) { if (attempt >= 119) throw error; await delay(500); }
     }
-  } catch (error) { server.kill('SIGKILL'); throw error; }
-  appium = { server, url, users: 1 };
+  } catch (error) { await diagnostics.report('appium-status', process.env.IOS_SIMULATOR_UDID); server.kill('SIGKILL'); throw error; }
+  appium = { server, url, users: 1, diagnostics };
   return appium;
 }
 async function releaseServer() {
@@ -105,7 +105,7 @@ export async function launchApplication(options: { isolated?: boolean; gameDrive
       'appium:wdaLaunchTimeout': 240_000, 'appium:newCommandTimeout': 1800,
       'appium:wdaLocalPort': 8100 + index, 'appium:mjpegServerPort': 9100 + index };
     const start = async () => {
-      await driver!.start(capabilities);
+      await server.diagnostics.run('appium-session', udid, () => driver!.start(capabilities));
       // fullReset 也会清除先前 status_bar override，因此在会话建立后固定显示。
       execFileSync('xcrun', ['simctl', 'status_bar', udid, 'override', '--time', '9:41', '--batteryState', 'charged',
         '--batteryLevel', '100', '--wifiBars', '3', '--cellularBars', '4']);
