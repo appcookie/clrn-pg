@@ -4,6 +4,7 @@ import { gameConnected, gameReady, gameTap, gameTapCurrent } from './game-contro
 import { captureNativeTransition, captureTimedPrompt } from './animation-transition';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 import { tapRecordedLeaderboard, zhajinhuaLeaderboardButton } from './leaderboard-entrance';
+import { observeRenewExitPress } from './renew-exit-diagnostics';
 
 async function panelPress(device: AndroidDevice, game: string, name: string, button: string,
   testInfo: TestInfo, phase: string): Promise<() => Promise<void>> {
@@ -23,6 +24,7 @@ async function panelPress(device: AndroidDevice, game: string, name: string, but
     const { bounds } = await gameReady(device, button);
     press = () => device.input.tap({ x: Math.round(bounds.x + bounds.width / 2),
       y: Math.round(bounds.y + bounds.height / 2) });
+    press = observeRenewExitPress(game, name, phase, bounds, device.screenSize, press);
   }
   return press;
 }
