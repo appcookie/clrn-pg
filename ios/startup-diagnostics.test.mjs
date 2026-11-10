@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
-import { startupDiagnostics, simulatorStartupTrace } from './startup-diagnostics.mjs';
+import { startupDiagnostics, simulatorStartupTrace, inspectSimulator } from './startup-diagnostics.mjs';
 
 test('startup diagnostics retain lifecycle events across chunks without raw output', async t => {
   const child = Object.assign(new EventEmitter(), { pid: 123, exitCode: null, signalCode: null });
@@ -92,4 +92,19 @@ test('state inspection failures and unexpected output cannot change session resu
   await Promise.resolve();
   unsafe.stop();
   assert.equal(unsafe.samples[0].state, 'unavailable');
+});
+
+test('simulator discovery distinguishes missing devices from query failures without raw errors', async () => {
+  const udid = '00000000-0000-4000-8000-000000000001';
+  const missing = await inspectSimulator(udid, async () => ({ stdout: '{"devices":{}}' }));
+  assert.equal(missing.simulatorPresent, false);
+  for (const killed of [true, false]) {
+    const result = await inspectSimulator(udid, async () => {
+      throw Object.assign(new Error('SECRET'), { killed, stderr: 'SECRET' });
+    });
+    assert.equal(result.simulatorState, 'unavailable');
+    assert.equal(result.simulatorQueryError, killed ? 'timeout' : 'query-failed');
+    assert.equal(result.simulatorPresent, undefined);
+    assert.ok(!JSON.stringify(result).includes('SECRET'));
+  }
 });

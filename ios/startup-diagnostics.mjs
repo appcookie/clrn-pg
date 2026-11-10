@@ -33,14 +33,21 @@ async function inspectProcess(pid) {
   return result;
 }
 
-async function inspectSimulator(udid) {
+export async function inspectSimulator(udid, query = execute) {
   const result = {};
   if (/^[a-f\d-]{36}$/i.test(udid || '')) {
     try {
-      const { stdout } = await execute('xcrun', ['simctl', 'list', '-j', 'devices'], { timeout: 5000, maxBuffer: 1024 * 1024 });
+      const { stdout } = await query('xcrun', ['simctl', 'list', '-j', 'devices'], { timeout: 5000, maxBuffer: 1024 * 1024 });
       const device = Object.values(JSON.parse(stdout).devices).flat().find(device => device.udid === udid);
       result.simulatorState = ['Booted', 'Shutdown', 'Booting', 'Shutting Down'].includes(device?.state) ? device.state : 'unknown';
-    } catch { result.simulatorState = 'unavailable'; }
+      result.simulatorPresent = !!device;
+    } catch (error) {
+      result.simulatorState = 'unavailable';
+      // A timed-out discovery query is not evidence that the device was deleted.
+      // Never export stderr, command arguments or the raw exception message.
+      result.simulatorQueryError = error.killed ? 'timeout'
+        : error instanceof SyntaxError ? 'invalid-json' : 'query-failed';
+    }
   }
   return result;
 }
