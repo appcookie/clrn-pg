@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
 import test from 'node:test';
-import { startupDiagnostics } from './startup-diagnostics.mjs';
+import { startupDiagnostics, simulatorStartupTrace } from './startup-diagnostics.mjs';
 
 test('startup diagnostics retain lifecycle events across chunks without raw output', async t => {
   const child = Object.assign(new EventEmitter(), { pid: 123, exitCode: null, signalCode: null });
@@ -11,13 +11,15 @@ test('startup diagnostics retain lifecycle events across chunks without raw outp
   child.emit('spawn');
   diagnostics.output(Buffer.from('Authorization: SECRET\nAttempting to load driver xcui'));
   diagnostics.output(Buffer.from('test SECRET\nPOST /session {"password":"SECRET"}\n'));
+  diagnostics.output(Buffer.from('Cleaning simulator 00000000-0000-4000-8000-000000000001\n'));
   child.signalCode = 'SIGKILL';
   child.emit('exit');
   await diagnostics.report('appium-status', 'unused', async () => ({ simulatorState: 'Shutdown' }));
   const serialized = JSON.stringify(output);
   assert.ok(!serialized.includes('SECRET'));
+  assert.ok(!serialized.includes('00000000-0000-4000-8000-000000000001'));
   const report = JSON.parse(output[0][1]);
-  assert.deepEqual(report.events.map(event => event.phase), ['spawn', 'driver-load-start', 'exit']);
+  assert.deepEqual(report.events.map(event => event.phase), ['spawn', 'driver-load-start', 'erase-start', 'exit']);
   assert.equal(report.signalCode, 'SIGKILL');
   assert.equal(report.simulatorState, 'Shutdown');
 });
@@ -51,5 +53,43 @@ test('session observation preserves action results, exceptions, and invocation c
   const original = new Error('original session failure');
   await assert.rejects(diagnostics.run('appium-session', 'device', async () => { calls++; throw original; }), error => error === original);
   assert.equal(calls, 2);
-  assert.deepEqual(reports, [['appium-session', 'device']]);
+  assert.equal(reports.length, 1);
+  assert.deepEqual(reports[0].slice(0, 2), ['appium-session', 'device']);
+  assert.ok(Array.isArray(reports[0][3]));
+});
+
+
+test('session state trace is bounded, redacted, and stops without waiting for an in-flight observation', async t => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  let calls = 0;
+  const trace = simulatorStartupTrace('unused', async () => ({
+    simulatorState: ++calls % 2 ? 'Shutdown' : 'Booted', deviceName: 'SECRET',
+  }));
+  await Promise.resolve();
+  for (let index = 0; index < 40; index++) {
+    t.mock.timers.tick(1000);
+    await Promise.resolve();
+  }
+  assert.equal(trace.samples.length, 32);
+  assert.ok(!JSON.stringify(trace.samples).includes('SECRET'));
+  trace.stop();
+  t.mock.timers.tick(1000);
+  assert.equal(calls, 41);
+  let finish;
+  const pending = simulatorStartupTrace('unused', () => new Promise(resolve => { finish = resolve; }));
+  pending.stop();
+  finish({ simulatorState: 'Booted' });
+  await Promise.resolve();
+  assert.deepEqual(pending.samples, []);
+});
+
+test('state inspection failures and unexpected output cannot change session results', async () => {
+  const failed = simulatorStartupTrace('unused', async () => { throw new Error('SECRET'); });
+  await Promise.resolve();
+  failed.stop();
+  assert.deepEqual(failed.samples, []);
+  const unsafe = simulatorStartupTrace('unused', async () => ({ simulatorState: 'SECRET' }));
+  await Promise.resolve();
+  unsafe.stop();
+  assert.equal(unsafe.samples[0].state, 'unavailable');
 });

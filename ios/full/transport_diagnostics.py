@@ -7,6 +7,7 @@ import re
 from time import monotonic
 from urllib.parse import urlsplit
 from http_failure import outcome, utc_now
+from room_protocol_diagnostics import RoomProtocolDiagnostics
 
 
 class TransportDiagnostics:
@@ -48,7 +49,8 @@ class TransportDiagnostics:
             # The key stays internal so reconnects are distinct without
             # retaining the flow/body or exporting its identity.
             self.sockets[flow.id] = dict(endpoint=endpoint, opened=self.clock(), ended=None,
-                lastActivity=None, clientToServer=None, serverToClient=None)
+                lastActivity=None, clientToServer=None, serverToClient=None,
+                roomProtocol=RoomProtocolDiagnostics())
 
     def websocket_message(self, flow):
         endpoint = self.socket_endpoint(flow)
@@ -71,11 +73,19 @@ class TransportDiagnostics:
                 frame = json.loads(line)
             except (ValueError, UnicodeDecodeError):
                 continue
+            self.observe_room_protocol(state, frame, message.from_client)
             if not isinstance(frame, dict) or not isinstance(frame.get('error'), dict):
                 continue
             code = frame['error'].get('code')
             if type(code) is int and 0 <= code <= 65535:
                 self.socket_errors[(*endpoint, direction, code)] += 1
+
+    def observe_room_protocol(self, state, frame, from_client):
+        try:
+            if state and isinstance(frame, dict):
+                state['roomProtocol'].observe(frame, from_client, self.clock())
+        except Exception:
+            pass  # Diagnostics must not alter the original message or test result.
 
     def websocket_end(self, flow):
         endpoint = self.socket_endpoint(flow)
@@ -231,6 +241,7 @@ class TransportDiagnostics:
                     'lastDataMessageAgoMs': ago(state['lastActivity']),
                     'lastClientMessageAgoMs': ago(state['clientToServer']),
                     'lastServerMessageAgoMs': ago(state['serverToClient']),
+                    'roomProtocol': state['roomProtocol'].snapshot(now),
                     'close': state.get('close')}
                     for state in self.sockets.values()],
                 'messages': [{'host': host, 'path': path, 'direction': direction,

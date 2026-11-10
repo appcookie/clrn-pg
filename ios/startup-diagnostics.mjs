@@ -14,6 +14,7 @@ const phases = [
   ['shutdown-start', /Shutting down Simulator/],
   ['already-shutdown', /Simulator is already shut down/],
   ['erase-start', /Erasing (?:contents|simulator)/i],
+  ['erase-start', /Cleaning simulator [a-f\d-]{36}/i],
 ];
 
 async function inspectProcess(pid) {
@@ -49,6 +50,28 @@ async function inspect(udid, pid) {
   return { ...processState, ...simulator };
 }
 
+// Observe only session startup, never animation capture. Keep state transitions,
+// not device names, IDs, raw simctl output or application data.
+export function simulatorStartupTrace(udid, observe = inspectSimulator) {
+  const samples = [];
+  let stopped = false, timer;
+  const started = performance.now();
+  const sample = async () => {
+    try {
+      const { simulatorState } = await observe(udid);
+      const state = ['Booted', 'Shutdown', 'Booting', 'Shutting Down', 'unknown', 'unavailable'].includes(simulatorState)
+        ? simulatorState : 'unavailable';
+      if (!stopped && state !== samples.at(-1)?.state) {
+        samples.push({ state, elapsedMs: Math.round(performance.now() - started) });
+        if (samples.length > 32) samples.shift();
+      }
+    } catch { /* Observation must never affect session establishment. */ }
+    if (!stopped) { timer = setTimeout(sample, 1000); timer.unref(); }
+  };
+  void sample();
+  return { samples, stop() { stopped = true; clearTimeout(timer); } };
+}
+
 export function startupDiagnostics(child) {
   const started = performance.now();
   const events = [];
@@ -72,19 +95,24 @@ export function startupDiagnostics(child) {
     },
     async run(phase, udid, action) {
       mark(phase);
+      const trace = phase === 'appium-session' ? simulatorStartupTrace(udid) : undefined;
       try { return await action(); }
-      catch (error) { await diagnostics.report(phase, udid); throw error; }
+      catch (error) {
+        trace?.stop();
+        await diagnostics.report(phase, udid, inspect, trace?.samples);
+        throw error;
+      } finally { trace?.stop(); }
     },
     reportFailure(completed, phase, udid) {
       if (!completed) return diagnostics.report(phase, udid);
     },
-    async report(phase, udid, inspectState = inspect) {
+    async report(phase, udid, inspectState = inspect, simulatorStates) {
       // Diagnostic failure must never replace the original startup exception.
       try {
         const exitCode = child.exitCode, signalCode = child.signalCode;
         const state = await inspectState(udid, child.pid);
         console.error('[iOS startup]', JSON.stringify({ phase, elapsedMs: Math.round(performance.now() - started),
-          pid: child.pid, exitCode, signalCode, loadAverage: loadavg(), events, ...state }));
+          pid: child.pid, exitCode, signalCode, loadAverage: loadavg(), events, simulatorStates, ...state }));
       } catch { /* Keep the original failure and result. */ }
     },
   };
