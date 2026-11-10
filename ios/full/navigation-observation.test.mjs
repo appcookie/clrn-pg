@@ -64,3 +64,15 @@ test('第二次原生观测失败必须传播错误，不能使用旧快照点�
   await assert.rejects(tap(device, 'confirm-button'), error => error === failure);
   assert.deepEqual(events, ['读取界面']);
 });
+
+test('匹配取消诊断日志失败不影响两次观测后的单次输入', async () => {
+  const { device, events } = navigationDevice();
+  const source = device.driver.source;
+  device.driver.source = async () => (await source()).replace('confirm-button', 'quick-start-room-cancel');
+  const previous = console.log;
+  try {
+    console.log = () => { throw new Error('diagnostic'); };
+    await tap(device, 'quick-start-room-cancel');
+    assert.deepEqual(events, ['读取界面', '读取界面', { x: 60, y: 120 }]);
+  } finally { console.log = previous; }
+});

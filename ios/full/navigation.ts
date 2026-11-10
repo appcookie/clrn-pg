@@ -71,7 +71,10 @@ export async function tap(device: NativeDevice, identifier: string) {
   const point = { x: bounds.x + bounds.width * (overlaps || identifier === 'username-or-email-sign-in-button' ? 0.95 : 0.5),
     y: bounds.y + bounds.height / 2 };
   if (!pointInside(point, viewport)) throw new Error(`点击位置仍被祖先裁切：${identifier}`);
+  try { if (identifier === 'quick-start-room-cancel') console.log('[matching cancel input]', JSON.stringify({
+    requestedUtc: new Date().toISOString(), bounds, viewport, point, screen: device.screenSize })); } catch {}
   await device.input.tap(point);
+  try { if (identifier === 'quick-start-room-cancel') console.log('[matching cancel input returned]', new Date().toISOString()); } catch {}
 }
 
 /** Guest login must open from the actual account tab, not scroll a missed tab tap's hall. */

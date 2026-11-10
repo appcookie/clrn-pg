@@ -90,13 +90,13 @@ export function gameTextWithin(nodes: NativeNode[], marker: string): string[] {
  * @param text - 可选的就绪文字。
  */
 export async function gameReady(device: AndroidDevice, res: string, text?: string): Promise<NativeNode> {
-  let found: NativeNode | undefined;
-  await expect.poll(async () => {
-    const nodes = await gameNodes(device);
+  let found: NativeNode | undefined; const diagnostic = reportReadinessDiagnostic(res);
+  await diagnostic.wait(async () => { await expect.poll(async () => {
+    const started = Date.now(); const nodes = await gameNodes(device); diagnostic.record(nodes, Date.now() - started);
     const { connecting } = gameConnectionState(nodes);
     found = connecting ? undefined : nodes.find(node => node.res === res && (text === undefined || node.text === text));
     return found;
-  }, { message: `${res} 应可见且连接正常`, timeout: 45_000, intervals: [250] }).toBeDefined();
+  }, { message: `${res} 应可见且连接正常`, timeout: 45_000, intervals: [250] }).toBeDefined(); });
   return found!;
 }
 
@@ -257,4 +257,29 @@ export async function gameConnectedObservation(device: AndroidDevice): Promise<{
   nodes: NativeNode[]; recovered: boolean;
 }> {
   return connectedObservation(device, 0);
+}
+
+/** Reuse the report poll's observations without additional device queries or changed assertions. */
+export function reportReadinessDiagnostic(resource: string) {
+  const samples: unknown[] = [];
+  return {
+    record(nodes: NativeNode[], queryMs: number) {
+      if (resource !== 'report-field-input') return;
+      try {
+        samples.push({ completedUtc: new Date().toISOString(), queryMs,
+          targetPresent: nodes.some(node => node.res === resource),
+          reportVisible: nodes.some(node => node.res === 'report-popup-title'),
+          connecting: nodes.some(node => /Connecting\.\.\./.test(node.text || '')),
+          timeoutVisible: nodes.some(node => /Connection Timeout/i.test(node.text || '')) });
+        if (samples.length > 16) samples.shift();
+      } catch {}
+    },
+    async wait(task: () => Promise<void>) {
+      try { await task(); }
+      catch (error) {
+        try { if (samples.length) console.error('[report readiness]', JSON.stringify(samples)); } catch {}
+        throw error;
+      }
+    },
+  };
 }

@@ -92,3 +92,14 @@ test('独立模拟器进入大厅失败仍关闭该设备并保留原始失败',
   }), error => error === failure);
   assert.equal(closed, true);
 });
+
+// The fixed input marker is evidence; its entered value and ancestors remain secret.
+test('举报输入框只保留固定标识，内容及敏感祖先仍脱敏', () => {
+  const input = { res: 'report-field-input', clazz: 'XCUIElementTypeTextView', text: 'private-report' };
+  const parent = { res: 'private-parent', text: 'private-report', children: [input] };
+  const result = safeNativeTree([parent, input]);
+  assert.equal(result[0].res, '[redacted]');
+  assert.equal(result[1].res, 'report-field-input');
+  assert.equal(result[1].text, '[redacted]');
+  assert.ok(!JSON.stringify(result).includes('private'));
+});

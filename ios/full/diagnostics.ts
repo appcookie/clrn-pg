@@ -27,7 +27,7 @@ function sensitiveNodes(nodes: DiagnosticNode[]) {
 export function safeNativeTree(nodes: DiagnosticNode[]): unknown[] {
   const { secrets, containers } = sensitiveNodes(nodes);
   const redact = (node: DiagnosticNode): unknown => ({
-    res: containers.has(node) ? '[redacted]' : node.res, clazz: node.clazz, bounds: node.bounds,
+    res: node.res === 'report-field-input' ? node.res : containers.has(node) ? '[redacted]' : node.res, clazz: node.clazz, bounds: node.bounds,
     enabled: node.enabled, checked: node.checked, visible: node.visible,
     text: secrets.has(node) || containers.has(node) ? '[redacted]' : node.text,
     children: node.children?.map(redact),

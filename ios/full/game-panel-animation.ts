@@ -21,8 +21,15 @@ async function panelPress(device: AndroidDevice, game: string, name: string, but
   } else {
     await gameConnected(device);
     const { bounds } = await gameReady(device, button);
-    press = () => device.input.tap({ x: Math.round(bounds.x + bounds.width / 2),
-      y: Math.round(bounds.y + bounds.height / 2) });
+    const preparedUtc = new Date().toISOString();
+    press = async () => {
+      const diagnostic = game === 'zhajinhua' && name === 'card-rank' && phase === 'exit';
+      const point = { x: Math.round(bounds.x + bounds.width / 2), y: Math.round(bounds.y + bounds.height / 2) };
+      try { if (diagnostic) console.log('[card-rank exit input]', JSON.stringify({ preparedUtc,
+        requestedUtc: new Date().toISOString(), bounds, point, screen: device.screenSize })); } catch {}
+      await device.input.tap(point);
+      try { if (diagnostic) console.log('[card-rank exit input returned]', new Date().toISOString()); } catch {}
+    };
   }
   return press;
 }

@@ -338,3 +338,23 @@ test('只有连接spinner运动而资料硬切时，不能冒充profile的真实
     else process.env.IOS_VISUAL_MODE = previous;
   }
 });
+
+test('牌型退场输入诊断失败不增加查询或覆盖原始输入错误', async () => {
+  const close = { ...button, res: 'card-rank-popup-close' };
+  const failure = new Error('original-input');
+  let reads = 0, taps = 0;
+  const previous = console.log;
+  const device = {
+    screenSize: screen,
+    nodes: async () => { reads++; return [close]; },
+    input: { tap: async () => { taps++; throw failure; } },
+  };
+  try {
+    console.log = () => { throw new Error('diagnostic'); };
+    await assert.rejects(animateGamePanel(device, 'zhajinhua', 'card-rank', close.res,
+      close.bounds, { attach: async () => {} }, 'exit', 'videoFrames', [], undefined, [],
+      async (_device, _name, _info, _region, trigger) => { await trigger(); }), error => error === failure);
+    assert.equal(reads, 2);
+    assert.equal(taps, 1);
+  } finally { console.log = previous; }
+});
