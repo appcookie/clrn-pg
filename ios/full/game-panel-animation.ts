@@ -1,5 +1,6 @@
 import type { TestInfo } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
+import { observePreparedPress } from './prepared-press-diagnostics';
 import { gameConnected, gameReady, gameTap, gameTapCurrent } from './game-controls';
 import { captureNativeTransition, captureTimedPrompt } from './animation-transition';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
@@ -23,6 +24,9 @@ async function panelPress(device: AndroidDevice, game: string, name: string, but
     const { bounds } = await gameReady(device, button);
     press = () => device.input.tap({ x: Math.round(bounds.x + bounds.width / 2),
       y: Math.round(bounds.y + bounds.height / 2) });
+    if ([game, name, phase].join('/') === 'texas-holdem/drawer-menu/enter') {
+      press = observePreparedPress('texas drawer menu', bounds, device.screenSize, press);
+    }
   }
   return press;
 }

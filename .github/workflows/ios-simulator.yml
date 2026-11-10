@@ -1,10 +1,7 @@
-# 直接消费公开 Release 模拟器包，执行游客页面截图和动画回归。
+# 手动独立 Staging 诊断入口；PR/master 覆盖由 ios-full.yml 的 App job 执行。
 name: iOS Staging 模拟器回归
 
 on:
-  push:
-    branches: [master]
-  pull_request:
   workflow_dispatch:
     inputs:
       filter:
@@ -26,6 +23,7 @@ concurrency:
 
 jobs:
   check:
+    name: Staging diagnostic checks
     runs-on: ubuntu-latest
     env:
       QUALITY_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
@@ -54,6 +52,7 @@ jobs:
         run: node ios/download-release.mjs --simulator
 
   simulator:
+    name: Staging simulator diagnostics
     needs: check
     runs-on: macos-15
     timeout-minutes: 50

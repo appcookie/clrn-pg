@@ -20,7 +20,7 @@ test('手动诊断不能发布与 PR/master 门禁同名的 skipped 检查', () 
 });
 
 test('第 20 组分段身份传入录屏验收', () => {
-  assert.match(workflow, /ANIMATION_PART: \$\{\{ matrix\.animationPart \}\}/);
+  assert.match(readFileSync(new URL('./ios-ci-native.mjs', import.meta.url), 'utf8'), /ANIMATION_PART: group\.animationPart/);
 });
 
 test('正式汇总在前置失败、取消、跳过后仍执行，不能被默认依赖条件跳过', () => {
