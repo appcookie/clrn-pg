@@ -348,3 +348,29 @@ test('截图连接观测返回恢复后的同一份真实树，显式超时和�
     await assert.rejects(gameConnectedObservation(driverFixture([snapshot]).device), /Connection Timeout|原生整树查询失败/);
   }
 });
+
+test('关闭失败诊断区分目标残留与连接遮挡，复用原轮询且不输出节点正文', async t => {
+  const logs = [];
+  t.mock.method(console, 'error', (...args) => logs.push(args));
+  const { device, reads } = driverFixture([[message('Connecting...')], [button],
+    [message('Connection Timeout'), message('private-user-body')], []]);
+  await assert.rejects(gameGone(device, 'target'), /Connection Timeout/);
+  assert.equal(reads.length, 3);
+  const diagnostic = JSON.parse(logs[0][1]);
+  assert.equal(diagnostic.target, '<other>', '不输出可能包含玩家身份的其他目标标记');
+  assert.deepEqual(diagnostic.samples.map(({ targetPresent, connecting, timeout }) =>
+    ({ targetPresent, connecting, timeout })), [
+    { targetPresent: false, connecting: true, timeout: false },
+    { targetPresent: true, connecting: false, timeout: false },
+    { targetPresent: false, connecting: false, timeout: true },
+  ]);
+  assert.ok(!JSON.stringify(logs).includes('private'));
+});
+
+test('关闭诊断输出失败仍抛出同一驱动异常且不追加查询', async t => {
+  t.mock.method(console, 'error', () => { throw new Error('diagnostic unavailable'); });
+  const original = new Error('driver unavailable');
+  const { device, reads } = driverFixture([original, []]);
+  await assert.rejects(gameGone(device, 'target'), error => error === original);
+  assert.equal(reads.length, 1);
+});

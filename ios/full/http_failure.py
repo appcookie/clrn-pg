@@ -55,3 +55,28 @@ def disconnect_reason(message, reason):
     if message == 'connection cancelled':
         return 'connection-cancelled'
     return reason
+
+
+def unknown_error_evidence(flow, category):
+    """固定 mitmproxy HTTP/2 模板分类；不导出任意错误文本或帧数据。"""
+    try:
+        if category != 'unknown':
+            return {}
+        return unknown_signature(flow.error.msg)
+    except Exception:
+        return {}  # Diagnostics must preserve the original HTTP error.
+
+
+def unknown_signature(message):
+    signature = 'unrecognized'
+    if re.fullmatch(r'stream reset by client \([A-Z_0-9]+\)', message):
+        signature = 'http2-stream-reset'
+    elif message.startswith('HTTP/2 connection closed: '):
+        signature = 'http2-connection-closed'
+    elif message == 'peer closed connection':
+        signature = 'peer-closed'
+    elif message == 'connection cancelled':
+        signature = 'connection-cancelled'
+    number = re.match(r'\[Errno (-?\d{1,3})\] ', message)
+    return dict(unknownErrorSignature=signature,
+        connectionReset=bool(number and int(number[1]) in (54, 104)))

@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { setTimeout as delay } from 'node:timers/promises';
-
+import { observeGameGone } from './game-gone-diagnostics';
 export type NativeNode = { res?: string; text?: string; clazz?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
 
@@ -122,12 +122,12 @@ export async function gameReadyCurrent(device: AndroidDevice, res: string, text?
  * @param res - 弹层标记。
  */
 export async function gameGone(device: AndroidDevice, res: string): Promise<void> {
-  await expect.poll(async () => {
-    const nodes = await gameNodes(device);
+  await observeGameGone(res, observe => expect.poll(async () => {
+    const started = Date.now(), nodes = await gameNodes(device); observe(nodes, started);
     const { connecting } = gameConnectionState(nodes);
-    // 重连遮罩可能隐藏面板；只有连接正常后的真实消失才能作为关闭证据。
+    // 重连遮挡不算真实消失；诊断只复用已有样本。
     return connecting || nodes.some(node => node.res === res);
-  }, { message: `${res} 应在连接正常时消失`, timeout: 45_000, intervals: [250] }).toBe(false);
+  }, { message: `${res} 应在连接正常时消失`, timeout: 45_000, intervals: [250] }).toBe(false));
 }
 
 /** 等待房间重连遮罩退去并确认牌桌至少一秒内持续可操作。

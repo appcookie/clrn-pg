@@ -132,7 +132,9 @@ export async function zhajinhuaGameplay(device: AndroidDevice, proxy: Mitmproxy,
     // 其余四位玩家的十二张暗牌没有牌名；与 Web 相同，只校验已翻开的三张牌。
     await gameCardNames(device, 'player_card', 'player_card_name_text', ['as', 'ad', 'ac'], { namedOnly: true });
     await expect.poll(async () => Boolean(await currentSeeButton()), { timeout: 30_000 }).toBe(false);
-    // 看牌后的本人操作按钮会随回合时钟出现；对手完成跟注后再采集已审查的静态牌面。
+    // switch_player 只启动对手倒计时，不关闭本人操作栏；先完成本人的真实跟注，避免依赖120秒自动弃牌。
+    await gameTap(device, 'zhajinhua-operation-button-call');
+    // 对手完成跟注后再采集已审查的静态牌面。
     await send(events([{ event: 'switch_player', player_id: PLAYER_IDS[0],
       valid_bets: validBets(false) }]));
     await gameGone(device, 'zhajinhua-operation-button-call');

@@ -17,6 +17,7 @@ import { playerCountdownNodes } from './game-countdown';
 import { modalBackgroundMasks } from './modal-background-masks';
 import { texasRaiseClockMasks } from './texas-raise-masks';
 import { capturePredictionResult } from './prediction-result';
+import { captureTiming } from './capture-timing';
 /**
  * 使原生控件边界及绘制余量落到实际截图的整数像素。
  * @param bounds - 原生控件边界。
@@ -26,7 +27,6 @@ function pixelBounds(bounds: ScreenshotBounds): ScreenshotBounds {
   return { x, y, width: Math.ceil(bounds.x + bounds.width) - x,
     height: Math.ceil(bounds.y + bounds.height) - y };
 }
-
 /**
  * 保留真实牌桌布局，仅遮罩网络延迟、倒计时和循环座位指示箭头等动态区域。
  * @param device - 专用模拟器连接。
@@ -187,9 +187,10 @@ export async function captureGame(device: AndroidDevice, name: string, testInfo:
       ...masks.filter(mask => /^seat-guide-[789] 完整箭头动画范围$/.test(mask.reason))
         .map(mask => ({ x: mask.x + mask.width - 2, y: mask.y, width: 2, height: mask.height }))]
     : [];
-  await compareScreenshot(device, name, testInfo, {
+  const timing = captureTiming();
+  try { await compareScreenshot(device, name, testInfo, {
     masks, transientState: transientMarker ? assertTransient : undefined,
-    takeScreenshot: transientMarker ? () => gameScreenshot(device) : undefined,
+    takeScreenshot: transientMarker ? () => gameScreenshot(device) : timing.source(name, () => device.screenshot()),
     comparisonExclusions: [...backgroundMasks, ...nextTurnExclusions, ...countdownTextExclusions, ...cardRankExclusions],
-  });
+  }); } finally { timing.report(); }
 }

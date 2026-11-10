@@ -6,7 +6,7 @@ import math
 import re
 from time import monotonic
 from urllib.parse import urlsplit
-from http_failure import outcome, utc_now
+from http_failure import outcome, utc_now, unknown_error_evidence
 from room_protocol_diagnostics import RoomProtocolDiagnostics
 
 
@@ -171,6 +171,7 @@ class TransportDiagnostics:
                 if self.tls_connections.get(conn.id) == side:
                     flow.metadata['ios_tls_failure_side'] = side
             details = dict(observationHook=hook, **outcome(flow))
+            details.update(unknown_error_evidence(flow, details['failureCategory']))
             flow.metadata['ios_http_outcome'] = details
             self.responses[(host, path, flow.response.status_code if flow.response else 0)] += 1
             event = self.http_events.get(flow.id)
