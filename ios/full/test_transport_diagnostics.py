@@ -342,12 +342,7 @@ class TransportTests(unittest.TestCase):
             (False, {'id': 3, 'error': {'code': 100, 'message': 'private-error'}}),
             (False, {'result': {'type': 3, 'channel': f'{game}>private-room#private-user'}}),
         ]
-        for from_client, frame in frames:
-            msg = self.message(socket, json.dumps(frame).encode(), from_client=from_client)
-            before = msg.get_state()
-            diagnostics.websocket_message(socket)
-            self.assertEqual(msg.get_state(), before)
-        events = diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']
+        events = self.observe_frames(diagnostics, socket, frames)
         self.assertEqual([event['kind'] for event in events],
                          ['subscribe', 'subscribe', 'alive', 'alive', 'room-rpc', 'room-rpc', 'server-unsubscribe'])
         self.assertFalse(events[1]['protocolError'])
@@ -359,6 +354,14 @@ class TransportTests(unittest.TestCase):
             msg = self.message(socket, json.dumps(frames[0][1]).encode(), from_client=True)
             diagnostics.websocket_message(socket)
         self.assertEqual(len(diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']), 64)
+
+    def observe_frames(self, diagnostics, socket, frames):
+        for from_client, frame in frames:
+            msg = self.message(socket, json.dumps(frame).encode(), from_client=from_client)
+            before = msg.get_state()
+            diagnostics.websocket_message(socket)
+            self.assertEqual(msg.get_state(), before)
+        return diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']
 
     def test_room_protocol_diagnostic_error_does_not_mutate_or_reject_message(self):
         diagnostics = TransportDiagnostics()
@@ -379,12 +382,7 @@ class TransportTests(unittest.TestCase):
         frames = [(True, {'id': 987654, 'method': 9, 'params': {'data': {
             'path': '/private-user/leaderboard?token=private-token', 'body': 'private-body'}}}),
             (False, {'id': 987654, 'result': {'data': {'ok': True, 'result': 'private-result'}}})]
-        for from_client, frame in frames:
-            msg = self.message(socket, json.dumps(frame).encode(), from_client=from_client)
-            before = msg.get_state()
-            diagnostics.websocket_message(socket)
-            self.assertEqual(msg.get_state(), before)
-        events = diagnostics.snapshot()['websocket']['connections'][0]['roomProtocol']
+        events = self.observe_frames(diagnostics, socket, frames)
         self.assertEqual(events, [dict(kind='rpc', stage='request', agoMs=0),
             dict(kind='rpc', stage='response', protocolError=False, applicationOk=True, agoMs=0)])
         self.assertNotIn('private', json.dumps(events))

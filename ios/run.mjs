@@ -7,7 +7,7 @@ import { comparePixels } from './visual.mjs';
 import { recordAnimation } from './recording.mjs';
 import { WebDriver } from './webdriver.mjs';
 import { applicationId, readVerifiedBuild } from './release.mjs';
-import { selectScenarios } from './scenarios.mjs';
+import { selectScenarios, tabPages } from './scenarios.mjs';
 import { extractSimulator } from './extract-simulator.mjs';
 
 const mode = process.env.IOS_VISUAL_MODE || 'smoke';
@@ -30,7 +30,7 @@ const profile = `${simulator.deviceTypeIdentifier}-${runtime}`.replace(/[^a-zA-Z
 const snapshots = resolve('ios/snapshots', profile);
 rmSync(results, { recursive: true, force: true });
 mkdirSync(results, { recursive: true });
-const report = { mode, profile, release: information.releaseTag, applicationCommit: information.applicationCommit, scenarios: [] };
+const report = { mode, profile, release: information.releaseTag, applicationCommit: information.applicationCommit, scenarios: [], tabSwitches: [] };
 writeFileSync(join(results, 'environment.json'), JSON.stringify({ profile, simulator, runtime, information }, null, 2));
 const appiumHome = resolve('.appium');
 const server = spawn(resolve('node_modules/.bin/appium'), ['--address', '127.0.0.1', '--port', '4723',
@@ -62,7 +62,7 @@ try {
   await driver.find('settings-tab', 120_000);
   for (const scenario of selectedScenarios) {
     try {
-      await driver.selectTab(scenario.tab);
+      await driver.selectTab(scenario.tab, { pages: tabPages, onObservation: event => report.tabSwitches.push(event) });
       for (const click of scenario.clicks || []) await driver.tap(click);
       await driver.find(scenario.ready);
       await delay(1500);

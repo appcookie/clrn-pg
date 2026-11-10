@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { PNG } from 'pngjs';
 import { compareScreenshot, launchApplication, waitForHall } from '../device';
 import { captureFailure } from '../diagnostics';
+import { normalizeNativeScreenshot } from '../native-device';
 import { selectLanguage } from '../navigation';
 import { withAndroidProxy } from '../proxy';
 
@@ -23,7 +24,9 @@ if (['all', 'guest'].includes(process.env.IOS_GROUP || 'all')) {
           const bytes = await device.nativeScreenshot();
           const picture = PNG.sync.read(bytes);
           expect({ width: picture.width, height: picture.height }).toEqual(device.screenSize);
-          return bytes;
+          // Run 42515107020 returned 1179×2556 while the reviewed iPhone 16
+          // baseline is 1178×2556. Use the existing one-column crop, without scaling.
+          return normalizeNativeScreenshot(bytes, { width: 1178, height: 2556 });
         };
         const { width, height } = device.screenSize;
         // The iOS Home indicator changes with simulator appearance; it is outside the app canvas.

@@ -3,10 +3,15 @@ export const scenarios = [
   { name: 'hall', tab: 'hall-tab', ready: 'hall-sign-in-button' },
   { name: 'guest-message', tab: 'message-tab', ready: 'not-sign-in-container' },
   { name: 'guest-private-room', tab: 'private-room-tab', ready: 'guest-private-room-empty-state' },
-  { name: 'guest-club', tab: 'club-tab', ready: 'club-tab-screen' },
+  { name: 'guest-club', tab: 'club-tab', ready: 'club_tab_room' },
   { name: 'guest-me', tab: 'settings-tab', ready: 'after-sign-in-see-asset-text' },
   { name: 'login', tab: 'settings-tab', clicks: ['sign-in-button'], ready: 'username-or-email-sign-in-button' },
 ];
+
+// The login scenario opens a child page; selecting Me must first prove the parent tab is ready.
+export const tabPages = Object.fromEntries(scenarios.filter(scenario => !scenario.clicks).map(scenario => [scenario.tab, scenario.ready]));
+// The hall sign-in button is below the initial viewport; tab readiness uses the visible content list.
+tabPages['hall-tab'] = 'hall-content-list';
 
 export function selectScenarios(filter = '') {
   if (!filter) return scenarios;

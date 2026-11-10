@@ -2,7 +2,7 @@
 import { setTimeout as delay } from 'node:timers/promises';
 import { request as httpRequest } from 'node:http';
 import { request as httpsRequest } from 'node:https';
-
+import { selectTab } from './tab-selection.mjs';
 const elementKey = 'element-6066-11e4-a52e-4f735466cecf';
 
 export class WebDriver {
@@ -84,27 +84,8 @@ export class WebDriver {
     await this.request('POST', this.path(`/element/${element}/click`), {});
   }
 
-  async selectTab(identifier) {
-    const element = await this.find(identifier);
-    const selected = () => this.request('GET', this.path(`/element/${element}/attribute/value`));
-    if (await selected() === '1') return;
-    // Run 41782263073: element/click returned success for message-tab while
-    // hall-tab remained selected. Send an explicit touch at the tab's center.
-    const { x, y, width, height } = await this.request('GET', this.path(`/element/${element}/rect`));
-    if (![x, y, width, height].every(Number.isFinite) || width <= 0 || height <= 0) {
-      throw new Error(`标签控件尺寸无效：${identifier}`);
-    }
-    await this.request('POST', this.path('/actions'), { actions: [{ type: 'pointer', id: 'tab-touch',
-      parameters: { pointerType: 'touch' }, actions: [
-        { type: 'pointerMove', duration: 0, origin: 'viewport', x: Math.round(x + width / 2), y: Math.round(y + height / 2) },
-        { type: 'pointerDown', button: 0 }, { type: 'pause', duration: 100 }, { type: 'pointerUp', button: 0 },
-      ] }] });
-    const deadline = Date.now() + 30_000;
-    do {
-      if (await selected() === '1') return;
-      await delay(400);
-    } while (Date.now() < deadline);
-    throw new Error(`标签切换未生效：${identifier}`);
+  async selectTab(identifier, options) {
+    return selectTab(this, identifier, options);
   }
 
   async fill(identifier, value) {
