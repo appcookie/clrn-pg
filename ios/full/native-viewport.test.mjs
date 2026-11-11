@@ -1,12 +1,52 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { nativeViewport, fullyInside, pointInside } from './native-viewport.ts';
-import { reveal, revealScenarioReady, tap, tapScenarioOption } from './navigation.ts';
+import { reveal, revealScenarioReady, revealRoomNameInput, tap, tapScenarioOption } from './navigation.ts';
 
 function node(res, clazz, bounds, children = []) {
   return { res, clazz, bounds, children, visible: true, enabled: true, attributes: {} };
 }
 const screen = { x: 0, y: 0, width: 1178, height: 2556 };
+function scrolledRoomForm(settle = true) {
+  const title = node('room-name-title', 'XCUIElementTypeStaticText', { x: 47, y: -939, width: 364, height: 72 });
+  const input = node('room-name-input', 'XCUIElementTypeTextField', { x: 420, y: -939, width: 600, height: 72 });
+  title.visible = input.visible = false;
+  const scroll = node('form-scroll', 'XCUIElementTypeScrollView', { x: 0, y: 291, width: 1178, height: 1941 }, [title, input]);
+  const background = node('background-list', 'XCUIElementTypeScrollView', { x: 0, y: 100, width: 1178, height: 800 });
+  const form = node('base-create-room-screen', 'XCUIElementTypeOther', screen, [scroll]);
+  const snapshot = () => [form, background, scroll, ...[title, input].filter(item => item.visible)];
+  const gestures = [];
+  const device = {
+    screenSize: screen, waitSnapshot: async () => snapshot(), nodes: async () => snapshot(),
+    info: async selector => snapshot().find(item => item.res === selector.res), hideKeyboard: async () => {},
+    input: { swipe: async gesture => {
+      gestures.push(gesture);
+      assert.ok(gesture.y1 >= 291 && gesture.y2 <= 2232 && gesture.y2 > gesture.y1);
+      if (settle) {
+        title.bounds.y = input.bounds.y = 350;
+        title.visible = input.visible = true;
+      }
+    } },
+  };
+  return { device, scroll, gestures };
+}
+
+test('离屏房名通过其标题定位表单并向上寻找，不滚动背景列表', async () => {
+  const value = scrolledRoomForm();
+  await revealRoomNameInput(value.device);
+  assert.equal(value.gestures.length, 1);
+});
+
+test('缺少房名滚动容器或房名始终离屏时仍失败，禁止盲滚背景', async () => {
+  const missing = scrolledRoomForm();
+  missing.scroll.children = [];
+  await assert.rejects(revealRoomNameInput(missing.device), /缺少房名所在的滚动容器/);
+  assert.deepEqual(missing.gestures, []);
+  const stuck = scrolledRoomForm(false);
+  await assert.rejects(revealRoomNameInput(stuck.device), /房名标题仍未进入/);
+  assert.equal(stuck.gestures.length, 8);
+});
+
 function enteringGamePicker(settle = true, enabled = true, parentVisible = true) {
   const target = node('game-type-button-texas_six_plus', 'XCUIElementTypeOther',
     { x: 74, y: 2500, width: 1030, height: 150 });

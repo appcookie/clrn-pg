@@ -163,10 +163,34 @@ export async function returnToTabs(device: NativeDevice) {
 export async function fillScenarioInputs(device: NativeDevice, scenario: VisualScenario) {
   for (const rule of scenario.fixedTexts.filter(item => /input"\]$/.test(item.selector))) {
     const selector = nativeSelector(rule.selector);
-    await reveal(device, selector);
+    if (selector.res === 'room-name-input') await revealRoomNameInput(device);
+    else await reveal(device, selector);
     // 与真实建房一致：房名清空会恢复默认值，使用原生全选替换并核验完整结果。
     await device.fill(selector, rule.text, { replaceBySelection: selector.res === 'room-name-input' });
     await device.hideKeyboard();
+  }
+}
+
+/** 房名是表单首行；通过真实标题找到滚动区，避免目标离屏时只向下滚动。 */
+export async function revealRoomNameInput(device: NativeDevice) {
+  const descendants = (node: NativeNode): NativeNode[] => [node, ...node.children.flatMap(descendants)];
+  let nodes = await device.waitSnapshot({ res: 'base-create-room-screen' });
+  for (let attempt = 0; ; attempt++) {
+    const scroll = nodes.find(node => node.visible && /ScrollView|CollectionView|Table/.test(node.clazz)
+      && descendants(node).some(child => child.res === 'room-name-title'));
+    if (!scroll) throw new Error('建房表单缺少房名所在的滚动容器。');
+    const title = descendants(scroll).find(node => node.res === 'room-name-title')!;
+    const viewport = intersectBounds({ x: 0, y: 0, ...device.screenSize }, scroll.bounds);
+    if (title.visible && fullyInside(title.bounds, viewport)) {
+      await reveal(device, { res: 'room-name-input' });
+      return;
+    }
+    if (attempt === 8) throw new Error('滚动后房名标题仍未进入表单视口。');
+    const upward = title.bounds.y >= viewport.y;
+    await device.input.swipe({ x1: viewport.x + viewport.width * 0.97,
+      y1: viewport.y + viewport.height * (upward ? 0.85 : 0.2), x2: viewport.x + viewport.width * 0.97,
+      y2: viewport.y + viewport.height * (upward ? 0.2 : 0.85), duration: 600 });
+    nodes = await device.nodes();
   }
 }
 export async function revealScenarioReady(device: NativeDevice, scenario: Pick<VisualScenario, 'visualReadySelector' | 'readyText' | 'pageLabel' | 'signIn'>) {

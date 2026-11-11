@@ -228,9 +228,15 @@ test('会恢复默认值的房名及共享截图导航通过原生三击选择�
     const device = new NativeDevice(driver, 'test', async () => {}, async () => {}, 'test.app');
     const field = { res: 'room-name-input', clazz: 'XCUIElementTypeTextField', children: [], visible: true,
       bounds: { x: 20, y: 100, width: 300, height: 60 } };
+    const title = { ...field, res: 'room-name-title', clazz: 'XCUIElementTypeStaticText' };
+    const scroll = { ...field, res: 'form-scroll', clazz: 'XCUIElementTypeScrollView',
+      bounds: { x: 0, y: 80, width: 1178, height: 2200 }, children: [title, field] };
+    const form = { ...scroll, res: 'base-create-room-screen', clazz: 'XCUIElementTypeOther', children: [scroll] };
+    const snapshot = [form, scroll, title, field];
     device.screenSize = { width: 1178, height: 2556 };
     device.info = async () => field;
-    device.waitSnapshot = async () => [field];
+    device.waitSnapshot = async () => snapshot;
+    device.nodes = async () => snapshot;
     device.hideKeyboard = async () => {};
     const run = () => sharedNavigation
       ? fillScenarioInputs(device, { fixedTexts: [{ selector: '[data-testid="room-name-input"]', text: 'AB' }] })
