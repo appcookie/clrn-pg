@@ -15,7 +15,7 @@
   "applicationCommit": "36142b64770331e3cfae173d830bcb784b478732",
   "packageSha256": "8c477f381b6a08092a2b7d9f2d4d5a6a92ce512ce533d3307d41778dde9a47b9",
   "simulator": "iPhone 16 / iOS 18.5",
-  "review": "原有 77 张真实 PNG 保留原始来源与审查结论。新增图片逐图查看真实动画相位，单独在 files[].source 记录通过的采集运行、工作流提交和产物；所有 PNG 校验原始 SHA-256。动画仅保留英文。先前部分更新 6 张英文登录提示静态及搜索动画 PNG；更新图的独立来源在 files[].source，顶层来源仍描述原始基准集合。本次针对构建 36 的用户协议页面，仅更新经逐图审查的 en、zh-Hans、zh-Hant 三张原图；每张独立记录运行与产物，保留其余图片的原始来源。",
+  "review": "原有 77 张真实 PNG 保留原始来源与审查结论。新增图片逐图查看真实动画相位，单独在 files[].source 记录通过的采集运行、工作流提交和产物；所有 PNG 校验原始 SHA-256。动画仅保留英文。先前部分更新 6 张英文登录提示静态及搜索动画 PNG；更新图的独立来源在 files[].source，顶层来源仍描述原始基准集合。本次针对构建 36 的用户协议页面，仅更新经逐图审查的 en、zh-Hans、zh-Hant 三张原图；每张独立记录运行与产物，保留其余图片的原始来源。 本轮按语言补充实时音视频下线后的德州、短牌高级设置真实截图；新增图片逐图核对并在 files[].source 记录独立采集运行、构建及产物，原有图片的 SHA 和来源保留。",
   "knownIssues": [
     {
       "id": "staging-cta-obscured",
@@ -9616,6 +9616,38 @@
         "packageSha256": "7479633c59def30710e501db993b478761eda07fbc2f96d4dae1da656532d089"
       },
       "review": "逐图查看通过的英文德州大厅原生截图：自动带入、双人举报、个人榜单、猜牌中奖 +10、等级提示和加载画面完整；入退场保留真实中途相位，原始 PNG 未改动。"
+    },
+    {
+      "path": "private-room/create-room/signed-in-create-room-advanced-six-plus/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "c0b4b18e13478a712cd2e939a60f433fc96ee0d43a85133a33b437d31a7a94e3",
+      "source": {
+        "sourceRun": 43020638917,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/43020638917",
+        "sourceWorkflowHead": "7af48c779e44c5c07629b5eb365ea0bf792d44ec",
+        "sourceArtifacts": [
+          "ios-business-app-43020638917-1"
+        ],
+        "applicationCommit": "9ac33f63d43e4f271495b903c19533390a8c748f",
+        "releaseTag": "ios-staging-67-1-9ac33f63d43e",
+        "packageSha256": "35977cb184c2f50d8ec9ae10283d9b0e66cbd96d7302af6c28d9c15aeda72acc"
+      },
+      "review": "逐图核对构建 67 繁体中文原图：德州/短牌高级设置不再显示实时音视频开关，观众/玩家的四个文字及语音消息开关保留；座位数、回合时长、红色页脚提示及开局按钮完整可见，滚动末尾取景无异常留白或裁切。"
+    },
+    {
+      "path": "private-room/create-room/signed-in-create-room-advanced-texas/ios/iphone16-ios18.5/zh-Hant/page/default.png",
+      "sha256": "aa284c7009a6befc9939e4000b5891427f22294986f6d05e9d69e4e35a835efd",
+      "source": {
+        "sourceRun": 43020638917,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/43020638917",
+        "sourceWorkflowHead": "7af48c779e44c5c07629b5eb365ea0bf792d44ec",
+        "sourceArtifacts": [
+          "ios-business-app-43020638917-1"
+        ],
+        "applicationCommit": "9ac33f63d43e4f271495b903c19533390a8c748f",
+        "releaseTag": "ios-staging-67-1-9ac33f63d43e",
+        "packageSha256": "35977cb184c2f50d8ec9ae10283d9b0e66cbd96d7302af6c28d9c15aeda72acc"
+      },
+      "review": "逐图核对构建 67 繁体中文原图：德州/短牌高级设置不再显示实时音视频开关，观众/玩家的四个文字及语音消息开关保留；座位数、回合时长、红色页脚提示及开局按钮完整可见，滚动末尾取景无异常留白或裁切。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
