@@ -82,6 +82,7 @@ jobs:
           npm run typecheck
           node --import tsx --test ios/full/room-advanced.test.mjs scripts/room-advanced-plan.test.mjs
           node --import tsx --test --test-name-pattern '会恢复默认值的房名|先聚焦再清空受控输入' ios/full/native-device.test.mjs
+          node --import tsx --test ios/full/native-viewport.test.mjs
           cd ios/full
           python -m unittest test_game_session.GameSessionTests.test_room_presentation_preserves_real_identity_and_only_changes_own_number
       - id: plan

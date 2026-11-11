@@ -74,6 +74,28 @@ export async function tap(device: NativeDevice, identifier: string) {
   await device.input.tap(point);
 }
 
+/** 玩法底部面板入场时目标可能暂时在屏幕外；等待可点击布局，不滚动背景页。 */
+export async function tapScenarioOption(device: NativeDevice, identifier: string,
+  { timeout = 10_000, interval = 200 }: { timeout?: number; interval?: number } = {}) {
+  if (identifier.startsWith('game-type-button-')) {
+    let nodes = await device.waitSnapshot({ res: identifier });
+    // 原生查询本身可能较慢，首次观测后仍须有机会等到面板完成入场。
+    const deadline = Date.now() + timeout;
+    for (;;) {
+      if (!nodes.some(node => node.res === 'select-game-category-text')) throw new Error('选择玩法前必须显示游戏选择面板。');
+      const target = await device.info({ res: identifier }, nodes);
+      const { node, viewport } = nativeViewport(nodes, target,
+        { x: 0, y: 0, width: device.screenSize.width, height: device.screenSize.height * 0.98 });
+      const point = { x: node.bounds.x + node.bounds.width / 2, y: node.bounds.y + node.bounds.height / 2 };
+      if (node.enabled && pointInside(point, viewport)) break;
+      if (Date.now() >= deadline) throw new Error(`游戏选择面板未显示可点击目标：${identifier}`);
+      await delay(interval);
+      nodes = await device.waitSnapshot({ res: identifier });
+    }
+  }
+  await tap(device, identifier);
+}
+
 /** Guest login must open from the actual account tab, not scroll a missed tab tap's hall. */
 export async function selectGuestSettingsTab(device: NativeDevice,
   { timeout = 5000, tapTab = () => tap(device, 'settings-tab') }: { timeout?: number; tapTab?: () => Promise<void> } = {}) {
@@ -288,7 +310,7 @@ async function navigateIdentifier(device: NativeDevice, scenario: VisualScenario
     await selectGuestSettingsTab(device);
     await tap(device, 'sign-in-button');
     await device.wait({ res: 'username-or-email-sign-in-button' });
-  } else await tap(device, identifier);
+  } else await tapScenarioOption(device, identifier);
 }
 
 function assertReadySnapshotScenario(scenario: VisualScenario) {

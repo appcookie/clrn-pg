@@ -1,12 +1,58 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { nativeViewport, fullyInside, pointInside } from './native-viewport.ts';
-import { reveal, revealScenarioReady, tap } from './navigation.ts';
+import { reveal, revealScenarioReady, tap, tapScenarioOption } from './navigation.ts';
 
 function node(res, clazz, bounds, children = []) {
   return { res, clazz, bounds, children, visible: true, enabled: true, attributes: {} };
 }
 const screen = { x: 0, y: 0, width: 1178, height: 2556 };
+function enteringGamePicker(settle = true, enabled = true, parentVisible = true) {
+  const target = node('game-type-button-texas_six_plus', 'XCUIElementTypeOther',
+    { x: 74, y: 2500, width: 1030, height: 150 });
+  target.enabled = enabled;
+  const heading = node('select-game-category-text', 'XCUIElementTypeStaticText',
+    { x: 410, y: 1716, width: 358, height: 72 });
+  const panel = node('Bottom Sheet', 'XCUIElementTypeOther',
+    { x: 0, y: 1656, width: 1178, height: 1179 }, [heading, target]);
+  panel.visible = parentVisible;
+  const root = node('app', 'XCUIElementTypeApplication', screen, [panel]);
+  let observations = 0;
+  const points = [];
+  const observe = async () => {
+    if (++observations > 1 && settle) target.bounds.y = 2313;
+    return [root, panel, heading, target];
+  };
+  const device = {
+    screenSize: screen, waitSnapshot: observe, nodes: observe, hideKeyboard: async () => {},
+    info: async (selector, snapshot) => (snapshot || await observe()).find(item => item.res === selector.res),
+    input: { swipe: async () => { throw new Error('不得滚动背景列表'); }, tap: async point => points.push(point) },
+  };
+  return { device, target, points, observations: () => observations };
+}
+
+test('选择玩法等待底部面板的目标进入真实可点击视口，再执行单次点击', async () => {
+  const value = enteringGamePicker();
+  await tapScenarioOption(value.device, value.target.res, { interval: 1 });
+  assert.ok(value.observations() >= 3);
+  assert.deepEqual(value.points, [{ x: 589, y: 2388 }]);
+});
+
+test('选择面板持续被裁切、隐藏或禁用时仍失败，不滚背景或点击不可用目标', async () => {
+  for (const args of [[false, true, true], [true, true, false], [true, false, true]]) {
+    const value = enteringGamePicker(...args);
+    await assert.rejects(tapScenarioOption(value.device, value.target.res, { timeout: 1, interval: 1 }), /未显示可点击目标/);
+    assert.deepEqual(value.points, []);
+  }
+});
+
+test('等待游戏选择面板期间驱动断连直接失败', async () => {
+  const value = enteringGamePicker();
+  const failure = new Error('driver disconnected');
+  value.device.waitSnapshot = async () => { throw failure; };
+  await assert.rejects(tapScenarioOption(value.device, value.target.res), error => error === failure);
+});
+
 function stagingTree() {
   // Actual zh-Hans CI geometry: the button center (1810.5) lies below the scroll viewport (1803).
   const button = node('confirm-button', 'XCUIElementTypeButton', { x: 149, y: 1752, width: 880, height: 117 });

@@ -30,9 +30,9 @@ gh workflow run ios-full.yml --repo appcookie/clrn-pg --ref <待测分支> \
 
 | 语言 | 真实采集 | 独立 compare |
 | --- | --- | --- |
-| en | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020648134) | 待执行 |
+| en | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020648134) | [运行中](https://github.com/appcookie/clrn-pg/actions/runs/43026136304) |
 | zh-Hans | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020628623) | [运行中](https://github.com/appcookie/clrn-pg/actions/runs/43024703253) |
-| zh-Hant | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020638917) | [运行中](https://github.com/appcookie/clrn-pg/actions/runs/43023918538) |
+| zh-Hant | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020638917) | [首轮导航失败，待复跑](https://github.com/appcookie/clrn-pg/actions/runs/43023918538) |
 
 共享截图导航的房名输入沿用真实建房流程的原生三击全选替换，保留完整值校验；
 否则受控输入在 clear 后恢复默认名，会使高级设置导航提前失败。
