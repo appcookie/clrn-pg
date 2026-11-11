@@ -6,6 +6,7 @@ import { createServer } from 'node:http';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { parseNativeTree, NativeDevice, keyboardDismissTarget, normalizeNativeScreenshot, captureSimulatorScreenshot } from './native-device.ts';
+import { fillScenarioInputs } from './navigation.ts';
 
 test('截图子进程等待夹具响应时不会阻塞同进程HTTP服务，原始PNG字节不变', async () => {
   const bytes = PNG.sync.write(new PNG({ width: 5, height: 7 }));
@@ -207,8 +208,8 @@ test('先聚焦再清空受控输入，逐字输入后确认替换成功；残�
     }
   }
 });
-test('会恢复默认值的房名通过原生三击选择替换，选择失败仍拒绝提交', async () => {
-  for (const selectionWorks of [true, false]) {
+test('会恢复默认值的房名及共享截图导航通过原生三击选择替换，选择失败仍拒绝提交', async () => {
+  for (const [selectionWorks, sharedNavigation] of [[true, false], [false, false], [true, true], [false, true]]) {
     let selected = false, value = 'default name', clears = 0;
     const driver = {
       find: async () => 'room-input', path: suffix => suffix,
@@ -225,8 +226,15 @@ test('会恢复默认值的房名通过原生三击选择替换，选择失败�
       },
     };
     const device = new NativeDevice(driver, 'test', async () => {}, async () => {}, 'test.app');
-    device.info = async () => ({ res: 'room-name-input', clazz: 'XCUIElementTypeTextField', children: [] });
-    const run = () => device.fill({ res: 'room-name-input' }, 'AB', { replaceBySelection: true });
+    const field = { res: 'room-name-input', clazz: 'XCUIElementTypeTextField', children: [], visible: true,
+      bounds: { x: 20, y: 100, width: 300, height: 60 } };
+    device.screenSize = { width: 1178, height: 2556 };
+    device.info = async () => field;
+    device.waitSnapshot = async () => [field];
+    device.hideKeyboard = async () => {};
+    const run = () => sharedNavigation
+      ? fillScenarioInputs(device, { fixedTexts: [{ selector: '[data-testid="room-name-input"]', text: 'AB' }] })
+      : device.fill({ res: 'room-name-input' }, 'AB', { replaceBySelection: true });
     if (selectionWorks) { await run(); assert.equal(value, 'AB'); }
     else await assert.rejects(run(), /未完整替换/);
     assert.equal(clears, 0);

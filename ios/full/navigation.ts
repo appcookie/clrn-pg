@@ -142,7 +142,8 @@ export async function fillScenarioInputs(device: NativeDevice, scenario: VisualS
   for (const rule of scenario.fixedTexts.filter(item => /input"\]$/.test(item.selector))) {
     const selector = nativeSelector(rule.selector);
     await reveal(device, selector);
-    await device.fill(selector, rule.text);
+    // 与真实建房一致：房名清空会恢复默认值，使用原生全选替换并核验完整结果。
+    await device.fill(selector, rule.text, { replaceBySelection: selector.res === 'room-name-input' });
     await device.hideKeyboard();
   }
 }
