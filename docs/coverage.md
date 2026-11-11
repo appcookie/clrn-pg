@@ -31,11 +31,12 @@ gh workflow run ios-full.yml --repo appcookie/clrn-pg --ref <待测分支> \
 | 语言 | 真实采集 | 独立 compare |
 | --- | --- | --- |
 | en | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020648134) | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43026136304) |
-| zh-Hans | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020628623) | [首轮短牌定位失败，待复跑](https://github.com/appcookie/clrn-pg/actions/runs/43024703253) |
-| zh-Hant | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020638917) | [运行中](https://github.com/appcookie/clrn-pg/actions/runs/43029115269) |
+| zh-Hans | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020628623) | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43032099498) |
+| zh-Hant | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43020638917) | [2/2 通过](https://github.com/appcookie/clrn-pg/actions/runs/43029115269) |
 
-共享截图导航的房名输入沿用真实建房流程的原生三击全选替换，保留完整值校验；
-否则受控输入在 clear 后恢复默认名，会使高级设置导航提前失败。
+三语言独立 compare 共 6/6 通过。导航等待玩法面板进入可点击布局，
+并根据房名标题定位其所属表单滚动区；房名输入沿用真实建房流程的原生三击全选替换，保留完整值校验。
+原生 clear 会让该受控输入恢复默认名；全选替换可避免在高级设置前因值校验失败而中断。
 
 其他牌桌静态/动画清单没有 RTC 面板或视频开关的独立预期。共享回放器中历史
 `/v1/chat_room/` 的兼容响应不代表 iOS 仍有实时音视频入口；本轮不以这些数据宣称覆盖。
