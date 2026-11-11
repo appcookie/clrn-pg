@@ -4,6 +4,11 @@ import re
 
 
 def request_kind(frame):
+    # Connection commands can time out even after room RPCs succeeded. Retain
+    # only the bounded protocol method number, never params, IDs or channels.
+    method = frame.get('method')
+    if type(method) is int and 0 <= method <= 10 and method not in (1, 2, 9):
+        return f'protocol-method-{method}'
     params = frame.get('params')
     if not isinstance(params, dict):
         return None

@@ -6,7 +6,7 @@ import math
 import re
 from time import monotonic
 from urllib.parse import urlsplit
-from http_failure import outcome, utc_now
+from http_failure import outcome, utc_now, unknown_error_evidence
 from room_protocol_diagnostics import RoomProtocolDiagnostics
 
 
@@ -33,6 +33,8 @@ class TransportDiagnostics:
     @staticmethod
     def path(value):
         path = urlsplit(value).path
+        if path == '/public/v10/user/login/username/password':
+            return '/public/<login>'
         if re.fullmatch(r'/v10/profile/[a-fA-F0-9]{8}(?:-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}', path):
             return '/v10/profile/<user>'
         if re.fullmatch(r'/v10/texas_holdem/room/[0-9a-f-]{36}/user_settings', path, re.I):
@@ -174,6 +176,7 @@ class TransportDiagnostics:
                 if self.tls_connections.get(conn.id) == side:
                     flow.metadata['ios_tls_failure_side'] = side
             details = dict(observationHook=hook, **outcome(flow))
+            details.update(unknown_error_evidence(flow, details['failureCategory']))
             flow.metadata['ios_http_outcome'] = details
             self.responses[(host, path, flow.response.status_code if flow.response else 0)] += 1
             event = self.http_events.get(flow.id)

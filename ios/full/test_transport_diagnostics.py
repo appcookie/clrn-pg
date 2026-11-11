@@ -159,7 +159,7 @@ class TransportTests(unittest.TestCase):
         diagnostics.request(flow('/v10/wallet/private-user-id', 'PUT', {'secret': 'hidden'}))
         diagnostics.request(flow('/public/v10/user/login/username/password', 'POST', {'password': 'hidden'}))
         result = diagnostics.snapshot()
-        self.assertEqual(len(result['requests']), 2)
+        self.assertEqual(len(result['requests']), 3)
         self.assertIn({'host': failed.request.host, 'path': '/node/v1/status', 'status': 503, 'count': 1}, result['responses'])
         serialized = json.dumps(result)
         for sensitive in ('private', 'hidden', 'token=', 'password', 'Authorization'):
@@ -443,3 +443,20 @@ class TransportTests(unittest.TestCase):
         for secret in (room, 'private-query', 'private-body'):
             self.assertNotIn(secret, json.dumps(diagnostics.snapshot()))
         self.assertIsNone(diagnostics.path(f'/v10/texas_holdem/room/{room}/private-action'))
+
+
+class LoginTransportTests(unittest.TestCase):
+    def test_login_timeout_exposes_only_transport_metadata(self):
+        diagnostics = TransportDiagnostics()
+        request = flow('/public/v10/user/login/username/password?token=private-query',
+                       'POST', {'username': 'private-user', 'password': 'private-password'})
+        diagnostics.request(request)
+        request.error = Error('private-error')
+        diagnostics.response(request, hook='error')
+        event = diagnostics.snapshot()['httpEvents'][0]
+        self.assertEqual(event['path'], '/public/<login>')
+        self.assertEqual(event['status'], 0)
+        self.assertEqual(event['responseSource'], 'none')
+        self.assertIsNotNone(event['elapsedMs'])
+        self.assertNotIn('private', json.dumps(diagnostics.snapshot()))
+        self.assertEqual(request.error.msg, 'private-error')

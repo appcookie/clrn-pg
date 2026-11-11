@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 import type { NativeDevice as AndroidDevice } from './native-device';
 import type { ScreenshotBounds } from './screenshot';
 import { setTimeout as delay } from 'node:timers/promises';
-import { observeGameGone } from './game-gone-diagnostics';
+import { observeGameGone } from './game-gone-diagnostics'; import { observeStatisticsReady } from './game-ready-diagnostics';
 export type NativeNode = { res?: string; text?: string; clazz?: string; enabled?: boolean; checked?: boolean; visible?: boolean;
   bounds: ScreenshotBounds; children?: NativeNode[] };
 
@@ -91,12 +91,12 @@ export function gameTextWithin(nodes: NativeNode[], marker: string): string[] {
  */
 export async function gameReady(device: AndroidDevice, res: string, text?: string): Promise<NativeNode> {
   let found: NativeNode | undefined;
-  await expect.poll(async () => {
-    const nodes = await gameNodes(device);
+  await observeStatisticsReady(res, text, observe => expect.poll(async () => {
+    const queryStarted = Date.now(), nodes = await gameNodes(device); observe(nodes, queryStarted);
     const { connecting } = gameConnectionState(nodes);
     found = connecting ? undefined : nodes.find(node => node.res === res && (text === undefined || node.text === text));
     return found;
-  }, { message: `${res} 应可见且连接正常`, timeout: 45_000, intervals: [250] }).toBeDefined();
+  }, { message: `${res} 应可见且连接正常`, timeout: 45_000, intervals: [250] }).toBeDefined());
   return found!;
 }
 
