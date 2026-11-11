@@ -81,11 +81,17 @@ class GameSessionTests(unittest.TestCase):
         self.assertIsNone(session.room)
 
     def test_room_presentation_preserves_real_identity_and_only_changes_own_number(self):
+        # 当前建房禁用 RTC；旧响应仍可能带 True。展示规范化不能改写任一值。
+        for allow_player_rtc in (False, True):
+            with self.subTest(allow_player_rtc=allow_player_rtc):
+                self.assert_room_presentation_preserved(allow_player_rtc)
+
+    def assert_room_presentation_preserved(self, allow_player_rtc):
         session = GameSession('texas_holdem')
         session.response(login())
         session.response(room())
         body = {'ok': True, 'result': {'room_id': ROOM, 'creator_id': USER,
-            'options': {'house_number': '987654321', 'allow_player_rtc': True},
+            'options': {'house_number': '987654321', 'allow_player_rtc': allow_player_rtc},
             'game_config': {'small_blind': 1}, 'room_status': 'waiting'}}
         original = copy.deepcopy(body)
         ownership = copy.deepcopy(session.room)

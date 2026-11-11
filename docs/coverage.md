@@ -1,5 +1,36 @@
 # iOS 全功能迁移状态
 
+## 实时音视频下线后的 iOS 回归（#62）
+
+当前部署固定为正式发布的 [ios-staging-67-1-9ac33f63d43e](https://github.com/kevinanew/clrn/releases/tag/ios-staging-67-1-9ac33f63d43e)，
+应用提交 `9ac33f63d43e4f271495b903c19533390a8c748f`，版本 `2.0.2611111632`，
+模拟器 ZIP 为 45,041,854 字节、SHA-256 `35977cb184c2f50d8ec9ae10283d9b0e66cbd96d7302af6c28d9c15aeda72acc`。
+GitHub 提交比较确认音视频移除提交 `a63f9c71bcc81795b70b8b41a8e77e10cb3c1be6`
+是该构建的祖先；下载仍校验 Release、build-info 和 ZIP，不以较新的构建编号推断功能存在与否。
+
+手动定向入口只运行 `en`、`zh-Hans`、`zh-Hant` 的
+`signed_in_create_room_advanced_texas` / `signed_in_create_room_advanced_six_plus` 六例：
+
+```sh
+gh workflow run ios-full.yml --repo appcookie/clrn-pg --ref <待测分支> \
+  -f group=rooms -f locale=all -f room_case=rtc-retirement -f mode=reference
+# 审查真实候选并登记每张 PNG 的 SHA 和独立来源后，将 mode 改为 compare 再运行。
+```
+
+用例保持真实导航、滚到建房页末尾和既有像素阈值，额外验证已删除的
+`allow-player-rtc-switch` 不存在、四个文本/语音消息开关仍挂载、页脚完整落在滚动视口内，
+并保存脱敏页面树用于核对内容高度和取景。原 master 没有这六张已提交的高级设置基准，
+本轮应补充真实采集和审查，不能宣称替换了旧图或已复现 Web 三语言像素失败。
+默认 PR/master 回归范围与视觉门禁不变；该手动入口的检查仅包含相关单测和类型检查。
+
+其他牌桌静态/动画清单没有 RTC 面板或视频开关的独立预期。共享回放器中历史
+`/v1/chat_room/` 的兼容响应不代表 iOS 仍有实时音视频入口；本轮不以这些数据宣称覆盖。
+房号展示单测同时验证当前 `allow_player_rtc: false` 与历史 `true` 原值保留，仅规范化房号。
+文本消息、语音消息及它们的牌桌状态继续保留；测试产物 MP4/MOV 是正常回归录屏，继续采集。
+原有 PNG 的构建和采集来源保持不变，新图须在 `review.json` 的 `files[].source` 单独记录。
+
+## 功能测试迁移
+
 代码位于 `ios/full/functional/`，来自下文固定 Web master 的 **60 个功能、8 个交互、3 个弱网测试**，另有一个基于 Web 俱乐部搜索新增用例的命中结果测试。普通业务共 54 项，创建数据 7 项，两组分开执行。新增用例在进入搜索页后启用 mitmproxy 定向响应，核对真实键盘提交、搜索请求、俱乐部资料读取、可见卡片，并将稳定后的原生截图与独立基准比较；其余请求仍走原代理规则。新基准须从固定 iOS Simulator 参考图任务采集，审查原图与来源后登记。所有测试都有实际原生动作与语义断言，缺配置、未知弹窗、网络错误和不可达入口会失败，没有 skip 或预期失败充当完成。
 
 目前完成 TypeScript 检查和 Playwright 实际收集契约测试（2/2）：精确核对 60 个来源标题与编号、额外的搜索命中用例、54/7 分组、8/3 清单、无跳过或预期失败。**本实现尚未执行新增的原生搜索命中案例；不将静态检查当成 iOS 业务通过。** 冒烟、全量静态图、动画及业务流程的执行证据分别记录，不能相互替代。
@@ -1222,7 +1253,10 @@ E2E_INTERACTION_BASE_URL=http://127.0.0.1:9087 npm run test:interactions -- --pr
   测试不得改写 `Device.isWeb` 强行打开；保留 H5 实际效果与静态断言。
 - `TreasureBox` 在当前源码仅有导出，没有实际消费入口；不能以直接挂载测试组件冒充正常页面覆盖。
 - 独立 `MatchTexasHoldem` 热气球页面依赖浮窗匹配状态，现有 H5 场景不可达。
-- RTC、下一手下注记录、重新匹配、拼三张独立加注滑杆的入口限制沿用各牌桌已有 `COVERAGE.md`。
+- 实时音视频已随应用 [PR #7093](https://github.com/kevinanew/laiwan_react_native/pull/7093)
+  下线：共享建房高级设置的视频开关、德州 RTCPanel 及连接管理已删除，建房请求
+  `allow_player_RTC` 固定为 `false`。它不属于待补入口或待补截图；文本和语音消息继续保留。
+- 下一手下注记录、重新匹配、拼三张独立加注滑杆的入口限制沿用各牌桌已有 `COVERAGE.md`。
 - 俱乐部房间骨架仅用于旧引擎房间缺失信息的分支。当前 React Native 引擎响应在构造时即设置
   `isAllInformationLoaded=true`，旧版德州已下线。
 - React Navigation 的 Stack 在 Web 平台默认使用 `animation: none`。实际账号安全页入栈采样也没有位移或渐变，
@@ -1320,9 +1354,6 @@ zhajinhua 应使用自己的目录及控制命令，方便分别调试。
 
 以下界面尚无有效截图，不能把它们计入覆盖数：
 
-- **RTC 面板**：`MainScreen._initializeState` 将 `allowPlayerRTC` 设为 false；
-  `_renderRTCPanel` 依赖它，而 `_createChatRoom` 等待面板 ref。创建成功才将开关设为 true，
-  因此存在首次初始化循环，正常 UI/聊天室推送不能打开面板。
 - **猜牌记录**：`_queryRoomInfo` 更新 `allowBetNextHand` 后立即调用 `DrawerMenu.setOptions`，
   子组件读到旧 `showItemRecord`；之后没有随 props 更新重算选项。真实重连只刷新牌局状态，
   管理员入口也跳过记录菜单的插入。猜牌入口和结果本身已经覆盖。
@@ -1537,7 +1568,7 @@ TypeScript 类型检查和 lint 均通过。
 
 固定 Staging 包在 `LaunchBranding` 挂载时同步打开不透明提示框，文字的 500 毫秒淡入被提示框遮住，无法在这个包上取得可见像素轨迹。启动场景只声明实际可见的插画和提示出现；若应用将提示延后或提供可测试的无提示启动入口，应为品牌淡入另加逐帧基准。
 
-源码中 `TreasureBox` 只有导出而无页面消费，`PrizeCoinAnimation` 没有调用入口，不能把直接挂载组件产生的图片当作应用视觉回归。德州 `RTCPanel` 的首次初始化依赖尚未挂载的面板 ref，正常 UI 无法打开；这些效果需要应用先提供可达入口。旧引擎房间骨架同样不在固定 React Native 引擎包的可达路径内。
+源码中 `TreasureBox` 只有导出而无页面消费，`PrizeCoinAnimation` 没有调用入口，不能把直接挂载组件产生的图片当作应用视觉回归；这些效果需要应用先提供可达入口。德州 `RTCPanel` 已随实时音视频功能主动删除，不再要求提供入口或补充动画覆盖。旧引擎房间骨架同样不在固定 React Native 引擎包的可达路径内。
 
 旧版快速匹配页的 `MatchGameBackgroundV2` 气球循环虽然有导航路由，当前大厅的旧版快速匹配内容分支已注释，固定包中没有可操作入口。拼三张的旧 `RaiseBetPopup` 只调用 `hide()`，没有 `show()` 调用；可见牌桌使用快捷加注与精确加注弹层，其动画已覆盖。房间设置的 `StepSlider.native` 没有开启 `animateTransitions`，调整值时不执行源码中的 `StepIndicator` 动画。
 

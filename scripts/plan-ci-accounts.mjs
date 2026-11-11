@@ -8,6 +8,16 @@ const group = process.env.CI_IOS_GROUP || 'pr';
 // 游客任务不读取账号 Secret，也不执行账号准备。
 const accounts = group === 'guest' ? [] : availableCiAccounts(process.env.CLRN_IOS_CI_TEST_ACCOUNTS);
 const matrix = iosAccountMatrix(process.env.GITHUB_RUN_ID, group, process.env.CI_IOS_LOCALE || 'all', accounts);
+const requestedRoomCase = process.env.CI_ROOM_CASE || 'all';
+if (requestedRoomCase !== 'all') {
+  if (process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' || group !== 'rooms'
+    || requestedRoomCase !== 'rtc-retirement') {
+    throw new Error('高级设置定向回归仅允许手动运行 rooms 组，不能缩减 PR 门禁。');
+  }
+  matrix.include = matrix.include.map(entry => ({ ...entry, shard: 'rtc-retirement',
+    filter: 'signed_in_create_room_advanced_(?:texas|six_plus)$',
+    label: `rooms / ${entry.locale} / 实时音视频下线后的高级设置` }));
+}
 const requestedFunctionalCase = process.env.CI_FUNCTIONAL_CASE || 'all';
 if (requestedFunctionalCase !== 'all') {
   if (process.env.GITHUB_EVENT_NAME !== 'workflow_dispatch' || group !== 'functional'
