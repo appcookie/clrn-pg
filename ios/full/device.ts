@@ -12,7 +12,7 @@ import { comparePixels } from '../visual.mjs';
 import { NativeDevice } from './native-device';
 import { maskScreenshot, type ScreenshotMask, type ScreenshotBounds } from './screenshot';
 import { baselinePath, baselineRoot } from './baseline-path.mjs';
-import { startupDiagnostics, waitForAppium } from '../startup-diagnostics.mjs';
+import { startupDiagnostics, waitForAppium, withSimulatorFailure } from '../startup-diagnostics.mjs';
 export { applicationId };
 export const artifacts = artifactDirectory;
 let appPromise: Promise<string> | undefined;
@@ -105,7 +105,7 @@ export async function launchApplication(options: { isolated?: boolean; gameDrive
       'appium:wdaLaunchTimeout': 240_000, 'appium:newCommandTimeout': 1800,
       'appium:wdaLocalPort': 8100 + index, 'appium:mjpegServerPort': 9100 + index };
     const start = async () => {
-      await server.diagnostics.run('appium-session', udid, () => driver!.start(capabilities));
+      await server.diagnostics.run('appium-session', udid, () => withSimulatorFailure(udid, () => driver!.start(capabilities)));
       // fullReset 也会清除先前 status_bar override，因此在会话建立后固定显示。
       execFileSync('xcrun', ['simctl', 'status_bar', udid, 'override', '--time', '9:41', '--batteryState', 'charged',
         '--batteryLevel', '100', '--wifiBars', '3', '--cellularBars', '4']);

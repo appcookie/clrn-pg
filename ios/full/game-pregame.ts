@@ -13,6 +13,7 @@ import { captureNativeTransition } from './animation-transition';
 import { animationRecordOnly } from './record-only';
 import { seatGuideMotionBounds } from './game-masks';
 import { gameMaskPoint } from './game-mask-point';
+import { observeReviewClose } from './review-close-diagnostics';
 import { nativeReviewPanelBounds, nativeChatPanelBounds } from './animation-region';
 import type { ScreenshotBounds, ScreenshotMask } from './screenshot';
 
@@ -348,8 +349,10 @@ async function captureRemainingPanels(device: AndroidDevice, game: 'texas-holdem
   const closeRecord = async () => {
     await gameConnectedCurrent(device, 2_000);
     // 录屏预热与连接等待后重新观测遮罩，不能沿用数十秒前的点击条件。
-    await gameTapCurrent(device, 'screen-mask-touch-to-close', mask =>
-      gameMaskPoint(mask, reviewPanel, device.screenSize));
+    const point = (mask: ScreenshotBounds) => gameMaskPoint(mask, reviewPanel, device.screenSize);
+    if (game === 'texas-holdem') await observeReviewClose(reviewPanel, device.screenSize,
+      (onTap, onObservation) => gameTapCurrent(device, 'screen-mask-touch-to-close', point, onTap, onObservation));
+    else await gameTapCurrent(device, 'screen-mask-touch-to-close', point);
   };
   if (animationInfo) await captureNativeTransition(device, `${game}-game-record-exit`, animationInfo,
     screenBounds(device, { x: 150, y: 400, width: 440, height: 450 }), closeRecord, [], [], 0,

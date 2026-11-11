@@ -147,12 +147,12 @@ export async function gameConnectedCurrent(device: AndroidDevice, stableMs = 0):
 /** 录制期间等待真实面板标记消失；完整独立终点仍由转场采集器检查。 */
 export async function gameGoneCurrent(device: AndroidDevice, res: string): Promise<void> {
   await device.prepareTransientCapture();
-  await expect.poll(async () => {
-    const nodes = await device.inputObservation(res);
+  await observeGameGone(res, observe => expect.poll(async () => {
+    const queryStarted = Date.now(), nodes = await device.inputObservation(res); observe(nodes, queryStarted);
     const { connecting } = gameConnectionState(nodes);
     // 连接遮罩会使仍挂载的侧栏不可见；重连中的缺失不是关闭证据。
     return connecting || nodes.some(node => node.res === res);
-  }, { timeout: 45_000, intervals: [250] }).toBe(false);
+  }, { timeout: 45_000, intervals: [250] }).toBe(false), 'predicate');
 }
 
 /** Return the same complete tree that established connection readiness. */

@@ -15,6 +15,8 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
   test.setTimeout(1_200_000);
   await withAndroidProxy(async proxy => {
     let device: AndroidDevice | undefined;
+    const timing: { phase: string; utc: string }[] = [];
+    const mark = (phase: string) => { timing.push({ phase, utc: new Date().toISOString() }); };
     try {
       device = await launchApplication({ gameDriver: true, enableSystemAnimations: true });
       device.nativeVideoBackend = 'xctest';
@@ -25,7 +27,9 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       const initial = (await proxy.command<{ loaded: number }>('android/skeleton')).loaded;
       // 在挂起俱乐部响应前读取入口；原生点击不会等待网络进入 idle，给骨架动画留下完整采样窗口。
       const tab = (await device.info({ res: 'club-tab' })).bounds;
+      mark('hold-requested');
       await proxy.command('android/skeleton', { hold: true });
+      mark('hold-confirmed');
       await device.input.tap({ x: Number(String(Math.round(tab.x + tab.width / 2))), y: Number(String(Math.round(tab.y + tab.height / 2))) });
       let regions: ScreenshotBounds[] = [];
       // One native-tree observation, rather than wait() plus a second slow tree.
@@ -37,8 +41,14 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
         expect(nodes.some(node => /network issue/i.test(node.text || '')), '采样前不能已进入超时错误页').toBe(false);
         regions = placeholders.map(node => node.bounds);
       }).toPass({ timeout: 30_000, intervals: [200] });
+      mark('placeholders-observed');
       const samples = await recordScreenSamples(device, 'club-list-skeleton', testInfo, () => {}, 3500,
-        async () => { await proxy.command('android/skeleton', { hold: false }); });
+        async () => {
+          mark('release-requested');
+          await proxy.command('android/skeleton', { hold: false });
+          mark('release-confirmed');
+        });
+      mark('recording-returned');
       await captureLoopKeyframes(device, 'club-list-skeleton', testInfo, regions, 1, samples);
       await expect.poll(async () => (await proxy.command<{ loaded: number }>('android/skeleton')).loaded,
         { timeout: 30_000 }).toBeGreaterThan(initial);
@@ -47,7 +57,8 @@ if (!(!['all', 'social'].includes(process.env.IOS_GROUP || 'all')
       await expect.poll(async () => (await gameNodes(device!)).filter(node => node.res === 'club-title')
         .map(node => node.text).sort(), { timeout: 30_000 }).toEqual(['TestClub1', 'TestClub2']);
     } catch (error) {
-      if (device) await captureFailure(device, testInfo);
+      try { console.error('[club skeleton timing]', JSON.stringify(timing)); } catch { /* diagnostic only */ }
+      if (device) await captureFailure(device, testInfo, () => proxy.command('native/transport'));
       throw error;
     } finally {
       await proxy.command('android/skeleton', { hold: false }).catch(() => {});

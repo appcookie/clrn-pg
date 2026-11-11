@@ -60,6 +60,24 @@ class TransportTests(unittest.TestCase):
         self.assertIsNone(event['failureReason'])
         self.assertNotIn('private', json.dumps(diagnostics.snapshot()))
 
+    def test_club_fixture_timing_does_not_export_query_or_club_body(self):
+        diagnostics = TransportDiagnostics()
+        for path, method in (('/v10/club?user_id=private-user', 'GET'), ('/v10/clubs', 'PUT')):
+            request = flow(path, method)
+            diagnostics.request(request)
+            request.metadata['ios_mocked'] = True
+            request.response = http.Response.make(200, b'{"private-club":"private-body"}')
+            original = request.response.get_state()
+            diagnostics.response(request)
+            event = diagnostics.snapshot()['httpEvents'][-1]
+            self.assertEqual(event['responseSource'], 'fixture')
+            self.assertEqual(event['path'], path.split('?')[0])
+            self.assertIsNotNone(event['requestAtUtc'])
+            self.assertIsNotNone(event['completedAtUtc'])
+            self.assertIsNotNone(event['elapsedMs'])
+            self.assertEqual(request.response.get_state(), original)
+        self.assertNotIn('private', json.dumps(diagnostics.snapshot()))
+
     def test_metadata_candidates_are_redacted_read_only_and_support_both_versions(self):
         host = '67.hk.api.staging.laiwan.shafayouxi.com'
         for version, servers in ((12, [host, 'private-user.example.com', {'token': 'private'}]),

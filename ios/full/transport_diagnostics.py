@@ -39,7 +39,8 @@ class TransportDiagnostics:
             return '/v10/texas_holdem/room/<room>/user_settings'
         return path if (re.fullmatch(r'/(?:node/)?v\d+/status', path)
             or re.fullmatch(r'/public/v\d+/metadata(?:/servers)?', path)
-            or path in ('/v2/centrifugo/connection/websocket', '/v3/pay_action/do')) else None
+            or path in ('/v2/centrifugo/connection/websocket', '/v3/pay_action/do',
+                        '/v10/club', '/v10/clubs')) else None
 
     def socket_endpoint(self, flow):
         host, path = self.host(flow.request.host), self.path(flow.request.path)
