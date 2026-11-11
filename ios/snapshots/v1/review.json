@@ -9648,6 +9648,38 @@
         "packageSha256": "35977cb184c2f50d8ec9ae10283d9b0e66cbd96d7302af6c28d9c15aeda72acc"
       },
       "review": "逐图核对构建 67 繁体中文原图：德州/短牌高级设置不再显示实时音视频开关，观众/玩家的四个文字及语音消息开关保留；座位数、回合时长、红色页脚提示及开局按钮完整可见，滚动末尾取景无异常留白或裁切。"
+    },
+    {
+      "path": "private-room/create-room/signed-in-create-room-advanced-six-plus/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "41ba19ecfe9c0a764c42d0f5e50fc3fb150d3f87657f49a5006bcd342775fac1",
+      "source": {
+        "sourceRun": 43020628623,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/43020628623",
+        "sourceWorkflowHead": "7af48c779e44c5c07629b5eb365ea0bf792d44ec",
+        "sourceArtifacts": [
+          "ios-business-app-43020628623-1"
+        ],
+        "applicationCommit": "9ac33f63d43e4f271495b903c19533390a8c748f",
+        "releaseTag": "ios-staging-67-1-9ac33f63d43e",
+        "packageSha256": "35977cb184c2f50d8ec9ae10283d9b0e66cbd96d7302af6c28d9c15aeda72acc"
+      },
+      "review": "逐图核对构建 67 简体中文原图：德州/短牌高级设置不再显示实时音视频开关，观众/玩家的四个文字及语音消息开关保留；座位数、回合时长、红色页脚提示及开局按钮完整可见，滚动末尾取景无异常留白或裁切。"
+    },
+    {
+      "path": "private-room/create-room/signed-in-create-room-advanced-texas/ios/iphone16-ios18.5/zh-Hans/page/default.png",
+      "sha256": "e0791c47d91cf1b1e6676048cf68630bf4500c627bb0848f9f60264df0bf9976",
+      "source": {
+        "sourceRun": 43020628623,
+        "sourceUrl": "https://github.com/appcookie/clrn-pg/actions/runs/43020628623",
+        "sourceWorkflowHead": "7af48c779e44c5c07629b5eb365ea0bf792d44ec",
+        "sourceArtifacts": [
+          "ios-business-app-43020628623-1"
+        ],
+        "applicationCommit": "9ac33f63d43e4f271495b903c19533390a8c748f",
+        "releaseTag": "ios-staging-67-1-9ac33f63d43e",
+        "packageSha256": "35977cb184c2f50d8ec9ae10283d9b0e66cbd96d7302af6c28d9c15aeda72acc"
+      },
+      "review": "逐图核对构建 67 简体中文原图：德州/短牌高级设置不再显示实时音视频开关，观众/玩家的四个文字及语音消息开关保留；座位数、回合时长、红色页脚提示及开局按钮完整可见，滚动末尾取景无异常留白或裁切。"
     }
   ],
   "sourceWorkflowHead": "a3f35c02d9ed201f12d7c63dff5530653f80115b"
