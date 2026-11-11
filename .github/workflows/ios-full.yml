@@ -207,6 +207,7 @@ jobs:
             ios/artifacts/full-report/
             ios/artifacts/results/
             ios/artifacts/release/build-info.json
+            ${{ inputs.room_case == 'rtc-retirement' && '!ios/artifacts/business/**/reference-candidates/**' || '' }}
       - name: 保存分组状态和失败摘要供总门禁汇总
         if: always()
         uses: actions/upload-artifact@v4
