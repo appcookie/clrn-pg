@@ -74,6 +74,28 @@ export async function tap(device: NativeDevice, identifier: string) {
   await device.input.tap(point);
 }
 
+/** 玩法底部面板入场时目标可能暂时在屏幕外；等待可点击布局，不滚动背景页。 */
+export async function tapScenarioOption(device: NativeDevice, identifier: string,
+  { timeout = 10_000, interval = 200 }: { timeout?: number; interval?: number } = {}) {
+  if (identifier.startsWith('game-type-button-')) {
+    let nodes = await device.waitSnapshot({ res: identifier });
+    // 原生查询本身可能较慢，首次观测后仍须有机会等到面板完成入场。
+    const deadline = Date.now() + timeout;
+    for (;;) {
+      if (!nodes.some(node => node.res === 'select-game-category-text')) throw new Error('选择玩法前必须显示游戏选择面板。');
+      const target = await device.info({ res: identifier }, nodes);
+      const { node, viewport } = nativeViewport(nodes, target,
+        { x: 0, y: 0, width: device.screenSize.width, height: device.screenSize.height * 0.98 });
+      const point = { x: node.bounds.x + node.bounds.width / 2, y: node.bounds.y + node.bounds.height / 2 };
+      if (node.enabled && pointInside(point, viewport)) break;
+      if (Date.now() >= deadline) throw new Error(`游戏选择面板未显示可点击目标：${identifier}`);
+      await delay(interval);
+      nodes = await device.waitSnapshot({ res: identifier });
+    }
+  }
+  await tap(device, identifier);
+}
+
 /** Guest login must open from the actual account tab, not scroll a missed tab tap's hall. */
 export async function selectGuestSettingsTab(device: NativeDevice,
   { timeout = 5000, tapTab = () => tap(device, 'settings-tab') }: { timeout?: number; tapTab?: () => Promise<void> } = {}) {
@@ -141,9 +163,34 @@ export async function returnToTabs(device: NativeDevice) {
 export async function fillScenarioInputs(device: NativeDevice, scenario: VisualScenario) {
   for (const rule of scenario.fixedTexts.filter(item => /input"\]$/.test(item.selector))) {
     const selector = nativeSelector(rule.selector);
-    await reveal(device, selector);
-    await device.fill(selector, rule.text);
+    if (selector.res === 'room-name-input') await revealRoomNameInput(device);
+    else await reveal(device, selector);
+    // 与真实建房一致：房名清空会恢复默认值，使用原生全选替换并核验完整结果。
+    await device.fill(selector, rule.text, { replaceBySelection: selector.res === 'room-name-input' });
     await device.hideKeyboard();
+  }
+}
+
+/** 房名是表单首行；通过真实标题找到滚动区，避免目标离屏时只向下滚动。 */
+export async function revealRoomNameInput(device: NativeDevice) {
+  const descendants = (node: NativeNode): NativeNode[] => [node, ...node.children.flatMap(descendants)];
+  let nodes = await device.waitSnapshot({ res: 'base-create-room-screen' });
+  for (let attempt = 0; ; attempt++) {
+    const scroll = nodes.find(node => node.visible && /ScrollView|CollectionView|Table/.test(node.clazz)
+      && descendants(node).some(child => child.res === 'room-name-title'));
+    if (!scroll) throw new Error('建房表单缺少房名所在的滚动容器。');
+    const title = descendants(scroll).find(node => node.res === 'room-name-title')!;
+    const viewport = intersectBounds({ x: 0, y: 0, ...device.screenSize }, scroll.bounds);
+    if (title.visible && fullyInside(title.bounds, viewport)) {
+      await reveal(device, { res: 'room-name-input' });
+      return;
+    }
+    if (attempt === 8) throw new Error('滚动后房名标题仍未进入表单视口。');
+    const upward = title.bounds.y >= viewport.y;
+    await device.input.swipe({ x1: viewport.x + viewport.width * 0.97,
+      y1: viewport.y + viewport.height * (upward ? 0.85 : 0.2), x2: viewport.x + viewport.width * 0.97,
+      y2: viewport.y + viewport.height * (upward ? 0.2 : 0.85), duration: 600 });
+    nodes = await device.nodes();
   }
 }
 export async function revealScenarioReady(device: NativeDevice, scenario: Pick<VisualScenario, 'visualReadySelector' | 'readyText' | 'pageLabel' | 'signIn'>) {
@@ -287,7 +334,7 @@ async function navigateIdentifier(device: NativeDevice, scenario: VisualScenario
     await selectGuestSettingsTab(device);
     await tap(device, 'sign-in-button');
     await device.wait({ res: 'username-or-email-sign-in-button' });
-  } else await tap(device, identifier);
+  } else await tapScenarioOption(device, identifier);
 }
 
 function assertReadySnapshotScenario(scenario: VisualScenario) {

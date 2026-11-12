@@ -26,6 +26,11 @@ on:
         type: choice
         default: all
         options: [all, club-search-results]
+      room_case:
+        description: 手动 rooms 组定向执行三语言德州、短牌高级设置；不缩减 PR 门禁
+        type: choice
+        default: all
+        options: [all, rtc-retirement]
       animation_case:
         description: 手动可填 animation-编号；隔离组 20 可填 animation-20/themes、voice_records 或 interactions
         type: string
@@ -57,22 +62,36 @@ jobs:
         with:
           python-version: '3.12'
       - name: 提交前静态检查（与本地共用配置）
+        if: inputs.room_case != 'rtc-retirement'
         run: |
           python -m venv .venv-pre-commit
           .venv-pre-commit/bin/python -m pip install -r requirements-dev.txt
           .venv-pre-commit/bin/pre-commit run --all-files
           .venv-pre-commit/bin/python scripts/test-pre-commit.py
-      - run: |
+      - if: inputs.room_case != 'rtc-retirement'
+        run: |
           python -m venv e2e/.venv
           e2e/.venv/bin/python -m pip install -r e2e/mitmproxy/requirements.txt
-      - run: npm run check
-      - run: npm run check:python
+      - if: inputs.room_case != 'rtc-retirement'
+        run: npm run check
+      - if: inputs.room_case != 'rtc-retirement'
+        run: npm run check:python
+      - name: 高级设置相关检查（仅手动定向回归）
+        if: github.event_name == 'workflow_dispatch' && inputs.group == 'rooms' && inputs.room_case == 'rtc-retirement'
+        run: |
+          npm run typecheck
+          node --import tsx --test ios/full/room-advanced.test.mjs scripts/room-advanced-plan.test.mjs
+          node --import tsx --test --test-name-pattern '会恢复默认值的房名|先聚焦再清空受控输入' ios/full/native-device.test.mjs
+          node --import tsx --test ios/full/native-viewport.test.mjs
+          cd ios/full
+          python -m unittest test_game_session.GameSessionTests.test_room_presentation_preserves_real_identity_and_only_changes_own_number
       - id: plan
         env:
           CI_IOS_GROUP: ${{ inputs.group }}
           CI_IOS_LOCALE: ${{ inputs.locale || 'all' }}
           CI_ANIMATION_CASE: ${{ inputs.animation_case }}
           CI_FUNCTIONAL_CASE: ${{ inputs.functional_case || 'all' }}
+          CI_ROOM_CASE: ${{ inputs.room_case || 'all' }}
           CLRN_IOS_CI_TEST_ACCOUNTS: ${{ secrets.CLRN_IOS_CI_TEST_ACCOUNTS }}
           TESTING_API_TOKEN: ${{ secrets.TESTING_API_TOKEN }}
         run: |
@@ -190,6 +209,7 @@ jobs:
             ios/artifacts/full-report/
             ios/artifacts/results/
             ios/artifacts/release/build-info.json
+            ${{ inputs.room_case == 'rtc-retirement' && '!ios/artifacts/business/**/reference-candidates/**' || '' }}
       - name: 保存分组状态和失败摘要供总门禁汇总
         if: always()
         uses: actions/upload-artifact@v4
